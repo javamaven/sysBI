@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>用户标签表</title>
+	#parse("sys/header.html")
+</head>
+<body>
+<div class="content">
+
+	<div style="padding: 10px 30px;">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<i class="fa fa-eye"></i>   查询条件
+			</div>
+			<div class="panel-body">
+				<div class="form-group">
+					<div class="col-md-3">
+						<select id="id_type"  class="form-control" onchange="getLabelTagType()">
+							<option>请选择标签类型</option>
+							<option>用户标签</option>
+						</select>
+					</div>
+					<div class="col-md-3">
+						<select id="id_select"  class="form-control" onchange="getLabelList()">
+							<option>请选择标签</option>
+						</select>
+					</div>
+					<div class="col-md-3">
+						<a class="btn btn-primary" id="btn_search"><i class="fa fa-search"></i>&nbsp;查询</a>
+						#if($shiro.hasPermission("labeltaguser:export"))
+						<a class="btn btn-primary" id="btn_export"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+						#end
+					</div>
+				</div>
+				<div id="container">
+
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="panel panel-primary" >
+				<div class="panel-heading">
+					<i class="fa fa-list-ol"></i>  标签条件
+				</div>
+				<div class="panel-body">
+					<div class="table-responsive">
+						<table id="labelTable" class="table table-hover">
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<div class="row">
+			<div class="panel panel-primary"  >
+				<div class="panel-heading">
+					<i class="fa fa-list"></i>  用户标签数据
+				</div>
+				<div class="panel-body">
+					<div>
+						<ul class="spinners">
+							<li>
+								<div id="preloader_2">
+									<span></span>
+									<span></span>
+									<span></span>
+									<span></span>
+								</div>
+							</li>
+						</ul>
+					</div>
+					<div class="table-responsive">
+						<table id="reportTable" class="table table-hover">
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+
+</div>
+
+
+<script src="${rc.contextPath}/js/labelTag/labeltagUser.js?_${date.systemTime}"></script>
+</body>
+</html>

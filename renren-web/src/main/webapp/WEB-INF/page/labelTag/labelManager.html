@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>菜单管理</title>
+    #parse("sys/header.html")
+</head>
+<body>
+
+<div class="content" >
+
+    <div class="effects">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <i class="fa fa-search-plus"></i>   添加标签
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <select class="form-control" id="lagTagType">
+                                <option>请选择标签类型</option>
+                                <option>用户标签</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" id="mainLabelName" class="form-control" placeholder="请输入标签名称..." />
+                        </div>
+                        <div class="col-md-6">
+                            <a class="btn btn-primary" id="btn_addtr" onClick="addTr()"><i class="fa fa-plus"></i>&nbsp;新增</a>
+                            <a class="btn btn-success" id="btn_save" ><i class="fa fa-hand-peace-o"></i>&nbsp;保存</a>
+                            <a class="btn btn-info" href="../statics/picture/labelTagManager/userLabel_01.jpg" rel="lightbox-group" ><i class="fa fa-picture-o"></i>&nbsp;查看标签注释</a>
+                            <a class="btn btn-info" href="../statics/picture/labelTagManager/userLabel_02.jpg" rel="lightbox-group" style="display: none"></a>
+                            <a class="btn btn-info" href="../statics/picture/labelTagManager/userLabel_03.jpg" rel="lightbox-group" style="display: none"></a>
+                            <a class="btn btn-info" href="../statics/picture/labelTagManager/userLabel_04.jpg" rel="lightbox-group" style="display: none"></a>
+                            <a class="btn btn-info" href="../statics/picture/labelTagManager/userLabel_05.jpg" rel="lightbox-group" style="display: none"></a>
+                        </div>
+                    </div>
+                    <table id="dynamicTable" class="table table-hover">
+                        <thead>
+                        <tr>
+                            <td align="center" width="5%">ID</td>
+                            <td align="center" width="10%">维度/指标</td>
+                            <td align="center" width="15%">内容</td>
+                            <td align="center" width="10%">逻辑</td>
+                            <td align="center" width="50%">条件</td>
+                            <td width="10%"></td>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        </tbody>
+                    </table>
+                    <table id="dataTable" class="table table-hover" style="display: none">
+                        <tbody>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <i class="fa fa-eye"></i>   标签查询
+            </div>
+            <div class="panel-body">
+                <div class="form-group">
+                    <div class="col-md-3">
+                        <select class="form-control" id="id_type" onchange="getLabelTagType()">
+                            <option>请选择标签类型</option>
+                            <option>用户标签</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select id="id_select"  class="form-control" >
+                            <option>请选择标签</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <a class="btn btn-primary" id="btn_search" ><i class="fa fa-search"></i>&nbsp;查询</a>
+                        <a class="btn btn-danger" id="btn_del" ><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-body">
+
+                <div class="table-responsive">
+                    <table id="labelTable" class="table table-hover">
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+</script>
+<script src="${rc.contextPath}/js/labelTag/labelManager.js?_${date.systemTime}"></script>
+</body>
+</html>

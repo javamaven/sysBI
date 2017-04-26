@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.LabeltagUserDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.LabeltagUserEntity" id="LabeltagUserMap">
+        <result property="userId" column="USER_ID"/>
+        <result property="cgUserId" column="CG_USER_ID"/>
+        <result property="oldUserId" column="OLD_USER_ID"/>
+        <result property="phone" column="PHONE"/>
+        <result property="username" column="USERNAME"/>
+        <result property="realname" column="REALNAME"/>
+        <result property="registerTime" column="REGISTER_TIME"/>
+        <result property="firstinvestTime" column="FIRSTINVEST_TIME"/>
+        <result property="channelName" column="CHANNEL_NAME"/>
+        <result property="sex" column="SEX"/>
+        <result property="age" column="AGE"/>
+        <result property="isInterflow" column="IS_INTERFLOW"/>
+        <result property="isDepository" column="IS_DEPOSITORY"/>
+        <result property="invPeriod" column="INV_PERIOD"/>
+        <result property="invInterval" column="INV_INTERVAL"/>
+        <result property="normalPeriodPreference" column="NORMAL_PERIOD_PREFERENCE"/>
+        <result property="changePeriodPreference" column="CHANGE_PERIOD_PREFERENCE"/>
+        <result property="cumulativeInvMoney" column="CUMULATIVE_INV_MONEY"/>
+        <result property="cumulativeInvMoneyYear" column="CUMULATIVE_INV_MONEY_YEAR"/>
+        <result property="balance" column="BALANCE"/>
+        <result property="lastInvMoney" column="LAST_INV_MONEY"/>
+        <result property="invMaxMoney" column="INV_MAX_MONEY"/>
+        <result property="useVoucherProportion" column="USE_VOUCHER_PROPORTION"/>
+        <result property="cumulativeUseVoucherMoney" column="CUMULATIVE_USE_VOUCHER_MONEY"/>
+        <result property="cumulativeUseVoucherCou" column="CUMULATIVE_USE_VOUCHER_COU"/>
+        <result property="voucherEarningsProportion" column="VOUCHER_EARNINGS_PROPORTION"/>
+        <result property="cumulativeUsageVoucher" column="CUMULATIVE_USAGE_VOUCHER"/>
+        <result property="avgUseMoney" column="AVG_USE_MONEY"/>
+        <result property="lastInvTime" column="LAST_INV_TIME"/>
+        <result property="lastRechargeTime" column="LAST_RECHARGE_TIME"/>
+        <result property="avgNormalMoney" column="AVG_NORMAL_MONEY"/>
+        <result property="avgChangeMoney" column="AVG_CHANGE_MONEY"/>
+        <result property="avgInvMoney" column="AVG_INV_MONEY"/>
+        <result property="normalCou" column="NORMAL_COU"/>
+        <result property="changeCou" column="CHANGE_COU"/>
+        <result property="invCou" column="INV_COU"/>
+        <result property="voucherBalance" column="VOUCHER_BALANCE"/>
+        <result property="marketingDay" column="MARKETING_DAY"/>
+        <result property="lastLoginTime" column="LAST_LOGIN_TIME"/>
+
+        <result property="labelID" column="LABEL_ID"/>
+        <result property="labelType" column="LABEL_TYPE"/>
+        <result property="labelContene" column="LABEL_CONTENE"/>
+        <result property="labelLogic" column="LABEL_LOGIC"/>
+        <result property="labelCondition" column="LABEL_CONDITION"/>
+
+
+
+    </resultMap>
+
+	<select id="queryList" resultType="io.renren.entity.LabeltagUserEntity">
+
+        CALL PRO_LABELTAG_USER_2(#{strSql});
+
+    </select>
+
+    <select id="queryLabelList" resultType="io.renren.entity.LabelTagManagerEntity">
+        SELECT
+        LD.LABEL_ID,
+        LD.LABEL_TYPE,
+        LD.LABEL_CONTENE,
+        LD.LABEL_LOGIC,
+        LD.LABEL_CONDITION
+        FROM labeltag_detail LD
+        JOIN  labeltag_main LM ON (
+        LD.MAIN_ID = LM.ID)
+        WHERE LM.SYS_USER = #{sysUser}
+        AND LM.MAINLABEL_NAME = #{mainLabelName}
+        ORDER BY
+        LD.LABEL_ID
+        ;
+
+    </select>
+
+    <select id="queryStrSql" resultType="String">
+        SELECT group_concat(LD.STRSQL separator ' ') AS strSql
+        FROM labeltag_detail LD
+        JOIN  labeltag_main LM ON (
+        LD.MAIN_ID = LM.ID
+        )
+        WHERE
+        1 = 1
+        AND SYS_USER = #{sysUser}
+        AND MAINLABEL_NAME = #{mainLabelName}
+        ;
+    </select>
+
+    <select id="queryLabelTagType" resultType="io.renren.entity.LabelTagManagerEntity">
+        SELECT MAINLABEL_NAME
+        FROM labeltag_main
+        WHERE
+        1 = 1
+        AND SYS_USER = #{sysUser}
+        AND TYPE = #{type}
+        ORDER BY ID
+    </select>
+
+    <select id="queryTotal" resultType="int">
+        SELECT COUNT(1)
+        FROM TMP_LABELTAG_USER;
+    </select>
+
+    <select id="queryExport" resultType="io.renren.entity.LabeltagUserEntity">
+        SELECT
+        IFNULL(USER_ID,'') AS USER_ID,
+        IFNULL(CG_USER_ID,'') AS CG_USER_ID,
+        IFNULL(OLD_USER_ID,'') AS OLD_USER_ID,
+        IFNULL(PHONE,'') AS PHONE,
+        IFNULL(USERNAME,'') AS USERNAME,
+        IFNULL(REALNAME,'') AS REALNAME,
+        IFNULL(REGISTER_TIME,'') AS REGISTER_TIME,
+        IFNULL(FIRSTINVEST_TIME,'') AS FIRSTINVEST_TIME,
+        IFNULL(CHANNEL_NAME,'') AS CHANNEL_NAME,
+        IFNULL(SEX,'') AS SEX,
+        IFNULL(AGE,'') AS AGE,
+        IFNULL(IS_INTERFLOW,'') AS IS_INTERFLOW,
+        IFNULL(IS_DEPOSITORY,'') AS IS_DEPOSITORY,
+        IFNULL(INV_PERIOD,'') AS INV_PERIOD,
+        CONCAT(IFNULL(INV_INTERVAL,'0'),'天/次') AS INV_INTERVAL,
+        CONCAT(IFNULL(NORMAL_PERIOD_PREFERENCE,'0'),'天') AS NORMAL_PERIOD_PREFERENCE,
+        CONCAT(IFNULL(CHANGE_PERIOD_PREFERENCE,'0'),'天') AS CHANGE_PERIOD_PREFERENCE,
+        CONCAT(IFNULL(CUMULATIVE_INV_MONEY,'0'),'元') AS CUMULATIVE_INV_MONEY,
+        CONCAT(IFNULL(CUMULATIVE_INV_MONEY_YEAR,'0'),'元') AS CUMULATIVE_INV_MONEY_YEAR,
+        CONCAT(IFNULL(BALANCE,'0'),'元') AS BALANCE,
+        CONCAT(IFNULL(LAST_INV_MONEY,'0'),'元') AS LAST_INV_MONEY,
+        CONCAT(IFNULL(INV_MAX_MONEY,'0'),'元') AS INV_MAX_MONEY,
+        CONCAT(IFNULL(USE_VOUCHER_PROPORTION,'0'),'%') AS USE_VOUCHER_PROPORTION,
+        CONCAT(IFNULL(CUMULATIVE_USE_VOUCHER_MONEY,'0'),'元') AS CUMULATIVE_USE_VOUCHER_MONEY,
+        CONCAT(IFNULL(CUMULATIVE_USE_VOUCHER_COU,'0'),'次') AS CUMULATIVE_USE_VOUCHER_COU,
+        CONCAT(IFNULL(VOUCHER_EARNINGS_PROPORTION,'0'),'%') AS VOUCHER_EARNINGS_PROPORTION,
+        CONCAT(IFNULL(CUMULATIVE_USAGE_VOUCHER,'0'),'%') AS CUMULATIVE_USAGE_VOUCHER,
+        CONCAT(IFNULL(AVG_USE_MONEY,'0'),'元') AS AVG_USE_MONEY,
+        IFNULL(LAST_INV_TIME,'') AS LAST_INV_TIME,
+        IFNULL(LAST_RECHARGE_TIME,'') AS LAST_RECHARGE_TIME,
+        CONCAT(IFNULL(AVG_NORMAL_MONEY,'0'),'元') AS AVG_NORMAL_MONEY,
+        CONCAT(IFNULL(AVG_CHANGE_MONEY,'0'),'元') AS AVG_CHANGE_MONEY,
+        CONCAT(IFNULL(AVG_INV_MONEY,'0'),'元') AS AVG_INV_MONEY,
+        CONCAT(IFNULL(NORMAL_COU,'0'),'次') AS NORMAL_COU,
+        CONCAT(IFNULL(CHANGE_COU,'0'),'次') AS CHANGE_COU,
+        CONCAT(IFNULL(INV_COU,'0'),'次') AS INV_COU,
+        CONCAT(IFNULL(VOUCHER_BALANCE,'0'),'元') AS VOUCHER_BALANCE,
+        CONCAT(IFNULL(MARKETING_DAY,'0'),'天') AS MARKETING_DAY,
+        IFNULL(LAST_LOGIN_TIME,'') AS LAST_LOGIN_TIME
+        FROM
+        TMP_LABELTAG_USER
+        ;
+    </select>
+
+
+
+</mapper>

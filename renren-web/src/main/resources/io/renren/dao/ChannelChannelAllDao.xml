@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.ChannelChannelAllDao">
+
+	<resultMap type="io.renren.entity.ChannelChannelAllEntity" id="ChannelChannelAllMap">
+		<result property="channelName" column="CHANNEL_NAME"/>
+		<result property="investTimes" column="INVEST_TIMES"/>
+		<result property="stayPer" column="STAY_PER"/>
+		<result property="investUsers" column="INVEST_USERS"/>
+		<result property="moneyVoucherPer" column="MONEY_VOUCHER_PER"/>
+		<result property="moneyInvestPer" column="MONEY_INVEST_PER"/>
+		<result property="moneyInvsetYearPer" column="MONEY_INVSET_YEAR_PER"/>
+		<result property="borrowPeriodPer" column="BORROW_PERIOD_PER"/>
+		<result property="intervalsPer" column="INTERVALS_PER"/>
+	</resultMap>
+
+	
+	<select id="queryList" resultType="io.renren.entity.ChannelChannelAllEntity">
+		CALL PRO_CHANNEL_ALL(#{reg_begindate},#{reg_enddate},#{invest_enddate});
+
+		SELECT *
+		FROM TMP_CHANNEL_ALL_03
+		WHERE 1 = 1
+		<if test="channelName==null">
+			AND CHANNEL_NAME IN('百度','小米商店')
+		</if>
+		<if test="channelName!=null and channelName.size()!=0">
+			AND CHANNEL_NAME IN
+			<foreach item="channelName" collection="channelName" open="(" separator="," close=")">
+				#{channelName}
+			</foreach>
+		</if>
+		<if test="investTimes != null and investTimes.trim() != ''">
+			AND INVEST_TIMES  &lt;= #{investTimes}
+		</if>
+		;
+	</select>
+
+
+	<select id="queryTotal" resultType="int" >
+		SELECT COUNT(1) FROM TMP_CHANNEL_ALL_03
+		WHERE 1 =1
+		<if test="channelName!=null and channelName.size()!=0">
+			AND CHANNEL_NAME IN
+			<foreach item="channelName" collection="channelName" open="(" separator="," close=")">
+				#{channelName}
+			</foreach>
+		</if>
+		<if test="investTimes != null and investTimes.trim() != ''">
+			AND INVEST_TIMES  &lt;= #{investTimes}
+		</if>
+	</select>
+
+
+	<select id="queryMainChart" resultType="io.renren.entity.ChannelChannelAllEntity">
+		SELECT CHANNEL_NAME,INVEST_USERS,REPLACE(STAY_PER,'%','') AS STAY_PER
+		FROM TMP_CHANNEL_ALL_03
+		WHERE 1 = 1
+		<if test="channelName==null">
+			AND CHANNEL_NAME IN('百度','小米商店')
+		</if>
+		<if test="channelName!=null and channelName.size()!=0">
+			AND CHANNEL_NAME IN
+			<foreach item="channelName" collection="channelName" open="(" separator="," close=")">
+				#{channelName}
+			</foreach>
+		</if>
+		<if test="investTimes != null and investTimes.trim() != ''">
+			AND INVEST_TIMES  &lt;= #{investTimes}
+		</if>
+		ORDER BY CHANNEL_NAME DESC,INVEST_TIMES
+	</select>
+
+
+	<select id="queryChannel" resultType="io.renren.entity.ChannelChannelAllEntity">
+		SELECT '空' AS CHANNEL_NAME
+		UNION ALL
+		SELECT DISTINCT CR.channel_name_back AS CHANNEL_NAME
+		FROM dim_channel CR  WHERE 1=1
+	</select>
+
+	
+</mapper>

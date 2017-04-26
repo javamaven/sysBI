@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.LabelTagManagerDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.LabelTagManagerEntity" id="labelTagManagerMap">
+        <result property="id" column="ID"/>
+        <result property="type" column="Type"/>
+        <result property="sysUser" column="Sys_User"/>
+        <result property="mainlabelName" column="MainLabel_Name"/>
+		<result property="createDate" column="Create_Date"/>
+
+		<result property="mainID" column="Main_ID"/>
+		<result property="labelID" column="Label_ID"/>
+		<result property="labelType" column="Label_Type"/>
+		<result property="labelContene" column="Label_Contene"/>
+		<result property="labelLogic" column="Label_Logic"/>
+		<result property="labelCondition" column="Label_Condition"/>
+    </resultMap>
+
+
+	<select id="exists" resultType="int">
+		SELECT COUNT(ID) FROM labeltag_main WHERE SYS_USER = #{sysUser} AND TYPE = #{type} AND  MAINLABEL_NAME = #{mainlabelName};
+	</select>
+
+	<select id="querySysUser" resultType="string">
+		select username from sys_user where user_id = #{id}
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.LabelTagManagerEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into labeltag_main
+		(
+		`Type`,
+		`Sys_User`,
+		`MainLabel_Name`,
+		`Create_Date`
+		)
+		values
+		(
+		#{type},
+		#{sysUser},
+		#{mainlabelName},
+		#{createDate}
+		);
+	</insert>
+
+	<insert id="saveDetail" parameterType="io.renren.entity.LabelTagManagerEntity" useGeneratedKeys="true" keyProperty="id">
+			insert into labeltag_detail
+			(
+			`Main_ID`,
+			`Label_ID`,
+			`Label_Type`,
+			`Label_Contene`,
+			`Label_Logic`,
+			`Label_Condition`,
+			`Create_Date`
+			)
+			values
+			(
+			(SELECT ID FROM labeltag_main where MainLabel_Name = #{mainlabelName} AND SYS_USER = #{sysUser}),
+			#{labelID},
+			#{labelType},
+			#{labelContene},
+			#{labelLogic},
+			#{labelCondition},
+			#{createDate}
+			);
+
+		UPDATE labeltag_detail A,
+		(
+		SELECT
+		LD.ID,
+		CONCAT(' AND ',DL.CONTENT
+		,' ',CASE WHEN LD.LABEL_LOGIC = '在范围内' THEN CONCAT(DLL.CONTENT,' (''')
+		ELSE CONCAT(DLL.CONTENT,' ''') END
+		,CASE WHEN LD.LABEL_CONTENE LIKE '%日期%' THEN REPLACE(LD.LABEL_CONDITION,'-','')
+		ELSE REPLACE(LD.LABEL_CONDITION,',',''',''') END
+		,CASE WHEN LD.LABEL_LOGIC = '在范围内' THEN ''')'
+		ELSE '''' END
+		) AS STRSQL
+		FROM
+		labeltag_detail LD
+		LEFT JOIN DIM_LABELTAG DL ON (LD.Label_Contene = DL.NOTE AND DL.TYPE = 'DIM')
+		LEFT JOIN DIM_LABELTAG DLL ON (LD.Label_LOGIC = DLL.NOTE AND DLL.TYPE = 'LOGIC')
+		) B
+		SET A.STRSQL = B.STRSQL
+		WHERE A.ID = B.ID
+		;
+	</insert>
+
+	<select id="deleteAll" >
+		DELETE FROM labeltag_detail
+		WHERE MAIN_ID = (SELECT ID FROM labeltag_main WHERE SYS_USER = #{sysUser} AND TYPE = #{type} AND  MAINLABEL_NAME = #{mainlabelName})
+		;
+		DELETE FROM labeltag_main
+		WHERE SYS_USER = #{sysUser} AND TYPE = #{type} AND  MAINLABEL_NAME = #{mainlabelName}
+		;
+
+	</select>
+
+
+</mapper>
