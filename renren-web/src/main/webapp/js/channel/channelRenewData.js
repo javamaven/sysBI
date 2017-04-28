@@ -156,28 +156,51 @@ function loadTable(columnsData,tableData){
 }
 //加载渠道数据
 function loadChannel(){
-    var str = '';
-    var i = 0;
-    $.ajax({
-        type: "POST",
-        url: "../channel/channelAll/queryChannelList",
-        data: JSON.stringify(),
-        contentType: "application/json;charset=utf-8",
-        success : function(msg) {
-        	console.info(msg);
-        	var index = 0;
-        	for (var i = 0; i < msg.data.length; i++) {
-				var channelNameBack = msg.data[i];
-//				console.info("label=" +channel.channelLabel + " ;name=" + channel.channelName + " ;nameBack=" + channel.channelNameBack );
-				 str += '<option value="'+(index++)+'">' + channelNameBack + "</option>";
-			}
-            $("#id_select").select2({
-                maximumSelectionLength: 3,
-                width:'100%'
-            });
-            $("#id_select").append(str);
-        }
-     });
+//    var str = '';
+//    var i = 0;
+//    $.ajax({
+//        type: "POST",
+//        url: "../channel/channelAll/queryChannelList",
+//        data: JSON.stringify(),
+//        contentType: "application/json;charset=utf-8",
+//        success : function(msg) {
+//        	console.info(msg);
+//        	var index = 0;
+//        	for (var i = 0; i < msg.data.length; i++) {
+//				var channelNameBack = msg.data[i];
+//				 str += '<option value="'+(index++)+'">' + channelNameBack + "</option>";
+//			}
+//            $("#id_select").select2({
+//                maximumSelectionLength: 3,
+//                width:'100%'
+//            });
+//            $("#id_select").append(str);
+//        }
+//     });
+	   var str = '';
+	    var i = 0;
+	    $.ajax({
+	        type: "POST",
+	        url: "../channel/channelAll/getChannel",
+	        data: JSON.stringify(),
+	        contentType: "application/json;charset=utf-8",
+	        success : function(msg) {
+	            console.log(msg);
+	            for(var list in msg.Channel){
+	                for(var key in msg.Channel[list]){
+	                    if(key == "channelName")
+	                        str += '<option value="'+(i++)+'">' + msg.Channel[list][key] + "</option>";
+	                }
+	            }
+
+	            $("#id_select").select2({
+	                maximumSelectionLength: 3,
+	                width:'100%'
+	            });
+	            $("#id_select").append(str);
+	        }
+	     });
+
 };
 
 $("#searchButton").click(function(){
