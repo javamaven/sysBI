@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.ChannelRenewDataDao">
+
+<sql id="channelCond">
+	<if test="channelLabelList !=null and channelLabelList.size() != 0">
+		AND c.channel_label IN
+		<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
+			#{channelName}
+		</foreach>
+	</if>
+</sql>
+<select id="queryFirstInvestYearRoi" resultType="io.renren.entity.ChannelRenewDataEntity">
+<!-- 30日60日90日,首投年化ROI 传入不同参数，返回对应信息-->
+SELECT
+	s.activity_tag channelLabel,
+	sum(
+		CASE WHEN c.roi IS NULL THEN 0 ELSE c.roi END
+	) firstInvestYearRoi
+FROM
+	(
+		SELECT
+			s.*, u.activity_tag,
+			LEFT (s.addtime, 10) time
+		FROM
+			(
+				SELECT
+					s.rownum,s.addtime,s.user_id
+				FROM
+					(
+						SELECT
+
+						IF (
+							@pa = p.user_id ,@rank :=@rank + 1 ,@rank := 1
+						) rownum,
+						@pa := p.user_id user_id,
+						p.addtime
+					FROM
+						(
+							SELECT
+								a.user_id,
+								a.addtime
+							FROM
+								edw_merge_project_detail a
+							UNION ALL
+								SELECT
+									a.ASSIGNEE_USER_ID user_id,
+									a.CREATE_TIME addtime
+								FROM
+									edw_merge_cre_pur_order a
+						) p,
+						(SELECT @rank := 0 ,@pa = '') t
+					ORDER BY
+						p.user_id ASC,
+						p.addtime ASC
+					) s
+				WHERE
+					1 = 1
+				AND s.rownum = 1
+				AND s.addTime >= #{startDate}
+				AND s.addTime &lt;= #{endDate}
+			) s
+		LEFT JOIN edw_merge_user u ON (s.user_id = u.user_id)
+		where 1=1 
+	) s,
+	dim_channel_cost c
+WHERE
+	1 = 1
+AND s.activity_tag = c.channel_label
+AND s.time = c.ctime
+ 	<include refid="channelCond"/>
+GROUP BY
+	s.activity_tag
+
+
+</select>
+<select id="queryFirstInvestUserNum" resultType="io.renren.entity.ChannelRenewDataEntity">
+<!-- 30日60日90日,首投用户数，首投金额，首投年华金额 传入不同参数，返回对应信息-->
+select s.* from (
+		select 
+			u.activity_tag channelLabel,
+			count(distinct s.user_id) firstInvestUserNum,
+			sum(s.money) firstInvestAmount,
+			sum(s.money * s.days / 360) firstInvestYearAmount
+		from (
+				SELECT
+				IF (
+					@pa = p.user_id ,@rank :=@rank + 1 ,@rank := 1
+				) rownum ,
+				@pa := p.user_id user_id,
+				p.addtime,
+				p.money, 
+				p.days
+				FROM
+					(
+						SELECT
+							a.user_id,
+							a.addtime,
+							a.TENDER_CAPITAL money, 
+							a.BORROW_PERIOD days
+						FROM
+							edw_merge_project_detail a
+						UNION ALL
+							SELECT
+								a.ASSIGNEE_USER_ID user_id,
+								a.CREATE_TIME addtime,
+								a.PAY_AMOUNT money,
+								a.REMAINING_DAYS days
+							FROM
+								edw_merge_cre_pur_order a
+					) p,
+					(SELECT @rank := 0 ,@pa = '') t
+				ORDER BY
+					p.user_id ASC,
+					p.addtime ASC
+		) s , edw_merge_user u
+		where 1=1
+		and s.rownum= #{rownum}
+		AND s.addTime >= #{startDate}
+		AND s.addTime &lt;= #{endDate}
+		and s.user_id=u.user_id
+		group by u.activity_tag
+
+) s where 1=1
+<if test="channelLabelList !=null and channelLabelList.size() != 0">
+	AND s.channelLabel IN
+	<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
+		#{channelName}
+	</foreach>
+</if>
+</select>
+<select id="queryYearRoi" resultType="io.renren.entity.ChannelRenewDataEntity">
+<!-- 30日60日90日,年化ROI-->
+select 
+	s.channelLabel,
+	sum(s.30dayroi) day30YearRoi,
+	sum(s.60dayroi) day60YearRoi,
+	sum(s.90dayroi) day90YearRoi
+from (
+	SELECT
+		c.CHANNEL_LABEL channelLabel,
+		case when sum(c.ROI) is null then 0 else sum(c.ROI) end 30dayroi, 
+		0 60dayroi,
+		0 90dayroi
+	FROM
+		DIM_CHANNEL_COST c
+	where 1=1
+		<include refid="channelCond"/>
+		AND c.ctime >= #{day30}
+		AND c.ctime &lt;= #{endDate}
+	GROUP BY
+		c.CHANNEL_LABEL
+union ALL
+	SELECT
+		c.CHANNEL_LABEL channelLabel,
+		0 30dayroi,
+		case when sum(c.ROI) is null then 0 else sum(c.ROI) end 60dayroi,
+		0 90dayroi
+	FROM
+		DIM_CHANNEL_COST c
+	where 1=1
+    	<include refid="channelCond"/>
+		AND c.ctime >= #{day60}
+		AND c.ctime &lt;= #{endDate}
+	GROUP BY
+		c.CHANNEL_LABEL
+union ALL
+	SELECT
+		c.CHANNEL_LABEL channelLabel,
+		0 30dayroi,
+		0 60dayroi,
+		case when sum(c.ROI) is null then 0 else sum(c.ROI) end 90dayroi
+	FROM
+		DIM_CHANNEL_COST c
+	where 1=1
+		<include refid="channelCond"/>
+		AND c.ctime >= #{day90}
+		AND c.ctime &lt;= #{endDate}
+	GROUP BY
+		c.CHANNEL_LABEL
+) s
+where 1=1
+group by s.channelLabel
+
+
+</select>
+
+<select id="queryYearAmount" resultType="io.renren.entity.ChannelRenewDataEntity">
+	<!-- 30日60日90日,年化投资金额 ,传入不同天数，返回对应年化金额-->
+	
+	SELECT
+		u.ACTIVITY_TAG channelLabel,
+		sum(
+			p.TENDER_CAPITAL * p.BORROW_PERIOD / 360
+		) yearAmount
+	FROM
+		edw_merge_project_detail p,
+		edw_merge_user u
+	WHERE
+		1 = 1
+	AND p.USER_ID = u.USER_ID
+	AND p.TENDER_SUBJECT IN (1, 2) 
+	<if test="channelLabelList !=null and channelLabelList.size() != 0">
+		AND u.ACTIVITY_TAG IN
+		<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
+			#{channelName}
+		</foreach>
+	</if>
+	AND p.ADDTIME >= #{startDate}
+	AND p.ADDTIME &lt;= #{endDate}
+	GROUP BY
+		u.ACTIVITY_TAG
+
+</select>
+<select id="queryOnlineTime" resultType="io.renren.entity.ChannelRenewDataEntity">
+	SELECT
+		c.CHANNEL_LABEL channelLabel,
+		c.CHANNEL_STARTTIME onlineTime
+	FROM
+		dim_channel c
+	WHERE
+		1 = 1
+	 <include refid="channelCond"/>
+	order by c.CHANNEL_LABEL
+
+</select>
+<select id="queryChannelCost" resultType="io.renren.entity.ChannelRenewDataEntity">
+<!-- 30日60日90日，费用 -->
+SELECT 
+	s.channel_label channelLabel, 
+	sum(s.30dayMoney) day30Cost,
+	sum(s.60dayMoney) day60Cost,
+	sum(s.90dayMoney) day90Cost
+FROM (
+	SELECT
+		c.channel_label,
+		sum(case when c.actual_cost is null then 0 else c.actual_cost end ) 30dayMoney, 
+		0 60dayMoney,
+		0 90dayMoney
+	FROM
+		dim_channel_cost c
+	WHERE
+		1 = 1
+	<include refid="channelCond"/>
+	AND c.ctime >= #{day30}
+	AND c.ctime &lt;= #{endDate}
+	GROUP BY
+		c.channel_label
+union all 
+	SELECT
+		c.channel_label,
+		0 30dayMoney,
+		sum(case when c.actual_cost is null then 0 else c.actual_cost end ) 60dayMoney,
+		0 90dayMoney
+	FROM
+		dim_channel_cost c
+	WHERE
+		1 = 1
+	<include refid="channelCond"/>
+	AND c.ctime >= #{day60}
+	AND c.ctime &lt;= #{endDate}
+	GROUP BY
+		c.channel_label
+union all 
+	SELECT
+		c.channel_label,
+		0 30dayMoney,
+		0 60dayMoney,
+		sum(case when c.actual_cost is null then 0 else c.actual_cost end ) 90dayMoney
+	FROM
+		dim_channel_cost c
+	WHERE
+		1 = 1
+	<include refid="channelCond"/>
+	AND c.ctime >= #{day90}
+	AND c.ctime &lt;= #{endDate}
+	GROUP BY
+		c.channel_label
+) s
+where 1=1
+group by s.channel_label
+
+
+</select>
+
+
+</mapper>
