@@ -57,6 +57,7 @@ public class ChanneRenewDataController extends AbstractController {
 		params.put("endDate", DateUtil.formatDate(params.get("date") + ""));
 		Object object = params.get("channelName");
 		List<String> channelLabelList = new ArrayList<String>();
+		
 		if (object != null) {
 			List<String> list = JSON.parseArray(object + "", String.class);
 			channelLabelList = getChannelLabelsByName(channelList, list);
