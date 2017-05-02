@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.DailyDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+	<resultMap type="io.renren.entity.DailyEntity" id="DailyMap">
+		<result property="indicatorsName" column="INDICATORS_NAME"/>
+		<result property="indicatorsValue" column="INDICATORS_VALUE"/>
+		<result property="sequential" column="SEQUENTIAL"/>
+		<result property="compared" column="COMPARED"/>
+		<result property="monthMeanValue" column="MONTH_MEAN_VALUE"/>
+		<result property="monthMeanValueThan" column="MONTH_MEAN_VALUE_THAN"/>
+	</resultMap>
+
+
+	<select id="queryList" resultType="io.renren.entity.DailyEntity">
+		DROP TABLE IF EXISTS TMP;
+		CREATE TEMPORARY TABLE TMP AS
+		SELECT
+		STAT_PERIOD,
+		INDICATORS_NAME,
+		indicators_value,
+		sequential,
+		compared,
+		month_mean_value,
+		month_mean_value_than,
+		NUM
+		FROM test.DIM_REPORT_DAILY
+		WHERE 1=1
+
+		<if test="STAT_PERIOD != null and STAT_PERIOD.trim() != ''">
+			AND STAT_PERIOD = #{STAT_PERIOD}
+		</if>
+		;
+		SELECT * FROM TMP ORDER BY NUM,INDICATORS_NAME;
+	</select>
+
+	<select id="queryExports" resultType="io.renren.entity.DailyEntity">
+
+		SELECT * FROM TMP ORDER BY NUM,INDICATORS_NAME;
+
+
+	</select>
+
+
+</mapper>
