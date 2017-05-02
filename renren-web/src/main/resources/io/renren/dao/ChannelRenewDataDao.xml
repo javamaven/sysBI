@@ -27,6 +27,9 @@
 <select id="queryFirstInvestUserNum" resultType="io.renren.entity.ChannelRenewDataEntity">
 <!-- 30日60日90日,首投用户数，首投金额，首投年华金额 传入不同参数，返回对应信息-->
 <!-- 30日60日90日,复投用户数，复投金额，复投年华金额 传入不同参数，返回对应信息-->
+
+	SET @rank = 0;
+	SET @pa = NULL;
 		select 
 			u.activity_tag channelLabel,
 			count(distinct s.user_id) firstInvestUserNum,
