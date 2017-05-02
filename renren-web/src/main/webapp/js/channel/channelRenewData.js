@@ -200,7 +200,6 @@ function loadChannel(){
 	            $("#id_select").append(str);
 	        }
 	     });
-
 };
 
 $("#searchButton").click(function(){
