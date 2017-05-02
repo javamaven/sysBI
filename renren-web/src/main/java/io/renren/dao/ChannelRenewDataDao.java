@@ -26,4 +26,13 @@ public interface ChannelRenewDataDao extends BaseDao<ChannelRenewDataEntity> {
 	// 30日60日90日,首投年化ROI 传入不同参数，返回对应信息
 	List<ChannelRenewDataEntity> queryFirstInvestYearRoi(Map<String, Object> map);
 
+	// 30日,首投年化ROI 传入不同参数，返回对应信息
+	List<ChannelRenewDataEntity> queryDay30FirstInvestYearRoi(Map<String, Object> map);
+
+	// 60日,首投年化ROI 传入不同参数，返回对应信息
+	List<ChannelRenewDataEntity> queryDay60FirstInvestYearRoi(Map<String, Object> map);
+
+	// 90日,首投年化ROI 传入不同参数，返回对应信息
+	List<ChannelRenewDataEntity> queryDay90FirstInvestYearRoi(Map<String, Object> map);
+
 }

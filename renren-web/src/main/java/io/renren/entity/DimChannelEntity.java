@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 /**
  * 渠道信息表
+ * 
  * @author liyo
  *
  */
@@ -18,9 +19,12 @@ public class DimChannelEntity implements Serializable {
 	private String channelNameBack;
 	private Integer channelStatus;
 	private Integer status;
+	private String type;
+	
+	public DimChannelEntity(){}
 
 	public DimChannelEntity(Integer channelId, String channelCenter, String channelLabel, String channelName,
-			String channelNameBack, Integer channelStatus, Integer status) {
+			String channelNameBack, Integer channelStatus, Integer status, String type) {
 		super();
 		this.channelId = channelId;
 		this.channelCenter = channelCenter;
@@ -29,6 +33,7 @@ public class DimChannelEntity implements Serializable {
 		this.channelNameBack = channelNameBack;
 		this.channelStatus = channelStatus;
 		this.status = status;
+		this.type = type;
 	}
 
 	public Integer getChannelId() {
@@ -87,11 +92,19 @@ public class DimChannelEntity implements Serializable {
 		this.status = status;
 	}
 
+	public String getType() {
+		return type;
+	}
+
+	public void setType(String type) {
+		this.type = type;
+	}
+
 	@Override
 	public String toString() {
 		return "DimChannelEntity [channelId=" + channelId + ", channelCenter=" + channelCenter + ", channelLabel="
 				+ channelLabel + ", channelName=" + channelName + ", channelNameBack=" + channelNameBack
-				+ ", channelStatus=" + channelStatus + ", status=" + status + "]";
+				+ ", channelStatus=" + channelStatus + ", status=" + status + ", type=" + type + "]";
 	}
 
 }

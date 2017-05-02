@@ -13,7 +13,7 @@ import io.renren.service.ChannelRenewDataService;
  *
  */
 public class ChannelRenewDataQueryThread implements Runnable {
-	
+
 	private ChannelRenewDataService service;
 	private Map<String, Object> params;
 	private Map<String, ChannelRenewDataEntity> result;
@@ -41,10 +41,11 @@ public class ChannelRenewDataQueryThread implements Runnable {
 			break;
 		case 3:
 			list = service.queryYearAmount(params);// 30日60日90日，年化金额 ,传入不同参数
-//			for (int i = 0; i < list.size(); i++) {
-//				ChannelRenewDataEntity en = list.get(i);
-//				System.err.println("params=" + params + " ; "+en.getChannelLabel() + " : " + en.getYearAmount());
-//			}
+			// for (int i = 0; i < list.size(); i++) {
+			// ChannelRenewDataEntity en = list.get(i);
+			// System.err.println("params=" + params + " ;
+			// "+en.getChannelLabel() + " : " + en.getYearAmount());
+			// }
 			break;
 		case 4:
 			list = service.queryYearRoi(params);// 30日60日90日，年化ROI
@@ -54,8 +55,16 @@ public class ChannelRenewDataQueryThread implements Runnable {
 															// 30日60日90日，复投人数，复投金额为，复投年化金额
 			break;
 		case 6:
-			list = service.queryFirstInvestYearRoi(params);// 30日60日90日,首投年化ROI
-															// 传入不同参数，返回对应信息
+			list = service.queryDay30FirstInvestYearRoi(params);// 30日,首投年化ROI
+			// 传入不同参数，返回对应信息
+			break;
+		case 7:
+			list = service.queryDay60FirstInvestYearRoi(params);// 60日,首投年化ROI
+			// 传入不同参数，返回对应信息
+			break;
+		case 8:
+			list = service.queryDay90FirstInvestYearRoi(params);// 90日,首投年化ROI
+			// 传入不同参数，返回对应信息
 			break;
 		default:
 			break;
@@ -68,12 +77,12 @@ public class ChannelRenewDataQueryThread implements Runnable {
 			}
 			if (entity.getChannelLabel() == null) {
 				result.put("weizhi", entity);
-				if(channelListMap != null){
+				if (channelListMap != null) {
 					channelListMap.put("weizhi", entity);
 				}
 			} else {
 				result.put(entity.getChannelLabel(), entity);
-				if(channelListMap != null){
+				if (channelListMap != null) {
 					channelListMap.put(entity.getChannelLabel(), entity);
 				}
 			}
