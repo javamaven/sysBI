@@ -212,6 +212,7 @@ $("#searchButton").click(function(){
     pageInfo = {
             page  : 1,
             limit : 1000000,
+            channelName : getChannelName().toString().length == "0" ? null : getChannelName(),
             date:document.getElementById("date").value.replace(/-/g,"")
         };
     //加载数据

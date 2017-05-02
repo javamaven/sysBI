@@ -56,9 +56,11 @@ public class ChanneRenewDataController extends AbstractController {
 		System.err.println("+++++查询条件： " + params);
 		params.put("endDate", DateUtil.formatDate(params.get("date") + ""));
 		Object object = params.get("channelName");
+		List<String> channelLabelList = new ArrayList<String>();
 		if (object != null) {
 			List<String> list = JSON.parseArray(object + "", String.class);
-			params.put("channelLabelList", getChannelLabelsByName(channelList, list));
+			channelLabelList = getChannelLabelsByName(channelList, list);
+			params.put("channelLabelList",channelLabelList);
 		} else {
 			params.put("channelLabelList", new ArrayList<String>());
 		}
@@ -71,9 +73,25 @@ public class ChanneRenewDataController extends AbstractController {
 		buildQueryParamsAndQueryData(params, channelListMap, resultMap);
 		// 将数据按照渠道聚合
 		List<ChannelRenewDataEntity> list = unionData(channelDataMap, channelListMap, resultMap);
+		//过滤channelLabel
+		List<ChannelRenewDataEntity> retList = new ArrayList<ChannelRenewDataEntity>();
+		if(channelLabelList.size() == 0){
+			retList.addAll(list);
+		}else{
+			for (int i = 0; i < list.size(); i++) {
+				ChannelRenewDataEntity entity = list.get(i);
+				for (int j = 0; j < channelLabelList.size(); j++) {
+					String label = channelLabelList.get(j);
+					if((label+"").trim().equals((entity.getChannelLabel()+"").trim())){
+						retList.add(entity);
+					}
+				}
+			}
+		}
 		// 获取数据条数
-		PageUtils pageUtil = new PageUtils(list, list.size(), query.getLimit(), query.getPage());
+		PageUtils pageUtil = new PageUtils(retList, retList.size(), query.getLimit(), query.getPage());
 
+		
 		long endTime = System.currentTimeMillis();
 		System.err.println("++++++++++++++++++++++++++++++++++查询总耗时：" + (endTime - startTime));
 		return R.ok().put("page", pageUtil);
