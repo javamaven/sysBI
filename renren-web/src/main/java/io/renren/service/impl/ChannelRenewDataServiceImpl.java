@@ -51,5 +51,23 @@ public class ChannelRenewDataServiceImpl implements ChannelRenewDataService {
 		return channelRenewDataDao.queryFirstInvestYearRoi(map);
 	}
 
+	@Override
+	public List<ChannelRenewDataEntity> queryDay30FirstInvestYearRoi(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		return channelRenewDataDao.queryDay30FirstInvestYearRoi(map);
+	}
+
+	@Override
+	public List<ChannelRenewDataEntity> queryDay60FirstInvestYearRoi(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		return channelRenewDataDao.queryDay60FirstInvestYearRoi(map);
+	}
+
+	@Override
+	public List<ChannelRenewDataEntity> queryDay90FirstInvestYearRoi(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		return channelRenewDataDao.queryDay90FirstInvestYearRoi(map);
+	}
+
 
 }

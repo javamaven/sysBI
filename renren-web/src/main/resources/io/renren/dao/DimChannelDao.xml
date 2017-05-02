@@ -3,20 +3,13 @@
 
 <mapper namespace="io.renren.dao.DimChannelDao">
 
-	<!-- 可根据自己的需求，是否要使用 -->
-    <resultMap type="io.renren.entity.DimChannelEntity" id="dimChannelMap">
-        <result property="channelId" column="CHANNEL_ID"/>
-        <result property="channelCenter" column="CHANNEL_CENTER"/>
-        <result property="channelLabel" column="CHANNEL_LABEL"/>
-        <result property="channelName" column="CHANNEL_NAME"/>
-        <result property="channelNameBack" column="CHANNEL_NAME_BACK"/>
-        <result property="channelStatus" column="CHANNEL_STATUS"/>
-        <result property="status" column="STATUS"/>
-    </resultMap>
 
-
-	<select id="queryList" resultMap="dimChannelMap">
-       select channel_id,channel_center,channel_label,channel_label,channel_name_back,channel_status,status from dim_channel
+	<select id="queryChannel" resultType="io.renren.entity.DimChannelEntity">
+       select channel_id,channel_center,channel_label,channel_name_back,status from dim_channel
+	</select>
+	
+	<select id="queryChannelCostList" resultType="io.renren.entity.DimChannelEntity">
+      select channel_label,channel_name_back,type from dim_channel_cost
 	</select>
 	
 </mapper>

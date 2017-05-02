@@ -126,13 +126,13 @@ function loadTable(columnsData,tableData){
             {field:"day60MultiInvestUserNum",title:"60日复投用户数",align:"center",valign:"middle",sortable:"true"},
             {field:"day90MultiInvestUserNum",title:"90日复投用户数",align:"center",valign:"middle",sortable:"true"},
 
-            {field:"day30MultiRate",title:"30日复投率",align:"center",valign:"middle",sortable:"true"},
-            {field:"day60MultiRate",title:"60日复投率",align:"center",valign:"middle",sortable:"true"},
-            {field:"day90MultiRate",title:"90日复投率",align:"center",valign:"middle",sortable:"true"},
+            {field:"day30MultiRateText",title:"30日复投率",align:"center",valign:"middle",sortable:"true"},
+            {field:"day60MultiRateText",title:"60日复投率",align:"center",valign:"middle",sortable:"true"},
+            {field:"day90MultiRateText",title:"90日复投率",align:"center",valign:"middle",sortable:"true"},
             
-            {field:"day30MultiInvestAmountRate",title:"30日复投金额比",align:"center",valign:"middle",sortable:"true"},
-            {field:"day60MultiInvestAmountRate",title:"60日复投金额比",align:"center",valign:"middle",sortable:"true"},
-            {field:"day90MultiInvestAmountRate",title:"90日复投金额比",align:"center",valign:"middle",sortable:"true"},
+            {field:"day30MultiInvestAmountRateText",title:"30日复投金额比",align:"center",valign:"middle",sortable:"true"},
+            {field:"day60MultiInvestAmountRateText",title:"60日复投金额比",align:"center",valign:"middle",sortable:"true"},
+            {field:"day90MultiInvestAmountRateText",title:"90日复投金额比",align:"center",valign:"middle",sortable:"true"},
 
             {field:"day30FirstInvestYearAmount",title:"30日首投年化金额",align:"center",valign:"middle",sortable:"true"},
             {field:"day60FirstInvestYearAmount",title:"60日首投年化金额",align:"center",valign:"middle",sortable:"true"},

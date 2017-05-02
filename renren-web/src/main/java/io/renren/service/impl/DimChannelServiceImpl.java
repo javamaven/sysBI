@@ -11,23 +11,20 @@ import io.renren.dao.DimChannelDao;
 import io.renren.entity.DimChannelEntity;
 import io.renren.service.DimChannelService;
 
-
-
 @Service("DimChannelService")
 public class DimChannelServiceImpl implements DimChannelService {
 	@Autowired
 	private DimChannelDao dimChannelDao;
-	
-	
-	@Override
-	public List<DimChannelEntity> queryList(Map<String, Object> map) {
-		return dimChannelDao.queryList(map);
-	}
 
+	@Override
+	public List<DimChannelEntity> queryChannelList(Map<String, Object> map) {
+		List<DimChannelEntity> queryChannel = dimChannelDao.queryChannel();
+		return queryChannel;
+	}
 
 	@Override
 	public Map<String, String> queryListAsLabelMap(Map<String, Object> map) {
-		List<DimChannelEntity> list = queryList(map);
+		List<DimChannelEntity> list = queryChannelList(map);
 		Map<String, String> dataMap = new HashMap<String, String>();
 		for (int i = 0; i < list.size(); i++) {
 			DimChannelEntity dimChannelEntity = list.get(i);
@@ -35,6 +32,22 @@ public class DimChannelServiceImpl implements DimChannelService {
 		}
 		return dataMap;
 	}
-	
+
+	@Override
+	public List<DimChannelEntity> queryChannelCostList() {
+		List<DimChannelEntity> queryChannelCostList = dimChannelDao.queryChannelCostList();
+		return queryChannelCostList;
+	}
+
+	@Override
+	public Map<String, String> queryChanelTypeMap() {
+		List<DimChannelEntity> list = queryChannelCostList();
+		Map<String, String> dataMap = new HashMap<String, String>();
+		for (int i = 0; i < list.size(); i++) {
+			DimChannelEntity dimChannelEntity = list.get(i);
+			dataMap.put(dimChannelEntity.getChannelLabel(), dimChannelEntity.getType());
+		}
+		return dataMap;
+	}
 
 }

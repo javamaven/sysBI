@@ -11,73 +11,22 @@
 		</foreach>
 	</if>
 </sql>
-<select id="queryFirstInvestYearRoi" resultType="io.renren.entity.ChannelRenewDataEntity">
+<select id="queryDay90FirstInvestYearRoi" resultType="io.renren.entity.ChannelRenewDataEntity">
+<!-- 60日,首投年化ROI 传入不同参数，返回对应信息-->
+	call first_invest_year_roi_renew_day90(#{startDate} , #{endDate})
+</select>
+<select id="queryDay60FirstInvestYearRoi" resultType="io.renren.entity.ChannelRenewDataEntity">
+<!-- 60日,首投年化ROI 传入不同参数，返回对应信息-->
+	call first_invest_year_roi_renew_day60(#{startDate} , #{endDate})
+</select>
+<select id="queryDay30FirstInvestYearRoi" resultType="io.renren.entity.ChannelRenewDataEntity">
 <!-- 30日60日90日,首投年化ROI 传入不同参数，返回对应信息-->
-SELECT
-	s.activity_tag channelLabel,
-	sum(
-		CASE WHEN c.roi IS NULL THEN 0 ELSE c.roi END
-	) firstInvestYearRoi
-FROM
-	(
-		SELECT
-			s.*, u.activity_tag,
-			LEFT (s.addtime, 10) time
-		FROM
-			(
-				SELECT
-					s.rownum,s.addtime,s.user_id
-				FROM
-					(
-						SELECT
-
-						IF (
-							@pa = p.user_id ,@rank :=@rank + 1 ,@rank := 1
-						) rownum,
-						@pa := p.user_id user_id,
-						p.addtime
-					FROM
-						(
-							SELECT
-								a.user_id,
-								a.addtime
-							FROM
-								edw_merge_project_detail a
-							UNION ALL
-								SELECT
-									a.ASSIGNEE_USER_ID user_id,
-									a.CREATE_TIME addtime
-								FROM
-									edw_merge_cre_pur_order a
-						) p,
-						(SELECT @rank := 0 ,@pa = '') t
-					ORDER BY
-						p.user_id ASC,
-						p.addtime ASC
-					) s
-				WHERE
-					1 = 1
-				AND s.rownum = 1
-				AND s.addTime >= #{startDate}
-				AND s.addTime &lt;= #{endDate}
-			) s
-		LEFT JOIN edw_merge_user u ON (s.user_id = u.user_id)
-		where 1=1 
-	) s,
-	dim_channel_cost c
-WHERE
-	1 = 1
-AND s.activity_tag = c.channel_label
-AND s.time = c.ctime
- 	<include refid="channelCond"/>
-GROUP BY
-	s.activity_tag
-
+	call first_invest_year_roi_renew_day30(#{startDate} , #{endDate})
 
 </select>
 <select id="queryFirstInvestUserNum" resultType="io.renren.entity.ChannelRenewDataEntity">
 <!-- 30日60日90日,首投用户数，首投金额，首投年华金额 传入不同参数，返回对应信息-->
-select s.* from (
+<!-- 30日60日90日,复投用户数，复投金额，复投年华金额 传入不同参数，返回对应信息-->
 		select 
 			u.activity_tag channelLabel,
 			count(distinct s.user_id) firstInvestUserNum,
@@ -90,45 +39,28 @@ select s.* from (
 				) rownum ,
 				@pa := p.user_id user_id,
 				p.addtime,
-				p.money, 
-				p.days
+				p.TENDER_CAPITAL money, 
+				p.BORROW_PERIOD days
 				FROM
-					(
-						SELECT
-							a.user_id,
-							a.addtime,
-							a.TENDER_CAPITAL money, 
-							a.BORROW_PERIOD days
-						FROM
-							edw_merge_project_detail a
-						UNION ALL
-							SELECT
-								a.ASSIGNEE_USER_ID user_id,
-								a.CREATE_TIME addtime,
-								a.PAY_AMOUNT money,
-								a.REMAINING_DAYS days
-							FROM
-								edw_merge_cre_pur_order a
-					) p,
-					(SELECT @rank := 0 ,@pa = '') t
+					edw_merge_project_detail p
+<!-- 					,(SELECT @rank := 0 ,@pa = '') t -->
 				ORDER BY
 					p.user_id ASC,
-					p.addtime ASC
+					p.id
 		) s , edw_merge_user u
 		where 1=1
 		and s.rownum= #{rownum}
 		AND s.addTime >= #{startDate}
 		AND s.addTime &lt;= #{endDate}
+		<if test="channelLabelList !=null and channelLabelList.size() != 0">
+			AND u.activity_tag IN
+			<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
+				#{channelName}
+			</foreach>
+		</if>
 		and s.user_id=u.user_id
 		group by u.activity_tag
 
-) s where 1=1
-<if test="channelLabelList !=null and channelLabelList.size() != 0">
-	AND s.channelLabel IN
-	<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
-		#{channelName}
-	</foreach>
-</if>
 </select>
 <select id="queryYearRoi" resultType="io.renren.entity.ChannelRenewDataEntity">
 <!-- 30日60日90日,年化ROI-->
@@ -193,7 +125,8 @@ group by s.channelLabel
 		u.ACTIVITY_TAG channelLabel,
 		sum(
 			p.TENDER_CAPITAL * p.BORROW_PERIOD / 360
-		) yearAmount
+		) yearAmount,
+		sum(IFNULL(p.TENDER_CAPITAL,0)) amount
 	FROM
 		edw_merge_project_detail p,
 		edw_merge_user u

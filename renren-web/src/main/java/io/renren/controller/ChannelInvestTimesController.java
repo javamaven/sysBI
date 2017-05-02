@@ -48,7 +48,7 @@ public class ChannelInvestTimesController extends AbstractController {
 	@RequiresPermissions("channel:channelAll:list")
 	public R queryChannelInvestTimesList(@RequestBody Map<String, Object> params) {
 		long startTime = System.currentTimeMillis();
-		List<DimChannelEntity> channelList = dimChannelService.queryList(null);
+		List<DimChannelEntity> channelList = dimChannelService.queryChannelList(null);
 		Map<String, String> channelDataMap = getChannelLabelKeyMap(channelList);
 		System.err.println("+++++查询条件： " + params);
 		try {
