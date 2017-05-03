@@ -80,6 +80,7 @@ public class ChannelStftInfoController extends AbstractController {
 		List<DimChannelEntity> channelList = dimChannelService.queryChannelList(null);
 		Map<String, String> channelDataMap = getChannelLabelKeyMap(channelList);
 		System.err.println("+++++查询条件： " + params);
+		List<String> channelLabelList = new ArrayList<String>();
 		try {
 			params.put("regBeginDate", sdf1.format(dateSdf.parse(params.get("regBeginDate") + "")) + " 00:00:00");
 			params.put("regEndDate", sdf1.format(dateSdf.parse(params.get("regEndDate") + "")) + " 23:59:59");
@@ -91,8 +92,10 @@ public class ChannelStftInfoController extends AbstractController {
 			Object object = params.get("channelName");
 			if (object != null) {
 				List<String> list = JSON.parseArray(object + "", String.class);
-				List<String> nameList = getChannelLabelsByName(channelList, list);
-				params.put("channelLabelList", nameList);
+				channelLabelList = getChannelLabelsByName(channelList, list);
+				params.put("channelLabelList", channelLabelList);
+			}else{
+				channelLabelList = new ArrayList<String>();
 			}
 
 		} catch (ParseException e) {
@@ -178,8 +181,23 @@ public class ChannelStftInfoController extends AbstractController {
 				result3, result4, result5, result6, result7, result8, result9, result10, result11);// 将数据按照渠道聚合
 
 		// 获取数据条数
-		// int total = channelChannelAllService.queryTotal(query);
-		PageUtils pageUtil = new PageUtils(list, list.size(), query.getLimit(), query.getPage());
+		//过滤channelLabel
+		List<ChannelStftInfoEntity> retList = new ArrayList<ChannelStftInfoEntity>();
+		if(channelLabelList.size() == 0){
+			retList.addAll(list);
+		}else{
+			for (int i = 0; i < list.size(); i++) {
+				ChannelStftInfoEntity entity = list.get(i);
+				for (int j = 0; j < channelLabelList.size(); j++) {
+					String label = channelLabelList.get(j);
+					if((label+"").trim().equals((entity.getChannelLabel()+"").trim())){
+						retList.add(entity);
+					}
+				}
+			}
+		}
+		
+		PageUtils pageUtil = new PageUtils(retList, retList.size(), query.getLimit(), query.getPage());
 
 		long endTime = System.currentTimeMillis();
 		System.err.println("++++++++++++++++++++++++++++++++++查询总耗时：" + (endTime - startTime));
