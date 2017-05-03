@@ -140,8 +140,8 @@ function loadTableAjax(){
             a = '['+a.substring(0,a.length-1)+']';
             var b = '['+
             '{field:"userId",title:"用户主键",align:"center",valign:"middle",sortable:"true"},'+//居中对齐
-            '{field:"cgUserId",title:"存管版主键",align:"center",valign:"middle",sortable:"true"},'+//居中对齐
-            '{field:"oldUserId",title:"普通版主键",align:"center",valign:"middle",sortable:"true"},'+//居中对齐
+            '{field:"cgUserId",title:"存管版ID",align:"center",valign:"middle",sortable:"true"},'+//居中对齐
+            '{field:"oldUserId",title:"普通版ID",align:"center",valign:"middle",sortable:"true"},'+//居中对齐
             '{field:"phone",title:"手机号",align:"center",valign:"middle",sortable:"true"},'+//居中对齐
             '{field:"username",title:"用户账号",align:"center",valign:"middle",sortable:"true"},'+//居中对齐
             '{field:"realname",title:"用户姓名",align:"center",valign:"middle",sortable:"true"},'+//居中对齐
