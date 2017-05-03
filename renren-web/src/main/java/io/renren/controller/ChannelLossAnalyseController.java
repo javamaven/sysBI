@@ -1,23 +1,30 @@
 package io.renren.controller;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 
 import io.renren.controller.querythread.ChannelLossQueryThread;
 import io.renren.entity.ChannelLossEntity;
@@ -25,6 +32,7 @@ import io.renren.entity.DimChannelEntity;
 import io.renren.service.ChannelLossService;
 import io.renren.service.DimChannelService;
 import io.renren.util.NumberUtil;
+import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.Query;
 import io.renren.utils.R;
@@ -51,9 +59,10 @@ public class ChannelLossAnalyseController extends AbstractController {
 		List<DimChannelEntity> channelList = dimChannelService.queryChannelList(null);
 		Map<String, String> channelDataMap = getChannelLabelKeyMap(channelList);
 		System.err.println("+++++查询条件： " + params);
-
+		List<String> channelLabelList = new ArrayList<String>();
 		try {
-			params.put("firstInvBeginDate", sdf1.format(dateSdf.parse(params.get("firstInvBeginDate") + "")) + " 00:00:00");
+			params.put("firstInvBeginDate",
+					sdf1.format(dateSdf.parse(params.get("firstInvBeginDate") + "")) + " 00:00:00");
 			params.put("firstInvEndDate", sdf1.format(dateSdf.parse(params.get("firstInvEndDate") + "")) + " 23:59:59");
 			if (StringUtils.isEmpty(params.get("invEndDate") + "")) {
 				params.put("invEndDate", dateTimeSdf.format(new Date()));
@@ -63,8 +72,8 @@ public class ChannelLossAnalyseController extends AbstractController {
 			Object object = params.get("channelName");
 			if (object != null) {
 				List<String> list = JSON.parseArray(object + "", String.class);
-				List<String> nameList = getChannelLabelsByName(channelList, list);
-				params.put("channelLabelList", nameList);
+				channelLabelList = getChannelLabelsByName(channelList, list);
+				params.put("channelLabelList", channelLabelList);
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -99,7 +108,8 @@ public class ChannelLossAnalyseController extends AbstractController {
 
 		Map<String, ChannelLossEntity> result4 = new HashMap<String, ChannelLossEntity>();
 		Map<String, ChannelLossEntity> result5 = new HashMap<String, ChannelLossEntity>();
-//		Map<String, ChannelLossEntity> result6 = new HashMap<String, ChannelLossEntity>();
+		// Map<String, ChannelLossEntity> result6 = new HashMap<String,
+		// ChannelLossEntity>();
 		Map<String, ChannelLossEntity> result7 = new HashMap<String, ChannelLossEntity>();
 		Map<String, ChannelLossEntity> result8 = new HashMap<String, ChannelLossEntity>();
 		Map<String, ChannelLossEntity> result9 = new HashMap<String, ChannelLossEntity>();
@@ -115,7 +125,8 @@ public class ChannelLossAnalyseController extends AbstractController {
 
 		Thread t4 = new Thread(new ChannelLossQueryThread(service, params, channelListMap, result4, 4));
 		Thread t5 = new Thread(new ChannelLossQueryThread(service, params, channelListMap, result5, 5));
-//		Thread t6 = new Thread(new ChannelLossQueryThread(service, params, channelListMap, result6, 6));
+		// Thread t6 = new Thread(new ChannelLossQueryThread(service, params,
+		// channelListMap, result6, 6));
 		Thread t7 = new Thread(new ChannelLossQueryThread(service, params, channelListMap, result7, 7));
 		Thread t8 = new Thread(new ChannelLossQueryThread(service, params, channelListMap, result8, 8));
 		Thread t9 = new Thread(new ChannelLossQueryThread(service, params, channelListMap, result9, 9));
@@ -129,7 +140,7 @@ public class ChannelLossAnalyseController extends AbstractController {
 			t35.start();
 			t4.start();
 			t5.start();
-//			t6.start();
+			// t6.start();
 			t7.start();
 			t8.start();
 			t9.start();
@@ -148,7 +159,7 @@ public class ChannelLossAnalyseController extends AbstractController {
 			long l5 = System.currentTimeMillis();
 			t5.join();
 			long l6 = System.currentTimeMillis();
-//			t6.join();
+			// t6.join();
 			long l7 = System.currentTimeMillis();
 			t7.join();
 			long l8 = System.currentTimeMillis();
@@ -171,11 +182,66 @@ public class ChannelLossAnalyseController extends AbstractController {
 		List<ChannelLossEntity> list = unionChannelLossData(channelDataMap, channelListMap, result1, result2, result31,
 				result32, result33, result34, result35, result4, result5, null, result7, result8, result9);// 将数据按照渠道聚合
 		// 获取数据条数
-		PageUtils pageUtil = new PageUtils(list, list.size(), query.getLimit(), query.getPage());
+		// 过滤channelLabel
+		List<ChannelLossEntity> retList = new ArrayList<ChannelLossEntity>();
+		if (channelLabelList.size() == 0) {
+			retList.addAll(list);
+		} else {
+			for (int i = 0; i < list.size(); i++) {
+				ChannelLossEntity entity = list.get(i);
+				for (int j = 0; j < channelLabelList.size(); j++) {
+					String label = channelLabelList.get(j);
+					if ((label + "").trim().equals((entity.getChannelLabel() + "").trim())) {
+						retList.add(entity);
+					}
+				}
+			}
+		}
+
+		// 获取数据条数
+		PageUtils pageUtil = new PageUtils(retList, retList.size(), query.getLimit(), query.getPage());
 
 		long endTime = System.currentTimeMillis();
 		System.err.println("++++++++++++++++++++++++++++++++++查询总耗时：" + (endTime - startTime));
 		return R.ok().put("page", pageUtil);
+	}
+
+	@ResponseBody
+	@RequestMapping("/exportExcel")
+	@RequiresPermissions("channel:channelAll:list")
+	public void partExport(String list, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		List<ChannelLossEntity> dataList = JSON.parseArray(list, ChannelLossEntity.class);
+		JSONArray va = new JSONArray();
+		//
+		for (int i = 0; i < dataList.size(); i++) {
+			ChannelLossEntity entity = dataList.get(i);
+			va.add(entity);
+		}
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+		headMap.put("channelName", "渠道名称");
+		headMap.put("channelLabel", "渠道标签");
+		headMap.put("registerUserNum", "注册人数");
+		headMap.put("firstInvestUserNum", "首投人数");
+
+		headMap.put("investOneTimeUserNum", "投资1次人数");
+		headMap.put("investTwoTimeUserNum", "投资2次人数");
+		headMap.put("investThreeTimeUserNum", "投资3次人数");
+		headMap.put("investFourTimeUserNum", "投资4次人数");
+		headMap.put("investNTimeUserNum", "投资N次人数");
+
+		headMap.put("firstInvestAmount", "首次投资金额");
+		headMap.put("investAmount", "累计投资金额");
+		headMap.put("investYearAmount", "累计投资年华金额");
+		headMap.put("firstInvestUseRedMoney", "首投使用红包金额");
+		headMap.put("perFirstInvestUseRedMoney", "人均首投使用红包金额");
+		headMap.put("totalUseRedMoney", "累计使用红包金额");
+		headMap.put("ddzInvestDays", "点点赚投资天数");
+		headMap.put("ddzPerInvestAmount", "点点赚平均投资金额");
+
+		String title = "渠道流失分析";
+
+		ExcelUtil.downloadExcelFile(title, headMap, va, response);
 	}
 
 	private List<ChannelLossEntity> unionChannelLossData(Map<String, String> channelDataMap,
@@ -242,10 +308,11 @@ public class ChannelLossAnalyseController extends AbstractController {
 				vo.setInvestYearAmount(NumberUtil.keepPrecision(en.getInvestYearAmount(), 2));
 			}
 			// 6：累计投资年化金额
-//			if (result6.containsKey(key)) {
-//				ChannelLossEntity en = result6.get(key);
-//				vo.setInvestYearAmount(NumberUtil.keepPrecision(en.getInvestYearAmount(), 2));
-//			}
+			// if (result6.containsKey(key)) {
+			// ChannelLossEntity en = result6.get(key);
+			// vo.setInvestYearAmount(NumberUtil.keepPrecision(en.getInvestYearAmount(),
+			// 2));
+			// }
 			// 7：首投使用红包金额
 			if (result7.containsKey(key)) {
 				ChannelLossEntity en = result7.get(key);
@@ -267,7 +334,7 @@ public class ChannelLossAnalyseController extends AbstractController {
 				vo.setPerTotalUseRedMoney(
 						NumberUtil.keepPrecision((double) vo.getTotalUseRedMoney() / vo.getUseRedMoneyUserNum(), 2));
 			}
-			//9.点点赚投资天数 , 点点赚平均投资金额
+			// 9.点点赚投资天数 , 点点赚平均投资金额
 			if (result9.containsKey(key)) {
 				ChannelLossEntity en = result9.get(key);
 				vo.setDdzInvestDays(en.getDdzInvestDays());

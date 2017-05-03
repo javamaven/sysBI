@@ -1,23 +1,30 @@
 package io.renren.controller;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 
 import io.renren.controller.querythread.ChannelInvestTimesQueryThread;
 import io.renren.entity.ChannelInvestTimesEntity;
@@ -25,6 +32,7 @@ import io.renren.entity.DimChannelEntity;
 import io.renren.service.ChannelInvestTimesService;
 import io.renren.service.DimChannelService;
 import io.renren.util.NumberUtil;
+import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.Query;
 import io.renren.utils.R;
@@ -51,6 +59,7 @@ public class ChannelInvestTimesController extends AbstractController {
 		List<DimChannelEntity> channelList = dimChannelService.queryChannelList(null);
 		Map<String, String> channelDataMap = getChannelLabelKeyMap(channelList);
 		System.err.println("+++++查询条件： " + params);
+		List<String> channelLabelList = new ArrayList<String>();
 		try {
 			params.put("regBeginDate", sdf1.format(dateSdf.parse(params.get("regBeginDate") + "")) + " 00:00:00");
 			params.put("regEndDate", sdf1.format(dateSdf.parse(params.get("regEndDate") + "")) + " 23:59:59");
@@ -62,8 +71,8 @@ public class ChannelInvestTimesController extends AbstractController {
 			Object object = params.get("channelName");
 			if (object != null) {
 				List<String> list = JSON.parseArray(object + "", String.class);
-				List<String> nameList = getChannelLabelsByName(channelList, list);
-				params.put("channelLabelList", nameList);
+				channelLabelList = getChannelLabelsByName(channelList, list);
+				params.put("channelLabelList", channelLabelList);
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -134,12 +143,60 @@ public class ChannelInvestTimesController extends AbstractController {
 		}
 		List<ChannelInvestTimesEntity> list = unionChannelInvestTimesData(channelDataMap, channelListMap, result1,
 				result2, result3, result4, result5, result6, result7, result8, result9);// 将数据按照渠道聚合
+		// 过滤channelLabel
+		List<ChannelInvestTimesEntity> retList = new ArrayList<ChannelInvestTimesEntity>();
+		if (channelLabelList.size() == 0) {
+			retList.addAll(list);
+		} else {
+			for (int i = 0; i < list.size(); i++) {
+				ChannelInvestTimesEntity entity = list.get(i);
+				for (int j = 0; j < channelLabelList.size(); j++) {
+					String label = channelLabelList.get(j);
+					if ((label + "").trim().equals((entity.getChannelLabel() + "").trim())) {
+						retList.add(entity);
+					}
+				}
+			}
+		}
 		// 获取数据条数
-		PageUtils pageUtil = new PageUtils(list, list.size(), query.getLimit(), query.getPage());
+		PageUtils pageUtil = new PageUtils(retList, retList.size(), query.getLimit(), query.getPage());
 
 		long endTime = System.currentTimeMillis();
 		System.err.println("++++++++++++++++++++++++++++++++++查询总耗时：" + (endTime - startTime));
 		return R.ok().put("page", pageUtil);
+	}
+
+	@ResponseBody
+	@RequestMapping("/exportExcel")
+	@RequiresPermissions("channel:channelAll:list")
+	public void partExport(String list, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		List<ChannelInvestTimesEntity> dataList = JSON.parseArray(list, ChannelInvestTimesEntity.class);
+		JSONArray va = new JSONArray();
+		//
+		for (int i = 0; i < dataList.size(); i++) {
+			ChannelInvestTimesEntity entity = dataList.get(i);
+			va.add(entity);
+		}
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+		headMap.put("channelName", "渠道名称");
+		headMap.put("channelLabel", "渠道标签");
+		headMap.put("registerUserNum", "注册人数");
+		headMap.put("firstInvestUserNum", "首投人数");
+		headMap.put("firstInvestAmount", "首投金额");
+		headMap.put("investTimes", "投资次数");
+		headMap.put("investUserNum", "投资人数");
+		headMap.put("investAmount", "累计投资金额");
+		headMap.put("investYearAmount", "累计投资年华金额");
+		headMap.put("firstInvestRedMoney", "首投使用红包金额");
+		headMap.put("perFirstInvestRedMoney", "人均首投使用红包金额");
+		headMap.put("allRedMoney", "累计使用红包金额");
+		headMap.put("ddzInvestDays", "点点赚投资天数");
+		headMap.put("ddzPerInvestAmount", "点点赚平均投资金额");
+
+		String title = "渠道投资次数分析";
+
+		ExcelUtil.downloadExcelFile(title, headMap, va, response);
 	}
 
 	private List<ChannelInvestTimesEntity> unionChannelInvestTimesData(Map<String, String> channelDataMap,

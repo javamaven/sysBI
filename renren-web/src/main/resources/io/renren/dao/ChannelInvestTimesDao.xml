@@ -7,9 +7,9 @@
 <!-- 注册人数 -->
 SELECT
 	u.ACTIVITY_TAG channelLabel,
-	count(DISTINCT u.user_id) registerUserNum
+	count(u.user_id) registerUserNum
 FROM
-	edw_merge_user u
+	dm_report_merge_user u
 WHERE
 	1 = 1
 <if test="regBeginDate != null and regBeginDate.trim() != '' ">
@@ -29,78 +29,50 @@ GROUP BY
 </select>
 	
 <select id="queryFirstInvestUserNum" resultType="io.renren.entity.ChannelInvestTimesEntity">
-<!-- 首投人数,首投金额 -->
-SELECT
-	u.ACTIVITY_TAG channelLabel,
-	count(DISTINCT u.user_id) firstInvestUserNum,
-	sum(stMoney) firstInvestAmount
-FROM
-	(
-			select s.* from (
-			select ss.user_id, ss.ACTIVITY_TAG,
-			case when ptTime is null then cgTime when cgTime is null then ptTime when ptTime > cgTime then cgTime else ptTime end minTime, 
-			case when ptTime is null then cgMoney when cgTime is null then ptMoney when ptTime > cgTime then cgMoney else ptMoney end stMoney
-			from (
-				SELECT
-					u.user_id,
-					u.ACTIVITY_TAG,
-					max(u.NORMAL_FIRSTINVEST_TIME) ptTime,
-					max(u.DEPOSITORY_FIRSTINVEST_TIME) cgTime,
-					max(u.NORMAL_FIRSTINVEST_BALANCE) ptMoney,
-					max(u.DEPOSITORY_FIRSTINVEST_BALANCE) cgMoney
-				FROM
-					edw_merge_user u
-					WHERE 1=1
-						<if test="regBeginDate != null and regBeginDate.trim() != '' ">
-						     <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]>
-						</if>
-						<if test="regEndDate != null and regEndDate.trim() != '' "  >
-						     <![CDATA[ and u.REGISTER_TIME <=  #{regEndDate}  ]]>
-						</if>
-						and (
-							(
-								u.NORMAL_FIRSTINVEST_TIME IS NOT NULL
-								<if test="regBeginDate != null and regBeginDate.trim() != '' ">
-								     <![CDATA[ and u.NORMAL_FIRSTINVEST_TIME  >=  #{regBeginDate}  ]]>
-								</if>
-								<if test="invEndDate != null and invEndDate.trim() != '' "  >
-								     <![CDATA[ and u.NORMAL_FIRSTINVEST_TIME <=  #{invEndDate}  ]]>
-								</if>
-							)
-							OR (
-								u.DEPOSITORY_FIRSTINVEST_TIME IS NOT NULL
-								<if test="regBeginDate != null and regBeginDate.trim() != '' ">
-								     <![CDATA[ and u.DEPOSITORY_FIRSTINVEST_TIME  >=  #{regBeginDate}  ]]>
-								</if>
-								<if test="invEndDate != null and invEndDate.trim() != '' "  >
-								     <![CDATA[ and u.DEPOSITORY_FIRSTINVEST_TIME <=  #{invEndDate}  ]]>
-								</if>								
-							) 
-						)
-				group by u.user_id 
-				) ss
-			) s where 1=1 
-			<if test="regBeginDate != null and regBeginDate.trim() != '' ">
-			     <![CDATA[ and s.minTime  >=  #{regBeginDate}  ]]>
+	<!-- 首投人数,首投金额 -->
+	SELECT
+		u.ACTIVITY_TAG channelLabel,
+		count(DISTINCT u.user_id) firstInvestUserNum,
+		sum(stMoney) firstInvestAmount
+	FROM
+		(
+			SELECT
+				u.ACTIVITY_TAG,
+				u.user_id,
+				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_TIME ELSE u.NORMAL_FIRSTINVEST_TIME END minTime,
+				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_BALANCE ELSE u.NORMAL_FIRSTINVEST_BALANCE END stMoney,
+				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_Y_MONEY ELSE u.NORMAL_FIRSTINVEST_Y_MONEY END stYearMoney
+			FROM
+				dm_report_merge_user u
+			WHERE
+				1 = 1
+			<if test="channelLabelList != null and channelLabelList.size()!=0">
+				AND u.ACTIVITY_TAG IN
+				<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
+					#{channelName}
+				</foreach>
 			</if>
-			<if test="invEndDate != null and invEndDate.trim() != '' "  >
-			     <![CDATA[ and s.minTime <=  #{invEndDate}  ]]>
-			</if>			
-
-) u
-WHERE
-	1 = 1
-
-<if test="channelLabelList != null and channelLabelList.size()!=0">
-	AND u.ACTIVITY_TAG IN
-	<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
-		#{channelName}
-	</foreach>
-</if>
-
-GROUP BY
-	u.ACTIVITY_TAG
-
+			AND u.REGISTER_TIME >=  #{regBeginDate}
+			AND u.REGISTER_TIME &lt;= #{regEndDate} 
+			AND (
+				(
+					u.NORMAL_FIRSTINVEST_TIME IS NOT NULL
+					AND u.NORMAL_FIRSTINVEST_TIME >=  #{regBeginDate}
+					AND u.NORMAL_FIRSTINVEST_TIME &lt;= #{invEndDate}
+				)
+				OR (
+					u.DEPOSITORY_FIRSTINVEST_TIME IS NOT NULL
+					AND u.DEPOSITORY_FIRSTINVEST_TIME >=  #{regBeginDate}
+					AND u.DEPOSITORY_FIRSTINVEST_TIME &lt;= #{invEndDate}
+				)
+			)
+	) u
+	WHERE
+		1 = 1
+	AND u.minTime >=  #{regBeginDate}
+	AND u.minTime &lt;= #{invEndDate}
+	GROUP BY
+		u.ACTIVITY_TAG
 
 </select>	
 
@@ -111,7 +83,7 @@ SELECT
 	count(1) investTimes
 FROM
 	edw_merge_project_detail p,
-	edw_merge_user u
+	dm_report_merge_user u
 WHERE
 	1 = 1
 AND p.USER_ID = u.USER_ID
@@ -148,7 +120,7 @@ GROUP BY
 		count(DISTINCT u.user_id) investUserNum
 	FROM
 		edw_merge_project_detail p,
-		edw_merge_user u
+		dm_report_merge_user u
 	WHERE
 		1 = 1
 	AND p.USER_ID = u.USER_ID
@@ -184,7 +156,7 @@ GROUP BY
 		sum(p.TENDER_CAPITAL) investAmount
 	FROM
 		edw_merge_project_detail p,
-		edw_merge_user u
+		dm_report_merge_user u
 	WHERE
 		1 = 1
 	AND p.USER_ID = u.USER_ID
@@ -214,13 +186,13 @@ GROUP BY
 </select>
 
 <select id="queryInvestYearAmount" resultType="io.renren.entity.ChannelInvestTimesEntity">
-	<!-- 累积投资年华金额 -->
+	<!-- 累计投资年华金额 -->
 	SELECT
 		u.ACTIVITY_TAG channelLabel,
 		sum(IFNULL(p.TENDER_CAPITAL,0)*IFNULL(p.BORROW_PERIOD,0)/360) investYearAmount
 	FROM
 		edw_merge_project_detail p,
-		edw_merge_user u
+		dm_report_merge_user u
 	WHERE
 		1 = 1
 	AND p.USER_ID = u.USER_ID
@@ -253,13 +225,14 @@ GROUP BY
 	<!-- 首投使用红包金额-->
 	call first_invest_use_red_money_investtimes(#{regBeginDate},#{regEndDate},#{invEndDate});
 
-	select u.channelLabel,u.firstInvestRedMoney from first_invest_use_red_money_investtimes_tmp u where 1=1
-<if test="channelLabelList != null and channelLabelList.size()!=0">
-	AND u.channelLabel IN
-	<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
-		#{channelName}
-	</foreach>
-</if>
+<!-- 不再使用临时表 -->
+<!-- 	select u.channelLabel,u.firstInvestRedMoney from first_invest_use_red_money_investtimes_tmp u where 1=1 -->
+<!-- <if test="channelLabelList != null and channelLabelList.size()!=0"> -->
+<!-- 	AND u.channelLabel IN -->
+<!-- 	<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")"> -->
+<!-- 		#{channelName} -->
+<!-- 	</foreach> -->
+<!-- </if> -->
 
 </select>
 <select id="queryAllRedMoney" resultType="io.renren.entity.ChannelInvestTimesEntity">
@@ -269,7 +242,7 @@ SELECT
 	sum(IFNULL(p.TEND_VOUCHE,0)) allRedMoney
 FROM
 	edw_merge_project_detail p,
-	edw_merge_user u
+	dm_report_merge_user u
 WHERE
 	1 = 1
 AND p.USER_ID = u.USER_ID
@@ -304,7 +277,7 @@ GROUP BY
 		sum(IFNULL(d.INCOME_, 0)) / count(DISTINCT d.USER_ID_) ddzPerInvestAmount
 	FROM
 		ODS_MJKF_DDZ_INV_ACCOUNTLOG_DD d,
-		edw_merge_user u
+		dm_report_merge_user u
 	WHERE
 		1 = 1
 	AND d.USER_ID_ = u.USER_ID

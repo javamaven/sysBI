@@ -9,7 +9,7 @@
 //}
 //默认时间
 function getDate(datatype){
-    var today = new Date(new Date()-24*60*60*1000*5);
+    var today = new Date(new Date()-24*60*60*1000*1);
     var halfYearAgo = new Date(new Date()-24*60*60*1000*182);
     var startdate;
     var enddate;
@@ -124,7 +124,7 @@ function loadTableAjax(){
         //alert(a);
         var b = '['+
         '{field:"statPeriod",title:"日期",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"indicatorsName",title:"指标名字",align:"center",valign:"middle",sortable:"true"},'+
+        '{field:"indicatorsName",title:"指标名字",align:"left",valign:"middle",sortable:"true"},'+
         '{field:"indicatorsValue",title:"指标值",align:"center",valign:"middle",sortable:"true"},'+
         '{field:"sequential",title:"环比",align:"center",valign:"middle",sortable:"true"},'+
         '{field:"compared",title:"同比",align:"center",valign:"middle",sortable:"true"},'+
