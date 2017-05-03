@@ -1,10 +1,46 @@
 $(function(){
     loadChannel();
 //    loadTableAjax();
-    
+    initExportFunction();
     // 移除loading样式
     $(".spinners li").removeClass("active");
 });
+
+
+var currDataList;
+
+function initExportFunction(){
+	$('#btn_exports').click(function(){
+		if(currDataList){
+			executePost('../channel/renew/exportExcel', {'list': currDataList } );  
+		}else {
+			alert('请先查询数据!');
+		}
+//	    window.open("../channel/stft/exportExcel?list=" + JSON.stringify(currDataList),"_blank",'height=400,width=400,top=100,left=200,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no');
+	});
+
+}
+/**
+ * 使用post提交表单
+ * @param URL
+ * @param PARAMS
+ * @returns
+ */
+function executePost(URL, PARAMS) {        
+    var temp = document.createElement("form");        
+    temp.action = URL;        
+    temp.method = "post";        
+    temp.style.display = "none";        
+    for (var x in PARAMS) {        
+        var opt = document.createElement("textarea");        
+        opt.name = x;        
+        opt.value = PARAMS[x];        
+        temp.appendChild(opt);        
+    }        
+    document.body.appendChild(temp);        
+    temp.submit();        
+    return temp;        
+}   
 
 function loadTableAjax(){
  $.ajax({
@@ -23,7 +59,7 @@ function loadTableAjax(){
             a += d;
         };
         a = '['+a.substring(0,a.length-1)+']';
-       
+        currDataList = a;
         //加载数据
         loadTable(null ,a);
 

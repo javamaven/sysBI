@@ -1,5 +1,6 @@
 package io.renren.controller;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -7,17 +8,23 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 
 import io.renren.controller.querythread.ChannelRenewDataQueryThread;
 import io.renren.entity.ChannelRenewDataEntity;
@@ -26,6 +33,7 @@ import io.renren.service.ChannelRenewDataService;
 import io.renren.service.DimChannelService;
 import io.renren.util.DateUtil;
 import io.renren.util.NumberUtil;
+import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.Query;
 import io.renren.utils.R;
@@ -57,11 +65,11 @@ public class ChanneRenewDataController extends AbstractController {
 		params.put("endDate", DateUtil.formatDate(params.get("date") + ""));
 		Object object = params.get("channelName");
 		List<String> channelLabelList = new ArrayList<String>();
-		
+
 		if (object != null) {
 			List<String> list = JSON.parseArray(object + "", String.class);
 			channelLabelList = getChannelLabelsByName(channelList, list);
-			params.put("channelLabelList",channelLabelList);
+			params.put("channelLabelList", channelLabelList);
 		} else {
 			params.put("channelLabelList", new ArrayList<String>());
 		}
@@ -74,16 +82,16 @@ public class ChanneRenewDataController extends AbstractController {
 		buildQueryParamsAndQueryData(params, channelListMap, resultMap);
 		// 将数据按照渠道聚合
 		List<ChannelRenewDataEntity> list = unionData(channelDataMap, channelListMap, resultMap);
-		//过滤channelLabel
+		// 过滤channelLabel
 		List<ChannelRenewDataEntity> retList = new ArrayList<ChannelRenewDataEntity>();
-		if(channelLabelList.size() == 0){
+		if (channelLabelList.size() == 0) {
 			retList.addAll(list);
-		}else{
+		} else {
 			for (int i = 0; i < list.size(); i++) {
 				ChannelRenewDataEntity entity = list.get(i);
 				for (int j = 0; j < channelLabelList.size(); j++) {
 					String label = channelLabelList.get(j);
-					if((label+"").trim().equals((entity.getChannelLabel()+"").trim())){
+					if ((label + "").trim().equals((entity.getChannelLabel() + "").trim())) {
 						retList.add(entity);
 					}
 				}
@@ -92,10 +100,73 @@ public class ChanneRenewDataController extends AbstractController {
 		// 获取数据条数
 		PageUtils pageUtil = new PageUtils(retList, retList.size(), query.getLimit(), query.getPage());
 
-		
 		long endTime = System.currentTimeMillis();
 		System.err.println("++++++++++++++++++++++++++++++++++查询总耗时：" + (endTime - startTime));
 		return R.ok().put("page", pageUtil);
+	}
+
+	@ResponseBody
+	@RequestMapping("/exportExcel")
+	@RequiresPermissions("channel:channelAll:list")
+	public void partExport(String list, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		List<ChannelRenewDataEntity> dataList = JSON.parseArray(list, ChannelRenewDataEntity.class);
+		JSONArray va = new JSONArray();
+		//
+		for (int i = 0; i < dataList.size(); i++) {
+			ChannelRenewDataEntity entity = dataList.get(i);
+			va.add(entity);
+		}
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+		headMap.put("channelName", "渠道名称");
+		headMap.put("channelLabel", "渠道标签");
+		headMap.put("channelType", "渠道分类");
+
+		headMap.put("day30Cost", "30天费用");
+		headMap.put("day60Cost", "60天费用");
+		headMap.put("day90Cost", "90天费用");
+
+		headMap.put("onlineTime", "上线时间");
+
+		headMap.put("day30YearAmount", "30日年化投资金额");
+		headMap.put("day60YearAmount", "60日年化投资金额");
+		headMap.put("day90YearAmount", "90日年化投资金额");
+
+		headMap.put("day30YearRoi", "30日年化ROI");
+		headMap.put("day60YearRoi", "60日年化ROI");
+		headMap.put("day90YearRoi", "90日年化ROI");
+
+		headMap.put("day30FirstInvestUserNum", "30日首投用户数");
+		headMap.put("day60FirstInvestUserNum", "60日首投用户数");
+		headMap.put("day90FirstInvestUserNum", "90日首投用户数");
+
+		headMap.put("day30MultiInvestUserNum", "30日复投用户数");
+		headMap.put("day60MultiInvestUserNum", "60日复投用户数");
+		headMap.put("day90MultiInvestUserNum", "90日复投用户数");
+
+		headMap.put("day30MultiRateText", "30日复投率");
+		headMap.put("day60MultiRateText", "60日复投率");
+		headMap.put("day90MultiRateText", "90日复投率");
+
+		headMap.put("day30MultiInvestAmountRateText", "30日复投金额比");
+		headMap.put("day60MultiInvestAmountRateText", "60日复投金额比");
+		headMap.put("day90MultiInvestAmountRateText", "90日复投金额比");
+
+		headMap.put("day30FirstInvestYearAmount", "30日首投年化金额");
+		headMap.put("day60FirstInvestYearAmount", "60日首投年化金额");
+		headMap.put("day90FirstInvestYearAmount", "90日首投年化金额");
+
+		headMap.put("day30perFirstInvestYearAmount", "30日人均首投年化金额");
+		headMap.put("day60perFirstInvestYearAmount", "60日人均首投年化金额");
+		headMap.put("day90perFirstInvestYearAmount", "90日人均首投年化金额");
+
+		headMap.put("day30FirstInvestYearRoi", "30日首投年化ROI");
+		headMap.put("day60FirstInvestYearRoi", "60日首投年化ROI");
+		headMap.put("day90FirstInvestYearRoi", "90日首投年化ROI");
+
+		String title = "渠道续费数据提取汇总";
+
+		ExcelUtil.downloadExcelFile(title, headMap, va, response);
 	}
 
 	/**
@@ -307,14 +378,14 @@ public class ChanneRenewDataController extends AbstractController {
 		List<ChannelRenewDataEntity> list = new ArrayList<ChannelRenewDataEntity>();
 
 		Map<String, String> chanelTypeMap = dimChannelService.queryChanelTypeMap();
-		
+
 		Iterator<String> iterator = channelListMap.keySet().iterator();
 		ChannelRenewDataEntity vo = null;
 		while (iterator.hasNext()) {
 			String key = iterator.next();
-//			if ("bd-pcpz".equals(key)) {
-//				System.err.println(key);
-//			}
+			// if ("bd-pcpz".equals(key)) {
+			// System.err.println(key);
+			// }
 			vo = new ChannelRenewDataEntity();
 			if (channelDataMap.containsKey(key)) {
 				vo.setChannelName(channelDataMap.get(key));// 渠道名称
@@ -322,10 +393,10 @@ public class ChanneRenewDataController extends AbstractController {
 				vo.setChannelName("未知");// 渠道名称
 			}
 			vo.setChannelLabel(key);// 渠道标签
-			//渠道类型
-			if(chanelTypeMap.containsKey(key)){
+			// 渠道类型
+			if (chanelTypeMap.containsKey(key)) {
 				vo.setChannelType(chanelTypeMap.get(key));
-			}else{
+			} else {
 				vo.setChannelType("未知");
 			}
 			// 30天 60 90 费用

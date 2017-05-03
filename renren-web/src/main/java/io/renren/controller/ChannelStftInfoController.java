@@ -1,5 +1,6 @@
 package io.renren.controller;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -8,18 +9,24 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.druid.util.StringUtils;
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 
 import io.renren.controller.querythread.ChannelStFtInfoQueryThread;
 import io.renren.entity.ChannelStftInfoEntity;
@@ -27,6 +34,7 @@ import io.renren.entity.DimChannelEntity;
 import io.renren.service.ChannelStftInfoService;
 import io.renren.service.DimChannelService;
 import io.renren.util.NumberUtil;
+import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.Query;
 import io.renren.utils.R;
@@ -94,7 +102,7 @@ public class ChannelStftInfoController extends AbstractController {
 				List<String> list = JSON.parseArray(object + "", String.class);
 				channelLabelList = getChannelLabelsByName(channelList, list);
 				params.put("channelLabelList", channelLabelList);
-			}else{
+			} else {
 				channelLabelList = new ArrayList<String>();
 			}
 
@@ -122,7 +130,7 @@ public class ChannelStftInfoController extends AbstractController {
 		Thread t3 = new Thread(new ChannelStFtInfoQueryThread(service, params, channelListMap, result3, 3));
 		Thread t4 = new Thread(new ChannelStFtInfoQueryThread(service, params, channelListMap, result4, 4));
 		Thread t5 = new Thread(new ChannelStFtInfoQueryThread(service, params, channelListMap, result5, 5));
-		Thread t6 = new Thread(new ChannelStFtInfoQueryThread(service, params, channelListMap, result6, 6));//queryFirstInvestUserAmount
+		Thread t6 = new Thread(new ChannelStFtInfoQueryThread(service, params, channelListMap, result6, 6));// queryFirstInvestUserAmount
 		Thread t7 = new Thread(new ChannelStFtInfoQueryThread(service, params, channelListMap, result7, 7));
 		Thread t8 = new Thread(new ChannelStFtInfoQueryThread(service, params, channelListMap, result8, 8));
 		Thread t9 = new Thread(new ChannelStFtInfoQueryThread(service, params, channelListMap, result9, 9));
@@ -181,22 +189,22 @@ public class ChannelStftInfoController extends AbstractController {
 				result3, result4, result5, result6, result7, result8, result9, result10, result11);// 将数据按照渠道聚合
 
 		// 获取数据条数
-		//过滤channelLabel
+		// 过滤channelLabel
 		List<ChannelStftInfoEntity> retList = new ArrayList<ChannelStftInfoEntity>();
-		if(channelLabelList.size() == 0){
+		if (channelLabelList.size() == 0) {
 			retList.addAll(list);
-		}else{
+		} else {
 			for (int i = 0; i < list.size(); i++) {
 				ChannelStftInfoEntity entity = list.get(i);
 				for (int j = 0; j < channelLabelList.size(); j++) {
 					String label = channelLabelList.get(j);
-					if((label+"").trim().equals((entity.getChannelLabel()+"").trim())){
+					if ((label + "").trim().equals((entity.getChannelLabel() + "").trim())) {
 						retList.add(entity);
 					}
 				}
 			}
 		}
-		
+
 		PageUtils pageUtil = new PageUtils(retList, retList.size(), query.getLimit(), query.getPage());
 
 		long endTime = System.currentTimeMillis();
@@ -238,26 +246,27 @@ public class ChannelStftInfoController extends AbstractController {
 				ChannelStftInfoEntity en = result1.get(key);
 				vo.setRegisterUserNum(en.getRegisterUserNum());// 1:注册人数
 			}
-			// 2.首投人数，首投金额,首投年化投资金额  人均首投
+			// 2.首投人数，首投金额,首投年化投资金额 人均首投
 			if (result2.containsKey(key)) {
 				ChannelStftInfoEntity en = result2.get(key);
 				vo.setFirstInvestUserNum(en.getFirstInvestUserNum());// 2：首投人数
 				vo.setFirstInvestAmount(NumberUtil.keepPrecision(en.getFirstInvestAmount(), 2));// 首投金额
 				vo.setFirstInvestYearAmount(NumberUtil.keepPrecision(en.getFirstInvestYearAmount(), 2));// 首投年化金额
-				vo.setFirstInvestPer(NumberUtil.keepPrecision(en.getFirstInvestPer(), 2));//人均首投=首投金额/首投人数
+				vo.setFirstInvestPer(NumberUtil.keepPrecision(en.getFirstInvestPer(), 2));// 人均首投=首投金额/首投人数
 			}
 			// 用户年华投资金额
 			if (result3.containsKey(key)) {
 				ChannelStftInfoEntity en = result3.get(key);
 				vo.setUserInvestYearAmount(NumberUtil.keepPrecision(en.getUserInvestYearAmount(), 2));
 			}
-//			// 人均首投=首投金额/首投人数
-//			if (vo.getFirstInvestUserNum() == 0) {
-//				vo.setFirstInvestPer(0);
-//			} else {
-//				vo.setFirstInvestPer(
-//						NumberUtil.keepPrecision((double) vo.getFirstInvestAmount() / vo.getFirstInvestUserNum(), 2));
-//			}
+			// // 人均首投=首投金额/首投人数
+			// if (vo.getFirstInvestUserNum() == 0) {
+			// vo.setFirstInvestPer(0);
+			// } else {
+			// vo.setFirstInvestPer(
+			// NumberUtil.keepPrecision((double) vo.getFirstInvestAmount() /
+			// vo.getFirstInvestUserNum(), 2));
+			// }
 			// 转化率 （公式=“首投人数”/“注册人数”）
 			if (vo.getRegisterUserNum() == 0) {
 				vo.setConversionRate(0);
@@ -369,6 +378,50 @@ public class ChannelStftInfoController extends AbstractController {
 		}
 		Collections.sort(list, new MyCompartor());
 		return list;
+	}
+
+	@ResponseBody
+	@RequestMapping("/exportExcel")
+	@RequiresPermissions("channel:channelAll:list")
+	public void partExport(String list, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		List<ChannelStftInfoEntity> dataList = JSON.parseArray(list, ChannelStftInfoEntity.class);
+		JSONArray va = new JSONArray();
+		//
+		for (int i = 0; i < dataList.size(); i++) {
+			ChannelStftInfoEntity entity = dataList.get(i);
+			va.add(entity);
+		}
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+		headMap.put("channelName", "渠道名称");
+		headMap.put("channelLabel", "渠道标签");
+		headMap.put("channelType", "渠道分类");
+		headMap.put("registerUserNum", "注册人数");
+		headMap.put("firstInvestUserNum", "首投人数");
+		headMap.put("firstInvestAmount", "首投金额");
+		headMap.put("firstInvestYearAmount", "首投年化投资金额");
+		headMap.put("firstInvestPer", "人均首投");
+		headMap.put("conversionRateText", "转化率");
+		headMap.put("multipleUser", "复投人数");
+		headMap.put("multipleRateText", "复投率");
+		headMap.put("firstInvestProAmount", "首投用户项目投资金额");
+		headMap.put("proInvestAmount", "项目投资金额");
+		headMap.put("proMultiInvestAmount", "项目复投金额");
+		headMap.put("firstInvestUserAmount", "首投用户投资金额");
+		headMap.put("userInvestAmount", "用户投资金额");
+		headMap.put("userInvestYearAmount", "用户年化投资金额");
+		headMap.put("firstInvestPerTime", "首投平均期限");
+		headMap.put("firstInvestUserPerProAmount", "首投用户平均项目投资金额");
+		headMap.put("perProInvestAmont", "平均项目投资金额");
+		headMap.put("perProMultiInvestAmount", "平均项目复投金额");
+		headMap.put("firstInvestUserPerAmount", "首投用户平均投资金额");
+		headMap.put("perInvestAmount", "平均投资金额");
+		headMap.put("amountMultiRateText", "金额复投率");
+
+		String title = "渠道首投复投情况";
+
+
+		ExcelUtil.downloadExcelFile(title, headMap, va, response);
 	}
 
 	/**

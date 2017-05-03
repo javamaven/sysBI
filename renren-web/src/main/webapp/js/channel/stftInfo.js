@@ -1,11 +1,47 @@
 $(function(){
     loadChannel();
-//    loadTableAjax();
+    initExportFunction();
     
+//    loadTableAjax();
     // 移除loading样式
     $(".spinners li").removeClass("active");
 });
 
+var currDataList;
+
+function initExportFunction(){
+	$('#btn_exports').click(function(){
+//	    window.open("../channel/stft/exportExcel?list=" + JSON.stringify(currDataList),"_blank",'height=400,width=400,top=100,left=200,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no');
+		if(currDataList){
+			executePost('../channel/stft/exportExcel', {'list': currDataList } );  
+		}else {
+			alert('请先查询数据!');
+		}
+	});
+
+}
+/**
+ * 使用post提交表单
+ * @param URL
+ * @param PARAMS
+ * @returns
+ */
+function executePost(URL, PARAMS) {        
+    var temp = document.createElement("form");        
+    temp.action = URL;        
+    temp.method = "post";        
+    temp.style.display = "none";        
+    for (var x in PARAMS) {        
+        var opt = document.createElement("textarea");        
+        opt.name = x;        
+        opt.value = PARAMS[x];        
+        temp.appendChild(opt);        
+    }        
+    document.body.appendChild(temp);        
+    temp.submit();        
+    return temp;        
+}        
+     
 function loadTableAjax(){
  $.ajax({
     type: "POST",
@@ -13,7 +49,7 @@ function loadTableAjax(){
     data: JSON.stringify(pageInfo),
     contentType: "application/json;charset=utf-8",
     success : function(msg) {
-         var a = '';
+        var a = '';
         for(var list in msg.page.list){
             var d = '{'
             for(var key in msg.page.list[list]){
@@ -23,7 +59,7 @@ function loadTableAjax(){
             a += d;
         };
         a = '['+a.substring(0,a.length-1)+']';
-       
+        currDataList = a;
         //加载数据
         loadTable(null ,a);
 
@@ -143,28 +179,6 @@ function loadTable(columnsData,tableData){
 }
 //加载渠道数据
 function loadChannel(){
-//    var str = '';
-//    var i = 0;
-//    $.ajax({
-//        type: "POST",
-//        url: "../channel/channelAll/queryChannelList",
-//        data: JSON.stringify(),
-//        contentType: "application/json;charset=utf-8",
-//        success : function(msg) {
-//        	console.info(msg);
-//        	var index = 0;
-//        	for (var i = 0; i < msg.data.length; i++) {
-//				var channelNameBack = msg.data[i];
-//				 str += '<option value="'+(index++)+'">' + channelNameBack + "</option>";
-//			}
-//            $("#id_select").select2({
-//                maximumSelectionLength: 3,
-//                width:'100%'
-//            });
-//            $("#id_select").append(str);
-//        }
-//     });
-    
 	   var str = '';
 	    var i = 0;
 	    $.ajax({
@@ -173,7 +187,6 @@ function loadChannel(){
 	        data: JSON.stringify(),
 	        contentType: "application/json;charset=utf-8",
 	        success : function(msg) {
-	            console.log(msg);
 	            for(var list in msg.Channel){
 	                for(var key in msg.Channel[list]){
 	                    if(key == "channelName")
