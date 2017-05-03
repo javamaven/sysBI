@@ -123,13 +123,13 @@ function loadTableAjax(){
         a = '['+a.substring(0,a.length-1)+']';
         //alert(a);
         var b = '['+
-        '{field:"statPeriod",title:"日期",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"indicatorsName",title:"指标名字",align:"left",valign:"middle",sortable:"true"},'+
-        '{field:"indicatorsValue",title:"指标值",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"sequential",title:"环比",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"compared",title:"同比",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"monthMeanValue",title:"30天均值",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"monthMeanValueThan",title:"30天均值比",align:"center",valign:"middle",sortable:"true"},'+
+        '{field:"statPeriod",title:"日期",align:"center",valign:"middle"},'+
+        '{field:"indicatorsName",title:"指标名字",align:"left",valign:"middle"},'+
+        '{field:"indicatorsValue",title:"指标值",align:"center",valign:"middle"},'+
+        '{field:"sequential",title:"环比",align:"center",valign:"middle"},'+
+        '{field:"compared",title:"同比",align:"center",valign:"middle"},'+
+        '{field:"monthMeanValue",title:"30天均值",align:"center",valign:"middle"},'+
+        '{field:"monthMeanValueThan",title:"30天均值比",align:"center",valign:"middle"},'+
         ']';
 
         //加载数据
