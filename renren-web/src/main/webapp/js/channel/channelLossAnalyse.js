@@ -1,10 +1,45 @@
 $(function(){
     loadChannel();
 //    loadTableAjax();
-    
+    initExportFunction();
     // 移除loading样式
     $(".spinners li").removeClass("active");
 });
+
+var currDataList;
+
+function initExportFunction(){
+	$('#btn_exports').click(function(){
+//	    window.open("../channel/stft/exportExcel?list=" + JSON.stringify(currDataList),"_blank",'height=400,width=400,top=100,left=200,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no');
+		if(currDataList){
+			executePost('../channel/loss/exportExcel', {'list': currDataList } );  
+		}else {
+			alert('请先查询数据!');
+		}
+	});
+
+}
+/**
+ * 使用post提交表单
+ * @param URL
+ * @param PARAMS
+ * @returns
+ */
+function executePost(URL, PARAMS) {        
+    var temp = document.createElement("form");        
+    temp.action = URL;        
+    temp.method = "post";        
+    temp.style.display = "none";        
+    for (var x in PARAMS) {        
+        var opt = document.createElement("textarea");        
+        opt.name = x;        
+        opt.value = PARAMS[x];        
+        temp.appendChild(opt);        
+    }        
+    document.body.appendChild(temp);        
+    temp.submit();        
+    return temp;        
+}    
 
 function loadTableAjax(){
  $.ajax({
@@ -23,6 +58,8 @@ function loadTableAjax(){
             a += d;
         };
         a = '['+a.substring(0,a.length-1)+']';
+        currDataList = a;
+        
         var b = '['+
         '{field:"channelName",title:"渠道名称",align:"center",valign:"middle",sortable:"true"},'+//居中对齐
         '{field:"channelLabel",title:"渠道标签",align:"center",valign:"middle",sortable:"true"},'+
@@ -160,7 +197,6 @@ function loadChannel(){
 	        data: JSON.stringify(),
 	        contentType: "application/json;charset=utf-8",
 	        success : function(msg) {
-	            console.log(msg);
 	            for(var list in msg.Channel){
 	                for(var key in msg.Channel[list]){
 	                    if(key == "channelName")
