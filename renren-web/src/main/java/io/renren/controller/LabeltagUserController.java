@@ -161,8 +161,8 @@ public class LabeltagUserController {
 
 		Map<String,String> headMap = new LinkedHashMap<String,String>();
 		headMap.put("userId","用户主键");
-		headMap.put("cgUserId","存管版主键");
-		headMap.put("oldUserId","普通版主键");
+		headMap.put("cgUserId","存管版ID");
+		headMap.put("oldUserId","普通版ID");
 		headMap.put("phone","手机号");
 		headMap.put("username","用户账号");
 		headMap.put("realname","用户姓名");
