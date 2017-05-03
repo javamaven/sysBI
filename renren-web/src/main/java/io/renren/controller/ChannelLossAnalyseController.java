@@ -21,6 +21,7 @@ import com.alibaba.fastjson.JSON;
 
 import io.renren.controller.querythread.ChannelLossQueryThread;
 import io.renren.entity.ChannelLossEntity;
+import io.renren.entity.ChannelStftInfoEntity;
 import io.renren.entity.DimChannelEntity;
 import io.renren.service.ChannelLossService;
 import io.renren.service.DimChannelService;
@@ -51,9 +52,10 @@ public class ChannelLossAnalyseController extends AbstractController {
 		List<DimChannelEntity> channelList = dimChannelService.queryChannelList(null);
 		Map<String, String> channelDataMap = getChannelLabelKeyMap(channelList);
 		System.err.println("+++++查询条件： " + params);
-
+		List<String> channelLabelList = new ArrayList<String>();
 		try {
-			params.put("firstInvBeginDate", sdf1.format(dateSdf.parse(params.get("firstInvBeginDate") + "")) + " 00:00:00");
+			params.put("firstInvBeginDate",
+					sdf1.format(dateSdf.parse(params.get("firstInvBeginDate") + "")) + " 00:00:00");
 			params.put("firstInvEndDate", sdf1.format(dateSdf.parse(params.get("firstInvEndDate") + "")) + " 23:59:59");
 			if (StringUtils.isEmpty(params.get("invEndDate") + "")) {
 				params.put("invEndDate", dateTimeSdf.format(new Date()));
@@ -63,8 +65,8 @@ public class ChannelLossAnalyseController extends AbstractController {
 			Object object = params.get("channelName");
 			if (object != null) {
 				List<String> list = JSON.parseArray(object + "", String.class);
-				List<String> nameList = getChannelLabelsByName(channelList, list);
-				params.put("channelLabelList", nameList);
+				channelLabelList = getChannelLabelsByName(channelList, list);
+				params.put("channelLabelList", channelLabelList);
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -99,7 +101,8 @@ public class ChannelLossAnalyseController extends AbstractController {
 
 		Map<String, ChannelLossEntity> result4 = new HashMap<String, ChannelLossEntity>();
 		Map<String, ChannelLossEntity> result5 = new HashMap<String, ChannelLossEntity>();
-//		Map<String, ChannelLossEntity> result6 = new HashMap<String, ChannelLossEntity>();
+		// Map<String, ChannelLossEntity> result6 = new HashMap<String,
+		// ChannelLossEntity>();
 		Map<String, ChannelLossEntity> result7 = new HashMap<String, ChannelLossEntity>();
 		Map<String, ChannelLossEntity> result8 = new HashMap<String, ChannelLossEntity>();
 		Map<String, ChannelLossEntity> result9 = new HashMap<String, ChannelLossEntity>();
@@ -115,7 +118,8 @@ public class ChannelLossAnalyseController extends AbstractController {
 
 		Thread t4 = new Thread(new ChannelLossQueryThread(service, params, channelListMap, result4, 4));
 		Thread t5 = new Thread(new ChannelLossQueryThread(service, params, channelListMap, result5, 5));
-//		Thread t6 = new Thread(new ChannelLossQueryThread(service, params, channelListMap, result6, 6));
+		// Thread t6 = new Thread(new ChannelLossQueryThread(service, params,
+		// channelListMap, result6, 6));
 		Thread t7 = new Thread(new ChannelLossQueryThread(service, params, channelListMap, result7, 7));
 		Thread t8 = new Thread(new ChannelLossQueryThread(service, params, channelListMap, result8, 8));
 		Thread t9 = new Thread(new ChannelLossQueryThread(service, params, channelListMap, result9, 9));
@@ -129,7 +133,7 @@ public class ChannelLossAnalyseController extends AbstractController {
 			t35.start();
 			t4.start();
 			t5.start();
-//			t6.start();
+			// t6.start();
 			t7.start();
 			t8.start();
 			t9.start();
@@ -148,7 +152,7 @@ public class ChannelLossAnalyseController extends AbstractController {
 			long l5 = System.currentTimeMillis();
 			t5.join();
 			long l6 = System.currentTimeMillis();
-//			t6.join();
+			// t6.join();
 			long l7 = System.currentTimeMillis();
 			t7.join();
 			long l8 = System.currentTimeMillis();
@@ -171,7 +175,24 @@ public class ChannelLossAnalyseController extends AbstractController {
 		List<ChannelLossEntity> list = unionChannelLossData(channelDataMap, channelListMap, result1, result2, result31,
 				result32, result33, result34, result35, result4, result5, null, result7, result8, result9);// 将数据按照渠道聚合
 		// 获取数据条数
-		PageUtils pageUtil = new PageUtils(list, list.size(), query.getLimit(), query.getPage());
+		// 过滤channelLabel
+		List<ChannelLossEntity> retList = new ArrayList<ChannelLossEntity>();
+		if (channelLabelList.size() == 0) {
+			retList.addAll(list);
+		} else {
+			for (int i = 0; i < list.size(); i++) {
+				ChannelLossEntity entity = list.get(i);
+				for (int j = 0; j < channelLabelList.size(); j++) {
+					String label = channelLabelList.get(j);
+					if ((label + "").trim().equals((entity.getChannelLabel() + "").trim())) {
+						retList.add(entity);
+					}
+				}
+			}
+		}
+
+		// 获取数据条数
+		PageUtils pageUtil = new PageUtils(retList, retList.size(), query.getLimit(), query.getPage());
 
 		long endTime = System.currentTimeMillis();
 		System.err.println("++++++++++++++++++++++++++++++++++查询总耗时：" + (endTime - startTime));
@@ -242,10 +263,11 @@ public class ChannelLossAnalyseController extends AbstractController {
 				vo.setInvestYearAmount(NumberUtil.keepPrecision(en.getInvestYearAmount(), 2));
 			}
 			// 6：累计投资年化金额
-//			if (result6.containsKey(key)) {
-//				ChannelLossEntity en = result6.get(key);
-//				vo.setInvestYearAmount(NumberUtil.keepPrecision(en.getInvestYearAmount(), 2));
-//			}
+			// if (result6.containsKey(key)) {
+			// ChannelLossEntity en = result6.get(key);
+			// vo.setInvestYearAmount(NumberUtil.keepPrecision(en.getInvestYearAmount(),
+			// 2));
+			// }
 			// 7：首投使用红包金额
 			if (result7.containsKey(key)) {
 				ChannelLossEntity en = result7.get(key);
@@ -267,7 +289,7 @@ public class ChannelLossAnalyseController extends AbstractController {
 				vo.setPerTotalUseRedMoney(
 						NumberUtil.keepPrecision((double) vo.getTotalUseRedMoney() / vo.getUseRedMoneyUserNum(), 2));
 			}
-			//9.点点赚投资天数 , 点点赚平均投资金额
+			// 9.点点赚投资天数 , 点点赚平均投资金额
 			if (result9.containsKey(key)) {
 				ChannelLossEntity en = result9.get(key);
 				vo.setDdzInvestDays(en.getDdzInvestDays());
