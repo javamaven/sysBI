@@ -33,7 +33,16 @@
 			AND STAT_PERIOD = #{STAT_PERIOD}
 		</if>
 		;
-		SELECT * FROM TMP ORDER BY NUM,INDICATORS_NAME;
+		SELECT
+		STAT_PERIOD,
+		INDICATORS_NAME,
+		case when NUM in(7,8,9,10,11,12,15,16,37,38,39,40) then Format(indicators_value,'') else Format(indicators_value, 2) end AS indicators_value,
+		sequential,
+		compared,
+		case when NUM in(7,8,9,10,11,12,15,16,37,38,39,40) then Format(month_mean_value,'') else Format(month_mean_value, 2) end AS month_mean_value,
+		month_mean_value_than,
+		NUM
+		FROM TMP ORDER BY NUM,INDICATORS_NAME;
 	</select>
 
 	<select id="queryExports" resultType="io.renren.entity.DailyEntity">
