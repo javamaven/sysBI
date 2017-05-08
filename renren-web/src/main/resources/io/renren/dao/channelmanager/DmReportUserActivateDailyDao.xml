@@ -304,8 +304,14 @@
 		     <![CDATA[ and IS_BINDING =  #{bangCard}  ]]>
 		</if>
 		<!-- 渠道名称-->
-		<if test="channelName != null and channelName.trim() != ''">
-		     <![CDATA[ and CHANNEL_NAME =  #{channelName}  ]]>
+<!-- 		<if test="channelName != null and channelName.trim() != ''"> -->
+<!-- 		     <![CDATA[ and CHANNEL_NAME =  #{channelName}  ]]> -->
+<!-- 		</if> -->
+		<if test="channelName != null and channelName.size()!=0">
+			AND CHANNEL_NAME IN
+			<foreach item="channelName_" collection="channelName" open="(" separator="," close=")">
+				#{channelName_}
+			</foreach>
 		</if>
 	
 	</sql>
