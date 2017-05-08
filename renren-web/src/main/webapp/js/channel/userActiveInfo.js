@@ -108,13 +108,13 @@ function queryTotalInfo(stataDay){
 	        	var data = retData.data;
 	        	$("#register_user_num").html(data.registerUserNum);
 	        	$("#invest_user_num").html(data.investUserNum);
-	        	$("#first_invest_rate").html(data.firstInvestRate);
+	        	$("#first_invest_rate").html((data.firstInvestRate*100).toFixed(2) + "%");
 	        	$("#total_invest_amount").html(data.totalInvestAmount);
 	        	$("#first_invest_amount").html(data.firstInvestAmount);
 	        	$("#cre_invest_amount").html(data.changeInvestAmount);
 	        	$("#multi_invest_user_num").html(data.multiInvestUserNum);
 	        	$("#multi_invest_amount").html(data.multiInvestAmount);
-	        	$("#multi_invest_rate").html(data.multiInvestRate);
+	        	$("#multi_invest_rate").html((data.multiInvestRate*100).toFixed(2) + "%");
 	        }
 	     });
 	 
@@ -231,7 +231,8 @@ function initTable(){
 	        },
 	        gridComplete:function(){
 	        	//隐藏grid底部滚动条
-	        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
+	        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
+	        	$("#query_cond").removeAttr("disabled");
 	        }
 	    });
 }
@@ -310,6 +311,8 @@ var vm = new Vue({
 		reload: function (event) {
 			vm.showList = true;
 			resetTotalInfo();
+			$("#query_cond").attr({"disabled":"disabled"});
+			$("#jqGrid").jqGrid("clearGridData");
 			queryTotalInfo($("#stat_day").val());
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			 $("#jqGrid").jqGrid('setGridParam',{  
@@ -371,7 +374,7 @@ function loadChannel(){
 
 	            $("#id_select").select2({
 	                maximumSelectionLength: 3,
-	                width:'300px'
+	                width:'200px'
 	            });
 	            $("#id_select").append(str);
 	        }
