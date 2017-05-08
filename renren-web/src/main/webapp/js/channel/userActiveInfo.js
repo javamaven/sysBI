@@ -97,6 +97,14 @@ function initTimeCond(){
 //        endDate:getDate(1)
     }).on("click",function(){
     });
+    $("#end_first_invest_time").datetimepicker({
+        format: 'yyyy-mm-dd',
+        minView:'month',
+        language: 'zh-CN',
+        autoclose:true
+//        endDate:getDate(1)
+    }).on("click",function(){
+    });
     $("#start_register_time").datetimepicker({
         format: 'yyyy-mm-dd',
         minView:'month',
@@ -245,6 +253,7 @@ var vm = new Vue({
 		},
 		reload: function (event) {
 			vm.showList = true;
+			resetTotalInfo();
 			queryTotalInfo($("#stat_day").val());
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			 $("#jqGrid").jqGrid('setGridParam',{  
