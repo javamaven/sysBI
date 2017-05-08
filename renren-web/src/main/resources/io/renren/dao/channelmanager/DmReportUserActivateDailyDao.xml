@@ -161,6 +161,9 @@
 	
  	<select id="queryTotal" resultType="int">
 		select count(*) from dm_report_user_activate_daily 
+		where 1=1
+		<include refid="cond"/>
+		
 	</select>
 	 
 	<insert id="save" parameterType="io.renren.entity.channelmanager.DmReportUserActivateDailyEntity">
