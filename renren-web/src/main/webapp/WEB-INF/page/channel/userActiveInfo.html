@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>用户激活情况表</title>
+#parse("sys/header.html")
+</head>
+
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+				<div class="form-group">
+					<label>注册人数：</label><font id="register_user_num">-</font>
+					<label style="padding: 10px;"></label>
+					<label>投资人数：</label><font id="invest_user_num">-</font>
+					<label style="padding: 10px;"></label>
+					<label>首投转化率：</label><font id="first_invest_rate">-</font>
+					<label style="padding: 10px;"></label>
+					<label>累计投资金额：</label><font id="total_invest_amount">-</font>
+					<label style="padding: 10px;"></label>
+					<label>首次投资金额：</label><font id="first_invest_amount">-</font>
+					<label style="padding: 10px;"></label>
+					<label>债转投资金额：</label><font id="cre_invest_amount">-</font>
+					<label style="padding: 10px;"></label>
+					<label>复投人数：</label><font id="multi_invest_user_num">-</font>
+					<label style="padding: 10px;"></label>
+					<label>复投金额：</label><font id="multi_invest_amount">-</font>
+					<label style="padding: 10px;"></label>
+					<label>复投率：</label><font id="multi_invest_rate">-</font>
+				</div>
+				<table border="0">
+					<tr>
+						<td>渠道名称</td>
+						<td>
+							<input type="text" class="form-control" id="channel_name" placeholder="渠道名称"/>
+						</td>
+<!-- 						<td>渠道</td> -->
+<!-- 						<td> -->
+<!-- 							<select id="id_select" multiple="multiple" class="form-control"></select> -->
+<!-- 							<label >渠道</label> -->
+<!-- 							<div class="col-md-3"> -->
+<!-- 								<select id="id_select" multiple="multiple" class="form-control"></select> -->
+<!-- 							</div> -->
+<!-- 						</td> -->
+						
+						<td>实名</td>
+						<td>
+							<select id="if_real_name">
+							 	<option value ="">全部</option>
+							 	<option value ="1">是</option>
+							  	<option value ="0">否</option>
+							</select>
+						</td>
+						
+						<td>绑卡</td>
+						<td>
+							<select id="if_bang_card">
+							 	<option value ="">全部</option>
+							 	<option value ="1">是</option>
+							  	<option value ="0">否</option>
+							</select>
+						</td>
+						
+						<td>注册时间:</td>
+						<td>
+							<input type="text" class="form-control form_datetime_2" id="start_register_time"  placeholder="请选择开始时间"/>
+						</td>
+						<td>&nbsp;-&nbsp; </td>
+						<td>
+							<input type="text" class="form-control form_datetime_2" id="end_register_time"  placeholder="请选择结束时间"/>
+						</td>
+						
+						
+					</tr>
+					<tr height="10px;"></tr>
+					<tr>
+						<td>首投金额:</td>
+						<td>
+							<input type="text" class="form-control" id="start_first_invest_amount" placeholder="首投金额"/>
+						</td>
+						<td>&nbsp;-&nbsp;</td>
+						<td>
+							<input type="text" class="form-control" id="end_first_invest_amount" placeholder="首投金额"/>
+						</td>
+						
+						<td>累计投资金额:</td>
+						<td>
+							<input type="text" class="form-control" id="start_total_invest_amount" placeholder="累计投资金额"/>
+						</td>
+						<td>&nbsp;-&nbsp;</td>
+						<td>
+							<input type="text" class="form-control" id="end_total_invest_amount" placeholder="累计投资金额"/>
+						</td>
+					
+						<td>总资产:</td>
+						<td>
+							<input type="text" class="form-control" id="start_total_money" placeholder="总资产"/>
+						</td>
+						<td>&nbsp;-&nbsp; </td>
+						<td>
+							<input type="text" class="form-control" id="end_total_money" placeholder="总资产"/>
+						</td>
+						
+					</tr>
+					<tr height="10px;"></tr>
+					<tr >
+						
+						<td>首投时间:</td>
+						<td>
+							<input type="text" class="form-control form_datetime_2" id="start_first_invest_time"  placeholder="请选择开始时间"/>
+						</td>
+						<td>&nbsp;-&nbsp; </td>
+						<td>
+							<input type="text" class="form-control form_datetime_2" id="end_first_invest_time"  placeholder="请选择结束时间"/>
+						</td>
+						
+						<td>复投金额:</td>
+						<td>
+							<input type="text" class="form-control" id="start_multi_invest_money" placeholder="复投金额"/>
+						</td>
+						<td>&nbsp;-&nbsp; </td>
+						<td>
+							<input type="text" class="form-control" id="end_multi_invest_money" placeholder="复投金额"/>
+						</td>
+						
+						<td>统计日期:</td>
+						<td>
+					         <input type="text" class="form-control form_datetime_2" id="stat_day">
+						</td>
+					</tr>
+					
+					
+				</table>
+		
+			#if($shiro.hasPermission("dmreportuseractivatedaily:delete"))
+			<a class="btn btn-primary" @click="reload"><i class="fa fa-trash-o"></i>&nbsp;查询</a>
+			#end
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+											<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportUserActivateDaily.userId" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportUserActivateDaily.username" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportUserActivateDaily.channelId" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportUserActivateDaily.channelName" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportUserActivateDaily.channelMark" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportUserActivateDaily.registerTime" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportUserActivateDaily.isRealname" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportUserActivateDaily.isBinding" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportUserActivateDaily.activateInvestTime" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportUserActivateDaily.firstInvestTime" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportUserActivateDaily.firstInvestBalance" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportUserActivateDaily.firstInvestPeriod" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportUserActivateDaily.afterInvestBalance" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportUserActivateDaily.afterInvestNumber" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportUserActivateDaily.totalInvestBalance" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportUserActivateDaily.totalInvestNumber" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportUserActivateDaily.changeInvestBalance" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportUserActivateDaily.totalCapital" placeholder=""/>
+			    </div>
+			</div>
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="${rc.contextPath}/js/channel/userActiveInfo.js?_${date.systemTime}"></script>
+</body>
+</html>

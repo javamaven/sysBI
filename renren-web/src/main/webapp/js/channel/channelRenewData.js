@@ -46,6 +46,7 @@ function loadTableAjax(){
  $.ajax({
     type: "POST",
     url: "../channel/renew/queryChannelRenewDataList",
+//    url: "../channel/renew/queryTest",
     data: JSON.stringify(pageInfo),
     contentType: "application/json;charset=utf-8",
     success : function(msg) {

@@ -11,20 +11,20 @@
 		</foreach>
 	</if>
 </sql>
-<select id="queryDay90FirstInvestYearRoi" resultType="io.renren.entity.ChannelRenewDataEntity">
+<select id="queryDay90FirstInvestYearRoi" resultType="io.renren.entity.ChannelRenewDataEntity" fetchSize="2000">
 <!-- 60日,首投年化ROI 传入不同参数，返回对应信息-->
 	call first_invest_year_roi_renew_day90(#{startDate} , #{endDate})
 </select>
-<select id="queryDay60FirstInvestYearRoi" resultType="io.renren.entity.ChannelRenewDataEntity">
+<select id="queryDay60FirstInvestYearRoi" resultType="io.renren.entity.ChannelRenewDataEntity" fetchSize="2000">
 <!-- 60日,首投年化ROI 传入不同参数，返回对应信息-->
 	call first_invest_year_roi_renew_day60(#{startDate} , #{endDate})
 </select>
-<select id="queryDay30FirstInvestYearRoi" resultType="io.renren.entity.ChannelRenewDataEntity">
+<select id="queryDay30FirstInvestYearRoi" resultType="io.renren.entity.ChannelRenewDataEntity" fetchSize="2000">
 <!-- 30日60日90日,首投年化ROI 传入不同参数，返回对应信息-->
 	call first_invest_year_roi_renew_day30(#{startDate} , #{endDate})
 
 </select>
-<select id="queryFirstInvestUserNum" resultType="io.renren.entity.ChannelRenewDataEntity">
+<select id="queryFirstInvestUserNum" resultType="io.renren.entity.ChannelRenewDataEntity" fetchSize="2000">
 <!-- 30日60日90日,首投用户数，首投金额，首投年华金额 传入不同参数，返回对应信息-->
 <!-- 30日60日90日,复投用户数，复投金额，复投年华金额 传入不同参数，返回对应信息-->
 
@@ -46,11 +46,10 @@
 				p.BORROW_PERIOD days
 				FROM
 					edw_merge_project_detail p
-<!-- 					,(SELECT @rank := 0 ,@pa = '') t -->
 				ORDER BY
 					p.user_id ASC,
 					p.id
-		) s , edw_merge_user u
+		) s , dm_report_merge_user u
 		where 1=1
 		and s.rownum= #{rownum}
 		AND s.addTime >= #{startDate}
@@ -132,7 +131,7 @@ group by s.channelLabel
 		sum(IFNULL(p.TENDER_CAPITAL,0)) amount
 	FROM
 		edw_merge_project_detail p,
-		edw_merge_user u
+		dm_report_merge_user u
 	WHERE
 		1 = 1
 	AND p.USER_ID = u.USER_ID

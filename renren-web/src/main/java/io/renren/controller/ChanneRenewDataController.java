@@ -1,6 +1,7 @@
 package io.renren.controller;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
@@ -31,6 +34,7 @@ import io.renren.entity.ChannelRenewDataEntity;
 import io.renren.entity.DimChannelEntity;
 import io.renren.service.ChannelRenewDataService;
 import io.renren.service.DimChannelService;
+import io.renren.system.jdbc.JdbcHelper;
 import io.renren.util.DateUtil;
 import io.renren.util.NumberUtil;
 import io.renren.utils.ExcelUtil;
@@ -46,9 +50,33 @@ public class ChanneRenewDataController extends AbstractController {
 	@Autowired
 	private ChannelRenewDataService service;
 
+	@Autowired
+	private DruidDataSource dataSource;
+
 	SimpleDateFormat dateSdf = new SimpleDateFormat("yyyyMMdd");
 	SimpleDateFormat dateTimeSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	private static SimpleDateFormat datesdf2 = new SimpleDateFormat("yyyy-MM-dd");
+
+	/**
+	 * 查询渠道流失分析列表
+	 * 
+	 * @throws ParseException
+	 * @throws SQLException
+	 */
+	@RequestMapping("/queryTest")
+	@RequiresPermissions("channel:channelAll:list")
+	public R queryTest(@RequestBody Map<String, Object> params) throws ParseException, SQLException {
+		long l1 = System.currentTimeMillis();
+		JdbcHelper jdbcHelper = new JdbcHelper(dataSource);
+
+		String procedureSql = "call first_invest_year_roi_renew_day90(? , ?)";
+		List<Map<String,Object>> list = jdbcHelper.callableQuery(procedureSql, "2017-02-02 00:00:00", "2017-05-03 23:59:59");
+		long l2 = System.currentTimeMillis();
+		System.err.println("list=" + list);
+		System.err.println("耗时=" + (l2 - l1));
+
+		return null;
+	}
 
 	/**
 	 * 查询渠道流失分析列表
@@ -102,6 +130,7 @@ public class ChanneRenewDataController extends AbstractController {
 
 		long endTime = System.currentTimeMillis();
 		System.err.println("++++++++++++++++++++++++++++++++++查询总耗时：" + (endTime - startTime));
+		
 		return R.ok().put("page", pageUtil);
 	}
 
@@ -109,7 +138,10 @@ public class ChanneRenewDataController extends AbstractController {
 	@RequestMapping("/exportExcel")
 	@RequiresPermissions("channel:channelAll:list")
 	public void partExport(String list, HttpServletRequest request, HttpServletResponse response) throws IOException {
-
+		HttpSession session = request.getSession();
+		Object attribute = session.getAttribute("userName");
+		System.err.println("attribute==>" + attribute);
+		System.err.println("attribute==>" + session.getAttribute("loginTime"));
 		List<ChannelRenewDataEntity> dataList = JSON.parseArray(list, ChannelRenewDataEntity.class);
 		JSONArray va = new JSONArray();
 		//
