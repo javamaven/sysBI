@@ -1,15 +1,16 @@
 package io.renren.controller;
 
-import io.renren.utils.R;
-import io.renren.utils.ShiroUtils;
-
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.IncorrectCredentialsException;
@@ -27,6 +28,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.google.code.kaptcha.Constants;
 import com.google.code.kaptcha.Producer;
 
+import io.renren.utils.R;
+import io.renren.utils.ShiroUtils;
+
 /**
  * 登录相关
  * 
@@ -38,6 +42,8 @@ import com.google.code.kaptcha.Producer;
 public class SysLoginController {
 	@Autowired
 	private Producer producer;
+	
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	@RequestMapping("captcha.jpg")
 	public void captcha(HttpServletResponse response)throws ServletException, IOException {
@@ -60,11 +66,12 @@ public class SysLoginController {
 	 */
 	@ResponseBody
 	@RequestMapping(value = "/sys/login", method = RequestMethod.POST)
-	public R login(String username, String password, String captcha)throws IOException {
+	public R login(String username, String password, String captcha, HttpServletRequest request)throws IOException {
 		String kaptcha = ShiroUtils.getKaptcha(Constants.KAPTCHA_SESSION_KEY);
 		if(!captcha.equalsIgnoreCase(kaptcha)){
 			return R.error("验证码不正确");
 		}
+		
 		
 		try{
 			Subject subject = ShiroUtils.getSubject();
@@ -82,6 +89,9 @@ public class SysLoginController {
 			return R.error("账户验证失败");
 		}
 	    
+		HttpSession session = request.getSession();
+		session.setAttribute("userName", username);
+		session.setAttribute("loginTime", sdf.format(new Date()));
 		return R.ok();
 	}
 	

@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.channelmanager.DmReportUserActivateDailyDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.channelmanager.DmReportUserActivateDailyEntity" id="dmReportUserActivateDailyMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="username" column="USERNAME"/>
+        <result property="channelId" column="CHANNEL_ID"/>
+        <result property="channelName" column="CHANNEL_NAME"/>
+        <result property="channelMark" column="CHANNEL_MARK"/>
+        <result property="registerTime" column="REGISTER_TIME"/>
+        <result property="isRealname" column="IS_REALNAME"/>
+        <result property="isBinding" column="IS_BINDING"/>
+        <result property="activateInvestTime" column="ACTIVATE_INVEST_TIME"/>
+        <result property="firstInvestTime" column="FIRST_INVEST_TIME"/>
+        <result property="firstInvestBalance" column="FIRST_INVEST_BALANCE"/>
+        <result property="firstInvestPeriod" column="FIRST_INVEST_PERIOD"/>
+        <result property="afterInvestBalance" column="AFTER_INVEST_BALANCE"/>
+        <result property="afterInvestNumber" column="AFTER_INVEST_NUMBER"/>
+        <result property="totalInvestBalance" column="TOTAL_INVEST_BALANCE"/>
+        <result property="totalInvestNumber" column="TOTAL_INVEST_NUMBER"/>
+        <result property="changeInvestBalance" column="CHANGE_INVEST_BALANCE"/>
+        <result property="totalCapital" column="TOTAL_CAPITAL"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.channelmanager.DmReportUserActivateDailyEntity">
+		select 
+			STAT_PERIOD, 
+			USER_ID, 
+			USERNAME, 
+			CHANNEL_ID, 
+			CHANNEL_NAME, 
+			CHANNEL_MARK, 
+			REGISTER_TIME, 
+			case when IS_REALNAME=1 then '是' else '否' end IS_REALNAME, 
+			case when IS_BINDING=1 then '是' else '否' end IS_BINDING,
+			ACTIVATE_INVEST_TIME, 
+			FIRST_INVEST_TIME, 
+			FIRST_INVEST_BALANCE, 
+			FIRST_INVEST_PERIOD, 
+			AFTER_INVEST_BALANCE, 
+			AFTER_INVEST_NUMBER, 
+			TOTAL_INVEST_BALANCE, 
+			TOTAL_INVEST_NUMBER, 
+			CHANGE_INVEST_BALANCE, 
+			TOTAL_CAPITAL
+		
+		 from dm_report_user_activate_daily where STAT_PERIOD = #{value}
+	</select>
+	
+	<select id="queryTotalList" resultType="io.renren.entity.channelmanager.UserActiveInfoEntity">
+	
+	select 
+		max(s.registerUserNum) registerUserNum,
+		max(s.investUserNum) investUserNum,
+		case when max(s.registerUserNum)=0 then 0 else max(s.investUserNum)/max(s.registerUserNum) end firstInvestRate,
+		max(s.totalInvestAmount) totalInvestAmount,
+		max(s.firstInvestAmount) firstInvestAmount,
+		max(s.changeInvestAmount) changeInvestAmount,
+		max(s.multiInvestUserNum) multiInvestUserNum,
+		max(s.multiInvestAmount) multiInvestAmount,
+			case when max(s.investUserNum)=0 then 0 else max(s.multiInvestUserNum)/max(s.investUserNum)	end multiInvestRate
+	from (
+			<!-- 注册人数 -->
+			SELECT
+				count(DISTINCT d.user_id) registerUserNum,
+				0 investUserNum,
+				0 totalInvestAmount,
+				0 firstInvestAmount,
+				0 changeInvestAmount,
+				0 multiInvestUserNum,
+				0 multiInvestAmount
+			FROM
+				dm_report_user_activate_daily d
+			where 1=1
+			<include refid="cond"/>
+			union all 
+			<!-- 投资人数 -->
+			SELECT
+				0 registerUserNum,
+				count(DISTINCT d.user_id) investUserNum,
+				0 totalInvestAmount,
+				0 firstInvestAmount,
+				0 changeInvestAmount,
+				0 multiInvestUserNum,
+				0 multiInvestAmount
+			FROM
+				dm_report_user_activate_daily d
+			where 1=1
+			and d.FIRST_INVEST_TIME is not null
+			<include refid="cond"/>
+			union all 
+			<!-- 累计投资金额,首次投资金额, 债转投资金额 -->
+			SELECT
+				0 registerUserNum,
+				0 investUserNum,
+				sum(d.TOTAL_INVEST_BALANCE) totalInvestAmount,
+				sum(d.FIRST_INVEST_BALANCE) firstInvestAmount,
+				sum(d.CHANGE_INVEST_BALANCE) changeInvestAmount,
+				0 multiInvestUserNum,
+				0 multiInvestAmount
+			FROM
+				dm_report_user_activate_daily d
+			where 1=1
+			<include refid="cond"/>
+			union all
+			<!-- 复投人数,复投金额,复投率 -->
+			SELECT
+				0 registerUserNum,
+				0 investUserNum,
+				0 totalInvestAmount,
+				0 firstInvestAmount,
+				0 changeInvestAmount,
+				count(DISTINCT d.user_id) multiInvestUserNum,
+				sum(d.AFTER_INVEST_BALANCE) multiInvestAmount
+			FROM
+				dm_report_user_activate_daily d
+			where 1=1
+			<include refid="cond"/>
+			and d.AFTER_INVEST_NUMBER > 0
+	) s
+
+	
+	</select>
+	
+
+	<select id="queryList" resultType="io.renren.entity.channelmanager.DmReportUserActivateDailyEntity">
+		select 
+			STAT_PERIOD, 
+			USER_ID, 
+			USERNAME, 
+			CHANNEL_ID, 
+			CHANNEL_NAME, 
+			CHANNEL_MARK, 
+			REGISTER_TIME, 
+			case when IS_REALNAME=1 then '是' else '否' end IS_REALNAME, 
+			case when IS_BINDING=1 then '是' else '否' end IS_BINDING,
+			ACTIVATE_INVEST_TIME, 
+			FIRST_INVEST_TIME, 
+			FIRST_INVEST_BALANCE, 
+			FIRST_INVEST_PERIOD, 
+			AFTER_INVEST_BALANCE, 
+			AFTER_INVEST_NUMBER, 
+			TOTAL_INVEST_BALANCE, 
+			TOTAL_INVEST_NUMBER, 
+			CHANGE_INVEST_BALANCE, 
+			TOTAL_CAPITAL
+		 from dm_report_user_activate_daily
+      	where 1=1
+      	
+      	<include refid="cond"/>
+      	
+      	order by register_time desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dm_report_user_activate_daily 
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.channelmanager.DmReportUserActivateDailyEntity">
+		insert into dm_report_user_activate_daily
+		(
+			`STAT_PERIOD`, 
+			`USER_ID`, 
+			`USERNAME`, 
+			`CHANNEL_ID`, 
+			`CHANNEL_NAME`, 
+			`CHANNEL_MARK`, 
+			`REGISTER_TIME`, 
+			`IS_REALNAME`, 
+			`IS_BINDING`, 
+			`ACTIVATE_INVEST_TIME`, 
+			`FIRST_INVEST_TIME`, 
+			`FIRST_INVEST_BALANCE`, 
+			`FIRST_INVEST_PERIOD`, 
+			`AFTER_INVEST_BALANCE`, 
+			`AFTER_INVEST_NUMBER`, 
+			`TOTAL_INVEST_BALANCE`, 
+			`TOTAL_INVEST_NUMBER`, 
+			`CHANGE_INVEST_BALANCE`, 
+			`TOTAL_CAPITAL`
+		)
+		values
+		(
+			#{statPeriod}, 
+			#{userId}, 
+			#{username}, 
+			#{channelId}, 
+			#{channelName}, 
+			#{channelMark}, 
+			#{registerTime}, 
+			#{isRealname}, 
+			#{isBinding}, 
+			#{activateInvestTime}, 
+			#{firstInvestTime}, 
+			#{firstInvestBalance}, 
+			#{firstInvestPeriod}, 
+			#{afterInvestBalance}, 
+			#{afterInvestNumber}, 
+			#{totalInvestBalance}, 
+			#{totalInvestNumber}, 
+			#{changeInvestBalance}, 
+			#{totalCapital}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.channelmanager.DmReportUserActivateDailyEntity">
+		update dm_report_user_activate_daily 
+		<set>
+			<if test="userId != null">`USER_ID` = #{userId}, </if>
+			<if test="username != null">`USERNAME` = #{username}, </if>
+			<if test="channelId != null">`CHANNEL_ID` = #{channelId}, </if>
+			<if test="channelName != null">`CHANNEL_NAME` = #{channelName}, </if>
+			<if test="channelMark != null">`CHANNEL_MARK` = #{channelMark}, </if>
+			<if test="registerTime != null">`REGISTER_TIME` = #{registerTime}, </if>
+			<if test="isRealname != null">`IS_REALNAME` = #{isRealname}, </if>
+			<if test="isBinding != null">`IS_BINDING` = #{isBinding}, </if>
+			<if test="activateInvestTime != null">`ACTIVATE_INVEST_TIME` = #{activateInvestTime}, </if>
+			<if test="firstInvestTime != null">`FIRST_INVEST_TIME` = #{firstInvestTime}, </if>
+			<if test="firstInvestBalance != null">`FIRST_INVEST_BALANCE` = #{firstInvestBalance}, </if>
+			<if test="firstInvestPeriod != null">`FIRST_INVEST_PERIOD` = #{firstInvestPeriod}, </if>
+			<if test="afterInvestBalance != null">`AFTER_INVEST_BALANCE` = #{afterInvestBalance}, </if>
+			<if test="afterInvestNumber != null">`AFTER_INVEST_NUMBER` = #{afterInvestNumber}, </if>
+			<if test="totalInvestBalance != null">`TOTAL_INVEST_BALANCE` = #{totalInvestBalance}, </if>
+			<if test="totalInvestNumber != null">`TOTAL_INVEST_NUMBER` = #{totalInvestNumber}, </if>
+			<if test="changeInvestBalance != null">`CHANGE_INVEST_BALANCE` = #{changeInvestBalance}, </if>
+			<if test="totalCapital != null">`TOTAL_CAPITAL` = #{totalCapital}</if>
+		</set>
+		where STAT_PERIOD = #{statPeriod}
+	</update>
+	
+	<delete id="delete">
+		delete from dm_report_user_activate_daily where STAT_PERIOD = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from dm_report_user_activate_daily where STAT_PERIOD in 
+		<foreach item="statPeriod" collection="array" open="(" separator="," close=")">
+			#{statPeriod}
+		</foreach>
+	</delete>
+	
+	<sql id="cond">
+		<if test="statPeriod != null and statPeriod.trim() != '' ">
+		     <![CDATA[ and STAT_PERIOD =  #{statPeriod}  ]]>
+		</if>
+		<if test="afterInvestBalance_start != null and afterInvestBalance_start.trim() != ''">
+		     <![CDATA[ and AFTER_INVEST_BALANCE >=  #{afterInvestBalance_start}  ]]>
+		</if>
+		<if test="afterInvestBalance_end != null and afterInvestBalance_end.trim() != ''">
+		     <![CDATA[ and AFTER_INVEST_BALANCE <=  #{afterInvestBalance_end}  ]]>
+		</if>
+		<if test="startFirstInvestTime != null and startFirstInvestTime.trim() != ''">
+		     <![CDATA[ and FIRST_INVEST_TIME >=  #{startFirstInvestTime}  ]]>
+		</if>
+		<if test="endFirstInvestTime != null and endFirstInvestTime.trim() != ''">
+		     <![CDATA[ and FIRST_INVEST_TIME <=  #{endFirstInvestTime}  ]]>
+		</if>
+		<!-- 总资产 -->
+		<if test="startTotalMoney != null and startTotalMoney.trim() != ''">
+		     <![CDATA[ and TOTAL_CAPITAL >=  #{startTotalMoney}  ]]>
+		</if>
+		<if test="endTotalMoney != null and endTotalMoney.trim() != ''">
+		     <![CDATA[ and TOTAL_CAPITAL <=  #{endTotalMoney}  ]]>
+		</if>
+		<!-- 累计投资金额-->
+		<if test="startTotalInvestAmount != null and startTotalInvestAmount.trim() != '' ">
+		     <![CDATA[ and TOTAL_INVEST_BALANCE >=  #{startTotalInvestAmount}  ]]>
+		</if>
+		<if test="endTotalInvestAmount != null and endTotalInvestAmount.trim() != ''">
+		     <![CDATA[ and TOTAL_INVEST_BALANCE <=  #{endTotalInvestAmount}  ]]>
+		</if>
+		
+		<!-- 首投金额-->
+		<if test="startFirstInvestAmount != null and startFirstInvestAmount.trim() != ''">
+		     <![CDATA[ and FIRST_INVEST_BALANCE >=  #{startFirstInvestAmount}  ]]>
+		</if>
+		<if test="endFirstInvestAmount != null and endFirstInvestAmount.trim() != ''">
+		     <![CDATA[ and FIRST_INVEST_BALANCE <=  #{endFirstInvestAmount}  ]]>
+		</if>
+		
+		<!-- 注册时间-->
+		<if test="startRegisterTime != null and startRegisterTime.trim() != ''">
+		     <![CDATA[ and REGISTER_TIME >=  #{startRegisterTime}  ]]>
+		</if>
+		<if test="endRegisterTime != null and endRegisterTime.trim() != ''">
+		     <![CDATA[ and REGISTER_TIME <=  #{endRegisterTime}  ]]>
+		</if>
+		<!-- 是否实名-->
+		<if test="realName != null and realName.trim() != ''">
+		     <![CDATA[ and IS_REALNAME =  #{realName}  ]]>
+		</if>
+		<!-- 是否绑卡-->
+		<if test="bangCard != null and bangCard.trim() != ''">
+		     <![CDATA[ and IS_BINDING =  #{bangCard}  ]]>
+		</if>
+		<!-- 渠道名称-->
+		<if test="channelName != null and channelName.trim() != ''">
+		     <![CDATA[ and CHANNEL_NAME =  #{channelName}  ]]>
+		</if>
+	
+	</sql>
+
+</mapper>
