@@ -1,7 +1,7 @@
-	
-
 var stataDay;
 $(function () {
+	loadChannel();
+	 initExportFunction();
 	stataDay = getDate(1);
 	document.getElementById("stat_day").value=stataDay;
 	initTimeCond();
@@ -9,6 +9,57 @@ $(function () {
 	queryTotalInfo(stataDay);
 });
 
+function initExportFunction(){
+	$('#btn_exports').click(function(){
+		var params = {
+        	'statPeriod': $("#stat_day").val(), 
+        	'afterInvestBalance_start': $("#start_multi_invest_money").val(), 
+        	'afterInvestBalance_end': $("#end_multi_invest_money").val(),
+        	'startFirstInvestTime': $("#start_first_invest_time").val() ,
+        	'endFirstInvestTime': $("#end_first_invest_time").val(),
+        	'startTotalMoney': $("#start_total_money").val(),
+        	'endTotalMoney': $("#end_total_money").val(),
+        	'startTotalInvestAmount': $("#start_total_invest_amount").val(),
+        	'endTotalInvestAmount': $("#end_total_invest_amount").val(),
+        	'startFirstInvestAmount': $("#start_first_invest_amount").val(),
+        	'endFirstInvestAmount': $("#end_first_invest_amount").val(),
+        	'startRegisterTime': $("#start_register_time").val(),
+        	'endRegisterTime': $("#end_register_time").val(),
+        	'bangCard': $("#if_bang_card").val(),
+        	'realName': $("#if_real_name").val(),
+        	'channelName': getChannelName().toString().length == "0" ? null : getChannelName()
+        }
+//		encodeURI(JSON.stringify(params))
+		executePost('../channel/manager/exportExcel', {'params' : JSON.stringify(params)});  
+//		executePost('../channel/manager/exportExcel', {'list': currDataList } );  
+//		 $.ajax({
+//		        type: "POST",
+//		        url: "../channel/manager/exportExcel",
+//		        async: false,
+//		        data: JSON.stringify(params),
+//		        contentType: "application/json;charset=utf-8",
+//		        success : function(retData) {
+//		        	
+//		        }
+//		     });
+	});
+
+}
+function executePost(URL, PARAMS) {        
+    var temp = document.createElement("form");        
+    temp.action = URL;        
+    temp.method = "post";        
+    temp.style.display = "none";        
+    for (var x in PARAMS) {        
+        var opt = document.createElement("textarea");        
+        opt.name = x;        
+        opt.value = PARAMS[x];        
+        temp.appendChild(opt);        
+    }        
+    document.body.appendChild(temp);        
+    temp.submit();        
+    return temp;        
+} 
 function resetTotalInfo(){
 	var char = '-';
 	$("#register_user_num").html(char);
@@ -22,9 +73,9 @@ function resetTotalInfo(){
 	$("#multi_invest_rate").html(char);
 }
 
-function queryTotalInfo(stataDay){
+function getParams(){
 	var params = {
-			'statPeriod': stataDay, 
+			'statPeriod': $("#stat_day").val(), 
         	'afterInvestBalance_start': $("#start_multi_invest_money").val(), 
         	'afterInvestBalance_end': $("#end_multi_invest_money").val(),
         	'startFirstInvestTime': $("#start_first_invest_time").val() ,
@@ -40,8 +91,13 @@ function queryTotalInfo(stataDay){
         	
         	'bangCard': $("#if_bang_card").val(),
         	'realName': $("#if_real_name").val(),
-        	'channelName': $("#channel_name").val()
+        	'channelName': getChannelName().toString().length == "0" ? null : getChannelName()
 	};
+	return params;
+}
+
+function queryTotalInfo(stataDay){
+	var params = getParams();
 	 $.ajax({
 	        type: "POST",
 	        url: "../channel/manager/totalList",
@@ -275,7 +331,7 @@ var vm = new Vue({
 	            	
 	            	'bangCard': $("#if_bang_card").val(),
 	            	'realName': $("#if_real_name").val(),
-	            	'channelName': $("#channel_name").val()
+	            	'channelName': getChannelName().toString().length == "0" ? null : getChannelName()
 	            	
 	            }, //发送数据  
 	            page:page 
@@ -287,5 +343,39 @@ var vm = new Vue({
 		}
 	}
 });
+//获取渠道信息
+function getChannelName(){
+    var arrStr = '';
+    $(".select2-selection__choice").each(function(){
+        arrStr += $(this).attr("title") + "^";
+    });
+    return arrStr;
+};
 
+//加载渠道数据
+function loadChannel(){
+	   var str = '';
+	    var i = 0;
+	    $.ajax({
+	        type: "POST",
+	        url: "../channel/channelAll/getChannel",
+	        data: JSON.stringify(),
+	        contentType: "application/json;charset=utf-8",
+	        success : function(msg) {
+	            for(var list in msg.Channel){
+	                for(var key in msg.Channel[list]){
+	                    if(key == "channelName")
+	                        str += '<option value="'+(i++)+'">' + msg.Channel[list][key] + "</option>";
+	                }
+	            }
+
+	            $("#id_select").select2({
+	                maximumSelectionLength: 3,
+	                width:'300px'
+	            });
+	            $("#id_select").append(str);
+	        }
+	     });
+
+};
 
