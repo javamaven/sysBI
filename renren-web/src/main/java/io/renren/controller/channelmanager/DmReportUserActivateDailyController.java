@@ -147,9 +147,6 @@ public class DmReportUserActivateDailyController {
 		for (int i = 0; i < dataList.size(); i++) {
 			DmReportUserActivateDailyEntity entity = dataList.get(i);
 			va.add(entity);
-			if(i == 100){
-				break;
-			}
 		}
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
 		headMap.put("statPeriod", "统计日期");
