@@ -50,4 +50,11 @@ public class DimChannelServiceImpl implements DimChannelService {
 		return dataMap;
 	}
 
+	@Override
+	public List<DimChannelEntity> queryChannelName() {
+		// TODO Auto-generated method stub
+		List<DimChannelEntity> nameList = dimChannelDao.queryChannelName();
+		return nameList;
+	}
+
 }

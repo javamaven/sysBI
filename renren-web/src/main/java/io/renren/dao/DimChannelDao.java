@@ -13,6 +13,12 @@ public interface DimChannelDao extends BaseDao<DimChannelEntity> {
 	List<DimChannelEntity> queryChannel();
 	
 	/**
+	 * 获取渠道数据
+	 * @return
+	 */
+	List<DimChannelEntity> queryChannelName();
+	
+	/**
 	 * 获取渠道成本数据
 	 * @return
 	 */
