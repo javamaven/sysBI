@@ -144,7 +144,7 @@ function queryTotalInfo(stataDay){
 	 $.ajax({
 	        type: "POST",
 	        url: "../channel/manager/totalList",
-	        async: false,
+	        async: true,
 	        data: JSON.stringify(params),
 	        contentType: "application/json;charset=utf-8",
 	        success : function(retData) {
@@ -228,20 +228,21 @@ function initTable(){
 	 $("#jqGrid").jqGrid({
 	        url: '../channel/manager/list',
 	        datatype: "json",
+	        mtype: 'GET',
 	        postData: {'statPeriod': getDate(1)},
 	        colModel: [			
-				{ label: '统计日期', name: 'statPeriod', index: '$STAT_PERIOD', width: 85, key: true },
+				{ label: '统计日期', name: 'statPeriod', index: '$STAT_PERIOD', width: 80, key: true },
 				{ label: '用户ID', name: 'userId', index: '$USER_ID', width: 80,align:'right' }, 			
-				{ label: '用户名', name: 'username', index: '$USERNAME', width: 80,align:'right' }, 			
+				{ label: '用户名', name: 'username', index: '$USERNAME', width: 100,align:'right' }, 			
 //				{ label: '渠道ID', name: 'channelId', index: '$CHANNEL_ID', width: 80 }, 			
-				{ label: '渠道名称', name: 'channelName', index: '$CHANNEL_NAME', width: 80,align:'right' }, 			
+				{ label: '渠道名称', name: 'channelName', index: '$CHANNEL_NAME', width: 100,align:'right' }, 			
 				{ label: '渠道标记', name: 'channelMark', index: '$CHANNEL_MARK', width: 80,align:'right' }, 			
-				{ label: '注册时间', name: 'registerTime', index: '$REGISTER_TIME', width: 150,align:'right' }, 			
-				{ label: '实名', name: 'isRealname', index: '$IS_REALNAME', width: 50,align:'right' }, 			
-				{ label: '绑卡', name: 'isBinding', index: '$IS_BINDING', width: 50 ,align:'right'}, 			
-				{ label: '激活投资时间', name: 'activateInvestTime', index: '$ACTIVATE_INVEST_TIME', width: 100,align:'right' }, 			
-				{ label: '首投时间', name: 'firstInvestTime', index: '$FIRST_INVEST_TIME', width: 80,align:'right' }, 			
-				{ label: '首投金额', name: 'firstInvestBalance', index: '$FIRST_INVEST_BALANCE', width: 80,align:'right'
+				{ label: '注册时间', name: 'registerTime', index: '$REGISTER_TIME', width: 140,align:'right' }, 			
+				{ label: '实名', name: 'isRealname', index: '$IS_REALNAME', width: 45,align:'right' }, 			
+				{ label: '绑卡', name: 'isBinding', index: '$IS_BINDING', width: 45 ,align:'right'}, 			
+				{ label: '激活投资时间', name: 'activateInvestTime', index: '$ACTIVATE_INVEST_TIME', width: 80,align:'right' }, 			
+				{ label: '首投时间', name: 'firstInvestTime', index: '$FIRST_INVEST_TIME', width: 140,align:'right' }, 			
+				{ label: '首投金额', name: 'firstInvestBalance', index: '$FIRST_INVEST_BALANCE', width: 100,align:'right'
 					,formatter:function(cellvalue, options, rowObject){
 							if(cellvalue){
 								return formatNumber(cellvalue,2);
@@ -250,8 +251,8 @@ function initTable(){
 							}
 						}
 				}, 			
-				{ label: '首投期限', name: 'firstInvestPeriod', index: '$FIRST_INVEST_PERIOD', width: 80 ,align:'right'}, 			
-				{ label: '复投金额', name: 'afterInvestBalance', index: '$AFTER_INVEST_BALANCE', width: 80,align:'right' 
+				{ label: '首投期限', name: 'firstInvestPeriod', index: '$FIRST_INVEST_PERIOD', width: 100 ,align:'right'}, 			
+				{ label: '复投金额', name: 'afterInvestBalance', index: '$AFTER_INVEST_BALANCE', width: 100,align:'right' 
 					,formatter:function(cellvalue, options, rowObject){
 						if(cellvalue){
 							return formatNumber(cellvalue,2);
@@ -261,7 +262,7 @@ function initTable(){
 					}	
 				}, 			
 				{ label: '复投次数', name: 'afterInvestNumber', index: '$AFTER_INVEST_NUMBER', width: 80,align:'right' }, 			
-				{ label: '累计投资金额', name: 'totalInvestBalance', index: '$TOTAL_INVEST_BALANCE', width: 80 ,align:'right'
+				{ label: '累计投资金额', name: 'totalInvestBalance', index: '$TOTAL_INVEST_BALANCE', width: 100 ,align:'right'
 					,formatter:function(cellvalue, options, rowObject){
 						if(cellvalue){
 							return formatNumber(cellvalue,2);
@@ -271,7 +272,7 @@ function initTable(){
 					}
 				}, 			
 				{ label: '累计投资次数', name: 'totalInvestNumber', index: '$TOTAL_INVEST_NUMBER', width: 80,align:'right' }, 			
-				{ label: '债转投资金额', name: 'changeInvestBalance', index: '$CHANGE_INVEST_BALANCE', width: 80 ,align:'right'
+				{ label: '债转投资金额', name: 'changeInvestBalance', index: '$CHANGE_INVEST_BALANCE', width: 100 ,align:'right'
 					,formatter:function(cellvalue, options, rowObject){
 						if(cellvalue){
 							return formatNumber(cellvalue,2);
@@ -280,7 +281,7 @@ function initTable(){
 						}
 					}					
 				}, 			
-				{ label: '帐户总资产', name: 'totalCapital', index: '$TOTAL_CAPITAL', width: 80,align:'right'
+				{ label: '帐户总资产', name: 'totalCapital', index: '$TOTAL_CAPITAL', width: 100,align:'right'
 					,formatter:function(cellvalue, options, rowObject){
 						if(cellvalue){
 							return formatNumber(cellvalue,2);
@@ -296,9 +297,9 @@ function initTable(){
 			rowList : [10,30,50],
 	        rownumbers: true, 
 	        rownumWidth: 25, 
-//	        fitColumns: true,
 	        autowidth:true,
-//	        shrinkToFit:false,
+	        shrinkToFit: false,
+	        autoScroll: false,
 	        multiselect: true,
 	        pager: "#jqGridPager",
 	        jsonReader : {
@@ -316,7 +317,7 @@ function initTable(){
 	        },
 	        gridComplete:function(){
 	        	//隐藏grid底部滚动条
-	        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
+//	        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
 	        	$("#query_cond").removeAttr("disabled");
 	        }
 	    });
@@ -401,32 +402,10 @@ var vm = new Vue({
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			 $("#jqGrid").jqGrid('setGridParam',{  
 	            datatype:'json', 
-	            postData:{
-	            	'statPeriod': $("#stat_day").val(), 
-	            	'afterInvestBalance_start': $("#start_multi_invest_money").val(), 
-	            	'afterInvestBalance_end': $("#end_multi_invest_money").val(),
-	            	'startFirstInvestTime': $("#start_first_invest_time").val() ,
-	            	'endFirstInvestTime': $("#end_first_invest_time").val(),
-	            	'startTotalMoney': $("#start_total_money").val(),
-	            	'endTotalMoney': $("#end_total_money").val(),
-	            	'startTotalInvestAmount': $("#start_total_invest_amount").val(),
-	            	'endTotalInvestAmount': $("#end_total_invest_amount").val(),
-	            	'startFirstInvestAmount': $("#start_first_invest_amount").val(),
-	            	'endFirstInvestAmount': $("#end_first_invest_amount").val(),
-	            	'startRegisterTime': $("#start_register_time").val(),
-	            	'endRegisterTime': $("#end_register_time").val(),
-	            	
-	            	'bangCard': $("#if_bang_card").val(),
-	            	'realName': $("#if_real_name").val(),
-	            	'channelName': getChannelName().toString().length == "0" ? null : encodeURI(getChannelName())
-	            	
-	            }, //发送数据  
+	            postData: getParams(), //发送数据  
 	            page:page 
 	        }).trigger("reloadGrid"); //重新载入  
 			queryTotalInfo($("#stat_day").val());
-//			$("#jqGrid").jqGrid('setGridParam',{ 
-//                page:page
-//            }).trigger("reloadGrid");
 		}
 	}
 });

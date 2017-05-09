@@ -4,7 +4,9 @@
 <title>用户激活情况表</title>
 #parse("sys/header.html")
 </head>
-
+<style>
+th {text-align: right}
+</style>
 <body>
 <div id="rrapp" v-cloak>
 	<div v-show="showList">
@@ -127,7 +129,7 @@
 			#end
 			<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
 		</div>
-	    <table id="jqGrid"></table>
+	   <div style="text-align: right;"><table id="jqGrid"></table></div>
 	    <div id="jqGridPager"></div>
     </div>
     

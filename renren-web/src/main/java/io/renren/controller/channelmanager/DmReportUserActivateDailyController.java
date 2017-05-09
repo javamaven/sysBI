@@ -91,11 +91,11 @@ public class DmReportUserActivateDailyController {
 		if (channelName == null || "".equals(channelName.toString().trim())) {
 			map.put("channelName", new ArrayList<>());
 		} else {
-			try {
-				channelName = URLDecoder.decode(channelName, "utf8");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				channelName = URLDecoder.decode(channelName, "utf8");
+//			} catch (UnsupportedEncodingException e) {
+//				e.printStackTrace();
+//			}
 			channelName = channelName.toString().substring(0, channelName.toString().length() - 1);
 			map.put("channelName", Arrays.asList(channelName.toString().split("\\^")));
 		}
