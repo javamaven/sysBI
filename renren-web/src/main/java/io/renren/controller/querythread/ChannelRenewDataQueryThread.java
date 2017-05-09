@@ -1,5 +1,6 @@
 package io.renren.controller.querythread;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -51,6 +52,7 @@ public class ChannelRenewDataQueryThread implements Runnable {
 			list = service.queryYearRoi(params);// 30日60日90日，年化ROI
 			break;
 		case 5:
+//			list = new ArrayList<ChannelRenewDataEntity>();
 			list = service.queryFirstInvestUserNum(params);// 30日60日90日，首投人数，首投金额为，首投年化金额
 															// 30日60日90日，复投人数，复投金额为，复投年化金额
 			break;
