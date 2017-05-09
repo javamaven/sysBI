@@ -20,6 +20,12 @@ public interface DimChannelService {
 	 */
 	List<DimChannelEntity> queryChannelCostList();
 	
+	/**
+	 * 获取渠道数据
+	 * @return
+	 */
+	List<DimChannelEntity> queryChannelName();
+	
 	
 	Map<String,String> queryChanelTypeMap();
 	

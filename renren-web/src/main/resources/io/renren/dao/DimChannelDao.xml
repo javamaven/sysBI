@@ -12,4 +12,11 @@
       select channel_label,channel_name_back,type from dim_channel_cost
 	</select>
 	
+	<select id="queryChannelName" resultType="io.renren.entity.DimChannelEntity">
+		SELECT '空' AS CHANNEL_NAME
+		UNION ALL
+		SELECT DISTINCT CR.channel_name AS CHANNEL_NAME
+		FROM dim_channel CR  WHERE 1=1
+	</select>
+	
 </mapper>

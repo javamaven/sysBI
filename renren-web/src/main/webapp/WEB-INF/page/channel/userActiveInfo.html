@@ -9,36 +9,32 @@
 <div id="rrapp" v-cloak>
 	<div v-show="showList">
 		<div class="grid-btn">
-				<div class="form-group">
-					<label>注册人数：</label><font id="register_user_num">-</font>
-					<label style="padding: 7px;"></label>
-					<label>投资人数：</label><font id="invest_user_num">-</font>
-					<label style="padding: 7px;"></label>
-					<label>首投转化率：</label><font id="first_invest_rate">-</font>
-					<label style="padding: 7px;"></label>
-					<label>累计投资金额：</label><font id="total_invest_amount">-</font>
-					<label style="padding: 7px;"></label>
-					<label>首次投资金额：</label><font id="first_invest_amount">-</font>
-					<label style="padding: 7px;"></label>
-					<label>债转投资金额：</label><font id="cre_invest_amount">-</font>
-					<label style="padding: 7px;"></label>
-					<label>复投人数：</label><font id="multi_invest_user_num">-</font>
-					<label style="padding: 7px;"></label>
-					<label>复投金额：</label><font id="multi_invest_amount">-</font>
-					<label style="padding: 7px;"></label>
-					<label>复投率：</label><font id="multi_invest_rate">-</font>
-				</div>
 				<table border="0">
 					<tr>
-<!-- 						<td>渠道名称：</td> -->
-<!-- 						<td> -->
-<!-- 							<input type="text" class="form-control" id="channel_name" placeholder="渠道名称"/> -->
-<!-- 						</td> -->
+						<label>注册人数：</label><font id="register_user_num">-</font>
+						<label style="padding: 7px;"></label>
+						<label>投资人数：</label><font id="invest_user_num">-</font>
+						<label style="padding: 7px;"></label>
+						<label>首投转化率：</label><font id="first_invest_rate">-</font>
+						<label style="padding: 7px;"></label>
+						<label>累计投资金额：</label><font id="total_invest_amount">-</font>
+						<label style="padding: 7px;"></label>
+						<label>首次投资金额：</label><font id="first_invest_amount">-</font>
+						<label style="padding: 7px;"></label>
+						<label>债转投资金额：</label><font id="cre_invest_amount">-</font>
+						<label style="padding: 7px;"></label>
+						<label>复投人数：</label><font id="multi_invest_user_num">-</font>
+						<label style="padding: 7px;"></label>
+						<label>复投金额：</label><font id="multi_invest_amount">-</font>
+						<label style="padding: 7px;"></label>
+						<label>复投率：</label><font id="multi_invest_rate">-</font>
+					</tr>
+					<hr style="margin:1px;height:1px;border:1px;background-color:#D5D5D5;color:#D5D5D5;"/>
+					<tr height="10px;"></tr>
+					<tr>
 						<td><label>渠道：</label></td>
 						<td>
-<!-- 							<div class="col-md-3"> -->
-								<select id="id_select" multiple="multiple" class="form-control"></select>
-<!-- 							</div> -->
+							<select id="id_select" multiple="multiple" class="form-control"></select>
 						</td>
 						<td></td>
 						<td>
@@ -125,9 +121,8 @@
 						</td>
 					</tr>
 					
-					
+					<tr height="10px;"></tr>
 				</table>
-		
 			#if($shiro.hasPermission("dmreportuseractivatedaily:delete"))
 			<a class="btn btn-primary" @click="reload" id="query_cond"><i class="fa fa-trash-o"></i>&nbsp;查询</a>
 			#end
