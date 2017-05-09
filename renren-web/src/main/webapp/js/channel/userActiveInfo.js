@@ -5,8 +5,8 @@ $(function () {
 	stataDay = getDate(1);
 	document.getElementById("stat_day").value=stataDay;
 	initTimeCond();
-	initTable();
-	queryTotalInfo(stataDay);
+	// initTable();
+	// queryTotalInfo(stataDay);
 });
 
 /**
@@ -228,7 +228,7 @@ function initTable(){
 	 $("#jqGrid").jqGrid({
 	        url: '../channel/manager/list',
 	        datatype: "json",
-	        postData: {'statPeriod': getDate(1)},
+	        postData: getParams(),
 	        colModel: [			
 				{ label: '统计日期', name: 'statPeriod', index: '$STAT_PERIOD', width: 85, key: true },
 				{ label: '用户ID', name: 'userId', index: '$USER_ID', width: 80,align:'right' }, 			
@@ -401,29 +401,11 @@ var vm = new Vue({
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			 $("#jqGrid").jqGrid('setGridParam',{  
 	            datatype:'json', 
-	            postData:{
-	            	'statPeriod': $("#stat_day").val(), 
-	            	'afterInvestBalance_start': $("#start_multi_invest_money").val(), 
-	            	'afterInvestBalance_end': $("#end_multi_invest_money").val(),
-	            	'startFirstInvestTime': $("#start_first_invest_time").val() ,
-	            	'endFirstInvestTime': $("#end_first_invest_time").val(),
-	            	'startTotalMoney': $("#start_total_money").val(),
-	            	'endTotalMoney': $("#end_total_money").val(),
-	            	'startTotalInvestAmount': $("#start_total_invest_amount").val(),
-	            	'endTotalInvestAmount': $("#end_total_invest_amount").val(),
-	            	'startFirstInvestAmount': $("#start_first_invest_amount").val(),
-	            	'endFirstInvestAmount': $("#end_first_invest_amount").val(),
-	            	'startRegisterTime': $("#start_register_time").val(),
-	            	'endRegisterTime': $("#end_register_time").val(),
-	            	
-	            	'bangCard': $("#if_bang_card").val(),
-	            	'realName': $("#if_real_name").val(),
-	            	'channelName': getChannelName().toString().length == "0" ? null : getChannelName()
-	            	
-	            }, //发送数据  
+	            postData:getParams, //发送数据
 	            page:page 
 	        }).trigger("reloadGrid"); //重新载入  
 			queryTotalInfo($("#stat_day").val());
+			initTable();
 //			$("#jqGrid").jqGrid('setGridParam',{ 
 //                page:page
 //            }).trigger("reloadGrid");

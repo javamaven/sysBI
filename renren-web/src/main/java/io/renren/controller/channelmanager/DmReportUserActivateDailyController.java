@@ -95,6 +95,8 @@ public class DmReportUserActivateDailyController {
 
 		System.err.println("++++++++++map: " + map);
 
+
+
 		// 查询列表数据
 		List<DmReportUserActivateDailyEntity> dmReportUserActivateDailyList = dmReportUserActivateDailyService
 				.queryList(map);
