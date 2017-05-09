@@ -1,6 +1,7 @@
 package io.renren.service;
 
 import io.renren.entity.DailyEntity;
+import io.renren.entity.UserBehaviorEntity;
 
 import java.util.List;
 import java.util.Map;
@@ -15,6 +16,11 @@ import java.util.Map;
 public interface DailyService {
 
 	List<DailyEntity> queryList(Map<String, Object> map);
-	int queryTotal(Map<String, Object> map);
+//	int queryTotal(Map<String, Object> map);
 	List<DailyEntity> queryExports();
+	void insert(UserBehaviorEntity logUserBehavior);
+
+
+
 }
+

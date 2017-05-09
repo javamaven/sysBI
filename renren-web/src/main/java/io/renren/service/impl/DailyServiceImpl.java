@@ -2,6 +2,7 @@ package io.renren.service.impl;
 
 import io.renren.dao.DailyDao;
 import io.renren.entity.DailyEntity;
+import io.renren.entity.UserBehaviorEntity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import io.renren.service.DailyService;
@@ -15,17 +16,22 @@ public class DailyServiceImpl implements DailyService {
 	@Autowired
 	private DailyDao dailyDao;
 
+
 	@Override
-	public List<DailyEntity> queryList(Map<String, Object> map){
-		return dailyDao.queryList(map);
+	public void insert(UserBehaviorEntity UserBehavior) {dailyDao.insert(UserBehavior);
 	}
 
 	@Override
-	public int queryTotal(Map<String, Object> map) {return dailyDao.queryTotal(map);
+	public List<DailyEntity> queryList(Map<String, Object> map){return dailyDao.queryList(map);
 	}
+
+//	@Override
+//	public int queryTotal(Map<String, Object> map) {return dailyDao.queryTotal(map);
+//	}
 	@Override
-	public List<DailyEntity> queryExports() { return dailyDao.queryExports();
+	public List<DailyEntity> queryExports() { return dailyDao.queryExports();//导出EX
 	}
+
 
 
 }
