@@ -19,7 +19,7 @@ $(function () {
  * @type String
  */
 function formatNumber(num,cent) {
-	num = num.toString().replace(/\$|\,/g,'');
+	var num = num.toString().replace(/\$|\,/g,'');
 	 var isThousand = 1;
 	 // 检查传入数值为数值类型
 	  if(isNaN(num))
@@ -43,10 +43,14 @@ function formatNumber(num,cent) {
 	   num = num.substring(0,num.length-(4*i+3))+','+ num.substring(num.length-(4*i+3));
 	 }
 	
-	 if (cent > 0)
-	  return (((sign)?'':'-') + num + '.' + cents);
-	 else
-	  return (((sign)?'':'-') + num);
+	 if (cent > 0){
+		 if(cents == '00'){
+			 return (((sign)?'':'-') + num);
+		 }
+		 return (((sign)?'':'-') + num + '.' + cents);
+	 }else{
+		 return (((sign)?'':'-') + num);
+	 }
 }
 function initExportFunction(){
 	$('#btn_exports').click(function(){
@@ -227,24 +231,64 @@ function initTable(){
 	        postData: {'statPeriod': getDate(1)},
 	        colModel: [			
 				{ label: '统计日期', name: 'statPeriod', index: '$STAT_PERIOD', width: 85, key: true },
-				{ label: '用户ID', name: 'userId', index: '$USER_ID', width: 80 }, 			
-				{ label: '用户名', name: 'username', index: '$USERNAME', width: 80 }, 			
+				{ label: '用户ID', name: 'userId', index: '$USER_ID', width: 80,align:'right' }, 			
+				{ label: '用户名', name: 'username', index: '$USERNAME', width: 80,align:'right' }, 			
 //				{ label: '渠道ID', name: 'channelId', index: '$CHANNEL_ID', width: 80 }, 			
-				{ label: '渠道名称', name: 'channelName', index: '$CHANNEL_NAME', width: 80 }, 			
-				{ label: '渠道标记', name: 'channelMark', index: '$CHANNEL_MARK', width: 80 }, 			
-				{ label: '注册时间', name: 'registerTime', index: '$REGISTER_TIME', width: 150 }, 			
-				{ label: '实名', name: 'isRealname', index: '$IS_REALNAME', width: 50 }, 			
-				{ label: '绑卡', name: 'isBinding', index: '$IS_BINDING', width: 50 }, 			
-				{ label: '激活投资时间', name: 'activateInvestTime', index: '$ACTIVATE_INVEST_TIME', width: 100 }, 			
-				{ label: '首投时间', name: 'firstInvestTime', index: '$FIRST_INVEST_TIME', width: 80 }, 			
-				{ label: '首投金额', name: 'firstInvestBalance', index: '$FIRST_INVEST_BALANCE', width: 80 }, 			
-				{ label: '首投期限', name: 'firstInvestPeriod', index: '$FIRST_INVEST_PERIOD', width: 80 }, 			
-				{ label: '复投金额', name: 'afterInvestBalance', index: '$AFTER_INVEST_BALANCE', width: 80 }, 			
-				{ label: '复投次数', name: 'afterInvestNumber', index: '$AFTER_INVEST_NUMBER', width: 80 }, 			
-				{ label: '累计投资金额', name: 'totalInvestBalance', index: '$TOTAL_INVEST_BALANCE', width: 80 }, 			
-				{ label: '累计投资次数', name: 'totalInvestNumber', index: '$TOTAL_INVEST_NUMBER', width: 80 }, 			
-				{ label: '债转投资金额', name: 'changeInvestBalance', index: '$CHANGE_INVEST_BALANCE', width: 80 }, 			
-				{ label: '帐户总资产', name: 'totalCapital', index: '$TOTAL_CAPITAL', width: 80 }		
+				{ label: '渠道名称', name: 'channelName', index: '$CHANNEL_NAME', width: 80,align:'right' }, 			
+				{ label: '渠道标记', name: 'channelMark', index: '$CHANNEL_MARK', width: 80,align:'right' }, 			
+				{ label: '注册时间', name: 'registerTime', index: '$REGISTER_TIME', width: 150,align:'right' }, 			
+				{ label: '实名', name: 'isRealname', index: '$IS_REALNAME', width: 50,align:'right' }, 			
+				{ label: '绑卡', name: 'isBinding', index: '$IS_BINDING', width: 50 ,align:'right'}, 			
+				{ label: '激活投资时间', name: 'activateInvestTime', index: '$ACTIVATE_INVEST_TIME', width: 100,align:'right' }, 			
+				{ label: '首投时间', name: 'firstInvestTime', index: '$FIRST_INVEST_TIME', width: 80,align:'right' }, 			
+				{ label: '首投金额', name: 'firstInvestBalance', index: '$FIRST_INVEST_BALANCE', width: 80,align:'right'
+					,formatter:function(cellvalue, options, rowObject){
+							if(cellvalue){
+								return formatNumber(cellvalue,2);
+							}else{
+								return '';
+							}
+						}
+				}, 			
+				{ label: '首投期限', name: 'firstInvestPeriod', index: '$FIRST_INVEST_PERIOD', width: 80 ,align:'right'}, 			
+				{ label: '复投金额', name: 'afterInvestBalance', index: '$AFTER_INVEST_BALANCE', width: 80,align:'right' 
+					,formatter:function(cellvalue, options, rowObject){
+						if(cellvalue){
+							return formatNumber(cellvalue,2);
+						}else{
+							return '';
+						}
+					}	
+				}, 			
+				{ label: '复投次数', name: 'afterInvestNumber', index: '$AFTER_INVEST_NUMBER', width: 80,align:'right' }, 			
+				{ label: '累计投资金额', name: 'totalInvestBalance', index: '$TOTAL_INVEST_BALANCE', width: 80 ,align:'right'
+					,formatter:function(cellvalue, options, rowObject){
+						if(cellvalue){
+							return formatNumber(cellvalue,2);
+						}else{
+							return '';
+						}
+					}
+				}, 			
+				{ label: '累计投资次数', name: 'totalInvestNumber', index: '$TOTAL_INVEST_NUMBER', width: 80,align:'right' }, 			
+				{ label: '债转投资金额', name: 'changeInvestBalance', index: '$CHANGE_INVEST_BALANCE', width: 80 ,align:'right'
+					,formatter:function(cellvalue, options, rowObject){
+						if(cellvalue){
+							return formatNumber(cellvalue,2);
+						}else{
+							return '';
+						}
+					}					
+				}, 			
+				{ label: '帐户总资产', name: 'totalCapital', index: '$TOTAL_CAPITAL', width: 80,align:'right'
+					,formatter:function(cellvalue, options, rowObject){
+						if(cellvalue){
+							return formatNumber(cellvalue,2);
+						}else{
+							return '';
+						}
+					}		
+				}
 	        ],
 			viewrecords: true,
 	        height: 385,
@@ -354,7 +398,6 @@ var vm = new Vue({
 			resetTotalInfo();
 			$("#query_cond").attr({"disabled":"disabled"});
 			$("#jqGrid").jqGrid("clearGridData");
-			queryTotalInfo($("#stat_day").val());
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			 $("#jqGrid").jqGrid('setGridParam',{  
 	            datatype:'json', 
@@ -380,7 +423,7 @@ var vm = new Vue({
 	            }, //发送数据  
 	            page:page 
 	        }).trigger("reloadGrid"); //重新载入  
-			
+			queryTotalInfo($("#stat_day").val());
 //			$("#jqGrid").jqGrid('setGridParam',{ 
 //                page:page
 //            }).trigger("reloadGrid");
@@ -415,7 +458,7 @@ function loadChannel(){
 
 	            $("#id_select").select2({
 	                maximumSelectionLength: 3,
-	                width:'200px'
+	                width:'170'
 	            });
 	            $("#id_select").append(str);
 	        }

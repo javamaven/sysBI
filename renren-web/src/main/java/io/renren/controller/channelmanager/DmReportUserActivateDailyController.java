@@ -57,6 +57,8 @@ public class DmReportUserActivateDailyController {
 		Map<String, Object> map = new HashMap<>();
 		map.put("offset", (page - 1) * limit);
 		map.put("limit", limit);
+		map.put("afterInvestBalance_start", afterInvestBalance_start);
+		map.put("afterInvestBalance_end", afterInvestBalance_end);
 		if (StringUtils.isNotEmpty(statPeriod)) {
 			map.put("statPeriod", statPeriod.replace("-", ""));
 		}
