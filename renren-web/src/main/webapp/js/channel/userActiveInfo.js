@@ -418,7 +418,7 @@ var vm = new Vue({
 	            	
 	            	'bangCard': $("#if_bang_card").val(),
 	            	'realName': $("#if_real_name").val(),
-	            	'channelName': getChannelName().toString().length == "0" ? null : getChannelName()
+	            	'channelName': getChannelName().toString().length == "0" ? null : encodeURI(getChannelName())
 	            	
 	            }, //发送数据  
 	            page:page 
