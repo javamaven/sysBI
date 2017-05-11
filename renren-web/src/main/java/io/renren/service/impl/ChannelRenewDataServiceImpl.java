@@ -62,22 +62,22 @@ public class ChannelRenewDataServiceImpl implements ChannelRenewDataService {
 	@Override
 	public List<ChannelRenewDataEntity> queryDay30FirstInvestYearRoi(Map<String, Object> map) {
 		// TODO Auto-generated method stub
-		 return channelRenewDataDao.queryDay30FirstInvestYearRoi(map);
-//		return queryFirstInvestYearRoiByJdbc(map, 30);
+		return channelRenewDataDao.queryDay30FirstInvestYearRoi(map);
+		// return queryFirstInvestYearRoiByJdbc(map, 30);
 	}
 
 	@Override
 	public List<ChannelRenewDataEntity> queryDay60FirstInvestYearRoi(Map<String, Object> map) {
 		// TODO Auto-generated method stub
-		 return channelRenewDataDao.queryDay60FirstInvestYearRoi(map);
-//		return queryFirstInvestYearRoiByJdbc(map, 60);
+		return channelRenewDataDao.queryDay60FirstInvestYearRoi(map);
+		// return queryFirstInvestYearRoiByJdbc(map, 60);
 	}
 
 	@Override
 	public List<ChannelRenewDataEntity> queryDay90FirstInvestYearRoi(Map<String, Object> map) {
 		// TODO Auto-generated method stub
-		 return channelRenewDataDao.queryDay90FirstInvestYearRoi(map);
-//		return queryFirstInvestYearRoiByJdbc(map, 90);
+		return channelRenewDataDao.queryDay90FirstInvestYearRoi(map);
+		// return queryFirstInvestYearRoiByJdbc(map, 90);
 	}
 
 	/**
@@ -122,6 +122,35 @@ public class ChannelRenewDataServiceImpl implements ChannelRenewDataService {
 			retList.add(entity);
 		}
 	}
+
+	@Override
+	public List<ChannelRenewDataEntity> queryFirstInvestUserNumDay30(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		return channelRenewDataDao.queryFirstInvestUserNumDay30(map);
+	}
+
+	@Override
+	public List<ChannelRenewDataEntity> queryFirstInvestUserNumDay60(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		return channelRenewDataDao.queryFirstInvestUserNumDay60(map);
+	}
+
+	@Override
+	public List<ChannelRenewDataEntity> queryFirstInvestUserNumDay90(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		return channelRenewDataDao.queryFirstInvestUserNumDay90(map);
+	}
+
+	@Override
+	public void insert(ChannelRenewDataEntity channelRenewDataEntity) {
+		// TODO Auto-generated method stub
+		channelRenewDataDao.insert(channelRenewDataEntity);
+	}
 	
+	@Override
+	public void delete(ChannelRenewDataEntity channelRenewDataEntity) {
+		// TODO Auto-generated method stub
+		channelRenewDataDao.delete(channelRenewDataEntity);
+	}
 
 }

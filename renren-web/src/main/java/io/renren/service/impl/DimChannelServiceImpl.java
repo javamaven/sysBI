@@ -16,6 +16,24 @@ public class DimChannelServiceImpl implements DimChannelService {
 	@Autowired
 	private DimChannelDao dimChannelDao;
 
+	/**
+	 * 创建渠道成本表：将渠道成本信息和渠道名称信息关联汇总
+	 * 
+	 * @param map
+	 * @return
+	 */
+	@Override
+	public void createChanelCostTable(Map<String, Object> map) {
+		dimChannelDao.createChanelCostTable(map);
+	}
+	
+	@Override
+	public List<DimChannelEntity> queryOnlineChannelCostList(Map<String, Object> map) {
+		List<DimChannelEntity> queryChannel = dimChannelDao.queryOnlineChannelCostList();
+		return queryChannel;
+	}
+
+
 	@Override
 	public List<DimChannelEntity> queryChannelList(Map<String, Object> map) {
 		List<DimChannelEntity> queryChannel = dimChannelDao.queryChannel();

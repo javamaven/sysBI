@@ -376,7 +376,9 @@ public class ChannelStftInfoController extends AbstractController {
 			}
 			list.add(vo);
 		}
-		Collections.sort(list, new MyCompartor());
+		if(list.size() > 0){
+			Collections.sort(list, new MyCompartor());
+		}
 		return list;
 	}
 
@@ -433,7 +435,7 @@ public class ChannelStftInfoController extends AbstractController {
 	class MyCompartor implements Comparator<ChannelStftInfoEntity> {
 		@Override
 		public int compare(ChannelStftInfoEntity o1, ChannelStftInfoEntity o2) {
-			return o1.getChannelName().compareTo(o2.getChannelName());
+			return (o1.getChannelName()+"").compareTo(o2.getChannelName());
 		}
 	}
 }

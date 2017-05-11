@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,6 +44,7 @@ public class DmReportUserActivateDailyController {
 	@Autowired
 	private DmReportUserActivateDailyService dmReportUserActivateDailyService;
 
+
 	/**
 	 * 列表
 	 */
@@ -57,6 +59,8 @@ public class DmReportUserActivateDailyController {
 		Map<String, Object> map = new HashMap<>();
 		map.put("offset", (page - 1) * limit);
 		map.put("limit", limit);
+		map.put("afterInvestBalance_start", afterInvestBalance_start);
+		map.put("afterInvestBalance_end", afterInvestBalance_end);
 		if (StringUtils.isNotEmpty(statPeriod)) {
 			map.put("statPeriod", statPeriod.replace("-", ""));
 		}
@@ -87,6 +91,11 @@ public class DmReportUserActivateDailyController {
 		if (channelName == null || "".equals(channelName.toString().trim())) {
 			map.put("channelName", new ArrayList<>());
 		} else {
+//			try {
+//				channelName = URLDecoder.decode(channelName, "utf8");
+//			} catch (UnsupportedEncodingException e) {
+//				e.printStackTrace();
+//			}
 			channelName = channelName.toString().substring(0, channelName.toString().length() - 1);
 			map.put("channelName", Arrays.asList(channelName.toString().split("\\^")));
 		}
@@ -172,11 +181,16 @@ public class DmReportUserActivateDailyController {
 
 		ExcelUtil.downloadExcelFile(title, headMap, va, response);
 	}
-
+	
+	@Autowired
+	SqlSessionFactory sqlSessionFactory;
+	
 	@ResponseBody
 	@RequestMapping("/totalList")
 	@RequiresPermissions("dmreportuseractivatedaily:list")
 	public R totalList(@RequestBody Map<String, Object> map) {
+//		MyBatisSql sql = MyBatisSqlUtils.getMyBatisSql("io.renren.dao.ChannelChannelAllDao.queryChannel", null, sqlSessionFactory);
+//		System.err.println("++++++++++++++++++++++++sql+++++++++++++++++++" + sql);
 		String statPeriod = map.get("statPeriod") + "";
 		if (StringUtils.isNotEmpty(statPeriod)) {
 			map.put("statPeriod", statPeriod.replace("-", ""));
