@@ -743,13 +743,10 @@ public class ChanneRenewDataController extends AbstractController {
 
 		Map<String, String> chanelTypeMap = dimChannelService.queryChanelTypeMap();
 
-		Iterator<String> iterator = channelListMap.keySet().iterator();
+		Iterator<String> iterator = channelDataMap.keySet().iterator();
 		ChannelRenewDataEntity vo = null;
 		while (iterator.hasNext()) {
 			String key = iterator.next();
-			// if ("bd-pcpz".equals(key)) {
-			// System.err.println(key);
-			// }
 			vo = new ChannelRenewDataEntity();
 			if (channelDataMap.containsKey(key)) {
 				vo.setChannelName(channelDataMap.get(key));// 渠道名称

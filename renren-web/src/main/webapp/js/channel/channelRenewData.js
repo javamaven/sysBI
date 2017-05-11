@@ -10,8 +10,7 @@ $(function(){
 
 //初始化时间
 function initQueryDate(){
-	var time1 = new Date().Format("yyyy-MM-dd");
-	document.getElementById("date").value = time1;
+	document.getElementById("date").value = getYesterday();
 }
 
 
