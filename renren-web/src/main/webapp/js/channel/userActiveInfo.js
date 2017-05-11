@@ -72,37 +72,10 @@ function initExportFunction(){
         	'realName': $("#if_real_name").val(),
         	'channelName': getChannelName().toString().length == "0" ? null : getChannelName()
         }
-//		encodeURI(JSON.stringify(params))
 		executePost('../channel/manager/exportExcel', {'params' : JSON.stringify(params)});  
-//		executePost('../channel/manager/exportExcel', {'list': currDataList } );  
-//		 $.ajax({
-//		        type: "POST",
-//		        url: "../channel/manager/exportExcel",
-//		        async: false,
-//		        data: JSON.stringify(params),
-//		        contentType: "application/json;charset=utf-8",
-//		        success : function(retData) {
-//		        	
-//		        }
-//		     });
 	});
 
 }
-function executePost(URL, PARAMS) {        
-    var temp = document.createElement("form");        
-    temp.action = URL;        
-    temp.method = "post";        
-    temp.style.display = "none";        
-    for (var x in PARAMS) {        
-        var opt = document.createElement("textarea");        
-        opt.name = x;        
-        opt.value = PARAMS[x];        
-        temp.appendChild(opt);        
-    }        
-    document.body.appendChild(temp);        
-    temp.submit();        
-    return temp;        
-} 
 function resetTotalInfo(){
 	var char = '-';
 	$("#register_user_num").html(char);
