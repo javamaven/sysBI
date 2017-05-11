@@ -15,8 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
         @Autowired
         private UserBehaviorDao userBehaviorDao;
 
-        @Override
-        public void insert(UserBehaviorEntity UserBehavior) {userBehaviorDao.insert(UserBehavior);
+//        @Override
+//        public void insert(UserBehaviorEntity UserBehavior) {
+//            userBehaviorDao.insert(UserBehavior);
+//    }
+    @Override
+    public void insert(UserBehaviorEntity UserBehavior) {userBehaviorDao.insert(UserBehavior);
     }
 
 

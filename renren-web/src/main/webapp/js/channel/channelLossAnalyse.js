@@ -206,7 +206,7 @@ function loadChannel(){
 
 	            $("#id_select").select2({
 	                maximumSelectionLength: 3,
-	                width:'100%'
+	                width:'200'
 	            });
 	            $("#id_select").append(str);
 	        }

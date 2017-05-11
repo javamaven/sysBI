@@ -14,36 +14,35 @@
 				<i class="fa fa-eye"></i>   查询条件
 			</div>
 			<div class="panel-body">
-
-				<div class="form-group">
-					<label  style="float:left">渠道名称&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
-					<div class="col-md-3">
-						<select id="id_select" multiple="multiple" class="form-control">
-						</select>
-					</div>
-					
-					<label  style="float:left">投资结束时间</label>
-					<div class="col-md-3">
-						<input type="text"class="form-control form_datetime_2"  id="invest_enddate" value="" placeholder="请选择投资结束时间"/>
-					</div>
-				</div>
-				<br/>
-				<div class="form-group">
-					<label  style="float:left">注册开始时间</label>
-					<div class="col-md-3">
-						<input type="text"class="form-control form_datetime_2" id="reg_begindate"  placeholder="请选择开始时间"/>
-					</div>
-
-					<label  style="float:left">注册结束时间</label>
-					<div class="col-md-3">
-						<input type="text"class="form-control form_datetime_2"  id="reg_enddate"  placeholder="请选择结束时间"/>
-					</div>
-					<div class="col-md-3">
-						<button type="button" id="searchButton" class="btn btn-primary"><i class="fa fa-search"></i>  查询</button>
-						<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
-					</div>
-
-				</div>
+				<table border="0">
+					<tr>
+						<td><label>渠道名称：</label></td>
+						<td>
+							<select id="id_select" multiple="multiple" class="form-control"></select>
+						</td>
+						<td width="100"></td>
+						<td><label>投资结束时间：</label></td>
+						<td>
+							<input type="text"class="form-control form_datetime_2"  id="invest_enddate" value="" placeholder="请选择投资结束时间"/>
+						</td>
+					</tr>
+					<tr height="10"></tr>
+					<tr>
+						<td><label>注册开始时间：</label></td>
+						<td>
+							<input type="text"class="form-control form_datetime_2" id="reg_begindate"  placeholder="请选择开始时间"/>
+						</td>
+						<td width="100"></td>
+						<td><label>注册结束时间：</label></td>
+						<td>
+							<input type="text"class="form-control form_datetime_2"  id="reg_enddate"  placeholder="请选择结束时间"/>
+						</td>
+						<td style="padding-left: 30px;">
+							<button type="button" id="searchButton" class="btn btn-primary"><i class="fa fa-search"></i>  查询</button>
+							<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+						</td>
+					</tr>
+				</table>
 
 			</div>
 		</div>

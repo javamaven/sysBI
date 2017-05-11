@@ -46,6 +46,7 @@ function loadTableAjax(){
  $.ajax({
     type: "POST",
     url: "../channel/renew/queryChannelRenewDataList",
+//    url: "../channel/renew/queryTest",
     data: JSON.stringify(pageInfo),
     contentType: "application/json;charset=utf-8",
     success : function(msg) {
@@ -231,7 +232,7 @@ function loadChannel(){
 
 	            $("#id_select").select2({
 	                maximumSelectionLength: 3,
-	                width:'100%'
+	                width:'200'
 	            });
 	            $("#id_select").append(str);
 	        }
