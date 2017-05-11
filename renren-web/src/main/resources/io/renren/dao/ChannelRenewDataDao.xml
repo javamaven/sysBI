@@ -292,7 +292,7 @@ group by s.channelLabel
 			AND t.FEE_TIME >= #{onlineDate}
 			AND t.FEE_TIME &lt;= #{day30}
 			AND t.CHANNEL_ID IN (SELECT a.channel_id FROM dim_channel_cost_union a WHERE 1 = 1 AND a.fee_time = #{onlineDate})
-	
+			group by t.CHANNEL_LABEL
 			union all 
 	
 			SELECT
@@ -307,7 +307,7 @@ group by s.channelLabel
 			AND t.FEE_TIME >= #{onlineDate}
 			AND t.FEE_TIME &lt;= #{day60}
 			AND t.CHANNEL_ID IN (SELECT a.channel_id FROM dim_channel_cost_union a WHERE 1 = 1 AND a.fee_time = #{onlineDate})
-		
+			group by t.CHANNEL_LABEL
 		union all 
 	
 			SELECT
@@ -322,9 +322,10 @@ group by s.channelLabel
 			AND t.FEE_TIME >= #{onlineDate}
 			AND t.FEE_TIME &lt;= #{day90}
 			AND t.CHANNEL_ID IN (SELECT a.channel_id FROM dim_channel_cost_union a WHERE 1 = 1 AND a.fee_time = #{onlineDate})
-	
+			group by t.CHANNEL_LABEL
 	) s 
 	where 1=1
+	and s.CHANNEL_label is not null
 	<include refid="channelCond_s"/>
 	group by s.CHANNEL_label
 
