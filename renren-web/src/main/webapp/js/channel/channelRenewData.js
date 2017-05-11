@@ -201,10 +201,63 @@ function loadTable(columnsData,tableData){
             {field:"day60MultiRateText",title:"60日复投率",align:"center",valign:"middle",sortable:"true"},
             {field:"day90MultiRateText",title:"90日复投率",align:"center",valign:"middle",sortable:"true"},
             
+            {field:"day30FirstInvestAmount",title:"30日首投金额",align:"center",valign:"middle",sortable:"true"
+            	,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				} 
+            },
+            {field:"day60FirstInvestAmount",title:"60日首投金额",align:"center",valign:"middle",sortable:"true"
+            	,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				} 
+            },
+            {field:"day90FirstInvestAmount",title:"90日首投金额",align:"center",valign:"middle",sortable:"true"
+            	,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				} 
+            },
+            {field:"day30MultiInvestAmount",title:"30日复投金额",align:"center",valign:"middle",sortable:"true"
+            	,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				} 
+            },
+            {field:"day60MultiInvestAmount",title:"60日复投金额",align:"center",valign:"middle",sortable:"true"
+            	,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				} 
+            },
+            {field:"day90MultiInvestAmount",title:"90日复投金额",align:"center",valign:"middle",sortable:"true"
+            	,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				} 
+            },
             {field:"day30MultiInvestAmountRateText",title:"30日复投金额比",align:"center",valign:"middle",sortable:"true"},
             {field:"day60MultiInvestAmountRateText",title:"60日复投金额比",align:"center",valign:"middle",sortable:"true"},
             {field:"day90MultiInvestAmountRateText",title:"90日复投金额比",align:"center",valign:"middle",sortable:"true"},
-
             {field:"day30FirstInvestYearAmount",title:"30日首投年化金额",align:"center",valign:"middle",sortable:"true"
             	,formatter:function(cellvalue, options, rowObject){
 					if(cellvalue){
@@ -232,7 +285,6 @@ function loadTable(columnsData,tableData){
 					}
 				}            	
             },
-           
             {field:"day30PerFirstInvestYearAmount",title:"30日人均首投年化金额",align:"center",valign:"middle",sortable:"true"
             	,formatter:function(cellvalue, options, rowObject){
 					if(cellvalue){
