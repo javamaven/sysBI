@@ -138,9 +138,9 @@ public class ChanneRenewDataController extends AbstractController {
 		// 获取数据条数
 		PageUtils pageUtil = new PageUtils(retList, retList.size(), query.getLimit(), query.getPage());
 		for (int i = 0; i < retList.size(); i++) {
-//			ChannelRenewDataEntity channelRenewDataEntity = retList.get(i);
-//			service.delete(channelRenewDataEntity);
-//			service.insert(channelRenewDataEntity);
+			// ChannelRenewDataEntity channelRenewDataEntity = retList.get(i);
+			// service.delete(channelRenewDataEntity);
+			// service.insert(channelRenewDataEntity);
 		}
 		long endTime = System.currentTimeMillis();
 		System.err.println("++++++++++++++++++++++++++++++++++查询总耗时：" + (endTime - startTime));
@@ -743,7 +743,7 @@ public class ChanneRenewDataController extends AbstractController {
 
 		Map<String, String> chanelTypeMap = dimChannelService.queryChanelTypeMap();
 
-		Iterator<String> iterator = channelDataMap.keySet().iterator();
+		Iterator<String> iterator = channelListMap.keySet().iterator();
 		ChannelRenewDataEntity vo = null;
 		while (iterator.hasNext()) {
 			String key = iterator.next();
@@ -799,9 +799,21 @@ public class ChanneRenewDataController extends AbstractController {
 			// 30日年化ROI
 			// 60日年化ROI
 			// 90日年化ROI
-			vo.setDay30YearRoi(vo.getDay30YearAmount() / vo.getDay30Cost());
-			vo.setDay60YearRoi(vo.getDay60YearAmount() / vo.getDay60Cost());
-			vo.setDay90YearRoi(vo.getDay90YearAmount() / vo.getDay90Cost());
+			if(vo.getDay30Cost() == 0){
+				vo.setDay30YearRoi(0);
+			}else{
+				vo.setDay30YearRoi(vo.getDay30YearAmount() / vo.getDay30Cost());
+			}
+			if(vo.getDay60Cost() == 0){
+				vo.setDay60YearRoi(0);
+			}else{
+				vo.setDay60YearRoi(vo.getDay60YearAmount() / vo.getDay60Cost());
+			}
+			if(vo.getDay90Cost() == 0){
+				vo.setDay90YearRoi(0);
+			}else{
+				vo.setDay90YearRoi(vo.getDay90YearAmount() / vo.getDay90Cost());
+			}
 
 			// 30日首投复投人数，首投复投金额，首投年化金额，
 			// 30日复投率，30日金额复投率，30日人均首投年化金额
@@ -858,12 +870,24 @@ public class ChanneRenewDataController extends AbstractController {
 			// 30日首投年化ROI
 			// 60日首投年化ROI
 			// 90日首投年化ROI
-			vo.setDay30FirstInvestYearRoi(
-					NumberUtil.keepPrecision((double) vo.getDay30FirstInvestYearAmount() / vo.getDay30Cost(), 4));
-			vo.setDay60FirstInvestYearRoi(
-					NumberUtil.keepPrecision((double) vo.getDay60FirstInvestYearAmount() / vo.getDay60Cost(), 4));
-			vo.setDay90FirstInvestYearRoi(
-					NumberUtil.keepPrecision((double) vo.getDay90FirstInvestYearAmount() / vo.getDay90Cost(), 4));
+			if (vo.getDay30Cost() == 0) {
+				vo.setDay30FirstInvestYearRoi(0);
+			} else {
+				vo.setDay30FirstInvestYearRoi(
+						NumberUtil.keepPrecision((double) vo.getDay30FirstInvestYearAmount() / vo.getDay30Cost(), 4));
+			}
+			if (vo.getDay60Cost() == 0) {
+				vo.setDay60FirstInvestYearRoi(0);
+			} else {
+				vo.setDay60FirstInvestYearRoi(
+						NumberUtil.keepPrecision((double) vo.getDay60FirstInvestYearAmount() / vo.getDay60Cost(), 4));
+			}
+			if (vo.getDay90Cost() == 0) {
+				vo.setDay90FirstInvestYearRoi(0);
+			} else {
+				vo.setDay90FirstInvestYearRoi(
+						NumberUtil.keepPrecision((double) vo.getDay90FirstInvestYearAmount() / vo.getDay90Cost(), 4));
+			}
 
 			list.add(vo);
 		}
