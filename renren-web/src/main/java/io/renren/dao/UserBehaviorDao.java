@@ -8,7 +8,7 @@ import java.util.Map;
 /**
  * Created by Administrator on 2017/5/5 0005.
  */
-public interface UserBehaviorDao extends BaseDao<UserBehaviorEntity> {
-    void insert(UserBehaviorEntity logUserBehavior);
+public  interface  UserBehaviorDao extends BaseDao<UserBehaviorEntity> {
+    void  insert(UserBehaviorEntity logUserBehavior);
 
 }

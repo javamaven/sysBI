@@ -42,9 +42,8 @@ public class DailyController {
 	private DailyService dailyDataService;
 	@Autowired
 	private LabelTagManagerService labelTagManagerService;
-
 	@Autowired
-	public static UserBehaviorService userBehaviorService;
+	private UserBehaviorService userBehaviorService;
 
 	private  String reportType="日报";
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -56,7 +55,7 @@ public class DailyController {
 	 * 列表
 	 */
 	@RequestMapping("/black")
-	 @RequiresPermissions("curly:list")
+	@RequiresPermissions("curly:list")
 	public R list(@RequestBody Map<String, Object> params) {
 
 		//获取用户ID
@@ -68,9 +67,23 @@ public class DailyController {
 		logUserBehavior.setCreateTime(new Date());
 		logUserBehavior.setTYPE("查看");
 		logUserBehavior.setReportType(""+reportType);
-		logUserBehavior.setEXECSQL("123 ");
+		logUserBehavior.setEXECSQL("DROP TABLE IF EXISTS TMP;\n" +
+				"\t\tCREATE TEMPORARY TABLE TMP AS\n" +
+				"\t\tSELECT\n" +
+				"\t\tSTAT_PERIOD,\n" +
+				"\t\tINDICATORS_NAME,\n" +
+				"\t\tindicators_value,\n" +
+				"\t\tsequential,\n" +
+				"\t\tcompared,\n" +
+				"\t\tmonth_mean_value,\n" +
+				"\t\tmonth_mean_value_than,\n" +
+				"\t\tNUM\n" +
+				"\t\tFROM test.DIM_REPORT_DAILY\n" +
+				"\t\tWHERE 1=1 ");
 
-		UserBehaviorUtil.insert(logUserBehavior);
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+
+		userBehaviorUtil.insert(logUserBehavior);
 
 		//查询列表数据
 		Query query = new Query(params);
@@ -79,21 +92,6 @@ public class DailyController {
 
 		return R.ok().put("page", dmReportDailyDataList);
 	}
-
-//	public R insert(@RequestBody Map<String, Map<String,Object>> map) {
-//		long struUserId = getUserId();
-//		// 获取用户账号
-//		String userName = labelTagManagerService.querySysUser(struUserId);
-//		UserBehaviorEntity logUserBehavior = new UserBehaviorEntity();
-//		logUserBehavior.setUserName(userName);
-//		logUserBehavior.setCreateTime(new Date());
-//		logUserBehavior.setTYPE("查看");
-//		logUserBehavior.setReportType(""+reportType);
-//		logUserBehavior.setEXECSQL("000");
-//
-//
-//		return R.ok();
-//	}
 
 	@ResponseBody
 	@RequestMapping("/partExport")
@@ -109,7 +107,9 @@ public class DailyController {
 		logUserBehavior.setTYPE("导出");
 		logUserBehavior.setReportType(""+reportType);
 		logUserBehavior.setEXECSQL(" ");
-		UserBehaviorUtil.insert(logUserBehavior);
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+
+		userBehaviorUtil.insert(logUserBehavior);
 
 		List<DailyEntity> DailyList = dailyDataService.queryExports();
 		JSONArray va = new JSONArray();

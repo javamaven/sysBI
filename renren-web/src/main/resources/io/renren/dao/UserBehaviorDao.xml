@@ -3,6 +3,28 @@
 
 <mapper namespace="io.renren.dao.UserBehaviorDao">
 
+	<resultMap type="io.renren.entity.DailyEntity" id="DailyMap">
+		<result property="ID" column="ID"/>
+		<result property="userName" column="USERNAME"/>
+		<result property="createTime" column="CREATETIME"/>
+		<result property="TYPE" column="TYPE"/>
+		<result property="reportType" column="REPORTTYPE"/>
+		<result property="EXECSQL" column="EXECSQL"/>
+
+	</resultMap>
+
+	<select id="queryList" resultType="io.renren.entity.UserBehaviorEntity">
+		select
+		ID,
+		username,
+		createtime,
+		type,
+		reportType,
+		left(execsql,20) as execsql
+		FROM user_behavior_statistic
+
+	</select>
+
 
 
 	<insert id="insert"  parameterType="io.renren.entity.UserBehaviorEntity">
