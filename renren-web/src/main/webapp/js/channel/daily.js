@@ -15,7 +15,7 @@ function getDate(datatype){
     var enddate;
     startdate = (today.getFullYear()) +"-" +
         (today.getMonth() + 1 >9  ? (today.getMonth() + 1 ) : "0"+(today.getMonth() + 1 )) + "-" +
-        (today.getDate() > 10 ? today.getDate() : "0" + today.getDate());
+        (today.getDate() > 9 ? today.getDate() : "0" + today.getDate());
     enddate = (halfYearAgo.getFullYear()) +"-" +
         (halfYearAgo.getMonth() + 1 >9  ? (halfYearAgo.getMonth() + 1 ) : "0"+(halfYearAgo.getMonth() + 1 ))+"-01";
     return datatype==1 ? startdate : enddate;

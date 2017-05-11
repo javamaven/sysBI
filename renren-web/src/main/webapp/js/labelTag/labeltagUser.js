@@ -149,7 +149,7 @@ function loadTableAjax(){
             '{field:"firstinvestTime",title:"首投日期",align:"center",valign:"middle",sortable:"true"},'+
             '{field:"channelName",title:"渠道名称",align:"center",valign:"middle",sortable:"true"},'+
             '{field:"sex",title:"性别",align:"center",valign:"middle",sortable:"true"},'+
-            '{field:"age",title:"用户年龄段",align:"center",valign:"middle",sortable:"true"},'+
+            '{field:"age",title:"年龄段",align:"center",valign:"middle",sortable:"true"},'+
             '{field:"isInterflow",title:"是否注册存管系统",align:"center",valign:"middle",sortable:"true"},'+
             '{field:"isDepository",title:"是否开通存管账号",align:"center",valign:"middle",sortable:"true"},'+
             '{field:"invPeriod",title:"投资时间段",align:"center",valign:"middle",sortable:"true"},'+
