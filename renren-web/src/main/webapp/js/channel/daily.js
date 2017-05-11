@@ -19,6 +19,9 @@ function getDate(datatype){
     enddate = (halfYearAgo.getFullYear()) +"-" +
         (halfYearAgo.getMonth() + 1 >9  ? (halfYearAgo.getMonth() + 1 ) : "0"+(halfYearAgo.getMonth() + 1 ))+"-01";
     return datatype==1 ? startdate : enddate;
+
+
+
 };
 //时间格式
 $(".form_datetime_2").
@@ -123,7 +126,7 @@ function loadTableAjax(){
         a = '['+a.substring(0,a.length-1)+']';
         //alert(a);
         var b = '['+
-        '{field:"statPeriod",title:"日期",align:"center",valign:"middle"},'+
+        '{field:"statPeriod",title:"日期",align:"center",valign:"middle",class:""},'+
         '{field:"indicatorsName",title:"指标名字",align:"left",valign:"middle"},'+
         '{field:"indicatorsValue",title:"指标值",align:"center",valign:"middle"},'+
         '{field:"sequential",title:"环比",align:"center",valign:"middle"},'+

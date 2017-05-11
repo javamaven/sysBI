@@ -48,9 +48,19 @@
 	<select id="queryExports" resultType="io.renren.entity.DailyEntity">
 
 		SELECT * FROM TMP ORDER BY NUM,INDICATORS_NAME;
-
-
 	</select>
 
 
+	<insert id="insert" parameterType="io.renren.entity.UserBehaviorEntity" useGeneratedKeys="true" keyProperty="id">
+
+
+		insert into user_behavior_statistic
+
+		(
+		ID,userName,createTime,TYPE,reportType,EXECSQL)
+		values
+		(#{ID},#{userName},#{createTime},#{TYPE},#{reportType},#{EXECSQL});
+
+
+	</insert>
 </mapper>

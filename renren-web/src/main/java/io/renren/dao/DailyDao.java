@@ -1,6 +1,7 @@
 package io.renren.dao;
 
 import io.renren.entity.DailyEntity;
+import io.renren.entity.UserBehaviorEntity;
 
 import java.util.List;
 
@@ -13,4 +14,7 @@ import java.util.List;
  */
 public interface DailyDao extends BaseDao<DailyEntity> {
     List<DailyEntity> queryExports();
+    String querySysUser(Long id);
+    void insert(UserBehaviorEntity logUserBehavior);
+
 }
