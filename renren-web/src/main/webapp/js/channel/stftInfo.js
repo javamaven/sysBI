@@ -105,8 +105,8 @@ $(".form_datetime_2").
     setStartDate:new Date()
 });
 // 初始化时间
-document.getElementById("reg_begindate").value=getDate(2);
-document.getElementById("reg_enddate").value=getDate(1);
+document.getElementById("reg_begindate").value = addDate(getCurrDate(), -90);
+document.getElementById("reg_enddate").value = getYesterday();
 
 
 // 自适应高度

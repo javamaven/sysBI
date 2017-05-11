@@ -1,14 +1,14 @@
 var stataDay;
 $(function () {
+//	$("#mask").show();
 	loadChannel();
-	 initExportFunction();
-	stataDay = getDate(1);
-	document.getElementById("stat_day").value=stataDay;
+	initExportFunction();
+	stataDay = getYesterday();
+	document.getElementById("stat_day").value = stataDay;
 	initTimeCond();
 	initTable();
 	queryTotalInfo(stataDay);
 });
-
 /**
  * 将数值四舍五入后格式化.
  *
@@ -183,7 +183,7 @@ function initTimeCond(){
         minView:'month',
         language: 'zh-CN',
         autoclose:true,
-        endDate:getDate(1)
+        endDate: getYesterday()
     }).on("click",function(){
 //        $("#stat_day").datetimepicker("setEndDate",$("#stat_day").val())
     });
@@ -193,7 +193,6 @@ function initTimeCond(){
         minView:'month',
         language: 'zh-CN',
         autoclose:true
-//        endDate:getDate(1)
     }).on("click",function(){
     });
     $("#end_first_invest_time").datetimepicker({
@@ -201,7 +200,6 @@ function initTimeCond(){
         minView:'month',
         language: 'zh-CN',
         autoclose:true
-//        endDate:getDate(1)
     }).on("click",function(){
     });
     $("#start_register_time").datetimepicker({
@@ -229,7 +227,7 @@ function initTable(){
 	        url: '../channel/manager/list',
 	        datatype: "json",
 	        mtype: 'GET',
-	        postData: {'statPeriod': getDate(1)},
+	        postData: {'statPeriod': getYesterday()},
 	        colModel: [			
 				{ label: '统计日期', name: 'statPeriod', index: '$STAT_PERIOD', width: 80, key: true },
 				{ label: '用户ID', name: 'userId', index: '$USER_ID', width: 80,align:'right' }, 			
@@ -319,6 +317,10 @@ function initTable(){
 	        	//隐藏grid底部滚动条
 //	        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
 	        	$("#query_cond").removeAttr("disabled");
+	        	
+	        },
+	        loadComplete: function(){
+//	        	$("#mask").hide();
 	        }
 	    });
 }
@@ -395,6 +397,7 @@ var vm = new Vue({
             });
 		},
 		reload: function (event) {
+//			$("#mask").show();
 			vm.showList = true;
 			resetTotalInfo();
 			$("#query_cond").attr({"disabled":"disabled"});

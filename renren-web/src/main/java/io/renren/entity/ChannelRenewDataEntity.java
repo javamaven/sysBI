@@ -11,6 +11,8 @@ import java.io.Serializable;
 public class ChannelRenewDataEntity implements Serializable {
 
 	private static final long serialVersionUID = 666567400919208674L;
+
+	private String statDay;
 	private String channelType;
 	private String channelName;
 	private String channelLabel;
@@ -36,7 +38,7 @@ public class ChannelRenewDataEntity implements Serializable {
 
 	private double firstInvestUserNum;
 	private double firstInvestAmount;
-	private double day30FirstInvestAmount;
+	private double day30FirstInvestAmount;// 30日投资金额
 	private double day60FirstInvestAmount;
 	private double day90FirstInvestAmount;
 	private double day30MultiInvestAmount;
@@ -69,9 +71,9 @@ public class ChannelRenewDataEntity implements Serializable {
 	private double day60FirstInvestYearAmount;// 60日首投年化金额
 	private double day90FirstInvestYearAmount;// 90日首投年化金额
 
-	private double day30perFirstInvestYearAmount;// 30日人均首投年化金额
-	private double day60perFirstInvestYearAmount;// 60日人均首投年化金额
-	private double day90perFirstInvestYearAmount;// 90日人均首投年化金额
+	private double day30PerFirstInvestYearAmount;// 30日人均首投年化金额
+	private double day60PerFirstInvestYearAmount;// 60日人均首投年化金额
+	private double day90PerFirstInvestYearAmount;// 90日人均首投年化金额
 
 	private double firstInvestYearRoi;//
 	private double day30FirstInvestYearRoi;// 30日首投年化ROI
@@ -82,42 +84,13 @@ public class ChannelRenewDataEntity implements Serializable {
 
 	}
 
-	public void setFirstInvestAmount(double firstInvestAmount) {
-		this.firstInvestAmount = firstInvestAmount;
-	}
-
-	public double getFirstInvestAmount() {
-		return firstInvestAmount;
-	}
-
-	public void setDay30MultiInvestAmount(double day30MultiInvestAmount) {
-		this.day30MultiInvestAmount = day30MultiInvestAmount;
-	}
-
-	public void setDay60MultiInvestAmount(double day60MultiInvestAmount) {
-		this.day60MultiInvestAmount = day60MultiInvestAmount;
-	}
-
-	public void setDay90MultiInvestAmount(double day90MultiInvestAmount) {
-		this.day90MultiInvestAmount = day90MultiInvestAmount;
-	}
-
-	public double getDay30MultiInvestAmount() {
-		return day30MultiInvestAmount;
-	}
-
-	public double getDay60MultiInvestAmount() {
-		return day60MultiInvestAmount;
-	}
-
-	public double getDay90MultiInvestAmount() {
-		return day90MultiInvestAmount;
-	}
-
-	public ChannelRenewDataEntity(String channelType, String channelName, String channelLabel, double day30Cost,
-			double day60Cost, double day90Cost, String onlineTime, double yearAmount, double day30YearAmount,
-			double day60YearAmount, double day90YearAmount, double day30YearRoi, double day60YearRoi,
-			double day90YearRoi, double firstInvestUserNum, double day30FirstInvestUserNum,
+	public ChannelRenewDataEntity(String statDay, String channelType, String channelName, String channelLabel,
+			double day30Cost, double day60Cost, double day90Cost, String onlineTime, double yearAmount, double amount,
+			double day30YearAmount, double day60YearAmount, double day90YearAmount, double day30Amount,
+			double day60Amount, double day90Amount, double day30YearRoi, double day60YearRoi, double day90YearRoi,
+			double firstInvestUserNum, double firstInvestAmount, double day30FirstInvestAmount,
+			double day60FirstInvestAmount, double day90FirstInvestAmount, double day30MultiInvestAmount,
+			double day60MultiInvestAmount, double day90MultiInvestAmount, double day30FirstInvestUserNum,
 			double day60FirstInvestUserNum, double day90FirstInvestUserNum, double day30MultiInvestUserNum,
 			double day60MultiInvestUserNum, double day90MultiInvestUserNum, double day30MultiRate,
 			double day60MultiRate, double day90MultiRate, String day30MultiRateText, String day60MultiRateText,
@@ -125,10 +98,11 @@ public class ChannelRenewDataEntity implements Serializable {
 			double day90MultiInvestAmountRate, String day30MultiInvestAmountRateText,
 			String day60MultiInvestAmountRateText, String day90MultiInvestAmountRateText, double firstInvestYearAmount,
 			double day30FirstInvestYearAmount, double day60FirstInvestYearAmount, double day90FirstInvestYearAmount,
-			double day30perFirstInvestYearAmount, double day60perFirstInvestYearAmount,
-			double day90perFirstInvestYearAmount, double firstInvestYearRoi, double day30FirstInvestYearRoi,
+			double day30PerFirstInvestYearAmount, double day60PerFirstInvestYearAmount,
+			double day90PerFirstInvestYearAmount, double firstInvestYearRoi, double day30FirstInvestYearRoi,
 			double day60FirstInvestYearRoi, double day90FirstInvestYearRoi) {
 		super();
+		this.statDay = statDay;
 		this.channelType = channelType;
 		this.channelName = channelName;
 		this.channelLabel = channelLabel;
@@ -137,13 +111,24 @@ public class ChannelRenewDataEntity implements Serializable {
 		this.day90Cost = day90Cost;
 		this.onlineTime = onlineTime;
 		this.yearAmount = yearAmount;
+		this.amount = amount;
 		this.day30YearAmount = day30YearAmount;
 		this.day60YearAmount = day60YearAmount;
 		this.day90YearAmount = day90YearAmount;
+		this.day30Amount = day30Amount;
+		this.day60Amount = day60Amount;
+		this.day90Amount = day90Amount;
 		this.day30YearRoi = day30YearRoi;
 		this.day60YearRoi = day60YearRoi;
 		this.day90YearRoi = day90YearRoi;
 		this.firstInvestUserNum = firstInvestUserNum;
+		this.firstInvestAmount = firstInvestAmount;
+		this.day30FirstInvestAmount = day30FirstInvestAmount;
+		this.day60FirstInvestAmount = day60FirstInvestAmount;
+		this.day90FirstInvestAmount = day90FirstInvestAmount;
+		this.day30MultiInvestAmount = day30MultiInvestAmount;
+		this.day60MultiInvestAmount = day60MultiInvestAmount;
+		this.day90MultiInvestAmount = day90MultiInvestAmount;
 		this.day30FirstInvestUserNum = day30FirstInvestUserNum;
 		this.day60FirstInvestUserNum = day60FirstInvestUserNum;
 		this.day90FirstInvestUserNum = day90FirstInvestUserNum;
@@ -166,37 +151,21 @@ public class ChannelRenewDataEntity implements Serializable {
 		this.day30FirstInvestYearAmount = day30FirstInvestYearAmount;
 		this.day60FirstInvestYearAmount = day60FirstInvestYearAmount;
 		this.day90FirstInvestYearAmount = day90FirstInvestYearAmount;
-		this.day30perFirstInvestYearAmount = day30perFirstInvestYearAmount;
-		this.day60perFirstInvestYearAmount = day60perFirstInvestYearAmount;
-		this.day90perFirstInvestYearAmount = day90perFirstInvestYearAmount;
+		this.day30PerFirstInvestYearAmount = day30PerFirstInvestYearAmount;
+		this.day60PerFirstInvestYearAmount = day60PerFirstInvestYearAmount;
+		this.day90PerFirstInvestYearAmount = day90PerFirstInvestYearAmount;
 		this.firstInvestYearRoi = firstInvestYearRoi;
 		this.day30FirstInvestYearRoi = day30FirstInvestYearRoi;
 		this.day60FirstInvestYearRoi = day60FirstInvestYearRoi;
 		this.day90FirstInvestYearRoi = day90FirstInvestYearRoi;
 	}
 
-	public void setDay30FirstInvestAmount(double day30FirstInvestAmount) {
-		this.day30FirstInvestAmount = day30FirstInvestAmount;
+	public String getStatDay() {
+		return statDay;
 	}
 
-	public void setDay60FirstInvestAmount(double day60FirstInvestAmount) {
-		this.day60FirstInvestAmount = day60FirstInvestAmount;
-	}
-
-	public void setDay90FirstInvestAmount(double day90FirstInvestAmount) {
-		this.day90FirstInvestAmount = day90FirstInvestAmount;
-	}
-
-	public double getDay30FirstInvestAmount() {
-		return day30FirstInvestAmount;
-	}
-
-	public double getDay60FirstInvestAmount() {
-		return day60FirstInvestAmount;
-	}
-
-	public double getDay90FirstInvestAmount() {
-		return day90FirstInvestAmount;
+	public void setStatDay(String statDay) {
+		this.statDay = statDay;
 	}
 
 	public String getChannelType() {
@@ -255,44 +224,20 @@ public class ChannelRenewDataEntity implements Serializable {
 		this.onlineTime = onlineTime;
 	}
 
-	public void setAmount(double amount) {
-		this.amount = amount;
-	}
-
-	public void setDay30Amount(double day30Amount) {
-		this.day30Amount = day30Amount;
-	}
-
-	public void setDay90Amount(double day90Amount) {
-		this.day90Amount = day90Amount;
-	}
-
-	public void setDay60Amount(double day60Amount) {
-		this.day60Amount = day60Amount;
-	}
-
-	public double getAmount() {
-		return amount;
-	}
-
-	public double getDay30Amount() {
-		return day30Amount;
-	}
-
-	public double getDay60Amount() {
-		return day60Amount;
-	}
-
-	public double getDay90Amount() {
-		return day90Amount;
-	}
-
 	public double getYearAmount() {
 		return yearAmount;
 	}
 
 	public void setYearAmount(double yearAmount) {
 		this.yearAmount = yearAmount;
+	}
+
+	public double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(double amount) {
+		this.amount = amount;
 	}
 
 	public double getDay30YearAmount() {
@@ -317,6 +262,30 @@ public class ChannelRenewDataEntity implements Serializable {
 
 	public void setDay90YearAmount(double day90YearAmount) {
 		this.day90YearAmount = day90YearAmount;
+	}
+
+	public double getDay30Amount() {
+		return day30Amount;
+	}
+
+	public void setDay30Amount(double day30Amount) {
+		this.day30Amount = day30Amount;
+	}
+
+	public double getDay60Amount() {
+		return day60Amount;
+	}
+
+	public void setDay60Amount(double day60Amount) {
+		this.day60Amount = day60Amount;
+	}
+
+	public double getDay90Amount() {
+		return day90Amount;
+	}
+
+	public void setDay90Amount(double day90Amount) {
+		this.day90Amount = day90Amount;
 	}
 
 	public double getDay30YearRoi() {
@@ -349,6 +318,62 @@ public class ChannelRenewDataEntity implements Serializable {
 
 	public void setFirstInvestUserNum(double firstInvestUserNum) {
 		this.firstInvestUserNum = firstInvestUserNum;
+	}
+
+	public double getFirstInvestAmount() {
+		return firstInvestAmount;
+	}
+
+	public void setFirstInvestAmount(double firstInvestAmount) {
+		this.firstInvestAmount = firstInvestAmount;
+	}
+
+	public double getDay30FirstInvestAmount() {
+		return day30FirstInvestAmount;
+	}
+
+	public void setDay30FirstInvestAmount(double day30FirstInvestAmount) {
+		this.day30FirstInvestAmount = day30FirstInvestAmount;
+	}
+
+	public double getDay60FirstInvestAmount() {
+		return day60FirstInvestAmount;
+	}
+
+	public void setDay60FirstInvestAmount(double day60FirstInvestAmount) {
+		this.day60FirstInvestAmount = day60FirstInvestAmount;
+	}
+
+	public double getDay90FirstInvestAmount() {
+		return day90FirstInvestAmount;
+	}
+
+	public void setDay90FirstInvestAmount(double day90FirstInvestAmount) {
+		this.day90FirstInvestAmount = day90FirstInvestAmount;
+	}
+
+	public double getDay30MultiInvestAmount() {
+		return day30MultiInvestAmount;
+	}
+
+	public void setDay30MultiInvestAmount(double day30MultiInvestAmount) {
+		this.day30MultiInvestAmount = day30MultiInvestAmount;
+	}
+
+	public double getDay60MultiInvestAmount() {
+		return day60MultiInvestAmount;
+	}
+
+	public void setDay60MultiInvestAmount(double day60MultiInvestAmount) {
+		this.day60MultiInvestAmount = day60MultiInvestAmount;
+	}
+
+	public double getDay90MultiInvestAmount() {
+		return day90MultiInvestAmount;
+	}
+
+	public void setDay90MultiInvestAmount(double day90MultiInvestAmount) {
+		this.day90MultiInvestAmount = day90MultiInvestAmount;
 	}
 
 	public double getDay30FirstInvestUserNum() {
@@ -527,28 +552,28 @@ public class ChannelRenewDataEntity implements Serializable {
 		this.day90FirstInvestYearAmount = day90FirstInvestYearAmount;
 	}
 
-	public double getDay30perFirstInvestYearAmount() {
-		return day30perFirstInvestYearAmount;
+	public double getDay30PerFirstInvestYearAmount() {
+		return day30PerFirstInvestYearAmount;
 	}
 
-	public void setDay30perFirstInvestYearAmount(double day30perFirstInvestYearAmount) {
-		this.day30perFirstInvestYearAmount = day30perFirstInvestYearAmount;
+	public void setDay30PerFirstInvestYearAmount(double day30PerFirstInvestYearAmount) {
+		this.day30PerFirstInvestYearAmount = day30PerFirstInvestYearAmount;
 	}
 
-	public double getDay60perFirstInvestYearAmount() {
-		return day60perFirstInvestYearAmount;
+	public double getDay60PerFirstInvestYearAmount() {
+		return day60PerFirstInvestYearAmount;
 	}
 
-	public void setDay60perFirstInvestYearAmount(double day60perFirstInvestYearAmount) {
-		this.day60perFirstInvestYearAmount = day60perFirstInvestYearAmount;
+	public void setDay60PerFirstInvestYearAmount(double day60PerFirstInvestYearAmount) {
+		this.day60PerFirstInvestYearAmount = day60PerFirstInvestYearAmount;
 	}
 
-	public double getDay90perFirstInvestYearAmount() {
-		return day90perFirstInvestYearAmount;
+	public double getDay90PerFirstInvestYearAmount() {
+		return day90PerFirstInvestYearAmount;
 	}
 
-	public void setDay90perFirstInvestYearAmount(double day90perFirstInvestYearAmount) {
-		this.day90perFirstInvestYearAmount = day90perFirstInvestYearAmount;
+	public void setDay90PerFirstInvestYearAmount(double day90PerFirstInvestYearAmount) {
+		this.day90PerFirstInvestYearAmount = day90PerFirstInvestYearAmount;
 	}
 
 	public double getFirstInvestYearRoi() {
@@ -585,12 +610,18 @@ public class ChannelRenewDataEntity implements Serializable {
 
 	@Override
 	public String toString() {
-		return "ChannelRenewDataEntity [channelType=" + channelType + ", channelName=" + channelName + ", channelLabel="
-				+ channelLabel + ", day30Cost=" + day30Cost + ", day60Cost=" + day60Cost + ", day90Cost=" + day90Cost
-				+ ", onlineTime=" + onlineTime + ", yearAmount=" + yearAmount + ", day30YearAmount=" + day30YearAmount
-				+ ", day60YearAmount=" + day60YearAmount + ", day90YearAmount=" + day90YearAmount + ", day30YearRoi="
-				+ day30YearRoi + ", day60YearRoi=" + day60YearRoi + ", day90YearRoi=" + day90YearRoi
-				+ ", firstInvestUserNum=" + firstInvestUserNum + ", day30FirstInvestUserNum=" + day30FirstInvestUserNum
+		return "ChannelRenewDataEntity [statDay=" + statDay + ", channelType=" + channelType + ", channelName="
+				+ channelName + ", channelLabel=" + channelLabel + ", day30Cost=" + day30Cost + ", day60Cost="
+				+ day60Cost + ", day90Cost=" + day90Cost + ", onlineTime=" + onlineTime + ", yearAmount=" + yearAmount
+				+ ", amount=" + amount + ", day30YearAmount=" + day30YearAmount + ", day60YearAmount=" + day60YearAmount
+				+ ", day90YearAmount=" + day90YearAmount + ", day30Amount=" + day30Amount + ", day60Amount="
+				+ day60Amount + ", day90Amount=" + day90Amount + ", day30YearRoi=" + day30YearRoi + ", day60YearRoi="
+				+ day60YearRoi + ", day90YearRoi=" + day90YearRoi + ", firstInvestUserNum=" + firstInvestUserNum
+				+ ", firstInvestAmount=" + firstInvestAmount + ", day30FirstInvestAmount=" + day30FirstInvestAmount
+				+ ", day60FirstInvestAmount=" + day60FirstInvestAmount + ", day90FirstInvestAmount="
+				+ day90FirstInvestAmount + ", day30MultiInvestAmount=" + day30MultiInvestAmount
+				+ ", day60MultiInvestAmount=" + day60MultiInvestAmount + ", day90MultiInvestAmount="
+				+ day90MultiInvestAmount + ", day30FirstInvestUserNum=" + day30FirstInvestUserNum
 				+ ", day60FirstInvestUserNum=" + day60FirstInvestUserNum + ", day90FirstInvestUserNum="
 				+ day90FirstInvestUserNum + ", day30MultiInvestUserNum=" + day30MultiInvestUserNum
 				+ ", day60MultiInvestUserNum=" + day60MultiInvestUserNum + ", day90MultiInvestUserNum="
@@ -604,9 +635,9 @@ public class ChannelRenewDataEntity implements Serializable {
 				+ ", day90MultiInvestAmountRateText=" + day90MultiInvestAmountRateText + ", firstInvestYearAmount="
 				+ firstInvestYearAmount + ", day30FirstInvestYearAmount=" + day30FirstInvestYearAmount
 				+ ", day60FirstInvestYearAmount=" + day60FirstInvestYearAmount + ", day90FirstInvestYearAmount="
-				+ day90FirstInvestYearAmount + ", day30perFirstInvestYearAmount=" + day30perFirstInvestYearAmount
-				+ ", day60perFirstInvestYearAmount=" + day60perFirstInvestYearAmount
-				+ ", day90perFirstInvestYearAmount=" + day90perFirstInvestYearAmount + ", firstInvestYearRoi="
+				+ day90FirstInvestYearAmount + ", day30PerFirstInvestYearAmount=" + day30PerFirstInvestYearAmount
+				+ ", day60PerFirstInvestYearAmount=" + day60PerFirstInvestYearAmount
+				+ ", day90PerFirstInvestYearAmount=" + day90PerFirstInvestYearAmount + ", firstInvestYearRoi="
 				+ firstInvestYearRoi + ", day30FirstInvestYearRoi=" + day30FirstInvestYearRoi
 				+ ", day60FirstInvestYearRoi=" + day60FirstInvestYearRoi + ", day90FirstInvestYearRoi="
 				+ day90FirstInvestYearRoi + "]";

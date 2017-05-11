@@ -5,9 +5,23 @@
 #parse("sys/header.html")
 </head>
 <style>
-th {text-align: right}
+th {
+	text-align: right
+}
+.mask {
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 100;
+	height: 100%;
+	width: 100%;
+	background: black;
+	opacity: 0.03;
+	filter: alpha(opacity = 30)
+}
 </style>
 <body>
+<!-- <div id="mask" class="mask" style=""></div> -->
 <div id="rrapp" v-cloak>
 	<div v-show="showList">
 		<div class="grid-btn">
@@ -129,7 +143,10 @@ th {text-align: right}
 			#end
 			<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
 		</div>
-	   <div style="text-align: right;"><table id="jqGrid"></table></div>
+	   <div style="text-align: right;">
+	   		<table id="jqGrid"></table>
+	   </div>
+	   
 	    <div id="jqGridPager"></div>
     </div>
     
@@ -252,7 +269,7 @@ th {text-align: right}
 		</form>
 	</div>
 </div>
-
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
 <script src="${rc.contextPath}/js/channel/userActiveInfo.js?_${date.systemTime}"></script>
 </body>
 </html>

@@ -1,10 +1,19 @@
 $(function(){
+	initQueryDate();
     loadChannel();
 //    loadTableAjax();
     initExportFunction();
     // 移除loading样式
     $(".spinners li").removeClass("active");
+    
 });
+
+//初始化时间
+function initQueryDate(){
+	var time1 = new Date().Format("yyyy-MM-dd");
+	document.getElementById("date").value = time1;
+}
+
 
 
 var currDataList;
@@ -16,32 +25,9 @@ function initExportFunction(){
 		}else {
 			alert('请先查询数据!');
 		}
-//	    window.open("../channel/stft/exportExcel?list=" + JSON.stringify(currDataList),"_blank",'height=400,width=400,top=100,left=200,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no');
 	});
 
 }
-/**
- * 使用post提交表单
- * @param URL
- * @param PARAMS
- * @returns
- */
-function executePost(URL, PARAMS) {        
-    var temp = document.createElement("form");        
-    temp.action = URL;        
-    temp.method = "post";        
-    temp.style.display = "none";        
-    for (var x in PARAMS) {        
-        var opt = document.createElement("textarea");        
-        opt.name = x;        
-        opt.value = PARAMS[x];        
-        temp.appendChild(opt);        
-    }        
-    document.body.appendChild(temp);        
-    temp.submit();        
-    return temp;        
-}   
-
 function loadTableAjax(){
  $.ajax({
     type: "POST",
@@ -85,6 +71,8 @@ function getChannelName(){
 
 function getDate(datatype){
     var today = new Date(new Date()-24*60*60*1000);
+    console.log("++++++today++++++");
+    console.log(today);
     var halfYearAgo = new Date(new Date()-24*60*60*1000*182);
     var startdate;
     var enddate;
@@ -105,8 +93,6 @@ $(".form_datetime_2").
     todayBtn : true,
     setStartDate:new Date()
 });
-// 初始化时间
-document.getElementById("date").value=getDate(1);
 
 
 // 自适应高度
@@ -118,7 +104,8 @@ function tableHeight() {
 var pageInfo = {
         page  : 1,
         limit : 10,
-        date : document.getElementById("date").value.replace(/-/g,"")
+        date: $("#date").val()
+//        date : document.getElementById("date").value.replace(/-/g,"")
     };
 
 // 表格加载
@@ -128,7 +115,7 @@ function loadTable(columnsData,tableData){
         cache: false,
         height: tableHeight(),
         pagination: true,
-        pageSize: 20,
+        pageSize: 10,
         pageNumber:1,
         pageList: [10, 20, 50, 100, 200, 500],
         // search: true,
@@ -175,9 +162,9 @@ function loadTable(columnsData,tableData){
             {field:"day60FirstInvestYearAmount",title:"60日首投年化金额",align:"center",valign:"middle",sortable:"true"},
             {field:"day90FirstInvestYearAmount",title:"90日首投年化金额",align:"center",valign:"middle",sortable:"true"},
             
-            {field:"day30perFirstInvestYearAmount",title:"30日人均首投年化金额",align:"center",valign:"middle",sortable:"true"},
-            {field:"day60perFirstInvestYearAmount",title:"60日人均首投年化金额",align:"center",valign:"middle",sortable:"true"},
-            {field:"day90perFirstInvestYearAmount",title:"90日人均首投年化金额",align:"center",valign:"middle",sortable:"true"},
+            {field:"day30PerFirstInvestYearAmount",title:"30日人均首投年化金额",align:"center",valign:"middle",sortable:"true"},
+            {field:"day60PerFirstInvestYearAmount",title:"60日人均首投年化金额",align:"center",valign:"middle",sortable:"true"},
+            {field:"day90PerFirstInvestYearAmount",title:"90日人均首投年化金额",align:"center",valign:"middle",sortable:"true"},
             
             {field:"day30FirstInvestYearRoi",title:"30日首投年化ROI",align:"center",valign:"middle",sortable:"true"},
             {field:"day60FirstInvestYearRoi",title:"60日首投年化ROI",align:"center",valign:"middle",sortable:"true"},
@@ -249,7 +236,8 @@ $("#searchButton").click(function(){
             page  : 1,
             limit : 1000000,
             channelName : getChannelName().toString().length == "0" ? null : getChannelName(),
-            date:document.getElementById("date").value.replace(/-/g,"")
+            date: $("#date").val()
+//            date:document.getElementById("date").value.replace(/-/g,"")
         };
     //加载数据
     loadTableAjax();

@@ -70,13 +70,16 @@ public class ChanneRenewDataController extends AbstractController {
 		JdbcHelper jdbcHelper = new JdbcHelper(dataSource);
 
 		String procedureSql = "call first_invest_year_roi_renew_day90(? , ?)";
-		List<Map<String,Object>> list = jdbcHelper.callableQuery(procedureSql, "2017-02-02 00:00:00", "2017-05-03 23:59:59");
+		List<Map<String, Object>> list = jdbcHelper.callableQuery(procedureSql, "2017-02-02 00:00:00",
+				"2017-05-03 23:59:59");
 		long l2 = System.currentTimeMillis();
 		System.err.println("list=" + list);
 		System.err.println("耗时=" + (l2 - l1));
 
 		return null;
 	}
+
+	private boolean hasCreateChannelCostTable = false;
 
 	/**
 	 * 查询渠道流失分析列表
@@ -87,10 +90,17 @@ public class ChanneRenewDataController extends AbstractController {
 	@RequiresPermissions("channel:channelAll:list")
 	public R queryChannelRenewDataList(@RequestBody Map<String, Object> params) throws ParseException {
 		long startTime = System.currentTimeMillis();
-		List<DimChannelEntity> channelList = dimChannelService.queryChannelList(null);
+		if (!hasCreateChannelCostTable) {
+			dimChannelService.createChanelCostTable(null);
+			hasCreateChannelCostTable = true;
+		}
+
+		// 查询渠道列表信息
+		List<DimChannelEntity> channelList = dimChannelService.queryOnlineChannelCostList(null);
+
 		Map<String, String> channelDataMap = getChannelLabelKeyMap(channelList);
 		System.err.println("+++++查询条件： " + params);
-		params.put("endDate", DateUtil.formatDate(params.get("date") + ""));
+		params.put("endDate", params.get("date") + "");
 		Object object = params.get("channelName");
 		List<String> channelLabelList = new ArrayList<String>();
 
@@ -107,9 +117,9 @@ public class ChanneRenewDataController extends AbstractController {
 		Map<String, Object> channelListMap = new ConcurrentHashMap<String, Object>();
 		Map<String, Map<String, ChannelRenewDataEntity>> resultMap = new HashMap<String, Map<String, ChannelRenewDataEntity>>();
 		// 查询并且返回各个指标数据
-		buildQueryParamsAndQueryData(params, channelListMap, resultMap);
+		buildQueryParamsAndQueryData2(params, channelListMap, resultMap);
 		// 将数据按照渠道聚合
-		List<ChannelRenewDataEntity> list = unionData(channelDataMap, channelListMap, resultMap);
+		List<ChannelRenewDataEntity> list = unionData2(channelDataMap, channelListMap, resultMap);
 		// 过滤channelLabel
 		List<ChannelRenewDataEntity> retList = new ArrayList<ChannelRenewDataEntity>();
 		if (channelLabelList.size() == 0) {
@@ -127,10 +137,14 @@ public class ChanneRenewDataController extends AbstractController {
 		}
 		// 获取数据条数
 		PageUtils pageUtil = new PageUtils(retList, retList.size(), query.getLimit(), query.getPage());
-
+		for (int i = 0; i < retList.size(); i++) {
+//			ChannelRenewDataEntity channelRenewDataEntity = retList.get(i);
+//			service.delete(channelRenewDataEntity);
+//			service.insert(channelRenewDataEntity);
+		}
 		long endTime = System.currentTimeMillis();
 		System.err.println("++++++++++++++++++++++++++++++++++查询总耗时：" + (endTime - startTime));
-		
+
 		return R.ok().put("page", pageUtil);
 	}
 
@@ -188,9 +202,9 @@ public class ChanneRenewDataController extends AbstractController {
 		headMap.put("day60FirstInvestYearAmount", "60日首投年化金额");
 		headMap.put("day90FirstInvestYearAmount", "90日首投年化金额");
 
-		headMap.put("day30perFirstInvestYearAmount", "30日人均首投年化金额");
-		headMap.put("day60perFirstInvestYearAmount", "60日人均首投年化金额");
-		headMap.put("day90perFirstInvestYearAmount", "90日人均首投年化金额");
+		headMap.put("day30PerFirstInvestYearAmount", "30日人均首投年化金额");
+		headMap.put("day60PerFirstInvestYearAmount", "60日人均首投年化金额");
+		headMap.put("day90PerFirstInvestYearAmount", "90日人均首投年化金额");
 
 		headMap.put("day30FirstInvestYearRoi", "30日首投年化ROI");
 		headMap.put("day60FirstInvestYearRoi", "60日首投年化ROI");
@@ -209,6 +223,116 @@ public class ChanneRenewDataController extends AbstractController {
 	 * @return
 	 * @throws ParseException
 	 */
+	private void buildQueryParamsAndQueryData2(Map<String, Object> params, Map<String, Object> channelListMap,
+			Map<String, Map<String, ChannelRenewDataEntity>> resultMap) throws ParseException {
+		String endDate = params.get("endDate") + "";
+		List<String> channelLabelList = (List<String>) params.get("channelLabelList");
+		Map<String, Object> params1 = new HashMap<String, Object>();
+		params1.put("endDate", endDate);
+		params1.put("channelLabelList", channelLabelList);
+		params1.put("onlineDate", endDate);
+		String timeFormat = "yyyy-MM-dd";
+		params1.put("day30", DateUtil.getCurrDayBefore(endDate, -30, timeFormat));
+		params1.put("day60", DateUtil.getCurrDayBefore(endDate, -60, timeFormat));
+		params1.put("day90", DateUtil.getCurrDayBefore(endDate, -90, timeFormat));
+
+		Map<String, Object> params2 = new HashMap<String, Object>();
+		params2.put("onlineDate", endDate);
+		params2.put("channelLabelList", channelLabelList);
+
+		// 30日60日90日，年化金额 ,传入不同参数
+		Map<String, Object> params3_30day = new HashMap<String, Object>();
+		params3_30day.put("onlineDate", endDate);
+		params3_30day.put("startDate", endDate + " 00:00:00");
+		params3_30day.put("endDate", DateUtil.getCurrDayBefore(endDate, -30, timeFormat) + " 23:59:59");
+		params3_30day.put("channelLabelList", channelLabelList);
+
+		Map<String, Object> params3_60day = new HashMap<String, Object>();
+		params3_60day.put("onlineDate", endDate);
+		params3_60day.put("startDate", endDate + " 00:00:00");
+		params3_60day.put("endDate", DateUtil.getCurrDayBefore(endDate, -60, timeFormat) + " 23:59:59");
+		params3_60day.put("channelLabelList", channelLabelList);
+
+		Map<String, Object> params3_90day = new HashMap<String, Object>();
+		params3_90day.put("onlineDate", endDate);
+		params3_90day.put("startDate", endDate + " 00:00:00");
+		params3_90day.put("endDate", DateUtil.getCurrDayBefore(endDate, -90, timeFormat) + " 23:59:59");
+		params3_90day.put("channelLabelList", channelLabelList);
+
+		// 首投复投人数，首投复投金额，首投复投年化金额，复投率，金额复投率，人均首投金额
+		Map<String, Object> params4_day30 = new HashMap<String, Object>();
+		params4_day30.putAll(params3_30day);
+		Map<String, Object> params4_day60 = new HashMap<String, Object>();
+		params4_day60.putAll(params3_60day);
+		Map<String, Object> params4_day90 = new HashMap<String, Object>();
+		params4_day90.putAll(params3_90day);
+
+		Map<String, ChannelRenewDataEntity> result1 = new HashMap<String, ChannelRenewDataEntity>();
+		Map<String, ChannelRenewDataEntity> result2 = new HashMap<String, ChannelRenewDataEntity>();
+		Map<String, ChannelRenewDataEntity> result3_30day = new HashMap<String, ChannelRenewDataEntity>();
+		Map<String, ChannelRenewDataEntity> result3_60day = new HashMap<String, ChannelRenewDataEntity>();
+		Map<String, ChannelRenewDataEntity> result3_90day = new HashMap<String, ChannelRenewDataEntity>();
+
+		Map<String, ChannelRenewDataEntity> result4_day30 = new HashMap<String, ChannelRenewDataEntity>();
+		Map<String, ChannelRenewDataEntity> result4_day60 = new HashMap<String, ChannelRenewDataEntity>();
+		Map<String, ChannelRenewDataEntity> result4_day90 = new HashMap<String, ChannelRenewDataEntity>();
+
+		Thread t1 = new Thread(new ChannelRenewDataQueryThread(service, params1, channelListMap, result1, 1));
+		Thread t2 = new Thread(new ChannelRenewDataQueryThread(service, params2, channelListMap, result2, 2));
+
+		Thread t3_30day = new Thread(
+				new ChannelRenewDataQueryThread(service, params3_30day, channelListMap, result3_30day, 3));
+		Thread t3_60day = new Thread(
+				new ChannelRenewDataQueryThread(service, params3_60day, channelListMap, result3_60day, 3));
+		Thread t3_90day = new Thread(
+				new ChannelRenewDataQueryThread(service, params3_90day, channelListMap, result3_90day, 3));
+
+		Thread t4_day30 = new Thread(new ChannelRenewDataQueryThread(service, params4_day30, null, result4_day30, 4));
+		Thread t4_day60 = new Thread(new ChannelRenewDataQueryThread(service, params4_day60, null, result4_day60, 5));
+		Thread t4_day90 = new Thread(new ChannelRenewDataQueryThread(service, params4_day90, null, result4_day90, 6));
+
+		t1.start();
+		t2.start();
+		t3_30day.start();
+		t3_60day.start();
+		t3_90day.start();
+		t4_day30.start();
+		t4_day60.start();
+		t4_day90.start();
+
+		try {
+			t1.join();
+			t2.join();
+			t3_30day.join();
+			t3_60day.join();
+			t3_90day.join();
+			t4_day30.join();
+			t4_day60.join();
+			t4_day90.join();
+
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		} finally {
+			resultMap.put("result1", result1);
+			resultMap.put("result2", result2);
+			resultMap.put("result3_30day", result3_30day);
+			resultMap.put("result3_60day", result3_60day);
+			resultMap.put("result3_90day", result3_90day);
+			resultMap.put("result4_day30", result4_day30);
+			resultMap.put("result4_day60", result4_day60);
+			resultMap.put("result4_day90", result4_day90);
+
+		}
+	}
+
+	/**
+	 * 根据参数: 1.创建各个指标的查询参数 2.创建返回结果map
+	 * 
+	 * @param params
+	 * @param resultMap
+	 * @return
+	 * @throws ParseException
+	 */
 	private void buildQueryParamsAndQueryData(Map<String, Object> params, Map<String, Object> channelListMap,
 			Map<String, Map<String, ChannelRenewDataEntity>> resultMap) throws ParseException {
 		String endDate = params.get("endDate") + "";
@@ -216,28 +340,28 @@ public class ChanneRenewDataController extends AbstractController {
 		Map<String, Object> params1 = new HashMap<String, Object>();
 		params1.put("endDate", endDate);
 		params1.put("channelLabelList", channelLabelList);
-		params1.put("day30", DateUtil.getCurrDayBefore(endDate, 30));
-		params1.put("day60", DateUtil.getCurrDayBefore(endDate, 60));
-		params1.put("day90", DateUtil.getCurrDayBefore(endDate, 90));
+		params1.put("day30", DateUtil.getCurrDayBefore(endDate, 30, null));
+		params1.put("day60", DateUtil.getCurrDayBefore(endDate, 60, null));
+		params1.put("day90", DateUtil.getCurrDayBefore(endDate, 90, null));
 
 		Map<String, Object> params2 = new HashMap<String, Object>();
 		params2.put("channelLabelList", channelLabelList);
 
 		Map<String, Object> params3_30day = new HashMap<String, Object>();
 		params3_30day.put("startDate",
-				datesdf2.format(dateSdf.parse(DateUtil.getCurrDayBefore(endDate, 30))) + " 00:00:00");
+				datesdf2.format(dateSdf.parse(DateUtil.getCurrDayBefore(endDate, 30, null))) + " 00:00:00");
 		params3_30day.put("endDate", datesdf2.format(dateSdf.parse(endDate)) + " 23:59:59");
 		params3_30day.put("channelLabelList", channelLabelList);
 
 		Map<String, Object> params3_60day = new HashMap<String, Object>();
 		params3_60day.put("startDate",
-				datesdf2.format(dateSdf.parse(DateUtil.getCurrDayBefore(endDate, 60))) + " 00:00:00");
+				datesdf2.format(dateSdf.parse(DateUtil.getCurrDayBefore(endDate, 60, null))) + " 00:00:00");
 		params3_60day.put("endDate", datesdf2.format(dateSdf.parse(endDate)) + " 23:59:59");
 		params3_60day.put("channelLabelList", channelLabelList);
 
 		Map<String, Object> params3_90day = new HashMap<String, Object>();
 		params3_90day.put("startDate",
-				datesdf2.format(dateSdf.parse(DateUtil.getCurrDayBefore(endDate, 90))) + " 00:00:00");
+				datesdf2.format(dateSdf.parse(DateUtil.getCurrDayBefore(endDate, 90, null))) + " 00:00:00");
 		params3_90day.put("endDate", datesdf2.format(dateSdf.parse(endDate)) + " 23:59:59");
 		params3_90day.put("channelLabelList", channelLabelList);
 
@@ -415,9 +539,6 @@ public class ChanneRenewDataController extends AbstractController {
 		ChannelRenewDataEntity vo = null;
 		while (iterator.hasNext()) {
 			String key = iterator.next();
-			// if ("bd-pcpz".equals(key)) {
-			// System.err.println(key);
-			// }
 			vo = new ChannelRenewDataEntity();
 			if (channelDataMap.containsKey(key)) {
 				vo.setChannelName(channelDataMap.get(key));// 渠道名称
@@ -587,29 +708,166 @@ public class ChanneRenewDataController extends AbstractController {
 
 			// 30日人均首投年化金额
 			if (vo.getDay30FirstInvestUserNum() == 0) {
-				vo.setDay30perFirstInvestYearAmount(0);
+				vo.setDay30PerFirstInvestYearAmount(0);
 			} else {
-				vo.setDay30perFirstInvestYearAmount(NumberUtil
+				vo.setDay30PerFirstInvestYearAmount(NumberUtil
 						.keepPrecision(vo.getDay30FirstInvestYearAmount() / vo.getDay30FirstInvestUserNum(), 2));
 			}
 			// 60日人均首投年化金额
 			if (vo.getDay60FirstInvestUserNum() == 0) {
-				vo.setDay60perFirstInvestYearAmount(0);
+				vo.setDay60PerFirstInvestYearAmount(0);
 			} else {
-				vo.setDay60perFirstInvestYearAmount(NumberUtil
+				vo.setDay60PerFirstInvestYearAmount(NumberUtil
 						.keepPrecision(vo.getDay60FirstInvestYearAmount() / vo.getDay60FirstInvestUserNum(), 2));
 			}
 			// 90日人均首投年化金额
 			if (vo.getDay90FirstInvestUserNum() == 0) {
-				vo.setDay90perFirstInvestYearAmount(0);
+				vo.setDay90PerFirstInvestYearAmount(0);
 			} else {
-				vo.setDay90perFirstInvestYearAmount(NumberUtil
+				vo.setDay90PerFirstInvestYearAmount(NumberUtil
 						.keepPrecision(vo.getDay90FirstInvestYearAmount() / vo.getDay90FirstInvestUserNum(), 2));
 			}
 			// print("vo--->" + vo);
 			if ("bd-pcpz".equals(key)) {
 				System.err.println(key);
 			}
+			list.add(vo);
+		}
+		Collections.sort(list, new MyCompartor());
+		return list;
+	}
+
+	private List<ChannelRenewDataEntity> unionData2(Map<String, String> channelDataMap,
+			Map<String, Object> channelListMap, Map<String, Map<String, ChannelRenewDataEntity>> resultMap) {
+		List<ChannelRenewDataEntity> list = new ArrayList<ChannelRenewDataEntity>();
+
+		Map<String, String> chanelTypeMap = dimChannelService.queryChanelTypeMap();
+
+		Iterator<String> iterator = channelListMap.keySet().iterator();
+		ChannelRenewDataEntity vo = null;
+		while (iterator.hasNext()) {
+			String key = iterator.next();
+			// if ("bd-pcpz".equals(key)) {
+			// System.err.println(key);
+			// }
+			vo = new ChannelRenewDataEntity();
+			if (channelDataMap.containsKey(key)) {
+				vo.setChannelName(channelDataMap.get(key));// 渠道名称
+			} else {
+				vo.setChannelName("未知");// 渠道名称
+			}
+			vo.setChannelLabel(key);// 渠道标签
+			// 渠道类型
+			if (chanelTypeMap.containsKey(key)) {
+				vo.setChannelType(chanelTypeMap.get(key));
+			} else {
+				vo.setChannelType("未知");
+			}
+			// 30天 60 90 费用
+			Map<String, ChannelRenewDataEntity> map1 = resultMap.get("result1");
+			if (map1.containsKey(key)) {
+				ChannelRenewDataEntity en = map1.get(key);
+				vo.setDay30Cost(NumberUtil.keepPrecision(en.getDay30Cost(), 2));
+				vo.setDay60Cost(NumberUtil.keepPrecision(en.getDay60Cost(), 2));
+				vo.setDay90Cost(NumberUtil.keepPrecision(en.getDay90Cost(), 2));
+			}
+			// 上线时间
+			Map<String, ChannelRenewDataEntity> map2 = resultMap.get("result2");
+			if (map2.containsKey(key)) {
+				ChannelRenewDataEntity en = map2.get(key);
+				vo.setOnlineTime(en.getOnlineTime());
+			}
+
+			// 30日年化投资金额
+			Map<String, ChannelRenewDataEntity> map3_30day = resultMap.get("result3_30day");
+			if (map3_30day.containsKey(key)) {
+				ChannelRenewDataEntity en = map3_30day.get(key);
+				vo.setDay30YearAmount(NumberUtil.keepPrecision(en.getYearAmount(), 2));
+				vo.setDay30Amount(en.getAmount());
+			}
+			// 60日年化投资金额
+			Map<String, ChannelRenewDataEntity> map3_60day = resultMap.get("result3_60day");
+			if (map3_60day.containsKey(key)) {
+				ChannelRenewDataEntity en = map3_60day.get(key);
+				vo.setDay60YearAmount(NumberUtil.keepPrecision(en.getYearAmount(), 2));
+				vo.setDay60Amount(en.getAmount());
+			}
+			// 90日年化投资金额
+			Map<String, ChannelRenewDataEntity> map3_90day = resultMap.get("result3_90day");
+			if (map3_90day.containsKey(key)) {
+				ChannelRenewDataEntity en = map3_90day.get(key);
+				vo.setDay90YearAmount(NumberUtil.keepPrecision(en.getYearAmount(), 2));
+				vo.setDay90Amount(en.getAmount());
+			}
+			// 30日年化ROI
+			// 60日年化ROI
+			// 90日年化ROI
+			vo.setDay30YearRoi(vo.getDay30YearAmount() / vo.getDay30Cost());
+			vo.setDay60YearRoi(vo.getDay60YearAmount() / vo.getDay60Cost());
+			vo.setDay90YearRoi(vo.getDay90YearAmount() / vo.getDay90Cost());
+
+			// 30日首投复投人数，首投复投金额，首投年化金额，
+			// 30日复投率，30日金额复投率，30日人均首投年化金额
+			Map<String, ChannelRenewDataEntity> result4_day30 = resultMap.get("result4_day30");
+			if (result4_day30.containsKey(key)) {
+				ChannelRenewDataEntity en = result4_day30.get(key);
+				vo.setDay30FirstInvestUserNum(en.getDay30FirstInvestUserNum());
+				vo.setDay30MultiInvestUserNum(en.getDay30MultiInvestUserNum());
+				vo.setDay30FirstInvestAmount(en.getDay30FirstInvestAmount());
+				vo.setDay30MultiInvestAmount(en.getDay30MultiInvestAmount());
+				vo.setDay30FirstInvestYearAmount(en.getDay30FirstInvestYearAmount());
+				vo.setDay30MultiRate(en.getDay30MultiRate());
+				vo.setDay30MultiRateText(NumberUtil.keepPrecision((double) en.getDay30MultiRate() * 100, 2) + "%");
+				vo.setDay30MultiInvestAmountRate(en.getDay30MultiInvestAmountRate());
+				vo.setDay30MultiInvestAmountRateText(
+						NumberUtil.keepPrecision((double) en.getDay30MultiInvestAmountRate() * 100, 2) + "%");
+				vo.setDay30PerFirstInvestYearAmount(NumberUtil.keepPrecision(en.getDay30PerFirstInvestYearAmount(), 2));
+			}
+			// 60日首投复投人数，首投复投金额，首投年化金额，
+			// 60日复投率，60日金额复投率，60日人均首投年化金额
+			Map<String, ChannelRenewDataEntity> result4_day60 = resultMap.get("result4_day60");
+			if (result4_day60.containsKey(key)) {
+				ChannelRenewDataEntity en = result4_day60.get(key);
+				vo.setDay60FirstInvestUserNum(en.getDay60FirstInvestUserNum());
+				vo.setDay60MultiInvestUserNum(en.getDay60MultiInvestUserNum());
+				vo.setDay60FirstInvestAmount(en.getDay60FirstInvestAmount());
+				vo.setDay60MultiInvestAmount(en.getDay60MultiInvestAmount());
+				vo.setDay60FirstInvestYearAmount(en.getDay60FirstInvestYearAmount());
+				vo.setDay60MultiRate(en.getDay60MultiRate());
+				vo.setDay60MultiRateText(NumberUtil.keepPrecision((double) en.getDay60MultiRate() * 100, 2) + "%");
+				vo.setDay60MultiInvestAmountRate(en.getDay60MultiInvestAmountRate());
+				vo.setDay60MultiInvestAmountRateText(
+						NumberUtil.keepPrecision((double) en.getDay60MultiInvestAmountRate() * 100, 2) + "%");
+				vo.setDay60PerFirstInvestYearAmount(NumberUtil.keepPrecision(en.getDay60PerFirstInvestYearAmount(), 2));
+			}
+			// 90日首投复投人数，首投复投金额，首投年化金额，
+			// 90日复投率，90日金额复投率，90日人均首投年化金额
+			Map<String, ChannelRenewDataEntity> result4_day90 = resultMap.get("result4_day90");
+			if (result4_day90.containsKey(key)) {
+				ChannelRenewDataEntity en = result4_day90.get(key);
+				vo.setDay90FirstInvestUserNum(en.getDay90FirstInvestUserNum());
+				vo.setDay90MultiInvestUserNum(en.getDay90MultiInvestUserNum());
+				vo.setDay90FirstInvestAmount(en.getDay90FirstInvestAmount());
+				vo.setDay90MultiInvestAmount(en.getDay90MultiInvestAmount());
+				vo.setDay90FirstInvestYearAmount(en.getDay90FirstInvestYearAmount());
+				vo.setDay90MultiRate(en.getDay90MultiRate());
+				vo.setDay90MultiRateText(NumberUtil.keepPrecision((double) en.getDay90MultiRate() * 100, 2) + "%");
+				vo.setDay90MultiInvestAmountRate(en.getDay90MultiInvestAmountRate());
+				vo.setDay90MultiInvestAmountRateText(
+						NumberUtil.keepPrecision((double) en.getDay90MultiInvestAmountRate() * 100, 2) + "%");
+				vo.setDay90PerFirstInvestYearAmount(NumberUtil.keepPrecision(en.getDay90PerFirstInvestYearAmount(), 2));
+			}
+
+			// 30日首投年化ROI
+			// 60日首投年化ROI
+			// 90日首投年化ROI
+			vo.setDay30FirstInvestYearRoi(
+					NumberUtil.keepPrecision((double) vo.getDay30FirstInvestYearAmount() / vo.getDay30Cost(), 4));
+			vo.setDay60FirstInvestYearRoi(
+					NumberUtil.keepPrecision((double) vo.getDay60FirstInvestYearAmount() / vo.getDay60Cost(), 4));
+			vo.setDay90FirstInvestYearRoi(
+					NumberUtil.keepPrecision((double) vo.getDay90FirstInvestYearAmount() / vo.getDay90Cost(), 4));
+
 			list.add(vo);
 		}
 		Collections.sort(list, new MyCompartor());
@@ -640,7 +898,7 @@ public class ChanneRenewDataController extends AbstractController {
 		Map<String, String> dataMap = new HashMap<String, String>();
 		for (int i = 0; i < channelList.size(); i++) {
 			DimChannelEntity dimChannelEntity = channelList.get(i);
-			dataMap.put(dimChannelEntity.getChannelLabel(), dimChannelEntity.getChannelNameBack());
+			dataMap.put(dimChannelEntity.getChannelLabel(), dimChannelEntity.getChannelName());
 		}
 		return dataMap;
 	}

@@ -1,6 +1,7 @@
 package io.renren.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import io.renren.entity.DimChannelEntity;
 
@@ -23,4 +24,8 @@ public interface DimChannelDao extends BaseDao<DimChannelEntity> {
 	 * @return
 	 */
 	List<DimChannelEntity> queryChannelCostList();
+
+	void createChanelCostTable(Map<String, Object> map);
+
+	List<DimChannelEntity> queryOnlineChannelCostList();
 }

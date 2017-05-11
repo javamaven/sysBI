@@ -32,7 +32,7 @@ $(".form_datetime_2").
 });
 // 初始化时间
 document.getElementById("reg_begindate").value=getDate(2);
-document.getElementById("reg_enddate").value=getDate(1);
+document.getElementById("reg_enddate").value = getYesterday();
 
 
 // 自适应高度
