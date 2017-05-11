@@ -35,7 +35,7 @@ function loadTableAjax(){
     data: JSON.stringify(pageInfo),
     contentType: "application/json;charset=utf-8",
     success : function(msg) {
-         var a = '';
+        var a = '';
         for(var list in msg.page.list){
             var d = '{'
             for(var key in msg.page.list[list]){
@@ -127,15 +127,63 @@ function loadTable(columnsData,tableData){
             {field:"channelLabel",title:"渠道标签",align:"center",valign:"middle",sortable:"true"},
             {field:"channelType",title:"渠道分类",align:"center",valign:"middle",sortable:"true"},
             
-            {field:"day30Cost",title:"30天费用",align:"center",valign:"middle",sortable:"true"},
-            {field:"day60Cost",title:"60天费用",align:"center",valign:"middle",sortable:"true"},
-            {field:"day90Cost",title:"90天费用",align:"center",valign:"middle",sortable:"true"},
+            {field:"day30Cost",title:"30天费用",align:"center",valign:"middle",sortable:"true"
+            	,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}            	
+            },
+            {field:"day60Cost",title:"60天费用",align:"center",valign:"middle",sortable:"true"
+            	,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}            	
+            },
+            {field:"day90Cost",title:"90天费用",align:"center",valign:"middle",sortable:"true"
+            	,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}            	
+            },
             
             {field:"onlineTime",title:"上线时间",align:"center",valign:"middle",sortable:"true"},
           
-            {field:"day30YearAmount",title:"30日年化投资金额",align:"center",valign:"middle",sortable:"true"},
-            {field:"day60YearAmount",title:"60日年化投资金额",align:"center",valign:"middle",sortable:"true"},
-            {field:"day90YearAmount",title:"90日年化投资金额",align:"center",valign:"middle",sortable:"true"},
+            {field:"day30YearAmount",title:"30日年化投资金额",align:"center",valign:"middle",sortable:"true"
+            	,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}            	
+            },            	
+            {field:"day60YearAmount",title:"60日年化投资金额",align:"center",valign:"middle",sortable:"true"
+            	,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}            	
+            },
+            {field:"day90YearAmount",title:"90日年化投资金额",align:"center",valign:"middle",sortable:"true"
+            	,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}            	
+            },            	
 
             {field:"day30YearRoi",title:"30日年化ROI",align:"center",valign:"middle",sortable:"true"},
             {field:"day60YearRoi",title:"60日年化ROI",align:"center",valign:"middle",sortable:"true"},
@@ -157,14 +205,61 @@ function loadTable(columnsData,tableData){
             {field:"day60MultiInvestAmountRateText",title:"60日复投金额比",align:"center",valign:"middle",sortable:"true"},
             {field:"day90MultiInvestAmountRateText",title:"90日复投金额比",align:"center",valign:"middle",sortable:"true"},
 
-            {field:"day30FirstInvestYearAmount",title:"30日首投年化金额",align:"center",valign:"middle",sortable:"true"},
-            {field:"day60FirstInvestYearAmount",title:"60日首投年化金额",align:"center",valign:"middle",sortable:"true"},
-            {field:"day90FirstInvestYearAmount",title:"90日首投年化金额",align:"center",valign:"middle",sortable:"true"},
-            
-            {field:"day30PerFirstInvestYearAmount",title:"30日人均首投年化金额",align:"center",valign:"middle",sortable:"true"},
-            {field:"day60PerFirstInvestYearAmount",title:"60日人均首投年化金额",align:"center",valign:"middle",sortable:"true"},
-            {field:"day90PerFirstInvestYearAmount",title:"90日人均首投年化金额",align:"center",valign:"middle",sortable:"true"},
-            
+            {field:"day30FirstInvestYearAmount",title:"30日首投年化金额",align:"center",valign:"middle",sortable:"true"
+            	,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}            	
+            },
+            {field:"day60FirstInvestYearAmount",title:"60日首投年化金额",align:"center",valign:"middle",sortable:"true"
+            	,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}            	
+            },
+            {field:"day90FirstInvestYearAmount",title:"90日首投年化金额",align:"center",valign:"middle",sortable:"true"
+            	,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}            	
+            },
+           
+            {field:"day30PerFirstInvestYearAmount",title:"30日人均首投年化金额",align:"center",valign:"middle",sortable:"true"
+            	,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}            	
+            },
+            {field:"day60PerFirstInvestYearAmount",title:"60日人均首投年化金额",align:"center",valign:"middle",sortable:"true"
+            	,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}            	
+            },
+            {field:"day90PerFirstInvestYearAmount",title:"90日人均首投年化金额",align:"center",valign:"middle",sortable:"true"
+            	,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}            	
+            },
             {field:"day30FirstInvestYearRoi",title:"30日首投年化ROI",align:"center",valign:"middle",sortable:"true"},
             {field:"day60FirstInvestYearRoi",title:"60日首投年化ROI",align:"center",valign:"middle",sortable:"true"},
             {field:"day90FirstInvestYearRoi",title:"90日首投年化ROI",align:"center",valign:"middle",sortable:"true"}

@@ -92,7 +92,7 @@ public class ChanneRenewDataController extends AbstractController {
 		long startTime = System.currentTimeMillis();
 		if (!hasCreateChannelCostTable) {
 			dimChannelService.createChanelCostTable(null);
-			hasCreateChannelCostTable = true;
+//			hasCreateChannelCostTable = true;
 		}
 
 		// 查询渠道列表信息
