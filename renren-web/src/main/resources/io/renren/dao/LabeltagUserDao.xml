@@ -57,7 +57,7 @@
 
 	<select id="queryList" resultType="io.renren.entity.LabeltagUserEntity">
 
-        CALL PRO_LABELTAG_USER_2(#{strSql});
+        CALL PRO_LABELTAG_USER(#{strSql});
 
     </select>
 
