@@ -1,8 +1,6 @@
 package io.renren.controller.channelmanager;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -44,6 +43,7 @@ import io.renren.utils.R;
 public class DmReportUserActivateDailyController {
 	@Autowired
 	private DmReportUserActivateDailyService dmReportUserActivateDailyService;
+
 
 	/**
 	 * 列表
@@ -91,18 +91,16 @@ public class DmReportUserActivateDailyController {
 		if (channelName == null || "".equals(channelName.toString().trim())) {
 			map.put("channelName", new ArrayList<>());
 		} else {
-			try {
-				channelName = URLDecoder.decode(channelName, "utf8");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				channelName = URLDecoder.decode(channelName, "utf8");
+//			} catch (UnsupportedEncodingException e) {
+//				e.printStackTrace();
+//			}
 			channelName = channelName.toString().substring(0, channelName.toString().length() - 1);
 			map.put("channelName", Arrays.asList(channelName.toString().split("\\^")));
 		}
 
 		System.err.println("++++++++++map: " + map);
-
-
 
 		// 查询列表数据
 		List<DmReportUserActivateDailyEntity> dmReportUserActivateDailyList = dmReportUserActivateDailyService
@@ -183,11 +181,16 @@ public class DmReportUserActivateDailyController {
 
 		ExcelUtil.downloadExcelFile(title, headMap, va, response);
 	}
-
+	
+	@Autowired
+	SqlSessionFactory sqlSessionFactory;
+	
 	@ResponseBody
 	@RequestMapping("/totalList")
 	@RequiresPermissions("dmreportuseractivatedaily:list")
 	public R totalList(@RequestBody Map<String, Object> map) {
+//		MyBatisSql sql = MyBatisSqlUtils.getMyBatisSql("io.renren.dao.ChannelChannelAllDao.queryChannel", null, sqlSessionFactory);
+//		System.err.println("++++++++++++++++++++++++sql+++++++++++++++++++" + sql);
 		String statPeriod = map.get("statPeriod") + "";
 		if (StringUtils.isNotEmpty(statPeriod)) {
 			map.put("statPeriod", statPeriod.replace("-", ""));

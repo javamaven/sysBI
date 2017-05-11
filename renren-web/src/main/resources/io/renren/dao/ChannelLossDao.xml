@@ -12,7 +12,7 @@
 		sum(IFNULL(d.INCOME_, 0)) / count(DISTINCT d.USER_ID_) ddzPerInvestAmount
 	FROM
 		ODS_MJKF_DDZ_INV_ACCOUNTLOG_DD d,
-		dm_report_merge_user u
+		edw_user_basic u
 	WHERE
 		1 = 1
 	AND d.USER_ID_ = u.USER_ID
@@ -34,7 +34,7 @@
 						CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_BALANCE ELSE u.NORMAL_FIRSTINVEST_BALANCE END stMoney,
 						CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_Y_MONEY ELSE u.NORMAL_FIRSTINVEST_Y_MONEY END stYearMoney
 					FROM
-						dm_report_merge_user u
+						edw_user_basic u
 					WHERE
 						1 = 1
 					AND u.REGISTER_TIME >= #{firstInvBeginDate}
@@ -70,8 +70,8 @@
 		sum(IFNULL(p.TEND_VOUCHE, 0))/count(DISTINCT p.user_id) perTotalUseRedMoney
 	
 	FROM
-		edw_merge_project_detail p,
-		dm_report_merge_user u
+		edw_trading_project_detail p,
+		edw_user_basic u
 	WHERE
 		1 = 1
 	AND u.user_id = p.USER_ID
@@ -93,7 +93,7 @@
 						CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_BALANCE ELSE u.NORMAL_FIRSTINVEST_BALANCE END stMoney,
 						CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_Y_MONEY ELSE u.NORMAL_FIRSTINVEST_Y_MONEY END stYearMoney
 					FROM
-						dm_report_merge_user u
+						edw_user_basic u
 					WHERE
 						1 = 1
 					AND u.REGISTER_TIME >= #{firstInvBeginDate}
@@ -149,7 +149,7 @@ FROM
 		p.addtime,
 		p.TEND_VOUCHE
 	FROM
-		edw_merge_project_detail p,
+		edw_trading_project_detail p,
 		(
 			SELECT
 				@multiRownum := 0 ,@multiUser = ''
@@ -257,7 +257,7 @@ FROM
 						     <![CDATA[ and o.CREATE_TIME <=  #{invEndDate}  ]]>
 						</if>
 						AND o.ASSIGNEE_USER_ID IN (
-							SELECT user_id FROM dm_report_merge_user u
+							SELECT user_id FROM edw_user_basic u
 							WHERE 1 = 1
 							AND u.user_id IN (
 								SELECT user_id FROM
@@ -270,7 +270,7 @@ FROM
 											SELECT
 												u.user_id,u.ACTIVITY_TAG,max(u.NORMAL_FIRSTINVEST_TIME) ptTime,max(u.DEPOSITORY_FIRSTINVEST_TIME) cgTime,max(u.NORMAL_FIRSTINVEST_BALANCE) ptMoney, max(u.DEPOSITORY_FIRSTINVEST_BALANCE) cgMoney
 											FROM
-												dm_report_merge_user u
+												edw_user_basic u
 											WHERE 1 = 1
 											AND (
 												(
@@ -306,7 +306,7 @@ FROM
 							)
 						)
 					) p,
-					dm_report_merge_user u
+					edw_user_basic u
 				WHERE
 					p.user_id = u.USER_ID
 				GROUP BY
@@ -322,7 +322,7 @@ FROM
 						(
 							SELECT p.user_id, p.TENDER_CAPITAL * p.BORROW_PERIOD / 360 money
 							FROM
-								edw_merge_project_detail p
+								edw_trading_project_detail p
 							WHERE
 								1 = 1
 							<if test="firstInvBeginDate != null and firstInvBeginDate.trim() != '' ">
@@ -332,7 +332,7 @@ FROM
 							     <![CDATA[ and p.ADDTIME <=  #{invEndDate}  ]]>
 							</if>
 							AND p.user_id IN (
-								SELECT user_id FROM dm_report_merge_user u
+								SELECT user_id FROM edw_user_basic u
 								WHERE
 									1 = 1
 								AND u.user_id IN (
@@ -346,7 +346,7 @@ FROM
 												SELECT
 													u.user_id,u.ACTIVITY_TAG,max(u.NORMAL_FIRSTINVEST_TIME) ptTime,max(u.DEPOSITORY_FIRSTINVEST_TIME) cgTime,max(u.NORMAL_FIRSTINVEST_BALANCE) ptMoney,max(u.DEPOSITORY_FIRSTINVEST_BALANCE) cgMoney
 												FROM
-													dm_report_merge_user u
+													edw_user_basic u
 												WHERE
 													1 = 1
 												AND (
@@ -384,7 +384,7 @@ FROM
 								)
 							)
 						) p,
-						dm_report_merge_user u
+						edw_user_basic u
 					WHERE
 						p.user_id = u.USER_ID
 					GROUP BY
@@ -418,7 +418,7 @@ GROUP BY
 				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_BALANCE ELSE u.NORMAL_FIRSTINVEST_BALANCE END stMoney,
 				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_Y_MONEY ELSE u.NORMAL_FIRSTINVEST_Y_MONEY END stYearMoney
 			FROM
-				dm_report_merge_user u
+				edw_user_basic u
 			WHERE
 				1 = 1
 			<if test="channelLabelList != null and channelLabelList.size()!=0">
@@ -442,7 +442,7 @@ GROUP BY
 				)
 			)
 		) u,
-		edw_merge_project_detail p
+		edw_trading_project_detail p
 	WHERE
 		1 = 1
 	AND u.user_id = p.USER_ID
@@ -470,7 +470,7 @@ GROUP BY
 				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_BALANCE ELSE u.NORMAL_FIRSTINVEST_BALANCE END stMoney,
 				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_Y_MONEY ELSE u.NORMAL_FIRSTINVEST_Y_MONEY END stYearMoney
 			FROM
-				dm_report_merge_user u
+				edw_user_basic u
 			WHERE
 				1 = 1
 			<if test="channelLabelList != null and channelLabelList.size()!=0">
@@ -521,7 +521,7 @@ GROUP BY
 							CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_BALANCE ELSE u.NORMAL_FIRSTINVEST_BALANCE END stMoney,
 							CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_Y_MONEY ELSE u.NORMAL_FIRSTINVEST_Y_MONEY END stYearMoney
 						FROM
-							dm_report_merge_user u
+							edw_user_basic u
 						WHERE
 							1 = 1
 						<if test="channelLabelList != null and channelLabelList.size()!=0">
@@ -545,7 +545,7 @@ GROUP BY
 							)
 						)
 	
-				) u ,edw_merge_project_detail p
+				) u ,edw_trading_project_detail p
 			WHERE
 				1 = 1
 			AND u.user_id = p.user_id
@@ -564,7 +564,7 @@ GROUP BY
 						count(1) = #{investTime}
 				</if>
 		) s,
-		dm_report_merge_user u
+		edw_user_basic u
 	WHERE
 		1 = 1
 	AND s.user_id = u.USER_ID
@@ -586,7 +586,7 @@ GROUP BY
 				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_BALANCE ELSE u.NORMAL_FIRSTINVEST_BALANCE END stMoney,
 				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_Y_MONEY ELSE u.NORMAL_FIRSTINVEST_Y_MONEY END stYearMoney
 			FROM
-				dm_report_merge_user u
+				edw_user_basic u
 			WHERE
 				1 = 1
 			<if test="channelLabelList != null and channelLabelList.size()!=0">
@@ -623,7 +623,7 @@ GROUP BY
 		u.ACTIVITY_TAG channelLabel,
 		count(u.user_id) registerUserNum
 	FROM
-		dm_report_merge_user u
+		edw_user_basic u
 	WHERE
 		1 = 1
 	<if test="firstInvBeginDate != null and firstInvBeginDate.trim() != '' ">

@@ -3,9 +3,70 @@
 
 <mapper namespace="io.renren.dao.ChannelRenewDataDao">
 
+<delete id="delete" parameterType="io.renren.entity.ChannelRenewDataEntity">
+
+delete from dm_report_channel_renew_stat 
+where stat_day=#{statDay} and  channel_label=#{channelLabel}
+</delete>
+<insert id="insert" parameterType="io.renren.entity.ChannelRenewDataEntity">
+  insert into  dm_report_channel_renew_stat
+values(	#{statDay},
+		#{channelType},
+		#{channelName},
+		#{channelLabel},
+		#{day30Cost},
+		#{day60Cost},
+		#{day90Cost},
+		#{onlineTime},
+		#{day30YearAmount},
+		#{day60YearAmount},
+		#{day90YearAmount},
+		#{day30YearRoi},
+		#{day60YearRoi},
+		#{day90YearRoi},
+		#{day30FirstInvestAmount},
+		#{day60FirstInvestAmount},
+		#{day90FirstInvestAmount},
+		#{day30MultiInvestAmount},
+		#{day60MultiInvestAmount},
+		#{day90MultiInvestAmount},
+		#{day30FirstInvestUserNum},
+		#{day60FirstInvestUserNum},
+		#{day90FirstInvestUserNum},
+		#{day30MultiInvestUserNum},
+		#{day60MultiInvestUserNum},
+		#{day90MultiInvestUserNum},
+		#{day30MultiRate},
+		#{day60MultiRate},
+		#{day90MultiRate},
+		#{day30MultiInvestAmountRate},
+		#{day60MultiInvestAmountRate},
+		#{day90MultiInvestAmountRate},
+		#{day30FirstInvestYearAmount},
+		#{day60FirstInvestYearAmount},
+		#{day90FirstInvestYearAmount},
+		#{day30PerFirstInvestYearAmount},
+		#{day60PerFirstInvestYearAmount},
+		#{day90PerFirstInvestYearAmount},
+		#{day30FirstInvestYearRoi},
+		#{day60FirstInvestYearRoi},
+		#{day90FirstInvestYearRoi}
+
+)
+</insert>
+
+
 <sql id="channelCond">
 	<if test="channelLabelList !=null and channelLabelList.size() != 0">
 		AND c.channel_label IN
+		<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
+			#{channelName}
+		</foreach>
+	</if>
+</sql>
+<sql id="channelCond_s">
+	<if test="channelLabelList !=null and channelLabelList.size() != 0">
+		AND s.channel_label IN
 		<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
 			#{channelName}
 		</foreach>
@@ -24,6 +85,21 @@
 	call first_invest_year_roi_renew_day30(#{startDate} , #{endDate})
 
 </select>
+
+<select id="queryFirstInvestUserNumDay30" resultType="io.renren.entity.ChannelRenewDataEntity">
+	<!-- 30日,首投用户数，首投金额，首投年华金额 传入不同参数，返回对应信息-->
+	call renew_invest_info_stat_day30(#{onlineDate} ,#{startDate} , #{endDate})
+</select>
+<select id="queryFirstInvestUserNumDay60" resultType="io.renren.entity.ChannelRenewDataEntity">
+	<!-- 60日首投用户数，首投金额，首投年华金额 传入不同参数，返回对应信息-->
+	call renew_invest_info_stat_day60(#{onlineDate} ,#{startDate} , #{endDate})
+</select>
+<select id="queryFirstInvestUserNumDay90" resultType="io.renren.entity.ChannelRenewDataEntity">
+	<!-- 90日,首投用户数，首投金额，首投年华金额 传入不同参数，返回对应信息-->
+	call renew_invest_info_stat_day90(#{onlineDate} ,#{startDate} , #{endDate})
+</select>
+
+
 <select id="queryFirstInvestUserNum" resultType="io.renren.entity.ChannelRenewDataEntity" fetchSize="2000">
 <!-- 30日60日90日,首投用户数，首投金额，首投年华金额 传入不同参数，返回对应信息-->
 <!-- 30日60日90日,复投用户数，复投金额，复投年华金额 传入不同参数，返回对应信息-->
@@ -45,11 +121,12 @@
 				p.TENDER_CAPITAL money, 
 				p.BORROW_PERIOD days
 				FROM
-					edw_merge_project_detail p
+					edw_trading_project_detail p
 				ORDER BY
 					p.user_id ASC,
+					p.addtime,
 					p.id
-		) s , dm_report_merge_user u
+		) s , edw_user_basic u
 		where 1=1
 		and s.rownum= #{rownum}
 		AND s.addTime >= #{startDate}
@@ -122,7 +199,30 @@ group by s.channelLabel
 
 <select id="queryYearAmount" resultType="io.renren.entity.ChannelRenewDataEntity">
 	<!-- 30日60日90日,年化投资金额 ,传入不同天数，返回对应年化金额-->
-	
+	SELECT
+		u.ACTIVITY_TAG channelLabel,
+		sum(
+			p.TENDER_CAPITAL * p.BORROW_PERIOD / 360
+		) yearAmount,
+		sum(IFNULL(p.TENDER_CAPITAL, 0)) amount
+	FROM
+		edw_trading_project_detail p,
+		edw_user_basic u
+	WHERE
+		1 = 1
+	AND p.USER_ID = u.USER_ID 
+	AND u.ACTIVITY_TAG IN (SELECT a.channel_label FROM dim_channel_cost_union a WHERE 1 = 1 AND a.fee_time =#{onlineDate})
+	AND p.ADDTIME  >= #{startDate}
+	AND p.ADDTIME  &lt;= #{endDate}
+	<if test="channelLabelList !=null and channelLabelList.size() != 0">
+		AND u.ACTIVITY_TAG IN
+		<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
+			#{channelName}
+		</foreach>
+	</if>
+	GROUP BY
+		u.ACTIVITY_TAG
+<!-- 	
 	SELECT
 		u.ACTIVITY_TAG channelLabel,
 		sum(
@@ -130,8 +230,8 @@ group by s.channelLabel
 		) yearAmount,
 		sum(IFNULL(p.TENDER_CAPITAL,0)) amount
 	FROM
-		edw_merge_project_detail p,
-		dm_report_merge_user u
+		edw_trading_project_detail p,
+		edw_user_basic u
 	WHERE
 		1 = 1
 	AND p.USER_ID = u.USER_ID
@@ -146,9 +246,21 @@ group by s.channelLabel
 	AND p.ADDTIME &lt;= #{endDate}
 	GROUP BY
 		u.ACTIVITY_TAG
-
+-->
 </select>
 <select id="queryOnlineTime" resultType="io.renren.entity.ChannelRenewDataEntity">
+	<!-- 上线时间 -->
+	SELECT
+		c.CHANNEL_LABEL channelLabel,
+		c.FEE_TIME onlineTime
+	FROM
+		dim_channel_cost_union c
+	WHERE
+		1 = 1
+	AND c.FEE_TIME = #{onlineDate}
+	<include refid="channelCond"/>
+
+<!-- 
 	SELECT
 		c.CHANNEL_LABEL channelLabel,
 		c.CHANNEL_STARTTIME onlineTime
@@ -158,10 +270,65 @@ group by s.channelLabel
 		1 = 1
 	 <include refid="channelCond"/>
 	order by c.CHANNEL_LABEL
-
+-->
 </select>
 <select id="queryChannelCost" resultType="io.renren.entity.ChannelRenewDataEntity">
-<!-- 30日60日90日，费用 -->
+	<!-- 30日60日90日，费用 -->
+	select 
+		s.CHANNEL_label channelLabel,
+		sum(s.day30Cost) day30Cost,
+		sum(s.day60Cost) day60Cost,
+		sum(s.day90Cost) day90Cost
+	from (
+			SELECT
+				t.CHANNEL_label,
+				sum(IFNULL(t.FEE_AMOUNT, 0)) day30Cost,
+				0 day60Cost,
+				0 day90Cost
+			FROM
+				dim_channel_cost_union t
+			WHERE
+				1 = 1
+			AND t.FEE_TIME >= #{onlineDate}
+			AND t.FEE_TIME &lt;= #{day30}
+			AND t.CHANNEL_ID IN (SELECT a.channel_id FROM dim_channel_cost_union a WHERE 1 = 1 AND a.fee_time = #{onlineDate})
+	
+			union all 
+	
+			SELECT
+				t.CHANNEL_label,
+				0 day30Cost,
+				sum(IFNULL(t.FEE_AMOUNT, 0)) day60Cost,
+				0 day90Cost
+			FROM
+				dim_channel_cost_union t
+			WHERE
+				1 = 1
+			AND t.FEE_TIME >= #{onlineDate}
+			AND t.FEE_TIME &lt;= #{day60}
+			AND t.CHANNEL_ID IN (SELECT a.channel_id FROM dim_channel_cost_union a WHERE 1 = 1 AND a.fee_time = #{onlineDate})
+		
+		union all 
+	
+			SELECT
+				t.CHANNEL_label,
+				0 day30Cost,
+				0 day60Cost,
+				sum(IFNULL(t.FEE_AMOUNT, 0)) day90Cost
+			FROM
+				dim_channel_cost_union t
+			WHERE
+				1 = 1
+			AND t.FEE_TIME >= #{onlineDate}
+			AND t.FEE_TIME &lt;= #{day90}
+			AND t.CHANNEL_ID IN (SELECT a.channel_id FROM dim_channel_cost_union a WHERE 1 = 1 AND a.fee_time = #{onlineDate})
+	
+	) s 
+	where 1=1
+	<include refid="channelCond_s"/>
+	group by s.CHANNEL_label
+
+<!-- 
 SELECT 
 	s.channel_label channelLabel, 
 	sum(s.30dayMoney) day30Cost,
@@ -215,7 +382,7 @@ union all
 ) s
 where 1=1
 group by s.channel_label
-
+-->
 
 </select>
 

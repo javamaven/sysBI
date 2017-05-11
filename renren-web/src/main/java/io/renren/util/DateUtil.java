@@ -14,7 +14,7 @@ public class DateUtil {
 		System.out.println(dateTimeSdf.format(new Date()));
 		System.out.println("getCurrDayStr=" + getCurrDayStr());
 		System.out.println("getCurrDayBefore=" + getCurrDayBefore(1));
-		System.out.println("getCurrDayBefore=" + getCurrDayBefore("20170423", 1));
+		System.out.println("getCurrDayBefore=" + getCurrDayBefore("20170423", 1 ,null));
 	}
 
 	public static String formatDate(Date date) {
@@ -69,15 +69,27 @@ public class DateUtil {
 	 *            多少天前
 	 * @return
 	 */
-	public static String getCurrDayBefore(String date, int days) {
+	public static String getCurrDayBefore(String date, int days, String sdf) {
 		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat dateSdf2 = null;
+
 		try {
-			cal.setTime(dateSdf.parse(date));
+			if (sdf != null && sdf.length() > 0) {
+				dateSdf2 = new SimpleDateFormat(sdf);
+				cal.setTime(dateSdf2.parse(date));
+			} else {
+				cal.setTime(dateSdf.parse(date));
+			}
 		} catch (ParseException e) {
 			e.printStackTrace();
 		}
 		cal.add(Calendar.DATE, -days);
-		return dateSdf.format(cal.getTime());
+		if (sdf != null && sdf.length() > 0) {
+			return dateSdf2.format(cal.getTime());
+		} else {
+			return dateSdf.format(cal.getTime());
+		}
+
 	}
 
 	/**

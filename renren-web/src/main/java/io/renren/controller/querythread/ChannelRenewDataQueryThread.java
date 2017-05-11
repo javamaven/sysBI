@@ -42,32 +42,27 @@ public class ChannelRenewDataQueryThread implements Runnable {
 			break;
 		case 3:
 			list = service.queryYearAmount(params);// 30日60日90日，年化金额 ,传入不同参数
-			// for (int i = 0; i < list.size(); i++) {
-			// ChannelRenewDataEntity en = list.get(i);
-			// System.err.println("params=" + params + " ;
-			// "+en.getChannelLabel() + " : " + en.getYearAmount());
-			// }
 			break;
 		case 4:
-			list = service.queryYearRoi(params);// 30日60日90日，年化ROI
+			list = service.queryFirstInvestUserNumDay30(params);//30日首(复)投人数，首(复)投金额为，首投年化金额
 			break;
 		case 5:
-//			list = new ArrayList<ChannelRenewDataEntity>();
-			list = service.queryFirstInvestUserNum(params);// 30日60日90日，首投人数，首投金额为，首投年化金额
+//			list = service.queryFirstInvestUserNum(params);// 30日60日90日，首投人数，首投金额为，首投年化金额
 															// 30日60日90日，复投人数，复投金额为，复投年化金额
+			list = service.queryFirstInvestUserNumDay60(params);//60日首(复)投人数，首(复)投金额为，首投年化金额
 			break;
 		case 6:
-			list = service.queryDay30FirstInvestYearRoi(params);// 30日,首投年化ROI
+			list = service.queryFirstInvestUserNumDay90(params);//90日首(复)投人数，首(复)投金额为，首投年化金额
 			// 传入不同参数，返回对应信息
 			break;
-		case 7:
-			list = service.queryDay60FirstInvestYearRoi(params);// 60日,首投年化ROI
-			// 传入不同参数，返回对应信息
-			break;
-		case 8:
-			list = service.queryDay90FirstInvestYearRoi(params);// 90日,首投年化ROI
-			// 传入不同参数，返回对应信息
-			break;
+//		case 7:
+//			list = service.queryDay60FirstInvestYearRoi(params);// 60日,首投年化ROI
+//			// 传入不同参数，返回对应信息
+//			break;
+//		case 8:
+//			list = service.queryDay90FirstInvestYearRoi(params);// 90日,首投年化ROI
+//			// 传入不同参数，返回对应信息
+//			break;
 		default:
 			break;
 		}

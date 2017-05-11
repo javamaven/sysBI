@@ -46,8 +46,8 @@
 					IFNULL(p.TENDER_CAPITAL, 0) * IFNULL(p.BORROW_PERIOD, 0) / 360
 				) money
 			FROM
-				edw_merge_project_detail p,
-				dm_report_merge_user u
+				edw_trading_project_detail p,
+				edw_user_basic u
 			WHERE
 				1 = 1
 			AND p.USER_ID = u.USER_ID
@@ -74,7 +74,7 @@
 					sum(IFNULL(d.INCOME_, 0) * 1 / 360) money
 				FROM
 					ODS_MJKF_DDZ_INV_ACCOUNTLOG_DD d,
-					dm_report_merge_user u
+					edw_user_basic u
 				WHERE
 					1 = 1
 				AND d.USER_ID_ = u.USER_ID
@@ -120,7 +120,7 @@
 				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_BALANCE ELSE u.NORMAL_FIRSTINVEST_BALANCE END stMoney,
 				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_Y_MONEY ELSE u.NORMAL_FIRSTINVEST_Y_MONEY END stYearMoney
 			FROM
-				dm_report_merge_user u
+				edw_user_basic u
 			WHERE
 				1 = 1
 			<include refid="channelCond" />
@@ -156,7 +156,7 @@
 <!-- 		count(DISTINCT u.user_id) registerUserNum -->
 	FROM
 <!-- 		edw_merge_user u -->
-		dm_report_merge_user u 
+		edw_user_basic u 
 	WHERE
 		1 = 1
 	<include refid="channelCond"/>
@@ -186,8 +186,8 @@ select s.ACTIVITY_TAG channelLabel, count(DISTINCT s.user_id) userInvestNum from
 				u.ACTIVITY_TAG,
 				u.USER_ID
 			FROM
-				edw_merge_project_detail p,
-				dm_report_merge_user u
+				edw_trading_project_detail p,
+				edw_user_basic u
 			WHERE
 				p.USER_ID = u.USER_ID
 			AND P.TENDER_SUBJECT IN (1,2)
@@ -212,7 +212,7 @@ union all
 				u.USER_ID
 			FROM
 				ods_mjkf_ddz_inv_accountlog_dd p,
-				dm_report_merge_user u
+				edw_user_basic u
 			WHERE
 			p.USER_ID_ = u.USER_ID
 			<include refid="channelCond"/>
@@ -243,8 +243,8 @@ select s.ACTIVITY_TAG channelLabel, sum(money) userInvestAmount from (
 				u.ACTIVITY_TAG,
 				sum(p.TENDER_CAPITAL) money
 			FROM
-				edw_merge_project_detail p,
-				dm_report_merge_user u
+				edw_trading_project_detail p,
+				edw_user_basic u
 			WHERE
 				p.USER_ID = u.USER_ID
 			AND P.TENDER_SUBJECT IN (1,2)
@@ -269,7 +269,7 @@ union all
 				sum(p.INCOME_) money
 			FROM
 				ods_mjkf_ddz_inv_accountlog_dd p,
-				dm_report_merge_user u
+				edw_user_basic u
 			WHERE
 			p.USER_ID_ = u.USER_ID
 			and p.TYPE_  in ('B', 'RP') 
@@ -306,7 +306,7 @@ select * from (
 				a.TENDER_CAPITAL money,
 				a.user_id user_id
 			FROM
-				edw_merge_project_detail a
+				edw_trading_project_detail a
 			WHERE
 				1 = 1
 			<if test="regBeginDate != null and regBeginDate.trim() != '' ">
@@ -365,7 +365,7 @@ select s.channelLabel,sum(s.firstInvestUserAmount) firstInvestUserAmount from (
 							CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_BALANCE ELSE u.NORMAL_FIRSTINVEST_BALANCE END stMoney,
 							CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_Y_MONEY ELSE u.NORMAL_FIRSTINVEST_Y_MONEY END stYearMoney
 						FROM
-							dm_report_merge_user u
+							edw_user_basic u
 						WHERE
 							1 = 1
 						<include refid="channelCond"/>
@@ -385,7 +385,7 @@ select s.channelLabel,sum(s.firstInvestUserAmount) firstInvestUserAmount from (
 						)			
 							
 			
-			) s , edw_merge_project_detail p
+			) s , edw_trading_project_detail p
 		where 1=1 
 		and s.user_id=p.USER_ID
 		<if test="regBeginDate != null and regBeginDate.trim() != '' ">
@@ -416,7 +416,7 @@ union all
 							CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_BALANCE ELSE u.NORMAL_FIRSTINVEST_BALANCE END stMoney,
 							CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_Y_MONEY ELSE u.NORMAL_FIRSTINVEST_Y_MONEY END stYearMoney
 						FROM
-							dm_report_merge_user u
+							edw_user_basic u
 						WHERE
 							1 = 1
 						<include refid="channelCond"/>
@@ -496,7 +496,7 @@ FROM
 				p.TENDER_CAPITAL,
 				p.BORROW_PERIOD days
 			FROM
-				edw_merge_project_detail p,
+				edw_trading_project_detail p,
 				(SELECT @multiRownum := 0 ,@multiUser = '') t
 			WHERE 1=1
 				and p.tender_subject = 1
@@ -543,7 +543,7 @@ GROUP BY
 				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_BALANCE ELSE u.NORMAL_FIRSTINVEST_BALANCE END stMoney,
 				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_Y_MONEY ELSE u.NORMAL_FIRSTINVEST_Y_MONEY END stYearMoney
 			FROM
-				dm_report_merge_user u
+				edw_user_basic u
 			WHERE
 				1 = 1
 			<include refid="channelCond"/>
@@ -561,7 +561,7 @@ GROUP BY
 					AND u.DEPOSITORY_FIRSTINVEST_TIME &lt;=  #{invEndDate}
 				)
 			)
-	) s , edw_merge_project_detail p
+	) s , edw_trading_project_detail p
 	where 1=1 
 	and s.user_id=p.USER_ID
 	and s.minTime >=  #{regBeginDate} 
@@ -588,7 +588,7 @@ GROUP BY
 				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_BALANCE ELSE u.NORMAL_FIRSTINVEST_BALANCE END stMoney,
 				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_Y_MONEY ELSE u.NORMAL_FIRSTINVEST_Y_MONEY END stYearMoney
 			FROM
-				dm_report_merge_user u
+				edw_user_basic u
 			WHERE
 				1 = 1
 			AND u.REGISTER_TIME >=  #{regBeginDate} 
@@ -607,7 +607,7 @@ GROUP BY
 				)
 			)
 	
-	) u, edw_merge_project_detail p
+	) u, edw_trading_project_detail p
 	
 	WHERE
 		1 = 1
@@ -630,8 +630,8 @@ GROUP BY
 		sum(p.TENDER_CAPITAL) proInvestAmount,
 		count(p.USER_ID) proInvestUser
 	FROM
-		edw_merge_project_detail p,
-		dm_report_merge_user u
+		edw_trading_project_detail p,
+		edw_user_basic u
 	WHERE 1=1
 	AND u.user_id = p.USER_ID
 	<include refid="channelCond"/>

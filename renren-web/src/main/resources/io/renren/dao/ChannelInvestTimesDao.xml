@@ -9,7 +9,7 @@ SELECT
 	u.ACTIVITY_TAG channelLabel,
 	count(u.user_id) registerUserNum
 FROM
-	dm_report_merge_user u
+	edw_user_basic u
 WHERE
 	1 = 1
 <if test="regBeginDate != null and regBeginDate.trim() != '' ">
@@ -43,7 +43,7 @@ GROUP BY
 				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_BALANCE ELSE u.NORMAL_FIRSTINVEST_BALANCE END stMoney,
 				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_Y_MONEY ELSE u.NORMAL_FIRSTINVEST_Y_MONEY END stYearMoney
 			FROM
-				dm_report_merge_user u
+				edw_user_basic u
 			WHERE
 				1 = 1
 			<if test="channelLabelList != null and channelLabelList.size()!=0">
@@ -82,8 +82,8 @@ SELECT
 	u.ACTIVITY_TAG channelLabel,
 	count(1) investTimes
 FROM
-	edw_merge_project_detail p,
-	dm_report_merge_user u
+	edw_trading_project_detail p,
+	edw_user_basic u
 WHERE
 	1 = 1
 AND p.USER_ID = u.USER_ID
@@ -119,8 +119,8 @@ GROUP BY
 		u.ACTIVITY_TAG channelLabel,
 		count(DISTINCT u.user_id) investUserNum
 	FROM
-		edw_merge_project_detail p,
-		dm_report_merge_user u
+		edw_trading_project_detail p,
+		edw_user_basic u
 	WHERE
 		1 = 1
 	AND p.USER_ID = u.USER_ID
@@ -155,8 +155,8 @@ GROUP BY
 		u.ACTIVITY_TAG channelLabel,
 		sum(p.TENDER_CAPITAL) investAmount
 	FROM
-		edw_merge_project_detail p,
-		dm_report_merge_user u
+		edw_trading_project_detail p,
+		edw_user_basic u
 	WHERE
 		1 = 1
 	AND p.USER_ID = u.USER_ID
@@ -191,8 +191,8 @@ GROUP BY
 		u.ACTIVITY_TAG channelLabel,
 		sum(IFNULL(p.TENDER_CAPITAL,0)*IFNULL(p.BORROW_PERIOD,0)/360) investYearAmount
 	FROM
-		edw_merge_project_detail p,
-		dm_report_merge_user u
+		edw_trading_project_detail p,
+		edw_user_basic u
 	WHERE
 		1 = 1
 	AND p.USER_ID = u.USER_ID
@@ -241,8 +241,8 @@ SELECT
 	u.ACTIVITY_TAG channelLabel,
 	sum(IFNULL(p.TEND_VOUCHE,0)) allRedMoney
 FROM
-	edw_merge_project_detail p,
-	dm_report_merge_user u
+	edw_trading_project_detail p,
+	edw_user_basic u
 WHERE
 	1 = 1
 AND p.USER_ID = u.USER_ID
@@ -277,7 +277,7 @@ GROUP BY
 		sum(IFNULL(d.INCOME_, 0)) / count(DISTINCT d.USER_ID_) ddzPerInvestAmount
 	FROM
 		ODS_MJKF_DDZ_INV_ACCOUNTLOG_DD d,
-		dm_report_merge_user u
+		edw_user_basic u
 	WHERE
 		1 = 1
 	AND d.USER_ID_ = u.USER_ID

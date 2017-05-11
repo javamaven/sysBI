@@ -22,6 +22,9 @@ public interface ChannelRenewDataService {
 	// 30日60日90日，首投人数，首投金额为，首投年化金额
 	// 30日60日90日，复投人数，复投金额为，复投年化金额
 	List<ChannelRenewDataEntity> queryFirstInvestUserNum(Map<String, Object> map);
+	List<ChannelRenewDataEntity> queryFirstInvestUserNumDay30(Map<String, Object> map);
+	List<ChannelRenewDataEntity> queryFirstInvestUserNumDay60(Map<String, Object> map);
+	List<ChannelRenewDataEntity> queryFirstInvestUserNumDay90(Map<String, Object> map);
 
 	// 30日60日90日,首投年化ROI 传入不同参数，返回对应信息
 	List<ChannelRenewDataEntity> queryFirstInvestYearRoi(Map<String, Object> map);
@@ -34,5 +37,9 @@ public interface ChannelRenewDataService {
 
 	// 90日,首投年化ROI 传入不同参数，返回对应信息
 	List<ChannelRenewDataEntity> queryDay90FirstInvestYearRoi(Map<String, Object> map);
+	
+	void insert(ChannelRenewDataEntity channelRenewDataEntity);
+	
+	void delete(ChannelRenewDataEntity channelRenewDataEntity);
 
 }

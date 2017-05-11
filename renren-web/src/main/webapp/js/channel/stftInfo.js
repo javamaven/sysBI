@@ -20,27 +20,7 @@ function initExportFunction(){
 	});
 
 }
-/**
- * 使用post提交表单
- * @param URL
- * @param PARAMS
- * @returns
- */
-function executePost(URL, PARAMS) {        
-    var temp = document.createElement("form");        
-    temp.action = URL;        
-    temp.method = "post";        
-    temp.style.display = "none";        
-    for (var x in PARAMS) {        
-        var opt = document.createElement("textarea");        
-        opt.name = x;        
-        opt.value = PARAMS[x];        
-        temp.appendChild(opt);        
-    }        
-    document.body.appendChild(temp);        
-    temp.submit();        
-    return temp;        
-}        
+     
      
 function loadTableAjax(){
  $.ajax({
@@ -105,8 +85,8 @@ $(".form_datetime_2").
     setStartDate:new Date()
 });
 // 初始化时间
-document.getElementById("reg_begindate").value=getDate(2);
-document.getElementById("reg_enddate").value=getDate(1);
+document.getElementById("reg_begindate").value = addDate(getCurrDate(), -90);
+document.getElementById("reg_enddate").value = getYesterday();
 
 
 // 自适应高度

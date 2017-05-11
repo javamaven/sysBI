@@ -11,6 +11,9 @@
 	<select id="queryChannelCostList" resultType="io.renren.entity.DimChannelEntity">
       select channel_label,channel_name_back,type from dim_channel_cost
 	</select>
+	<select id="queryOnlineChannelCostList" resultType="io.renren.entity.DimChannelEntity">
+		select * from dim_channel_cost_union
+	</select>
 	
 	<select id="queryChannelName" resultType="io.renren.entity.DimChannelEntity">
 		SELECT '空' AS CHANNEL_NAME
@@ -19,4 +22,32 @@
 		FROM dim_channel CR  WHERE 1=1
 	</select>
 	
+	
+	<select  id="createChanelCostTable" >
+		<!--  创建渠道成本表：将渠道成本信息和渠道名称信息关联汇总 -->
+		call renew_create_table_channel_cost()
+		<!-- 
+		DROP TABLE IF EXISTS dim_channel_cost_union;
+		CREATE TABLE dim_channel_cost_union AS 
+		SELECT
+			f.CHANNEL_ID,
+			f.FEE_TIME,
+			f.FEE_AMOUNT,
+			d.CHANNEL_NAME,
+			d.CHANNEL_NAME_BACK,
+			d.CHANNEL_LABEL,
+			current_date() curr_day
+		FROM
+			ODS_MDTX_CG_MARKET_CHANNEL_FEE f
+		LEFT JOIN dim_channel d ON (f.channel_id = d.channel_id);
+		-->
+		<!-- 为dim_channel_cost_union 增加索引-->
+		<!-- 
+		ALTER TABLE dim_channel_cost_union DROP INDEX IF EXISTS channel_label_index_tmp;
+		ALTER TABLE dim_channel_cost_union ADD INDEX channel_label_index_tmp (channel_label);
+		ALTER TABLE dim_channel_cost_union DROP INDEX IF EXISTS channel_id_index_tmp;
+		ALTER TABLE dim_channel_cost_union ADD INDEX channel_id_index_tmp (channel_id);
+		-->
+	
+	</select>
 </mapper>

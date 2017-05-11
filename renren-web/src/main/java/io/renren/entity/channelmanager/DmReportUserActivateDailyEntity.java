@@ -20,7 +20,7 @@ public class DmReportUserActivateDailyEntity implements Serializable {
 	//
 	private String username;
 	//
-	private Integer channelId;
+	private String channelId;
 	//
 	private String channelName;
 	//
@@ -97,14 +97,14 @@ public class DmReportUserActivateDailyEntity implements Serializable {
 	/**
 	 * 设置：
 	 */
-	public void setChannelId(Integer channelId) {
+	public void setChannelId(String channelId) {
 		this.channelId = channelId;
 	}
 
 	/**
 	 * 获取：
 	 */
-	public Integer getChannelId() {
+	public String getChannelId() {
 		return channelId;
 	}
 
