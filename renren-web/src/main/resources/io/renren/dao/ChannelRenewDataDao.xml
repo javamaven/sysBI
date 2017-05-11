@@ -325,6 +325,7 @@ group by s.channelLabel
 	
 	) s 
 	where 1=1
+	and s.CHANNEL_label is not null
 	<include refid="channelCond_s"/>
 	group by s.CHANNEL_label
 

@@ -802,17 +802,17 @@ public class ChanneRenewDataController extends AbstractController {
 			if(vo.getDay30Cost() == 0){
 				vo.setDay30YearRoi(0);
 			}else{
-				vo.setDay30YearRoi(vo.getDay30YearAmount() / vo.getDay30Cost());
+				vo.setDay30YearRoi(NumberUtil.keepPrecision(vo.getDay30YearAmount() / vo.getDay30Cost(), 2));
 			}
 			if(vo.getDay60Cost() == 0){
 				vo.setDay60YearRoi(0);
 			}else{
-				vo.setDay60YearRoi(vo.getDay60YearAmount() / vo.getDay60Cost());
+				vo.setDay60YearRoi(NumberUtil.keepPrecision(vo.getDay60YearAmount() / vo.getDay60Cost(), 2));
 			}
 			if(vo.getDay90Cost() == 0){
 				vo.setDay90YearRoi(0);
 			}else{
-				vo.setDay90YearRoi(vo.getDay90YearAmount() / vo.getDay90Cost());
+				vo.setDay90YearRoi(NumberUtil.keepPrecision(vo.getDay90YearAmount() / vo.getDay90Cost(), 2));
 			}
 
 			// 30日首投复投人数，首投复投金额，首投年化金额，
@@ -822,9 +822,9 @@ public class ChanneRenewDataController extends AbstractController {
 				ChannelRenewDataEntity en = result4_day30.get(key);
 				vo.setDay30FirstInvestUserNum(en.getDay30FirstInvestUserNum());
 				vo.setDay30MultiInvestUserNum(en.getDay30MultiInvestUserNum());
-				vo.setDay30FirstInvestAmount(en.getDay30FirstInvestAmount());
-				vo.setDay30MultiInvestAmount(en.getDay30MultiInvestAmount());
-				vo.setDay30FirstInvestYearAmount(en.getDay30FirstInvestYearAmount());
+				vo.setDay30FirstInvestAmount(NumberUtil.keepPrecision(en.getDay30FirstInvestAmount(), 2));
+				vo.setDay30MultiInvestAmount(NumberUtil.keepPrecision(en.getDay30MultiInvestAmount(), 2));
+				vo.setDay30FirstInvestYearAmount(NumberUtil.keepPrecision(en.getDay30FirstInvestYearAmount(), 2));
 				vo.setDay30MultiRate(en.getDay30MultiRate());
 				vo.setDay30MultiRateText(NumberUtil.keepPrecision((double) en.getDay30MultiRate() * 100, 2) + "%");
 				vo.setDay30MultiInvestAmountRate(en.getDay30MultiInvestAmountRate());
@@ -839,9 +839,9 @@ public class ChanneRenewDataController extends AbstractController {
 				ChannelRenewDataEntity en = result4_day60.get(key);
 				vo.setDay60FirstInvestUserNum(en.getDay60FirstInvestUserNum());
 				vo.setDay60MultiInvestUserNum(en.getDay60MultiInvestUserNum());
-				vo.setDay60FirstInvestAmount(en.getDay60FirstInvestAmount());
-				vo.setDay60MultiInvestAmount(en.getDay60MultiInvestAmount());
-				vo.setDay60FirstInvestYearAmount(en.getDay60FirstInvestYearAmount());
+				vo.setDay60FirstInvestAmount(NumberUtil.keepPrecision(en.getDay60FirstInvestAmount(), 2));
+				vo.setDay60MultiInvestAmount(NumberUtil.keepPrecision(en.getDay60MultiInvestAmount(), 2));
+				vo.setDay60FirstInvestYearAmount(NumberUtil.keepPrecision(en.getDay60FirstInvestYearAmount(), 2));
 				vo.setDay60MultiRate(en.getDay60MultiRate());
 				vo.setDay60MultiRateText(NumberUtil.keepPrecision((double) en.getDay60MultiRate() * 100, 2) + "%");
 				vo.setDay60MultiInvestAmountRate(en.getDay60MultiInvestAmountRate());
@@ -856,9 +856,9 @@ public class ChanneRenewDataController extends AbstractController {
 				ChannelRenewDataEntity en = result4_day90.get(key);
 				vo.setDay90FirstInvestUserNum(en.getDay90FirstInvestUserNum());
 				vo.setDay90MultiInvestUserNum(en.getDay90MultiInvestUserNum());
-				vo.setDay90FirstInvestAmount(en.getDay90FirstInvestAmount());
-				vo.setDay90MultiInvestAmount(en.getDay90MultiInvestAmount());
-				vo.setDay90FirstInvestYearAmount(en.getDay90FirstInvestYearAmount());
+				vo.setDay90FirstInvestAmount(NumberUtil.keepPrecision(en.getDay90FirstInvestAmount(), 2));
+				vo.setDay90MultiInvestAmount(NumberUtil.keepPrecision(en.getDay90MultiInvestAmount(), 2));
+				vo.setDay90FirstInvestYearAmount(NumberUtil.keepPrecision(en.getDay90FirstInvestYearAmount(), 2));
 				vo.setDay90MultiRate(en.getDay90MultiRate());
 				vo.setDay90MultiRateText(NumberUtil.keepPrecision((double) en.getDay90MultiRate() * 100, 2) + "%");
 				vo.setDay90MultiInvestAmountRate(en.getDay90MultiInvestAmountRate());
