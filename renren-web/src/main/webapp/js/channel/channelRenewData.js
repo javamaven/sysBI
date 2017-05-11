@@ -96,7 +96,7 @@ $(".form_datetime_2").
 
 // 自适应高度
 function tableHeight() {
-	return $(window).height();
+	return $(window).height()-200;
 }
 
 // 查询条件
