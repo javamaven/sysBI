@@ -192,7 +192,7 @@ public class ChanneRenewDataController extends AbstractController {
 		
 		headMap.put("day30FirstInvestAmount", "30日首投金额");
 		headMap.put("day60FirstInvestAmount", "60日首投金额");
-		headMap.put("day60FirstInvestAmount", "90日首投金额");
+		headMap.put("day90FirstInvestAmount", "90日首投金额");
 		
 		headMap.put("day30MultiInvestAmount", "30日复投金额");
 		headMap.put("day60MultiInvestAmount", "60日复投金额");
