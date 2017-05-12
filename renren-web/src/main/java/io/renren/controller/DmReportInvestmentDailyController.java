@@ -1,10 +1,15 @@
 package io.renren.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -15,9 +20,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+
 import io.renren.entity.DmReportInvestmentDailyEntity;
-import io.renren.entity.channelmanager.UserActiveInfoEntity;
+import io.renren.entity.channelmanager.DmReportUserActivateDailyEntity;
 import io.renren.service.DmReportInvestmentDailyService;
+import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
 
@@ -78,7 +87,7 @@ public class DmReportInvestmentDailyController {
 	public R totalList(@RequestBody Map<String, Object> map) {
 		System.err.println("++++++++++map: " + map);
 		String investStartTime = map.get("investStartTime") + "";
-		if (StringUtils.isNotEmpty(investStartTime )) {
+		if (StringUtils.isNotEmpty(investStartTime)) {
 			map.put("investStartTime", investStartTime + " 00:00:00");
 		}
 		String investEndTime = map.get("investEndTime") + "";
@@ -93,11 +102,63 @@ public class DmReportInvestmentDailyController {
 			map.put("channelName", Arrays.asList(channelName.toString().split("\\^")));
 		}
 		// 查询列表数据
-		DmReportInvestmentDailyEntity dmReportInvestmentDailyEntity = dmReportInvestmentDailyService.queryTotalList(map);
+		DmReportInvestmentDailyEntity dmReportInvestmentDailyEntity = dmReportInvestmentDailyService
+				.queryTotalList(map);
 
 		return R.ok().put("data", dmReportInvestmentDailyEntity);
 	}
-	
+
+	@ResponseBody
+	@RequestMapping("/exportExcel")
+	@RequiresPermissions("dmreportinvestmentdaily:list")
+	public void partExport(String params, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		Map<String, Object> map = JSON.parseObject(params, Map.class);
+		String investStartTime = map.get("investStartTime") + "";
+		if (StringUtils.isNotEmpty(investStartTime)) {
+			map.put("investStartTime", investStartTime + " 00:00:00");
+		}
+		String investEndTime = map.get("investEndTime") + "";
+		if (StringUtils.isNotEmpty(investEndTime)) {
+			map.put("investEndTime", investEndTime + " 23:59:59");
+		}
+		Object channelName = map.get("channelName");
+		if (channelName == null || "".equals(channelName.toString().trim())) {
+			map.put("channelName", new ArrayList<>());
+		} else {
+			channelName = channelName.toString().substring(0, channelName.toString().length() - 1);
+			map.put("channelName", Arrays.asList(channelName.toString().split("\\^")));
+		}
+		System.err.println("++++++++++map: " + map);
+
+		// 查询列表数据
+		List<DmReportInvestmentDailyEntity> dataList = dmReportInvestmentDailyService.queryList(map);
+		JSONArray va = new JSONArray();
+		for (int i = 0; i < dataList.size(); i++) {
+			DmReportInvestmentDailyEntity entity = dataList.get(i);
+			va.add(entity);
+		}
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+		headMap.put("userId", "用户ID");
+		headMap.put("username", "用户名称");
+		headMap.put("channelId", "渠道ID");
+		headMap.put("channelName", "渠道名称");
+		headMap.put("tenderFrom", "操作平台");
+		headMap.put("addTime", "投资时间");
+		headMap.put("borrowType", "涉及项目类型");
+		headMap.put("投资记录ID", "pid");
+		headMap.put("projectName", "涉及项目名称");
+		headMap.put("tenderCapital", "涉及项目本金");
+		headMap.put("borrowPeriod", "涉及项目期限");
+		headMap.put("stage", "目前状态");
+
+		headMap.put("recoverAccountWait", "当前持有总金额");
+		headMap.put("cia", "CIA");
+
+		String title = "用户投资情况";
+
+		ExcelUtil.downloadExcelFile(title, headMap, va, response);
+	}
+
 	/**
 	 * 信息
 	 */

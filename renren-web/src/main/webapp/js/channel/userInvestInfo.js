@@ -1,9 +1,17 @@
 $(function () {
 	loadChannel();
 	initTimeCond();
+	initExportFunction();
     initTableGrid();
     queryTotalInfo();
 });
+function initExportFunction(){
+	$('#btn_exports').click(function(){
+		var params = getParams();
+		executePost('../dmreportinvestmentdaily/exportExcel', {'params' : JSON.stringify(params)});  
+	});
+
+}
 function initTimeCond(){
     $("#start_invest_time").datetimepicker({
         format: 'yyyy-mm-dd',
@@ -50,24 +58,25 @@ function initTableGrid(){
 			{ label: '渠道ID', name: 'channelId', index: '$CHANNEL_ID', width: 80,align:'right' }, 			
 			{ label: '渠道名称', name: 'channelName', index: '$CHANNEL_NAME', width: 120,align:'right' }, 			
 			{ label: '渠道标记', name: 'activityTag', index: '$ACTIVITY_TAG', width: 80,align:'right' }, 			
-			{ label: '操作平台', name: 'tenderFrom', index: '$TENDER_FROM', width: 70,align:'right',
-				formatter:function(cellvalue, options, rowObject){
-					if(cellvalue == 0){
-						return '移动端无法区分';
-					}else if(cellvalue == 1){
-						return 'PC';
-					}else if(cellvalue == 2){
-						return 'IOS';
-					}else if(cellvalue == 3){
-						return 'Android';
-					}else if(cellvalue == 4){
-						return 'M站';
-					}else if(cellvalue == 5){
-						return '微信或后台';
-					}else if(cellvalue == -1){
-						return '系统';
-					}
-				}
+			{ label: '操作平台', name: 'tenderFrom', index: '$TENDER_FROM', width: 70,align:'right'
+//				,
+//				formatter:function(cellvalue, options, rowObject){
+//					if(cellvalue == 0){
+//						return '移动端无法区分';
+//					}else if(cellvalue == 1){
+//						return 'PC';
+//					}else if(cellvalue == 2){
+//						return 'IOS';
+//					}else if(cellvalue == 3){
+//						return 'Android';
+//					}else if(cellvalue == 4){
+//						return 'M站';
+//					}else if(cellvalue == 5){
+//						return '微信或后台';
+//					}else if(cellvalue == -1){
+//						return '系统';
+//					}
+//				}
 			},			
 			{ label: '投资时间', name: 'addtime', index: '$ADDTIME', width: 150 ,align:'right'}, 			
 			{ label: '涉及项目类型', name: 'borrowType', index: '$BORROW_TYPE', width: 100,align:'right' }, 			

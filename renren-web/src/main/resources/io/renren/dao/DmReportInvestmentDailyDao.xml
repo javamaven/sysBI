@@ -76,7 +76,32 @@
 		
 	</select>
 	<select id="queryList" resultType="io.renren.entity.DmReportInvestmentDailyEntity">
-		select * from dm_report_investment_daily
+		select 
+			STAT_PERIOD, 
+			USER_ID, 
+			USERNAME, 
+			CHANNEL_ID, 
+			CHANNEL_NAME, 
+			ACTIVITY_TAG, 
+			CASE
+				WHEN TENDER_FROM = 0 THEN '移动端无法区分'
+				WHEN TENDER_FROM = 1 THEN 'PC'
+				WHEN TENDER_FROM = 2 THEN 'IOS'
+				WHEN TENDER_FROM = 3 THEN 'Android'
+				WHEN TENDER_FROM = 4 THEN 'M站'
+				WHEN TENDER_FROM = 5 THEN '微信或后台'
+				WHEN TENDER_FROM = - 1 THEN '系统' END TENDER_FROM, 
+			ADDTIME, 
+			BORROW_TYPE, 
+			PID, 
+			PROJECT_NAME, 
+			TENDER_CAPITAL, 
+			BORROW_PERIOD, 
+			STAGE, 
+			RECOVER_ACCOUNT_WAIT, 
+			CIA
+		
+		from dm_report_investment_daily
        
         where 1=1
         

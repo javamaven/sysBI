@@ -26,7 +26,7 @@ public class DmReportInvestmentDailyEntity implements Serializable {
 	//
 	private String activityTag;
 	//操作平台
-	private Integer tenderFrom;
+	private String tenderFrom;
 	//投资时间
 	private Date addtime;
 	//涉及项目类型
@@ -121,13 +121,13 @@ public class DmReportInvestmentDailyEntity implements Serializable {
 	/**
 	 * 设置：操作平台
 	 */
-	public void setTenderFrom(Integer tenderFrom) {
+	public void setTenderFrom(String tenderFrom) {
 		this.tenderFrom = tenderFrom;
 	}
 	/**
 	 * 获取：操作平台
 	 */
-	public Integer getTenderFrom() {
+	public String getTenderFrom() {
 		return tenderFrom;
 	}
 	/**
