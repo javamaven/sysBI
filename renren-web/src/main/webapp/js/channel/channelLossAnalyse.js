@@ -121,11 +121,11 @@ function loadTable(columnsData,tableData){
         {field:"registerUserNum",title:"注册人数",align:"right",valign:"left",sortable:"true"},
         {field:"firstInvestUserNum",title:"首投人数",align:"right",valign:"left",sortable:"true"},
         
-        {field:"investOneTimeUserNum",title:"投资1次人数",align:"right",valign:"left",sortable:"true"},
-        {field:"investTwoTimeUserNum",title:"投资2次人数",align:"right",valign:"left",sortable:"true"},
-        {field:"investThreeTimeUserNum",title:"投资3次人数",align:"right",valign:"left",sortable:"true"},
-        {field:"investFourTimeUserNum",title:"投资4次人数",align:"right",valign:"left",sortable:"true"},
-        {field:"investNTimeUserNum",title:"投资N次人数",align:"right",valign:"left",sortable:"true"},
+        {field:"investOneTimeUserNum",title:"资产权益为0<br/>仅投资1次人数",align:"right",valign:"left",sortable:"true"},
+        {field:"investTwoTimeUserNum",title:"资产权益为0<br/>仅投资2次人数",align:"right",valign:"left",sortable:"true"},
+        {field:"investThreeTimeUserNum",title:"资产权益为0<br/>仅投资3次人数",align:"right",valign:"left",sortable:"true"},
+        {field:"investFourTimeUserNum",title:"资产权益为0<br/>仅投资4次人数",align:"right",valign:"left",sortable:"true"},
+        {field:"investNTimeUserNum",title:"资产权益为0<br/>投资N次人数",align:"right",valign:"left",sortable:"true"},
 
         {field:"firstInvestAmount",title:"首次投资金额",align:"right",valign:"left",sortable:"true",formatter:function(cellvalue, options, rowObject){
 			if(cellvalue){

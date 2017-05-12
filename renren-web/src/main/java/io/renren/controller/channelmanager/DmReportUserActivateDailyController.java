@@ -160,6 +160,7 @@ public class DmReportUserActivateDailyController {
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
 		headMap.put("statPeriod", "统计日期");
 		headMap.put("userId", "用户ID");
+		headMap.put("userName", "用户名称");
 		headMap.put("channelName", "渠道名称");
 		headMap.put("channelMark", "渠道标记");
 		headMap.put("registerTime", "注册时间");
