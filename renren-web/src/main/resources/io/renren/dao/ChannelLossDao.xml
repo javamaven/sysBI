@@ -545,10 +545,14 @@ GROUP BY
 							)
 						)
 	
-				) u ,edw_trading_project_detail p
+				) u ,edw_trading_project_detail p , edw_merge_acc_current e
 			WHERE
 				1 = 1
 			AND u.user_id = p.user_id
+			and u.user_id = e.user_id
+			<!-- 资产权益为0 -->
+			and (e.NOR_BALANCE+e.NOR_RECOVER_CAPITAL_WAIT+e.NOR_LOCK_AMOUNT+e.NOR_DDZ_AMOUNT+
+        	e.DEP_BALANCE+e.DEP_RECOVER_CAPITAL_WAIT+e.DEP_TENDER_LOCK_AMOUNT)=0
 			and u.minTime >= #{firstInvBeginDate}
 			and u.minTime &lt;= #{firstInvEndDate}
 			AND p.TENDER_SUBJECT IN (1, 2)
