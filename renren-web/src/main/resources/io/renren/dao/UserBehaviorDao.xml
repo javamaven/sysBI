@@ -14,14 +14,15 @@
 	</resultMap>
 
 	<select id="queryList" resultType="io.renren.entity.UserBehaviorEntity">
-		select
-		ID,
-		username,
-		createtime,
-		type,
-		reportType,
-		left(execsql,20) as execsql
-		FROM user_behavior_statistic
+		SELECT
+		a.ID,
+		b.username,
+		a.createtime,
+		a.type,
+		a.reportType,
+		left(a.execsql,20) as execsql
+		FROM user_behavior_statistic a, sys_user b
+		WHERE a.userId = b.user_id
 
 	</select>
 
@@ -33,9 +34,9 @@
 		insert into user_behavior_statistic
 
 		(
-		ID,userName,createTime,TYPE,reportType,EXECSQL)
+		userID,createTime,TYPE,reportType,EXECSQL)
 		values
-		(#{ID},#{userName},#{createTime},#{TYPE},#{reportType},#{EXECSQL});
+		(#{userID},#{createTime},#{TYPE},#{reportType},#{EXECSQL});
 
 
 	</insert>

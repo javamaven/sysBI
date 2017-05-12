@@ -23,7 +23,12 @@ import java.util.Map;
     public List<UserBehaviorEntity> queryList(Map<String, Object> map){return userBehaviorDao.queryList(map);
     }
     @Override
-    public  void insert(UserBehaviorEntity logUserBehavior) {userBehaviorDao.insert(logUserBehavior);
+    public  void insert(Map<String, Object> map ) {userBehaviorDao.insert(map);
+    }
+
+    @Override
+    public String querySysUsers(Long id) {
+        return userBehaviorDao.querySysUsers(id);
     }
 
 

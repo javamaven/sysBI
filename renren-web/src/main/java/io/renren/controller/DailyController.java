@@ -58,32 +58,15 @@ public class DailyController {
 	@RequiresPermissions("curly:list")
 	public R list(@RequestBody Map<String, Object> params) {
 
-		//获取用户ID
-		long ID = getUserId();
-		// 获取用户账号
-		String userName = labelTagManagerService.querySysUser(ID);
-		UserBehaviorEntity logUserBehavior = new UserBehaviorEntity();
-		logUserBehavior.setUserName(userName);
-		logUserBehavior.setCreateTime(new Date());
-		logUserBehavior.setTYPE("查看");
-		logUserBehavior.setReportType(""+reportType);
-		logUserBehavior.setEXECSQL("DROP TABLE IF EXISTS TMP;\n" +
-				"\t\tCREATE TEMPORARY TABLE TMP AS\n" +
-				"\t\tSELECT\n" +
-				"\t\tSTAT_PERIOD,\n" +
-				"\t\tINDICATORS_NAME,\n" +
-				"\t\tindicators_value,\n" +
-				"\t\tsequential,\n" +
-				"\t\tcompared,\n" +
-				"\t\tmonth_mean_value,\n" +
-				"\t\tmonth_mean_value_than,\n" +
-				"\t\tNUM\n" +
-				"\t\tFROM test.DIM_REPORT_DAILY\n" +
-				"\t\tWHERE 1=1 ");
+
+
 
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType,"aa");
 
-		userBehaviorUtil.insert(logUserBehavior);
+
+
+
 
 		//查询列表数据
 		Query query = new Query(params);
@@ -97,19 +80,11 @@ public class DailyController {
 	@RequestMapping("/partExport")
 	@RequiresPermissions("curly:list")
 	public void partExport(HttpServletResponse response, HttpServletRequest request) throws IOException {
-		//获取用户ID
-		long ID = getUserId();
-		// 获取用户账号
-		String userName = labelTagManagerService.querySysUser(ID);
-		UserBehaviorEntity logUserBehavior = new UserBehaviorEntity();
-		logUserBehavior.setUserName(userName);
-		logUserBehavior.setCreateTime(new Date());
-		logUserBehavior.setTYPE("导出");
-		logUserBehavior.setReportType(""+reportType);
-		logUserBehavior.setEXECSQL(" ");
-		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 
-		userBehaviorUtil.insert(logUserBehavior);
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType,"aadddddddddddddddddddddddddd");
+
+//		userBehaviorUtil.insert(logUserBehavior);
 
 		List<DailyEntity> DailyList = dailyDataService.queryExports();
 		JSONArray va = new JSONArray();

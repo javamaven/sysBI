@@ -3,6 +3,8 @@ package io.renren.entity;
 import java.io.Serializable;
 import java.util.Date;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 /**
  * Created by Administrator on 2017/5/4 0004.
  */
@@ -13,6 +15,15 @@ public class UserBehaviorEntity implements Serializable {
     private String TYPE;
     private String reportType;
     private String EXECSQL;
+    private String  userID;
+
+    public String getUserID() {
+        return userID;
+    }
+
+    public void setUserID(String userID) {
+        this.userID = userID;
+    }
 
     public int getID() {
         return ID;
