@@ -43,7 +43,7 @@
 			SELECT
 				u.ACTIVITY_TAG,
 				sum(
-					IFNULL(p.TENDER_CAPITAL, 0) * IFNULL(p.BORROW_PERIOD, 0) / 360
+					IFNULL(case when p.TENDER_SUBJECT=2 then p.TEND_CASH else p.TENDER_CAPITAL end , 0) * IFNULL(p.BORROW_PERIOD, 0) / 360
 				) money
 			FROM
 				edw_trading_project_detail p,
@@ -58,7 +58,8 @@
 			<if test="invEndDate != null and invEndDate.trim() != '' "  >
 			     <![CDATA[ and p.ADDTIME <=  #{invEndDate}  ]]>
 			</if>
-			AND p.TENDER_SUBJECT IN (1, 2)
+<!-- 			AND p.TENDER_SUBJECT IN (1, 2) -->
+				and p.TENDER_ACCOUNT_STATUS in (0,1)
 			<if test="regBeginDate != null and regBeginDate.trim() != '' ">
 			     <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]>
 			</if>
@@ -190,7 +191,8 @@ select s.ACTIVITY_TAG channelLabel, count(DISTINCT s.user_id) userInvestNum from
 				edw_user_basic u
 			WHERE
 				p.USER_ID = u.USER_ID
-			AND P.TENDER_SUBJECT IN (1,2)
+<!-- 			AND P.TENDER_SUBJECT IN (1,2) -->
+				and p.TENDER_ACCOUNT_STATUS in (0,1)
 			<include refid="channelCond"/>
 			<if test="regBeginDate != null and regBeginDate.trim() != '' ">
 			     <![CDATA[ and p.ADDTIME  >=  #{regBeginDate}  ]]>
@@ -241,13 +243,15 @@ group by s.ACTIVITY_TAG
 select s.ACTIVITY_TAG channelLabel, sum(money) userInvestAmount from (
 			SELECT
 				u.ACTIVITY_TAG,
-				sum(p.TENDER_CAPITAL) money
+				sum(case when p.TENDER_SUBJECT=2 then p.TEND_CASH else p.TENDER_CAPITAL end) money
+<!-- 				sum(p.TENDER_CAPITAL) money -->
 			FROM
 				edw_trading_project_detail p,
 				edw_user_basic u
 			WHERE
 				p.USER_ID = u.USER_ID
-			AND P.TENDER_SUBJECT IN (1,2)
+				and p.TENDER_ACCOUNT_STATUS in (0,1)
+<!-- 			AND P.TENDER_SUBJECT IN (1,2) -->
 			<include refid="channelCond"/>
 			<if test="regBeginDate != null and regBeginDate.trim() != '' ">
 			     <![CDATA[ and p.ADDTIME  >=  #{regBeginDate}  ]]>
@@ -400,7 +404,8 @@ select s.channelLabel,sum(s.firstInvestUserAmount) firstInvestUserAmount from (
 		<if test="invEndDate != null and invEndDate.trim() != '' "  >
 		     <![CDATA[ and p.ADDTIME <=  #{invEndDate}  ]]>
 		</if>
-		and p.TENDER_SUBJECT in (1,2)
+<!-- 		and p.TENDER_SUBJECT in (1,2) -->
+		and p.TENDER_ACCOUNT_STATUS in (0,1)
 		group by s.ACTIVITY_TAG
 
 union all
@@ -569,6 +574,7 @@ GROUP BY
 	and p.ADDTIME >=  #{regBeginDate} 
 	and p.ADDTIME &lt;= #{invEndDate}
 	and p.TENDER_SUBJECT=1
+	and p.TENDER_ACCOUNT_STATUS in (0,1)
 	group by s.ACTIVITY_TAG
 
 
@@ -617,7 +623,8 @@ GROUP BY
 	AND u.minTime  &lt;=  #{invEndDate}
 	AND p.ADDTIME >= #{regBeginDate} 
 	AND p.ADDTIME &lt;=  #{invEndDate}
-	AND p.TENDER_SUBJECT IN (1, 2)
+	and p.TENDER_ACCOUNT_STATUS in (0,1)
+<!-- 	AND p.TENDER_SUBJECT IN (1, 2) -->
 	group by u.ACTIVITY_TAG
 
 
@@ -638,6 +645,7 @@ GROUP BY
 	AND p.ADDTIME >=  #{regBeginDate} 
 	AND p.ADDTIME &lt;=  #{invEndDate}
 	AND p.TENDER_SUBJECT = 1
+	and p.TENDER_ACCOUNT_STATUS in (0,1)
 	AND u.register_time >=  #{regBeginDate} 
 	AND u.register_time &lt;= #{regEndDate} 
 	GROUP BY
