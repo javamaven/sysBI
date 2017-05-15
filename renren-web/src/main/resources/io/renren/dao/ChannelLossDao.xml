@@ -16,6 +16,7 @@
 	WHERE
 		1 = 1
 	AND d.USER_ID_ = u.USER_ID
+	and u.IS_BORROWER=0
 	<if test="channelLabelList != null and channelLabelList.size()!=0">
 		AND u.ACTIVITY_TAG IN
 		<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
@@ -37,6 +38,7 @@
 						edw_user_basic u
 					WHERE
 						1 = 1
+					and u.IS_BORROWER=0
 					AND u.REGISTER_TIME >= #{firstInvBeginDate}
 					AND u.REGISTER_TIME &lt;= #{firstInvEndDate}
 					AND (
@@ -75,6 +77,7 @@
 	WHERE
 		1 = 1
 	AND u.user_id = p.USER_ID
+	and u.IS_BORROWER=0
 	AND p.ADDTIME >= #{firstInvBeginDate}
 	AND p.ADDTIME &lt;= #{invEndDate}
 	and p.TENDER_ACCOUNT_STATUS in (0,1)
@@ -97,6 +100,7 @@
 						edw_user_basic u
 					WHERE
 						1 = 1
+					and u.IS_BORROWER=0
 					AND u.REGISTER_TIME >= #{firstInvBeginDate}
 					AND u.REGISTER_TIME &lt;= #{firstInvEndDate}
 					AND (
@@ -273,6 +277,7 @@ FROM
 											FROM
 												edw_user_basic u
 											WHERE 1 = 1
+											and u.IS_BORROWER=0
 											AND (
 												(
 													u.NORMAL_FIRSTINVEST_TIME IS NOT NULL
@@ -310,6 +315,7 @@ FROM
 					edw_user_basic u
 				WHERE
 					p.user_id = u.USER_ID
+					and u.IS_BORROWER=0
 				GROUP BY
 					u.ACTIVITY_TAG
 			) a1
@@ -350,6 +356,7 @@ FROM
 													edw_user_basic u
 												WHERE
 													1 = 1
+												and u.IS_BORROWER=0
 												AND (
 													(
 														u.NORMAL_FIRSTINVEST_TIME IS NOT NULL
@@ -388,6 +395,7 @@ FROM
 						edw_user_basic u
 					WHERE
 						p.user_id = u.USER_ID
+						and u.IS_BORROWER=0
 					GROUP BY
 						u.ACTIVITY_TAG
 				) a2
@@ -422,6 +430,7 @@ GROUP BY
 				edw_user_basic u
 			WHERE
 				1 = 1
+			and u.IS_BORROWER=0
 			<if test="channelLabelList != null and channelLabelList.size()!=0">
 				AND u.ACTIVITY_TAG IN
 				<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
@@ -475,6 +484,7 @@ GROUP BY
 				edw_user_basic u
 			WHERE
 				1 = 1
+			and u.IS_BORROWER=0
 			<if test="channelLabelList != null and channelLabelList.size()!=0">
 				AND u.ACTIVITY_TAG IN
 				<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
@@ -526,6 +536,7 @@ GROUP BY
 							edw_user_basic u
 						WHERE
 							1 = 1
+						and u.IS_BORROWER=0
 						<if test="channelLabelList != null and channelLabelList.size()!=0">
 							AND u.ACTIVITY_TAG IN
 							<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
@@ -575,6 +586,7 @@ GROUP BY
 	WHERE
 		1 = 1
 	AND s.user_id = u.USER_ID
+	and u.IS_BORROWER=0
 	GROUP BY
 		u.ACTIVITY_TAG
 	
@@ -596,6 +608,7 @@ GROUP BY
 				edw_user_basic u
 			WHERE
 				1 = 1
+			and u.IS_BORROWER=0
 			<if test="channelLabelList != null and channelLabelList.size()!=0">
 				AND u.ACTIVITY_TAG IN
 				<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
@@ -633,6 +646,7 @@ GROUP BY
 		edw_user_basic u
 	WHERE
 		1 = 1
+	and u.IS_BORROWER=0
 	<if test="firstInvBeginDate != null and firstInvBeginDate.trim() != '' ">
 	     <![CDATA[ and u.REGISTER_TIME  >=  #{firstInvBeginDate}  ]]>
 	</if>

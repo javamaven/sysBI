@@ -116,7 +116,9 @@ values(	#{statDay},
 					p.id
 		) s , edw_user_basic u
 		where 1=1
+		and s.user_id=u.user_id
 		and s.rownum= #{rownum}
+		and u.IS_BORROWER=0
 		and s.TENDER_ACCOUNT_STATUS in (0,1)
 		AND s.addTime >= #{startDate}
 		AND s.addTime &lt;= #{endDate}
@@ -126,7 +128,6 @@ values(	#{statDay},
 				#{channelName}
 			</foreach>
 		</if>
-		and s.user_id=u.user_id
 		group by u.activity_tag
 
 </select>
@@ -200,6 +201,7 @@ group by s.channelLabel
 	WHERE
 		1 = 1
 	AND p.USER_ID = u.USER_ID 
+	and u.IS_BORROWER=0
 	and p.TENDER_ACCOUNT_STATUS in (0,1)
 	AND u.ACTIVITY_TAG IN (SELECT a.channel_label FROM dim_channel_cost_union a WHERE 1 = 1 AND a.fee_time =#{onlineDate})
 	AND p.ADDTIME  >= #{startDate}

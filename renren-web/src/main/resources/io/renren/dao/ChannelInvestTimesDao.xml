@@ -12,6 +12,7 @@ FROM
 	edw_user_basic u
 WHERE
 	1 = 1
+and u.IS_BORROWER=0
 <if test="regBeginDate != null and regBeginDate.trim() != '' ">
      <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]>
 </if>
@@ -46,6 +47,7 @@ GROUP BY
 				edw_user_basic u
 			WHERE
 				1 = 1
+				and u.IS_BORROWER=0
 			<if test="channelLabelList != null and channelLabelList.size()!=0">
 				AND u.ACTIVITY_TAG IN
 				<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
@@ -87,6 +89,7 @@ FROM
 WHERE
 	1 = 1
 AND p.USER_ID = u.USER_ID
+and u.IS_BORROWER=0
 <if test="regBeginDate != null and regBeginDate.trim() != '' ">
      <![CDATA[ and p.ADDTIME  >=  #{regBeginDate}  ]]>
 </if>
@@ -125,6 +128,7 @@ GROUP BY
 	WHERE
 		1 = 1
 	AND p.USER_ID = u.USER_ID
+	and u.IS_BORROWER=0
 	<if test="regBeginDate != null and regBeginDate.trim() != '' ">
 	     <![CDATA[ and p.ADDTIME  >=  #{regBeginDate}  ]]>
 	</if>
@@ -163,6 +167,7 @@ GROUP BY
 	WHERE
 		1 = 1
 	AND p.USER_ID = u.USER_ID
+	and u.IS_BORROWER=0
 	<if test="regBeginDate != null and regBeginDate.trim() != '' ">
 	     <![CDATA[ and p.ADDTIME  >=  #{regBeginDate}  ]]>
 	</if>
@@ -200,6 +205,7 @@ GROUP BY
 	WHERE
 		1 = 1
 	AND p.USER_ID = u.USER_ID
+	and u.IS_BORROWER=0
 	<if test="regBeginDate != null and regBeginDate.trim() != '' ">
 	     <![CDATA[ and p.ADDTIME  >=  #{regBeginDate}  ]]>
 	</if>
@@ -251,6 +257,7 @@ FROM
 WHERE
 	1 = 1
 AND p.USER_ID = u.USER_ID
+and u.IS_BORROWER=0
 <!-- and p.TENDER_SUBJECT in (1,2) -->
 and p.TENDER_ACCOUNT_STATUS in (0,1)
 <if test="regBeginDate != null and regBeginDate.trim() != '' ">
@@ -287,6 +294,7 @@ GROUP BY
 	WHERE
 		1 = 1
 	AND d.USER_ID_ = u.USER_ID
+	and u.IS_BORROWER=0
 	<if test="regBeginDate != null and regBeginDate.trim() != '' ">
 	     <![CDATA[ and d.CREATED_TIME_  >=  #{regBeginDate}  ]]>
 	</if>

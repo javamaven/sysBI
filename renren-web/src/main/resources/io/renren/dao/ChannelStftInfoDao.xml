@@ -51,6 +51,7 @@
 			WHERE
 				1 = 1
 			AND p.USER_ID = u.USER_ID
+			and u.IS_BORROWER=0
 			<include refid="channelCond"/>
 			<if test="regBeginDate != null and regBeginDate.trim() != '' ">
 			     <![CDATA[ and p.ADDTIME  >=  #{regBeginDate}  ]]>
@@ -79,6 +80,7 @@
 				WHERE
 					1 = 1
 				AND d.USER_ID_ = u.USER_ID
+				and u.IS_BORROWER=0
 				<include refid="channelCond"/>
 				<if test="regBeginDate != null and regBeginDate.trim() != '' ">
 				     <![CDATA[ and d.CREATED_TIME_  >=  #{regBeginDate}  ]]>
@@ -134,6 +136,7 @@
 								FROM
 									edw_user_basic u
 									WHERE 1=1
+									and u.IS_BORROWER=0
 										<include refid="channelCond" />
 										AND u.REGISTER_TIME >= #{regBeginDate}
 										AND u.REGISTER_TIME &lt;= #{regEndDate}
@@ -215,6 +218,7 @@
 		edw_user_basic u 
 	WHERE
 		1 = 1
+	and u.IS_BORROWER=0
 	<include refid="channelCond"/>
 	<if test="regBeginDate != null and regBeginDate.trim() != '' ">
 	 		<![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]>
@@ -246,6 +250,7 @@ select s.ACTIVITY_TAG channelLabel, count(DISTINCT s.user_id) userInvestNum from
 				edw_user_basic u
 			WHERE
 				p.USER_ID = u.USER_ID
+				and u.IS_BORROWER=0
 <!-- 			AND P.TENDER_SUBJECT IN (1,2) -->
 				and p.TENDER_ACCOUNT_STATUS in (0,1)
 			<include refid="channelCond"/>
@@ -272,6 +277,7 @@ union all
 				edw_user_basic u
 			WHERE
 			p.USER_ID_ = u.USER_ID
+			and u.IS_BORROWER=0
 			<include refid="channelCond"/>
 			and p.TYPE_  in ('B', 'RP') 
 			<if test="regBeginDate != null and regBeginDate.trim() != '' ">
@@ -305,6 +311,7 @@ select s.ACTIVITY_TAG channelLabel, sum(money) userInvestAmount from (
 				edw_user_basic u
 			WHERE
 				p.USER_ID = u.USER_ID
+				and u.IS_BORROWER=0
 				and p.TENDER_ACCOUNT_STATUS in (0,1)
 <!-- 			AND P.TENDER_SUBJECT IN (1,2) -->
 			<include refid="channelCond"/>
@@ -331,6 +338,7 @@ union all
 				edw_user_basic u
 			WHERE
 			p.USER_ID_ = u.USER_ID
+			and u.IS_BORROWER=0
 			and p.TYPE_  in ('B', 'RP') 
 			<include refid="channelCond"/>
 			<if test="regBeginDate != null and regBeginDate.trim() != '' ">
@@ -427,6 +435,7 @@ select s.channelLabel,sum(s.firstInvestUserAmount) firstInvestUserAmount from (
 							edw_user_basic u
 						WHERE
 							1 = 1
+						and u.IS_BORROWER=0
 						<include refid="channelCond"/>
 						AND u.REGISTER_TIME >= #{regBeginDate}
 						AND u.REGISTER_TIME &lt;=  #{regEndDate}
@@ -479,6 +488,7 @@ union all
 							edw_user_basic u
 						WHERE
 							1 = 1
+						and u.IS_BORROWER=0
 						<include refid="channelCond"/>
 						AND u.REGISTER_TIME >= #{regBeginDate}
 						AND u.REGISTER_TIME &lt;=  #{regEndDate}
@@ -606,6 +616,7 @@ GROUP BY
 				edw_user_basic u
 			WHERE
 				1 = 1
+			and u.IS_BORROWER=0
 			<include refid="channelCond"/>
 			AND u.REGISTER_TIME >=  #{regBeginDate}
 			AND u.REGISTER_TIME &lt;=  #{regEndDate}
@@ -652,6 +663,7 @@ GROUP BY
 				edw_user_basic u
 			WHERE
 				1 = 1
+			and u.IS_BORROWER=0
 			AND u.REGISTER_TIME >=  #{regBeginDate} 
 			AND u.REGISTER_TIME &lt;=  #{regEndDate} 
 			<include refid="channelCond"/>
@@ -696,6 +708,7 @@ GROUP BY
 		edw_user_basic u
 	WHERE 1=1
 	AND u.user_id = p.USER_ID
+	and u.IS_BORROWER=0
 	<include refid="channelCond"/>
 	AND p.ADDTIME >=  #{regBeginDate} 
 	AND p.ADDTIME &lt;=  #{invEndDate}
