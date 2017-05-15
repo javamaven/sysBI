@@ -106,6 +106,59 @@
 
 <select id="queryFirstInvestUserNum" resultType="io.renren.entity.ChannelStftInfoEntity">
 	<!-- 2.首投人数，首投金额,首投年化投资金额  人均首投-->
+		SELECT
+			u.ACTIVITY_TAG channelLabel,
+			count(DISTINCT u.user_id) firstInvestUserNum, 
+			sum(stMoney) firstInvestAmount,	 
+			sum(stYearMoney) firstInvestYearAmount,
+			case when count(DISTINCT u.user_id) = 0 then 0 else sum(stMoney) /count(DISTINCT u.user_id) end 
+				firstInvestPer
+		FROM
+			(
+				select s.* from (
+							select ss.user_id, ss.ACTIVITY_TAG,
+							case when ptTime is null then cgTime when cgTime is null then ptTime when ptTime > cgTime then cgTime else ptTime end minTime, 
+							case when ptTime is null then cgMoney when cgTime is null then ptMoney when ptTime > cgTime then cgMoney else ptMoney end stMoney,
+							case when ptTime is null then cgYearMoney when cgTime is null then ptYearMoney when ptTime > cgTime then cgYearMoney else ptYearMoney end stYearMoney
+							
+							from (
+								SELECT
+									u.ACTIVITY_TAG,
+									u.user_id,
+									max(u.NORMAL_FIRSTINVEST_TIME) ptTime,
+									max(u.DEPOSITORY_FIRSTINVEST_TIME) cgTime,
+									max(u.NORMAL_FIRSTINVEST_BALANCE) ptMoney,
+									max(u.DEPOSITORY_FIRSTINVEST_BALANCE) cgMoney,
+									max(u.NORMAL_FIRSTINVEST_Y_MONEY) ptYearMoney,
+									max(u.DEPOSITORY_FIRSTINVEST_Y_MONEY) cgYearMoney
+								FROM
+									edw_user_basic u
+									WHERE 1=1
+										<include refid="channelCond" />
+										AND u.REGISTER_TIME >= #{regBeginDate}
+										AND u.REGISTER_TIME &lt;= #{regEndDate}
+										and (
+											(
+												u.NORMAL_FIRSTINVEST_TIME IS NOT NULL
+												AND u.NORMAL_FIRSTINVEST_TIME >= #{regBeginDate}
+												AND u.NORMAL_FIRSTINVEST_TIME &lt;=  #{invEndDate}
+											)
+											OR (
+												u.DEPOSITORY_FIRSTINVEST_TIME IS NOT NULL
+												AND u.DEPOSITORY_FIRSTINVEST_TIME >= #{regBeginDate}
+												AND u.DEPOSITORY_FIRSTINVEST_TIME &lt;=  #{invEndDate}
+											) 
+										)
+								group by u.ACTIVITY_TAG,u.user_id 
+						) ss
+				) s where s.minTime >= #{regBeginDate} and s.minTime &lt;=  #{invEndDate}
+		) u
+		WHERE
+			1 = 1
+<!-- 		and u.ACTIVITY_TAG='360pzhuan-2' -->
+		GROUP BY
+			u.ACTIVITY_TAG
+	<!-- 
 	SELECT
 		u.ACTIVITY_TAG channelLabel,
 		count(u.user_id) firstInvestUserNum,
@@ -147,6 +200,8 @@
 		AND u.minTime &lt;= #{invEndDate}
 	GROUP BY
 		u.ACTIVITY_TAG
+		
+		-->
 </select>
 
 <select id="queryRegisterUserNum" resultType="io.renren.entity.ChannelStftInfoEntity">
