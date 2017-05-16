@@ -26,7 +26,7 @@
 		month_mean_value,
 		month_mean_value_than,
 		NUM
-		FROM DM_REPORT_DAILY
+		FROM mdtxbi.DM_REPORT_DAILY
 		WHERE 1=1
 
 		<if test="STAT_PERIOD != null and STAT_PERIOD.trim() != ''">
@@ -51,16 +51,16 @@
 	</select>
 
 
-	<insert id="insert" parameterType="io.renren.entity.UserBehaviorEntity" useGeneratedKeys="true" keyProperty="id">
+	<!--<insert id="insert" parameterType="io.renren.entity.UserBehaviorEntity" useGeneratedKeys="true" keyProperty="id">-->
 
 
-		insert into user_behavior_statistic
+		<!--insert into user_behavior_statistic-->
 
-		(
-		ID,userName,createTime,TYPE,reportType,EXECSQL)
-		values
-		(#{ID},#{userName},#{createTime},#{TYPE},#{reportType},#{EXECSQL});
+		<!--(-->
+		<!--ID,userName,createTime,TYPE,reportType,EXECSQL)-->
+		<!--values-->
+		<!--(#{ID},#{userName},#{createTime},#{TYPE},#{reportType},#{EXECSQL});-->
 
 
-	</insert>
+	<!--</insert>-->
 </mapper>

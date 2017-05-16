@@ -1,17 +1,11 @@
 package io.renren.util;
 
-import io.renren.entity.UserBehaviorEntity;
-import io.renren.service.DailyService;
 import io.renren.service.UserBehaviorService;
-import io.renren.service.impl.UserBehaviorServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import static io.renren.utils.ShiroUtils.getUserId;
 
 /**
  * Created by Administrator on 2017/5/5 0005.

@@ -1,6 +1,7 @@
 package io.renren.entity;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static io.renren.utils.ShiroUtils.getUserId;
@@ -16,6 +17,52 @@ public class UserBehaviorEntity implements Serializable {
     private String reportType;
     private String EXECSQL;
     private String  userID;
+    private String statDate;
+    private String seeTimes;
+    private String exportTimes;
+    private String editTimes;
+    private String deleteTimes;
+
+
+    public String getStatDate() {
+        return statDate;
+    }
+
+    public void setStatDate(String statDate) {
+        this.statDate = statDate;
+    }
+
+    public String getSeeTimes() {
+        return seeTimes;
+    }
+
+    public void setSeeTimes(String seeTimes) {
+        this.seeTimes = seeTimes;
+    }
+
+    public String getExportTimes() {
+        return exportTimes;
+    }
+
+    public void setExportTimes(String exportTimes) {
+        this.exportTimes = exportTimes;
+    }
+
+    public String getEditTimes() {
+        return editTimes;
+    }
+
+    public void setEditTimes(String editTimes) {
+        this.editTimes = editTimes;
+    }
+
+    public String getDeleteTimes() {
+        return deleteTimes;
+    }
+
+    public void setDeleteTimes(String deleteTimes) {
+        this.deleteTimes = deleteTimes;
+    }
 
     public String getUserID() {
         return userID;

@@ -14,15 +14,7 @@
 	</resultMap>
 
 	<select id="queryList" resultType="io.renren.entity.UserBehaviorEntity">
-		SELECT
-		a.ID,
-		b.username,
-		a.createtime,
-		a.type,
-		a.reportType,
-		left(a.execsql,20) as execsql
-		FROM user_behavior_statistic a, sys_user b
-		WHERE a.userId = b.user_id
+		call sys_user_oper_log(#{beginStatDate},#{endStatDate},#{userName});
 
 	</select>
 

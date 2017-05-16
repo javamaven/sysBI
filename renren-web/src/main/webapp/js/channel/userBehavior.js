@@ -52,14 +52,15 @@ function loadTableAjax(){
             a += d;
         };
         a = '['+a.substring(0,a.length-1)+']';
-         //alert(a);
+         alert(a);
           var b = '['+
-             '{field:"iD",title:"ID",align:"center",valign:"middle"},'+ //class:"active" (控制底色）
-             '{field:"userName",title:"用户名",align:"center",valign:"middle"},'+
-             '{field:"createTime",title:"访问时间",align:"center",valign:"middle"},'+
+             '{field:"userName",title:"用户名",align:"center",valign:"middle"},'+ //class:"active" (控制底色）
+             '{field:"statDate",title:"访问时间",align:"center",valign:"middle"},'+
              '{field:"reportType",title:"访问报表",align:"center",valign:"middle"},'+
-             '{field:"tYPE",title:"访问类型",align:"center",valign:"middle"},'+
-             '{field:"eXECSQL",title:"EXECSQL",align:"center",valign:"middle"},'+
+             '{field:"seeTimes",title:"查看次数",align:"center",valign:"middle"},'+
+             '{field:"exportTimes",title:"导出次数",align:"center",valign:"middle"},'+
+             '{field:"editTimes",title:"修改次数",align:"center",valign:"middle"},'+
+             '{field:"deleteTimes",title:"删除次数",align:"center",valign:"middle"},'+
              ']';
 
         //加载数据
