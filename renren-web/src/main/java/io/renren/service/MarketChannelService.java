@@ -13,5 +13,6 @@ import io.renren.entity.MarketChannelEntity;
 public interface MarketChannelService {
 
 	List<MarketChannelEntity> queryList(Map<String, Object> map);
+	List<MarketChannelEntity> queryExport();
 	int queryTotal(Map<String, Object> map);
 }

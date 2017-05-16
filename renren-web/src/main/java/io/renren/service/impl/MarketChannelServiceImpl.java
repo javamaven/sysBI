@@ -25,5 +25,9 @@ public class MarketChannelServiceImpl implements MarketChannelService {
 		return marketChannelDao.queryTotal(map);
 	}
 
-	
+	@Override
+	public List<MarketChannelEntity> queryExport() { return marketChannelDao.queryExport();//导出EX
+	}
+
+
 }

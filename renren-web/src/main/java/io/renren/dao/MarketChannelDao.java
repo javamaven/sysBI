@@ -13,5 +13,5 @@ import java.util.Map;
  * @date 2017-04-05 15:30:24
  */
 public interface MarketChannelDao extends BaseDao<MarketChannelEntity> {
-
+    List<MarketChannelEntity> queryExport();
 }

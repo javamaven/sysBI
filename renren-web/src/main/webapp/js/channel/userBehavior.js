@@ -52,7 +52,7 @@ function loadTableAjax(){
             a += d;
         };
         a = '['+a.substring(0,a.length-1)+']';
-         alert(a);
+         //alert(a);
           var b = '['+
              '{field:"userName",title:"用户名",align:"center",valign:"middle"},'+ //class:"active" (控制底色）
              '{field:"statDate",title:"访问时间",align:"center",valign:"middle"},'+

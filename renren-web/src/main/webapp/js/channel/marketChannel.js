@@ -32,7 +32,7 @@ $(".form_datetime_2").
 });
 // 初始化时间
 document.getElementById("reg_begindate").value=getDate(2);
-document.getElementById("reg_enddate").value = getYesterday();
+document.getElementById("reg_enddate").value = getYesterday(1);
 
 
 // 自适应高度
@@ -117,7 +117,7 @@ function loadTableAjax(){
         a = '['+a.substring(0,a.length-1)+']';
 
         var b = '['+
-        '{field:"ctime",title:"日期",align:"center",valign:"middle",sortable:"true"},'+//居中对齐
+        '{field:"statPeriod",title:"日期",align:"center",valign:"middle",sortable:"true"},'+//居中对齐
         '{field:"channelHead",title:"主负责人",align:"center",valign:"middle",sortable:"true"},'+
         '{field:"type",title:"渠道类型",align:"center",valign:"middle",sortable:"true"},'+
         '{field:"channelName",title:"渠道名称",align:"center",valign:"middle",sortable:"true"},'+
@@ -130,7 +130,7 @@ function loadTableAjax(){
         '{field:"invMoney",title:"投资总金额",align:"center",valign:"middle",sortable:"true"},'+
         '{field:"invYMoney",title:"年化投资总金额",align:"center",valign:"middle",sortable:"true"},'+
         '{field:"ddzMoney",title:"点点赚购买金额",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"regCou",title:"注册成本",align:"center",valign:"middle",sortable:"true"},'+
+        '{field:"regCost",title:"注册成本",align:"center",valign:"middle",sortable:"true"},'+
         '{field:"firstinvestCost",title:"首投成本",align:"center",valign:"middle",sortable:"true"},'+
         '{field:"avgFirstinvestMoney",title:"人均首投",align:"center",valign:"middle",sortable:"true"},'+
         '{field:"regInvConversion",title:"注册人投资转化率",align:"center",valign:"middle",sortable:"true"},'+
@@ -171,5 +171,8 @@ $(function(){
     loadChannel();
     loadTableAjax();
 
+$('#btn_exports').click(function(){
+    window.open("../market/partExport","_blank",'height=400,width=400,top=100,left=200,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no');
+});
 
 });

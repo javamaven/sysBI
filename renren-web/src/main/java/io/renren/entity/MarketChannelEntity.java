@@ -27,274 +27,198 @@ public class MarketChannelEntity implements Serializable {
 	//日期
 	private String ctime;
 	//实际消费
-	private Integer actualCost;
+	private String actualCost;
 	//新增注册人
-	private Integer regCou;
+	private String regCou;
 	//新增首投人数
-	private Integer firstinvestCou;
+	private String firstinvestCou;
 	//首投金额
-	private BigDecimal firstinvestMoney;
+	private String firstinvestMoney;
 	//首投年化金额
-	private BigDecimal firstinvestYMoney;
+	private String firstinvestYMoney;
 	//投资总人数
-	private Integer invCou;
+	private String invCou;
 	//投资总金额
-	private BigDecimal invMoney;
+	private String invMoney;
 	//年化投资总金额
-	private BigDecimal invYMoney;
+	private String invYMoney;
 	//点点赚购买金额
-	private BigDecimal ddzMoney;
+	private String ddzMoney;
 	//注册成本
-	private BigDecimal regCost;
+	private String regCost;
 	//首投成本
-	private BigDecimal firstinvestCost;
+	private String firstinvestCost;
 	//人均首投
-	private BigDecimal avgFirstinvestMoney;
+	private String avgFirstinvestMoney;
 	//注册人投资转化率
-	private BigDecimal regInvConversion;
+	private String regInvConversion;
 	//首投ROI
-	private BigDecimal firstinvestRot;
+	private String firstinvestRot;
 	//累计ROI
-	private BigDecimal cumulativeRot;
+	private String cumulativeRot;
 
-	/**
-	 * 设置：
-	 */
-	public void setStatPeriod(String statPeriod) {
-		this.statPeriod = statPeriod;
+
+	public static long getSerialVersionUID() {
+		return serialVersionUID;
 	}
-	/**
-	 * 获取：
-	 */
+
 	public String getStatPeriod() {
 		return statPeriod;
 	}
-	/**
-	 * 设置：主负责人
-	 */
-	public void setChannelHead(String channelHead) {
-		this.channelHead = channelHead;
+
+	public void setStatPeriod(String statPeriod) {
+		this.statPeriod = statPeriod;
 	}
-	/**
-	 * 获取：主负责人
-	 */
+
 	public String getChannelHead() {
 		return channelHead;
 	}
-	/**
-	 * 设置：渠道类型
-	 */
-	public void setType(String type) {
-		this.type = type;
+
+	public void setChannelHead(String channelHead) {
+		this.channelHead = channelHead;
 	}
-	/**
-	 * 获取：渠道类型
-	 */
+
 	public String getType() {
 		return type;
 	}
-	/**
-	 * 设置：渠道名称
-	 */
-	public void setChannelName(String channelName) {
-		this.channelName = channelName;
+
+	public void setType(String type) {
+		this.type = type;
 	}
-	/**
-	 * 获取：渠道名称
-	 */
+
 	public String getChannelName() {
 		return channelName;
 	}
-	/**
-	 * 设置：日期
-	 */
-	public void setCtime(String ctime) {
-		this.ctime = ctime;
+
+	public void setChannelName(String channelName) {
+		this.channelName = channelName;
 	}
-	/**
-	 * 获取：日期
-	 */
+
 	public String getCtime() {
 		return ctime;
 	}
-	/**
-	 * 设置：实际消费
-	 */
-	public void setActualCost(Integer actualCost) {
-		this.actualCost = actualCost;
+
+	public void setCtime(String ctime) {
+		this.ctime = ctime;
 	}
-	/**
-	 * 获取：实际消费
-	 */
-	public Integer getActualCost() {
+
+	public String getActualCost() {
 		return actualCost;
 	}
-	/**
-	 * 设置：新增注册人
-	 */
-	public void setRegCou(Integer regCou) {
-		this.regCou = regCou;
+
+	public void setActualCost(String actualCost) {
+		this.actualCost = actualCost;
 	}
-	/**
-	 * 获取：新增注册人
-	 */
-	public Integer getRegCou() {
+
+	public String getRegCou() {
 		return regCou;
 	}
-	/**
-	 * 设置：新增首投人数
-	 */
-	public void setFirstinvestCou(Integer firstinvestCou) {
-		this.firstinvestCou = firstinvestCou;
+
+	public void setRegCou(String regCou) {
+		this.regCou = regCou;
 	}
-	/**
-	 * 获取：新增首投人数
-	 */
-	public Integer getFirstinvestCou() {
+
+	public String getFirstinvestCou() {
 		return firstinvestCou;
 	}
-	/**
-	 * 设置：首投金额
-	 */
-	public void setFirstinvestMoney(BigDecimal firstinvestMoney) {
-		this.firstinvestMoney = firstinvestMoney;
+
+	public void setFirstinvestCou(String firstinvestCou) {
+		this.firstinvestCou = firstinvestCou;
 	}
-	/**
-	 * 获取：首投金额
-	 */
-	public BigDecimal getFirstinvestMoney() {
+
+	public String getFirstinvestMoney() {
 		return firstinvestMoney;
 	}
-	/**
-	 * 设置：首投年化金额
-	 */
-	public void setFirstinvestYMoney(BigDecimal firstinvestYMoney) {
-		this.firstinvestYMoney = firstinvestYMoney;
+
+	public void setFirstinvestMoney(String firstinvestMoney) {
+		this.firstinvestMoney = firstinvestMoney;
 	}
-	/**
-	 * 获取：首投年化金额
-	 */
-	public BigDecimal getFirstinvestYMoney() {
+
+	public String getFirstinvestYMoney() {
 		return firstinvestYMoney;
 	}
-	/**
-	 * 设置：投资总人数
-	 */
-	public void setInvCou(Integer invCou) {
-		this.invCou = invCou;
+
+	public void setFirstinvestYMoney(String firstinvestYMoney) {
+		this.firstinvestYMoney = firstinvestYMoney;
 	}
-	/**
-	 * 获取：投资总人数
-	 */
-	public Integer getInvCou() {
+
+	public String getInvCou() {
 		return invCou;
 	}
-	/**
-	 * 设置：投资总金额
-	 */
-	public void setInvMoney(BigDecimal invMoney) {
-		this.invMoney = invMoney;
+
+	public void setInvCou(String invCou) {
+		this.invCou = invCou;
 	}
-	/**
-	 * 获取：投资总金额
-	 */
-	public BigDecimal getInvMoney() {
+
+	public String getInvMoney() {
 		return invMoney;
 	}
-	/**
-	 * 设置：年化投资总金额
-	 */
-	public void setInvYMoney(BigDecimal invYMoney) {
-		this.invYMoney = invYMoney;
+
+	public void setInvMoney(String invMoney) {
+		this.invMoney = invMoney;
 	}
-	/**
-	 * 获取：年化投资总金额
-	 */
-	public BigDecimal getInvYMoney() {
+
+	public String getInvYMoney() {
 		return invYMoney;
 	}
-	/**
-	 * 设置：点点赚购买金额
-	 */
-	public void setDdzMoney(BigDecimal ddzMoney) {
-		this.ddzMoney = ddzMoney;
+
+	public void setInvYMoney(String invYMoney) {
+		this.invYMoney = invYMoney;
 	}
-	/**
-	 * 获取：点点赚购买金额
-	 */
-	public BigDecimal getDdzMoney() {
+
+	public String getDdzMoney() {
 		return ddzMoney;
 	}
-	/**
-	 * 设置：注册成本
-	 */
-	public void setRegCost(BigDecimal regCost) {
-		this.regCost = regCost;
+
+	public void setDdzMoney(String ddzMoney) {
+		this.ddzMoney = ddzMoney;
 	}
-	/**
-	 * 获取：注册成本
-	 */
-	public BigDecimal getRegCost() {
+
+	public String getRegCost() {
 		return regCost;
 	}
-	/**
-	 * 设置：首投成本
-	 */
-	public void setFirstinvestCost(BigDecimal firstinvestCost) {
-		this.firstinvestCost = firstinvestCost;
+
+	public void setRegCost(String regCost) {
+		this.regCost = regCost;
 	}
-	/**
-	 * 获取：首投成本
-	 */
-	public BigDecimal getFirstinvestCost() {
+
+	public String getFirstinvestCost() {
 		return firstinvestCost;
 	}
-	/**
-	 * 设置：人均首投
-	 */
-	public void setAvgFirstinvestMoney(BigDecimal avgFirstinvestMoney) {
-		this.avgFirstinvestMoney = avgFirstinvestMoney;
+
+	public void setFirstinvestCost(String firstinvestCost) {
+		this.firstinvestCost = firstinvestCost;
 	}
-	/**
-	 * 获取：人均首投
-	 */
-	public BigDecimal getAvgFirstinvestMoney() {
+
+	public String getAvgFirstinvestMoney() {
 		return avgFirstinvestMoney;
 	}
-	/**
-	 * 设置：注册人投资转化率
-	 */
-	public void setRegInvConversion(BigDecimal regInvConversion) {
-		this.regInvConversion = regInvConversion;
+
+	public void setAvgFirstinvestMoney(String avgFirstinvestMoney) {
+		this.avgFirstinvestMoney = avgFirstinvestMoney;
 	}
-	/**
-	 * 获取：注册人投资转化率
-	 */
-	public BigDecimal getRegInvConversion() {
+
+	public String getRegInvConversion() {
 		return regInvConversion;
 	}
-	/**
-	 * 设置：首投ROI
-	 */
-	public void setFirstinvestRot(BigDecimal firstinvestRot) {
-		this.firstinvestRot = firstinvestRot;
+
+	public void setRegInvConversion(String regInvConversion) {
+		this.regInvConversion = regInvConversion;
 	}
-	/**
-	 * 获取：首投ROI
-	 */
-	public BigDecimal getFirstinvestRot() {
+
+	public String getFirstinvestRot() {
 		return firstinvestRot;
 	}
-	/**
-	 * 设置：累计ROI
-	 */
-	public void setCumulativeRot(BigDecimal cumulativeRot) {
-		this.cumulativeRot = cumulativeRot;
+
+	public void setFirstinvestRot(String firstinvestRot) {
+		this.firstinvestRot = firstinvestRot;
 	}
-	/**
-	 * 获取：累计ROI
-	 */
-	public BigDecimal getCumulativeRot() {
+
+	public String getCumulativeRot() {
 		return cumulativeRot;
+	}
+
+	public void setCumulativeRot(String cumulativeRot) {
+		this.cumulativeRot = cumulativeRot;
 	}
 }
