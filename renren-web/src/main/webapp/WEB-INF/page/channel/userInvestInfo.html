@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>用户投资情况表</title>
+#parse("sys/header.html")
+
+
+<style>
+th {
+	text-align: right
+}
+</style>
+
+</head>
+
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<table border="0">
+				<tr>
+					<label>累计投资金额：</label><font id="total_invest_amount">-</font>
+					<label style="padding: 7px;"></label>
+					<label>当前持有总金额：</label><font id="curr_have_amount">-</font>
+					<label style="padding: 7px;"></label>
+				</tr>
+				<hr style="margin:1px;height:1px;border:1px;background-color:#D5D5D5;color:#D5D5D5;"/>
+				<tr height="10px;"></tr>
+				<tr>
+					<td><label>用户ID：</label></td>
+					<td>
+						<input type="text" class="form-control" id="user_id" placeholder=""/>
+					</td>
+					<td width="10px;"></td>
+					<td><label>用户名称：</label></td>
+					<td>
+						<input type="text" class="form-control" id="user_name" placeholder=""/>
+					</td>
+					<td width="10px;"></td>
+					<td><label>操作平台：</label></td>
+					<td >
+						<select id="oper_platform">
+						 	<option value ="">全部</option>
+						 	<option value ="0">移动端无法区分</option>
+						 	<option value ="1">PC</option>
+						  	<option value ="2">IOS</option>
+						  	<option value ="3">Android</option>
+						  	<option value ="4">M站</option>
+						  	<option value ="5">微信或后台</option>
+						  	<option value ="-1">系统 </option>
+						</select>
+<!-- 						投资来源 0=移动端无法区分 1=PC网站，2=iosApp，3=androidApp，4=M站 5=微信或后台 这段备注加到你那个表上面去 -->
+					</td>
+					<td width="10px;"></td>
+					<td>
+						<label>涉及项目类型：</label>
+						<select id="with_pro_type">
+						 	<option value ="">全部</option>
+						 	<option value ="普通版-普通标">普通版-普通标</option>
+						  	<option value ="普通版-债转标">普通版-债转标</option>
+						  	<option value ="存管版-普通标">存管版-普通标</option>
+						  	<option value ="存管版-债转标">存管版-债转标</option>
+						  	<option value ="存管版-智投计划">存管版-智投计划</option>
+						</select>
+					</td>
+				</tr>
+				<tr height="10px;"></tr>
+				<tr>
+					<td><label>渠道ID：</label></td>
+					<td>
+						<input type="text" class="form-control" id="channel_id" placeholder=""/>
+					</td>
+					<td width="10px;"></td>
+					<td><label>渠道名称：</label></td>
+					<td>
+						<select id="id_select" multiple="multiple" class="form-control"></select>
+<!-- 						<input type="text" class="form-control" id="channel_name" placeholder=""/> -->
+					</td>
+					<td width="10px;"></td>
+					<td><label>投资时间：</label></td>
+					<td>
+						<input type="text" class="form-control form_datetime_2" id="start_invest_time"  placeholder="请选择开始时间"/>
+					</td>
+					<td>&nbsp;-&nbsp; </td>
+					<td>
+						<input type="text" class="form-control form_datetime_2" id="end_invest_time"  placeholder="请选择结束时间"/>
+					</td>
+				</tr>
+				<tr height="10px;"></tr>
+			</table>
+				<a class="btn btn-primary" @click="reload" id="query_cond"><i class="fa fa-search"></i>&nbsp;查询</a>
+				<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+				
+		</div>
+		<div style="text-align: right;">
+	    	<table id="jqGrid"></table>
+	    </div>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+											<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportInvestmentDaily.userId" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportInvestmentDaily.username" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportInvestmentDaily.channelId" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportInvestmentDaily.channelName" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportInvestmentDaily.activityTag" placeholder=""/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">操作平台</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportInvestmentDaily.tenderFrom" placeholder="操作平台"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">投资时间</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportInvestmentDaily.addtime" placeholder="投资时间"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">涉及项目类型</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportInvestmentDaily.borrowType" placeholder="涉及项目类型"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">投资记录ID</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportInvestmentDaily.pid" placeholder="投资记录ID"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">涉及项目名称</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportInvestmentDaily.projectName" placeholder="涉及项目名称"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">涉及项目本金</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportInvestmentDaily.tenderCapital" placeholder="涉及项目本金"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">涉及项目期限</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportInvestmentDaily.borrowPeriod" placeholder="涉及项目期限"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">目前状态</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportInvestmentDaily.stage" placeholder="目前状态"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">当前持有总金额</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportInvestmentDaily.recoverAccountWait" placeholder="当前持有总金额"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label"></div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportInvestmentDaily.cia" placeholder=""/>
+			    </div>
+			</div>
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+</div>
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/channel/userInvestInfo.js?_${date.systemTime}"></script>
+</body>
+</html>

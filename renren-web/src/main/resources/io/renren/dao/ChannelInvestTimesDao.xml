@@ -12,6 +12,7 @@ FROM
 	edw_user_basic u
 WHERE
 	1 = 1
+and u.IS_BORROWER=0
 <if test="regBeginDate != null and regBeginDate.trim() != '' ">
      <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]>
 </if>
@@ -39,13 +40,14 @@ GROUP BY
 			SELECT
 				u.ACTIVITY_TAG,
 				u.user_id,
-				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_TIME ELSE u.NORMAL_FIRSTINVEST_TIME END minTime,
-				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_BALANCE ELSE u.NORMAL_FIRSTINVEST_BALANCE END stMoney,
-				CASE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_Y_MONEY ELSE u.NORMAL_FIRSTINVEST_Y_MONEY END stYearMoney
+				CASE WHEN u.NORMAL_FIRSTINVEST_TIME is null then u.DEPOSITORY_FIRSTINVEST_TIME WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_TIME ELSE u.NORMAL_FIRSTINVEST_TIME END minTime,
+				CASE WHEN u.NORMAL_FIRSTINVEST_TIME is null then u.DEPOSITORY_FIRSTINVEST_BALANCE WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_BALANCE ELSE u.NORMAL_FIRSTINVEST_BALANCE END stMoney,
+				CASE WHEN u.NORMAL_FIRSTINVEST_TIME is null then u.DEPOSITORY_FIRSTINVEST_Y_MONEY WHEN u.NORMAL_FIRSTINVEST_TIME > u.DEPOSITORY_FIRSTINVEST_TIME THEN u.DEPOSITORY_FIRSTINVEST_Y_MONEY ELSE u.NORMAL_FIRSTINVEST_Y_MONEY END stYearMoney
 			FROM
 				edw_user_basic u
 			WHERE
 				1 = 1
+				and u.IS_BORROWER=0
 			<if test="channelLabelList != null and channelLabelList.size()!=0">
 				AND u.ACTIVITY_TAG IN
 				<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
@@ -87,13 +89,15 @@ FROM
 WHERE
 	1 = 1
 AND p.USER_ID = u.USER_ID
+and u.IS_BORROWER=0
 <if test="regBeginDate != null and regBeginDate.trim() != '' ">
      <![CDATA[ and p.ADDTIME  >=  #{regBeginDate}  ]]>
 </if>
 <if test="invEndDate != null and invEndDate.trim() != '' "  >
      <![CDATA[ and p.ADDTIME <=  #{invEndDate}  ]]>
 </if>
-AND p.TENDER_SUBJECT IN (1, 2)
+<!-- AND p.TENDER_SUBJECT IN (1, 2) -->
+and p.TENDER_ACCOUNT_STATUS in (0,1)
 <if test="regBeginDate != null and regBeginDate.trim() != '' ">
      <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]>
 </if>
@@ -124,13 +128,15 @@ GROUP BY
 	WHERE
 		1 = 1
 	AND p.USER_ID = u.USER_ID
+	and u.IS_BORROWER=0
 	<if test="regBeginDate != null and regBeginDate.trim() != '' ">
 	     <![CDATA[ and p.ADDTIME  >=  #{regBeginDate}  ]]>
 	</if>
 	<if test="invEndDate != null and invEndDate.trim() != '' "  >
 	     <![CDATA[ and p.ADDTIME <=  #{invEndDate}  ]]>
 	</if>
-	AND p.TENDER_SUBJECT IN (1, 2)
+<!-- 	AND p.TENDER_SUBJECT IN (1, 2) -->
+		and p.TENDER_ACCOUNT_STATUS in (0,1)
 	<if test="regBeginDate != null and regBeginDate.trim() != '' ">
 	     <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]>
 	</if>
@@ -153,20 +159,23 @@ GROUP BY
 	<!-- 累计投资金额 -->
 	SELECT
 		u.ACTIVITY_TAG channelLabel,
-		sum(p.TENDER_CAPITAL) investAmount
+		sum(case when p.TENDER_SUBJECT=2 then p.TEND_CASH else p.TENDER_CAPITAL end) investAmount
+<!-- 		sum(p.TENDER_CAPITAL) investAmount -->
 	FROM
 		edw_trading_project_detail p,
 		edw_user_basic u
 	WHERE
 		1 = 1
 	AND p.USER_ID = u.USER_ID
+	and u.IS_BORROWER=0
 	<if test="regBeginDate != null and regBeginDate.trim() != '' ">
 	     <![CDATA[ and p.ADDTIME  >=  #{regBeginDate}  ]]>
 	</if>
 	<if test="invEndDate != null and invEndDate.trim() != '' "  >
 	     <![CDATA[ and p.ADDTIME <=  #{invEndDate}  ]]>
 	</if>
-	AND p.TENDER_SUBJECT IN (1, 2)
+<!-- 	AND p.TENDER_SUBJECT IN (1, 2) -->
+		and p.TENDER_ACCOUNT_STATUS in (0,1)
 	<if test="regBeginDate != null and regBeginDate.trim() != '' ">
 	     <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]>
 	</if>
@@ -189,20 +198,22 @@ GROUP BY
 	<!-- 累计投资年华金额 -->
 	SELECT
 		u.ACTIVITY_TAG channelLabel,
-		sum(IFNULL(p.TENDER_CAPITAL,0)*IFNULL(p.BORROW_PERIOD,0)/360) investYearAmount
+		sum(IFNULL(case when p.TENDER_SUBJECT=2 then p.TEND_CASH else p.TENDER_CAPITAL end,0)*IFNULL(p.BORROW_PERIOD,0)/360) investYearAmount
 	FROM
 		edw_trading_project_detail p,
 		edw_user_basic u
 	WHERE
 		1 = 1
 	AND p.USER_ID = u.USER_ID
+	and u.IS_BORROWER=0
 	<if test="regBeginDate != null and regBeginDate.trim() != '' ">
 	     <![CDATA[ and p.ADDTIME  >=  #{regBeginDate}  ]]>
 	</if>
 	<if test="invEndDate != null and invEndDate.trim() != '' "  >
 	     <![CDATA[ and p.ADDTIME <=  #{invEndDate}  ]]>
 	</if>
-	AND p.TENDER_SUBJECT IN (1, 2)
+<!-- 	AND p.TENDER_SUBJECT IN (1, 2) -->
+		and p.TENDER_ACCOUNT_STATUS in (0,1)
 	<if test="regBeginDate != null and regBeginDate.trim() != '' ">
 	     <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]>
 	</if>
@@ -246,7 +257,9 @@ FROM
 WHERE
 	1 = 1
 AND p.USER_ID = u.USER_ID
-and p.TENDER_SUBJECT in (1,2)
+and u.IS_BORROWER=0
+<!-- and p.TENDER_SUBJECT in (1,2) -->
+and p.TENDER_ACCOUNT_STATUS in (0,1)
 <if test="regBeginDate != null and regBeginDate.trim() != '' ">
      <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]>
 </if>
@@ -281,6 +294,7 @@ GROUP BY
 	WHERE
 		1 = 1
 	AND d.USER_ID_ = u.USER_ID
+	and u.IS_BORROWER=0
 	<if test="regBeginDate != null and regBeginDate.trim() != '' ">
 	     <![CDATA[ and d.CREATED_TIME_  >=  #{regBeginDate}  ]]>
 	</if>

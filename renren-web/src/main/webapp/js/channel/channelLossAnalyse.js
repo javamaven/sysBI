@@ -39,30 +39,8 @@ function loadTableAjax(){
         a = '['+a.substring(0,a.length-1)+']';
         currDataList = a;
         
-        var b = '['+
-        '{field:"channelName",title:"渠道名称",align:"center",valign:"middle",sortable:"true"},'+//居中对齐
-        '{field:"channelLabel",title:"渠道标签",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"registerUserNum",title:"注册人数",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"firstInvestUserNum",title:"首投人数",align:"center",valign:"middle",sortable:"true"},'+
-        
-        '{field:"investOneTimeUserNum",title:"投资1次人数",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"investTwoTimeUserNum",title:"投资2次人数",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"investThreeTimeUserNum",title:"投资3次人数",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"investFourTimeUserNum",title:"投资4次人数",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"investNTimeUserNum",title:"投资N次人数",align:"center",valign:"middle",sortable:"true"},'+
-
-        '{field:"firstInvestAmount",title:"首次投资金额",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"investAmount",title:"累计投资金额",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"investYearAmount",title:"累计投资年华金额",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"firstInvestUseRedMoney",title:"首投使用红包金额",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"perFirstInvestUseRedMoney",title:"人均首投使用红包金额",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"totalUseRedMoney",title:"累计使用红包金额",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"ddzInvestDays",title:"点点赚投资天数",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"ddzPerInvestAmount",title:"点点赚平均投资金额",align:"center",valign:"middle",sortable:"true"}'+
-        ']';
-
         //加载数据
-        loadTable(b,a);
+        loadTable(null,a);
 
         $(window).resize(function () {
             $('#reportTable').bootstrapTable('resetView');
@@ -137,7 +115,69 @@ function loadTable(columnsData,tableData){
         // showColumns: true,
         // showExport: true,
         clickToSelect: true,
-        columns: eval("("+columnsData+")"),
+        columns: [
+        {field:"channelName",title:"渠道名称",align:"right",valign:"left",sortable:"true"},
+        {field:"channelLabel",title:"渠道标签",align:"right",valign:"left",sortable:"true"},
+        {field:"registerUserNum",title:"注册人数",align:"right",valign:"left",sortable:"true"},
+        {field:"firstInvestUserNum",title:"首投人数",align:"right",valign:"left",sortable:"true"},
+        
+        {field:"investOneTimeUserNum",title:"资产权益为0<br/>仅投资1次人数",align:"right",valign:"left",sortable:"true"},
+        {field:"investTwoTimeUserNum",title:"资产权益为0<br/>仅投资2次人数",align:"right",valign:"left",sortable:"true"},
+        {field:"investThreeTimeUserNum",title:"资产权益为0<br/>仅投资3次人数",align:"right",valign:"left",sortable:"true"},
+        {field:"investFourTimeUserNum",title:"资产权益为0<br/>仅投资4次人数",align:"right",valign:"left",sortable:"true"},
+        {field:"investNTimeUserNum",title:"资产权益为0<br/>投资N次人数",align:"right",valign:"left",sortable:"true"},
+
+        {field:"firstInvestAmount",title:"首次投资金额",align:"right",valign:"left",sortable:"true",formatter:function(cellvalue, options, rowObject){
+			if(cellvalue){
+				return formatNumber(cellvalue,2);
+			}else{
+				return '';
+			}
+		}  },
+        {field:"investAmount",title:"累计投资金额",align:"right",valign:"left",sortable:"true",formatter:function(cellvalue, options, rowObject){
+			if(cellvalue){
+				return formatNumber(cellvalue,2);
+			}else{
+				return '';
+			}
+		}  },
+        {field:"investYearAmount",title:"累计投资年华金额",align:"right",valign:"left",sortable:"true",formatter:function(cellvalue, options, rowObject){
+			if(cellvalue){
+				return formatNumber(cellvalue,2);
+			}else{
+				return '';
+			}
+		}  },
+        {field:"firstInvestUseRedMoney",title:"首投使用红包金额",align:"right",valign:"middle",sortable:"true",formatter:function(cellvalue, options, rowObject){
+			if(cellvalue){
+				return formatNumber(cellvalue,2);
+			}else{
+				return '';
+			}
+		}  },
+        {field:"perFirstInvestUseRedMoney",title:"人均首投使用红包金额",align:"right",valign:"middle",sortable:"true",formatter:function(cellvalue, options, rowObject){
+			if(cellvalue){
+				return formatNumber(cellvalue,2);
+			}else{
+				return '';
+			}
+		}  },
+        {field:"totalUseRedMoney",title:"累计使用红包金额",align:"right",valign:"middle",sortable:"true",formatter:function(cellvalue, options, rowObject){
+			if(cellvalue){
+				return formatNumber(cellvalue,2);
+			}else{
+				return '';
+			}
+		}  },
+        {field:"ddzInvestDays",title:"点点赚投资天数",align:"right",valign:"middle",sortable:"true"},
+        {field:"ddzPerInvestAmount",title:"点点赚平均投资金额",align:"right",valign:"middle",sortable:"true",formatter:function(cellvalue, options, rowObject){
+			if(cellvalue){
+				return formatNumber(cellvalue,2);
+			}else{
+				return '';
+			}
+		}  }
+        ],
         data :eval("("+tableData+")") ,
         formatNoMatches: function(){
             return '无符合条件的记录';

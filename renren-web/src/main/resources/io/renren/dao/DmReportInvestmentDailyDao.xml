@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.DmReportInvestmentDailyDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.DmReportInvestmentDailyEntity" id="dmReportInvestmentDailyMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="username" column="USERNAME"/>
+        <result property="channelId" column="CHANNEL_ID"/>
+        <result property="channelName" column="CHANNEL_NAME"/>
+        <result property="activityTag" column="ACTIVITY_TAG"/>
+        <result property="tenderFrom" column="TENDER_FROM"/>
+        <result property="addtime" column="ADDTIME"/>
+        <result property="borrowType" column="BORROW_TYPE"/>
+        <result property="pid" column="PID"/>
+        <result property="projectName" column="PROJECT_NAME"/>
+        <result property="tenderCapital" column="TENDER_CAPITAL"/>
+        <result property="borrowPeriod" column="BORROW_PERIOD"/>
+        <result property="stage" column="STAGE"/>
+        <result property="recoverAccountWait" column="RECOVER_ACCOUNT_WAIT"/>
+        <result property="cia" column="CIA"/>
+    </resultMap>
+    
+	<sql id="cond">
+		<if test="statPeriod != null and statPeriod.trim() != '' ">
+		     <![CDATA[ and STAT_PERIOD =  #{statPeriod}  ]]>
+		</if>
+		<if test="investStartTime != null and investStartTime.trim() != ''">
+		     <![CDATA[ and addtime >=  #{investStartTime}  ]]>
+		</if>
+		<if test="investEndTime != null and investEndTime.trim() != ''">
+		     <![CDATA[ and addtime <=  #{investEndTime}  ]]>
+		</if>
+		
+		<if test="userId != null and userId.trim() != ''">
+		     <![CDATA[ and user_id =  #{userId}  ]]>
+		</if>
+		<if test="userName != null and userName.trim() != ''">
+		     <![CDATA[ and username =  #{userName}  ]]>
+		</if>
+		<if test="channelId != null and channelId.trim() != ''">
+		     <![CDATA[ and channel_id =  #{channelId}  ]]>
+		</if>
+		<!-- 操作平台-->
+		<if test="operPlatform != null and operPlatform.trim() != '' ">
+		     <![CDATA[ and TENDER_FROM =  #{operPlatform}  ]]>
+		</if>
+		<!-- 涉及项目类型-->
+		<if test="withProType != null and withProType.trim() != ''">
+		     <![CDATA[ and BORROW_TYPE =  #{withProType}  ]]>
+		</if>
+		<if test="channelName != null and channelName.size()!=0">
+			AND CHANNEL_NAME IN
+			<foreach item="channelName_" collection="channelName" open="(" separator="," close=")">
+				#{channelName_}
+			</foreach>
+		</if>
+	
+	</sql>
+
+	<select id="queryObject" resultType="io.renren.entity.DmReportInvestmentDailyEntity">
+		select * from dm_report_investment_daily where STAT_PERIOD = #{value}
+	</select>
+
+	<select id="queryTotalList" resultType="io.renren.entity.DmReportInvestmentDailyEntity">
+		SELECT
+			sum(TENDER_CAPITAL) tenderCapital,
+			sum(RECOVER_ACCOUNT_WAIT) recoverAccountWait
+		FROM
+			DM_REPORT_INVESTMENT_DAILY
+		where 1=1
+		
+		<include refid="cond"/>
+		
+	</select>
+	<select id="queryList" resultType="io.renren.entity.DmReportInvestmentDailyEntity">
+		select 
+			STAT_PERIOD, 
+			USER_ID, 
+			USERNAME, 
+			CHANNEL_ID, 
+			CHANNEL_NAME, 
+			ACTIVITY_TAG, 
+			CASE
+				WHEN TENDER_FROM = 0 THEN '移动端无法区分'
+				WHEN TENDER_FROM = 1 THEN 'PC'
+				WHEN TENDER_FROM = 2 THEN 'IOS'
+				WHEN TENDER_FROM = 3 THEN 'Android'
+				WHEN TENDER_FROM = 4 THEN 'M站'
+				WHEN TENDER_FROM = 5 THEN '微信或后台'
+				WHEN TENDER_FROM = - 1 THEN '系统' END TENDER_FROM, 
+			ADDTIME, 
+			BORROW_TYPE, 
+			PID, 
+			PROJECT_NAME, 
+			TENDER_CAPITAL, 
+			BORROW_PERIOD, 
+			STAGE, 
+			RECOVER_ACCOUNT_WAIT, 
+			CIA
+		
+		from dm_report_investment_daily
+       
+        where 1=1
+        
+       	<include refid="cond"/>
+       
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dm_report_investment_daily 
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.DmReportInvestmentDailyEntity">
+		insert into dm_report_investment_daily
+		(
+			`STAT_PERIOD`, 
+			`USER_ID`, 
+			`USERNAME`, 
+			`CHANNEL_ID`, 
+			`CHANNEL_NAME`, 
+			`ACTIVITY_TAG`, 
+			`TENDER_FROM`, 
+			`ADDTIME`, 
+			`BORROW_TYPE`, 
+			`PID`, 
+			`PROJECT_NAME`, 
+			`TENDER_CAPITAL`, 
+			`BORROW_PERIOD`, 
+			`STAGE`, 
+			`RECOVER_ACCOUNT_WAIT`, 
+			`CIA`
+		)
+		values
+		(
+			#{statPeriod}, 
+			#{userId}, 
+			#{username}, 
+			#{channelId}, 
+			#{channelName}, 
+			#{activityTag}, 
+			#{tenderFrom}, 
+			#{addtime}, 
+			#{borrowType}, 
+			#{pid}, 
+			#{projectName}, 
+			#{tenderCapital}, 
+			#{borrowPeriod}, 
+			#{stage}, 
+			#{recoverAccountWait}, 
+			#{cia}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.DmReportInvestmentDailyEntity">
+		update dm_report_investment_daily 
+		<set>
+			<if test="userId != null">`USER_ID` = #{userId}, </if>
+			<if test="username != null">`USERNAME` = #{username}, </if>
+			<if test="channelId != null">`CHANNEL_ID` = #{channelId}, </if>
+			<if test="channelName != null">`CHANNEL_NAME` = #{channelName}, </if>
+			<if test="activityTag != null">`ACTIVITY_TAG` = #{activityTag}, </if>
+			<if test="tenderFrom != null">`TENDER_FROM` = #{tenderFrom}, </if>
+			<if test="addtime != null">`ADDTIME` = #{addtime}, </if>
+			<if test="borrowType != null">`BORROW_TYPE` = #{borrowType}, </if>
+			<if test="pid != null">`PID` = #{pid}, </if>
+			<if test="projectName != null">`PROJECT_NAME` = #{projectName}, </if>
+			<if test="tenderCapital != null">`TENDER_CAPITAL` = #{tenderCapital}, </if>
+			<if test="borrowPeriod != null">`BORROW_PERIOD` = #{borrowPeriod}, </if>
+			<if test="stage != null">`STAGE` = #{stage}, </if>
+			<if test="recoverAccountWait != null">`RECOVER_ACCOUNT_WAIT` = #{recoverAccountWait}, </if>
+			<if test="cia != null">`CIA` = #{cia}</if>
+		</set>
+		where STAT_PERIOD = #{statPeriod}
+	</update>
+	
+	<delete id="delete">
+		delete from dm_report_investment_daily where STAT_PERIOD = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from dm_report_investment_daily where STAT_PERIOD in 
+		<foreach item="statPeriod" collection="array" open="(" separator="," close=")">
+			#{statPeriod}
+		</foreach>
+	</delete>
+
+</mapper>

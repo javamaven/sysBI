@@ -72,19 +72,6 @@ values(	#{statDay},
 		</foreach>
 	</if>
 </sql>
-<select id="queryDay90FirstInvestYearRoi" resultType="io.renren.entity.ChannelRenewDataEntity" fetchSize="2000">
-<!-- 60日,首投年化ROI 传入不同参数，返回对应信息-->
-	call first_invest_year_roi_renew_day90(#{startDate} , #{endDate})
-</select>
-<select id="queryDay60FirstInvestYearRoi" resultType="io.renren.entity.ChannelRenewDataEntity" fetchSize="2000">
-<!-- 60日,首投年化ROI 传入不同参数，返回对应信息-->
-	call first_invest_year_roi_renew_day60(#{startDate} , #{endDate})
-</select>
-<select id="queryDay30FirstInvestYearRoi" resultType="io.renren.entity.ChannelRenewDataEntity" fetchSize="2000">
-<!-- 30日60日90日,首投年化ROI 传入不同参数，返回对应信息-->
-	call first_invest_year_roi_renew_day30(#{startDate} , #{endDate})
-
-</select>
 
 <select id="queryFirstInvestUserNumDay30" resultType="io.renren.entity.ChannelRenewDataEntity">
 	<!-- 30日,首投用户数，首投金额，首投年华金额 传入不同参数，返回对应信息-->
@@ -118,8 +105,9 @@ values(	#{statDay},
 				) rownum ,
 				@pa := p.user_id user_id,
 				p.addtime,
-				p.TENDER_CAPITAL money, 
-				p.BORROW_PERIOD days
+				case when p.TENDER_SUBJECT=2 then p.TEND_CASH else p.TENDER_CAPITAL end money, 
+				p.BORROW_PERIOD days,
+				p.TENDER_ACCOUNT_STATUS
 				FROM
 					edw_trading_project_detail p
 				ORDER BY
@@ -128,7 +116,10 @@ values(	#{statDay},
 					p.id
 		) s , edw_user_basic u
 		where 1=1
+		and s.user_id=u.user_id
 		and s.rownum= #{rownum}
+		and u.IS_BORROWER=0
+		and s.TENDER_ACCOUNT_STATUS in (0,1)
 		AND s.addTime >= #{startDate}
 		AND s.addTime &lt;= #{endDate}
 		<if test="channelLabelList !=null and channelLabelList.size() != 0">
@@ -137,7 +128,6 @@ values(	#{statDay},
 				#{channelName}
 			</foreach>
 		</if>
-		and s.user_id=u.user_id
 		group by u.activity_tag
 
 </select>
@@ -202,15 +192,17 @@ group by s.channelLabel
 	SELECT
 		u.ACTIVITY_TAG channelLabel,
 		sum(
-			p.TENDER_CAPITAL * p.BORROW_PERIOD / 360
+			IFNULL(case when p.TENDER_SUBJECT=2 then p.TEND_CASH else p.TENDER_CAPITAL end, 0) * p.BORROW_PERIOD / 360
 		) yearAmount,
-		sum(IFNULL(p.TENDER_CAPITAL, 0)) amount
+		sum(IFNULL(case when p.TENDER_SUBJECT=2 then p.TEND_CASH else p.TENDER_CAPITAL end, 0)) amount
 	FROM
 		edw_trading_project_detail p,
 		edw_user_basic u
 	WHERE
 		1 = 1
 	AND p.USER_ID = u.USER_ID 
+	and u.IS_BORROWER=0
+	and p.TENDER_ACCOUNT_STATUS in (0,1)
 	AND u.ACTIVITY_TAG IN (SELECT a.channel_label FROM dim_channel_cost_union a WHERE 1 = 1 AND a.fee_time =#{onlineDate})
 	AND p.ADDTIME  >= #{startDate}
 	AND p.ADDTIME  &lt;= #{endDate}
