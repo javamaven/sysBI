@@ -81,7 +81,7 @@
 	AND p.ADDTIME >= #{firstInvBeginDate}
 	AND p.ADDTIME &lt;= #{invEndDate}
 	and p.TENDER_ACCOUNT_STATUS in (0,1)
-<!-- 	AND p.TENDER_SUBJECT = 1 -->
+	AND p.TENDER_SUBJECT != 2
 	<if test="channelLabelList != null and channelLabelList.size()!=0">
 		AND u.ACTIVITY_TAG IN
 		<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
@@ -130,112 +130,6 @@
  
 	call first_invest_use_red_money_loss(#{firstInvBeginDate},#{firstInvEndDate},#{invEndDate});
 	
-<!-- 	不再使用临时表 -->
-<!-- 	select u.channelLabel, u.firstInvestRedMoney firstInvestUseRedMoney from first_invest_use_red_money_loss_tmp u -->
-<!-- 	where 1=1 -->
-<!-- 	<if test="channelLabelList != null and channelLabelList.size()!=0"> -->
-<!-- 		AND u.channelLabel IN -->
-<!-- 		<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")"> -->
-<!-- 			#{channelName} -->
-<!-- 		</foreach> -->
-<!-- 	</if> -->
-	<!-- 
-	SELECT
-	u.activity_tag channelLabel,
-	sum(IFNULL(s.TEND_VOUCHE, 0)) firstInvestRedMoney
-FROM
-	(
-		SELECT
-
-		IF (
-			@multiUser = p.user_id ,@multiRownum :=@multiRownum + 1 ,@multiRownum := 1
-		) rownum,
-		@multiUser := p.user_id user_id,
-		p.addtime,
-		p.TEND_VOUCHE
-	FROM
-		edw_trading_project_detail p,
-		(
-			SELECT
-				@multiRownum := 0 ,@multiUser = ''
-		) t
-	WHERE
-		1 = 1
-		and EXISTS (
-				select DISTINCT a.user_id	from (
-								select s.user_id, s.ACTIVITY_TAG,
-									case when ptTime is null then cgTime when cgTime is null then ptTime when ptTime > cgTime then cgTime else ptTime end minTime, 
-									case when ptTime is null then cgMoney when cgTime is null then ptMoney when ptTime > cgTime then cgMoney else ptMoney end stMoney
-								from (
-										SELECT
-											u.user_id,
-											u.ACTIVITY_TAG,
-											max(u.NORMAL_FIRSTINVEST_TIME) ptTime,
-											max(u.DEPOSITORY_FIRSTINVEST_TIME) cgTime,
-											max(u.NORMAL_FIRSTINVEST_BALANCE) ptMoney,
-											max(u.DEPOSITORY_FIRSTINVEST_BALANCE) cgMoney
-										FROM
-											edw_merge_user u
-											WHERE 1=1
-												and (
-													(
-														u.NORMAL_FIRSTINVEST_TIME IS NOT NULL
-														<if test="firstInvBeginDate != null and firstInvBeginDate.trim() != '' ">
-														     <![CDATA[ and u.NORMAL_FIRSTINVEST_TIME  >=  #{firstInvBeginDate}  ]]>
-														</if>
-														<if test="firstInvEndDate != null and firstInvEndDate.trim() != '' "  >
-														     <![CDATA[ and u.NORMAL_FIRSTINVEST_TIME <=  #{firstInvEndDate}  ]]>
-														</if>
-														
-													)
-													OR (
-														u.DEPOSITORY_FIRSTINVEST_TIME IS NOT NULL
-														<if test="firstInvBeginDate != null and firstInvBeginDate.trim() != '' ">
-														     <![CDATA[ and u.DEPOSITORY_FIRSTINVEST_TIME  >=  #{firstInvBeginDate}  ]]>
-														</if>
-														<if test="firstInvEndDate != null and firstInvEndDate.trim() != '' "  >
-														     <![CDATA[ and u.DEPOSITORY_FIRSTINVEST_TIME <=  #{firstInvEndDate}  ]]>
-														</if>
-													) 
-												)
-										group by u.user_id 
-								) s
-					) a where 1=1 
-					<if test="firstInvBeginDate != null and firstInvBeginDate.trim() != '' ">
-					     <![CDATA[ and a.minTime  >=  #{firstInvBeginDate}  ]]>
-					</if>
-					<if test="firstInvEndDate != null and firstInvEndDate.trim() != '' "  >
-					     <![CDATA[ and a.minTime <=  #{firstInvEndDate}  ]]>
-					</if>
-					and a.user_id = p.user_id
-		)
-
-	AND p.tender_subject IN (1, 2)
-	ORDER BY
-		p.user_id ASC,
-		p.addtime ASC
-	) s,
-	edw_merge_user u
-WHERE
-	1 = 1
-AND s.user_id = u.user_id
-AND s.rownum = 1
-	<if test="firstInvBeginDate != null and firstInvBeginDate.trim() != '' ">
-	     <![CDATA[ and s.addtime  >=  #{firstInvBeginDate}  ]]>
-	</if>
-	<if test="invEndDate != null and invEndDate.trim() != '' "  >
-	     <![CDATA[ and s.addtime <=  #{invEndDate}  ]]>
-	</if>
-	<if test="channelLabelList != null and channelLabelList.size()!=0">
-		AND u.channelLabel IN
-		<foreach item="channelName" collection="channelLabelList" open="(" separator="," close=")">
-			#{channelName}
-		</foreach>
-	</if>
-	
-GROUP BY
-	u.activity_tag
-	-->
 </select>
 
 <select id="queryInvestYearAmount" resultType="io.renren.entity.ChannelLossEntity">
@@ -327,7 +221,9 @@ FROM
 					SELECT u.ACTIVITY_TAG channelLabel, sum(p.money) investYearAmount
 					FROM
 						(
-							SELECT p.user_id, p.TENDER_CAPITAL * p.BORROW_PERIOD / 360 money
+							SELECT 
+									p.user_id, 
+									IFNULL(case when p.TENDER_SUBJECT=2 then p.TEND_CASH else IFNULL(p.TEND_CASH,0)+IFNULL(p.TEND_VOUCHE,0) end ,0) * p.BORROW_PERIOD / 360 money
 							FROM
 								edw_trading_project_detail p
 							WHERE
@@ -414,10 +310,10 @@ GROUP BY
 	<!-- 累计投资金额 ,累计投资年化金额-->
 	SELECT
 		u.ACTIVITY_TAG channelLabel,
-		sum(IFNULL(case when p.TENDER_SUBJECT=2 then p.TEND_CASH else p.TENDER_CAPITAL end , 0)) investAmount,
-		sum(
-			IFNULL(case when p.TENDER_SUBJECT=2 then p.TEND_CASH else p.TENDER_CAPITAL end , 0) * IFNULL(p.BORROW_PERIOD, 0) / 360
-		) investYearAmount
+			sum(case when p.TENDER_SUBJECT=2 then p.TEND_CASH else p.TEND_CASH+p.TEND_VOUCHE end) investAmount,
+			sum(
+				IFNULL(case when p.TENDER_SUBJECT=2 then p.TEND_CASH else p.TEND_CASH+p.TEND_VOUCHE end, 0) * IFNULL(p.BORROW_PERIOD, 0) / 360
+			) investYearAmount
 	FROM
 		(
 			SELECT
@@ -646,7 +542,7 @@ GROUP BY
 		edw_user_basic u
 	WHERE
 		1 = 1
-	and u.IS_BORROWER=0
+	
 	<if test="firstInvBeginDate != null and firstInvBeginDate.trim() != '' ">
 	     <![CDATA[ and u.REGISTER_TIME  >=  #{firstInvBeginDate}  ]]>
 	</if>
