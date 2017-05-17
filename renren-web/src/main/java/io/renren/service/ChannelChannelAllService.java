@@ -36,4 +36,5 @@ public interface ChannelChannelAllService {
 	 * @return
 	 */
 	List<ChannelChannelAllEntity> queryChannel();
+
 }

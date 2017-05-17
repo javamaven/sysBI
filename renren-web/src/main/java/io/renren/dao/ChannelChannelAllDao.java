@@ -25,4 +25,5 @@ public interface ChannelChannelAllDao extends BaseDao<ChannelChannelAllEntity> {
 	 * @return
 	 */
 	List<ChannelChannelAllEntity> queryChannel();
+
 }
