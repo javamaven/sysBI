@@ -58,7 +58,7 @@ function initTableGrid(){
 			{ label: '渠道ID', name: 'channelId', index: '$CHANNEL_ID', width: 80,align:'right' }, 			
 			{ label: '渠道名称', name: 'channelName', index: '$CHANNEL_NAME', width: 120,align:'right' }, 			
 			{ label: '渠道标记', name: 'activityTag', index: '$ACTIVITY_TAG', width: 80,align:'right' }, 			
-			{ label: '操作平台', name: 'tenderFrom', index: '$TENDER_FROM', width: 70,align:'right'
+			{ label: '操作平台', name: 'tenderFrom', index: '$TENDER_FROM', width: 80,align:'right'
 //				,
 //				formatter:function(cellvalue, options, rowObject){
 //					if(cellvalue == 0){
@@ -80,29 +80,56 @@ function initTableGrid(){
 			},			
 			{ label: '投资时间', name: 'addtime', index: '$ADDTIME', width: 150 ,align:'right'}, 			
 			{ label: '涉及项目类型', name: 'borrowType', index: '$BORROW_TYPE', width: 100,align:'right' }, 			
-			{ label: '投资记录ID', name: 'pid', index: '$PID', width: 80,align:'right' }, 			
+			{ label: '投资记录ID', name: 'pid', index: '$PID', width: 85,align:'right' }, 			
 			{ label: '涉及项目名称', name: 'projectName', index: '$PROJECT_NAME', width: 150,align:'right' }, 			
 			{ label: '涉及项目本金', name: 'tenderCapital', index: '$TENDER_CAPITAL', width: 110,align:'right',
 				formatter:function(cellvalue, options, rowObject){
 					if(cellvalue){
-						return formatNumber(cellvalue,2);
+						return formatNumber(cellvalue,2) + "元";
 					}else{
-						return '';
+						return '0.00元';
 					}
 				}
 			},
-			{ label: '涉及项目期限', name: 'borrowPeriod', index: '$BORROW_PERIOD', width: 80,align:'right' }, 			
-			{ label: '目前状态', name: 'stage', index: '$STAGE', width: 80,align:'right' }, 			
-			{ label: '当前持有总金额', name: 'recoverAccountWait', index: '$RECOVER_ACCOUNT_WAIT', width: 110,align:'right',
+			{ label: '涉及项目期限', name: 'borrowPeriod', index: '$BORROW_PERIOD', width: 85,align:'right',
+				formatter:function(cellvalue, options, rowObject){
+					return cellvalue + "天";
+				}
+			},
+			{ label: '当前持有', name: 'recoverAccountWait', index: '$RECOVER_ACCOUNT_WAIT', width: 110,align:'right',
 				formatter:function(cellvalue, options, rowObject){
 					if(cellvalue){
-						return formatNumber(cellvalue,2);
+						return formatNumber(cellvalue,2) + "元";
 					}else{
-						return '';
+						return '0.00元';
 					}
 				}
-			},				
-			{ label: 'CIA', name: 'cia', index: '$CIA', width: 80 ,align:'right'}			
+			},
+			{ label: '目前状态', name: 'stage', index: '$STAGE', width: 80,align:'right' ,
+				formatter:function(cellvalue, options, rowObject){
+					if(cellvalue == '1'){
+						return '待提交审核';
+					}else if(cellvalue == '2'){
+						return '审核中待发布';
+					}else if(cellvalue == '3'){
+						return '审核通过待排标';
+					}else if(cellvalue == '4'){
+						return '已发布筹款中';
+					}else if(cellvalue == '5'){
+						return '还款中';
+					}else if(cellvalue == '8'){
+						return '已结清';
+					}else if(cellvalue == '9'){
+						return '流标';
+					}else {
+						return cellvalue;
+					}
+				}
+			}
+			
+//			STAGE 项目阶段（1待提交审核 2审核中待发布、3审核通过待排标、4已发布筹款中、5还款中、8已结清、9流标） 
+//			,				
+//			{ label: 'CIA', name: 'cia', index: '$CIA', width: 80 ,align:'right'}			
         ],
 		viewrecords: true,
         height: 385,
