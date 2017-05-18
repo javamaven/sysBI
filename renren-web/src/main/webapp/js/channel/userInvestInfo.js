@@ -39,8 +39,8 @@ function queryTotalInfo(){
 	        contentType: "application/json;charset=utf-8",
 	        success : function(retData) {
 	        	var data = retData.data;
-	        	$("#total_invest_amount").html(data.tenderCapital);
-	        	$("#curr_have_amount").html(data.recoverAccountWait);
+	        	$("#total_invest_amount").html(formatNumber(data.tenderCapital, 2));
+	        	$("#curr_have_amount").html(formatNumber(data.recoverAccountWait, 2));
 	        }
 	     });
 	 
