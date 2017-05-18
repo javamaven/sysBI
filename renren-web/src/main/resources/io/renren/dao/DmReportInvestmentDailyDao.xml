@@ -98,8 +98,7 @@
 			TENDER_CAPITAL, 
 			BORROW_PERIOD, 
 			STAGE, 
-			RECOVER_ACCOUNT_WAIT, 
-			CIA
+			RECOVER_ACCOUNT_WAIT
 		
 		from dm_report_investment_daily
        
