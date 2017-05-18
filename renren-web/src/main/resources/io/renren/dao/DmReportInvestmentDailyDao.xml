@@ -92,7 +92,13 @@
 				WHEN TENDER_FROM = 5 THEN '微信或后台'
 				WHEN TENDER_FROM = - 1 THEN '系统' END TENDER_FROM, 
 			ADDTIME, 
-			BORROW_TYPE, 
+			case 
+				when BORROW_TYPE = 1 then '旧系统.普通标'
+				when BORROW_TYPE = 2 then '旧系统.债转标'
+				when BORROW_TYPE = 3 then '存管版.普通标'
+				when BORROW_TYPE = 4 then '存管版.债转标'
+				when BORROW_TYPE = 5 then '存管版.智投计划'
+				else BORROW_TYPE end BORROW_TYPE,
 			PID, 
 			PROJECT_NAME, 
 			TENDER_CAPITAL, 
