@@ -97,7 +97,15 @@
 			PROJECT_NAME, 
 			TENDER_CAPITAL, 
 			BORROW_PERIOD, 
-			STAGE, 
+			CASE
+				WHEN STAGE=1 THEN '待提交审核'
+				WHEN STAGE=2 THEN '审核中待发布'
+				WHEN STAGE=3 THEN '审核通过待排标'
+				WHEN STAGE=4 THEN '已发布筹款中'
+				WHEN STAGE=5 THEN '还款中'
+				WHEN STAGE=8 THEN '已结清'
+				WHEN STAGE=9 THEN '流标'
+			ELSE STAGE END AS STAGE,
 			RECOVER_ACCOUNT_WAIT
 		
 		from dm_report_investment_daily
