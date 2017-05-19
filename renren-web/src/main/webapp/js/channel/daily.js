@@ -103,6 +103,14 @@ function loadTable(columnsData,tableData){
 //     });
 //}
 
+function getParams(){
+	var params = {
+        	'statPeriod': $("#STAT_PERIOD").val(),
+
+	};
+	return params;
+}
+
 
 function loadTableAjax(){
  $.ajax({
@@ -170,8 +178,14 @@ $(function(){
 
 //    loadChannel();
     loadTableAjax();
-$('#btn_exports').click(function(){
-    window.open("../channel/daily/partExport","_blank",'height=400,width=400,top=100,left=200,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no');
-});
+    initExportFunction();
+
 
 });
+function initExportFunction(){
+	$('#btn_exports').click(function(){
+		var params = getParams();
+		executePost('../channel/daily/partExport', {'params' : JSON.stringify(params)});
+	});
+
+}

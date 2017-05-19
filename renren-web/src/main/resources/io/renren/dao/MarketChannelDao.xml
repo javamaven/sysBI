@@ -119,6 +119,7 @@
         <!--FROM TMP_dm_report_channel_data_02-->
 
         <!--UNION ALL-->
+        CREATE TEMPORARY TABLE TMP_dm_report_channel_data_02
         SELECT
         STAT_PERIOD,
         CHANNEL_HEAD,
@@ -141,6 +142,7 @@
         format(CUMULATIVE_ROT,2) AS CUMULATIVE_ROT
         FROM TMP_dm_report_channel_data_01
         ;
+
 	</select>
 	
  	<select id="queryTotal" resultType="int">
@@ -174,27 +176,29 @@
         <!--FROM TMP_dm_report_channel_data_02-->
 
         <!--UNION ALL-->
-        SELECT
-        STAT_PERIOD,
-        CHANNEL_HEAD,
-        TYPE,
-        CHANNEL_NAME,
-        ACTUAL_COST,
-        REG_COU,
-        FIRSTINVEST_COU,
-        FIRSTINVEST_MONEY,
-        FIRSTINVEST_Y_MONEY,
-        INV_COU,
-        INV_MONEY,
-        INV_Y_MONEY,
-        DDZ_MONEY,
-        format(REG_COST,2) AS REG_COST,
-        format(FIRSTINVEST_COST,2) AS FIRSTINVEST_COST,
-        format(AVG_FIRSTINVEST_MONEY,2) AS AVG_FIRSTINVEST_MONEY,
-        format(REG_INV_CONVERSION,2) AS REG_INV_CONVERSION,
-        format(FIRSTINVEST_ROT,2) AS FIRSTINVEST_ROT,
-        format(CUMULATIVE_ROT,2) AS CUMULATIVE_ROT
-        FROM TMP_dm_report_channel_data_01
+        <!--SELECT-->
+        <!--STAT_PERIOD,-->
+        <!--CHANNEL_HEAD,-->
+        <!--TYPE,-->
+        <!--CHANNEL_NAME,-->
+        <!--ACTUAL_COST,-->
+        <!--REG_COU,-->
+        <!--FIRSTINVEST_COU,-->
+        <!--FIRSTINVEST_MONEY,-->
+        <!--FIRSTINVEST_Y_MONEY,-->
+        <!--INV_COU,-->
+        <!--INV_MONEY,-->
+        <!--INV_Y_MONEY,-->
+        <!--DDZ_MONEY,-->
+        <!--format(REG_COST,2) AS REG_COST,-->
+        <!--format(FIRSTINVEST_COST,2) AS FIRSTINVEST_COST,-->
+        <!--format(AVG_FIRSTINVEST_MONEY,2) AS AVG_FIRSTINVEST_MONEY,-->
+        <!--format(REG_INV_CONVERSION,2) AS REG_INV_CONVERSION,-->
+        <!--format(FIRSTINVEST_ROT,2) AS FIRSTINVEST_ROT,-->
+        <!--format(CUMULATIVE_ROT,2) AS CUMULATIVE_ROT-->
+        <!--FROM TMP_dm_report_channel_data_01-->
+        select *
+        from  TMP_dm_report_channel_data_02
         ;
     </select>
 

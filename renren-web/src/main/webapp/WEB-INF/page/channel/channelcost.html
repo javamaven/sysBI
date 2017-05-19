@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>用户行为</title>
+	#parse("sys/header.html")
+</head>
+<body>
+
+<div class="content">
+	<div style="padding: 10px 30px;">
+
+		<table border="0">
+			<tr>
+				<label>注册人数：</label><font id="register_user_num">-</font>
+				<label style="padding: 7px;"></label>
+				<label>注册平均成本：</label><font id="invest_user_num">-</font>
+				<label style="padding: 7px;"></label>
+				<label>首投人数：</label><font id="first_invest_rate">-</font>
+				<label style="padding: 7px;"></label>
+				<label>首投金额：</label><font id="total_invest_amount">-</font>
+				<label style="padding: 7px;"></label>
+				<label>首投平均成本：</label><font id="first_invest_amount">-</font>
+				<label style="padding: 7px;"></label>
+				<label>首投ROI：</label><font id="cre_invest_amount">-</font>
+				<label style="padding: 7px;"></label>
+				<label>累投金额：</label><font id="multi_invest_user_num">-</font>
+				<label style="padding: 7px;"></label>
+				<label>累投ROI：</label><font id="multi_invest_amount">-</font>
+				<label style="padding: 7px;"></label>
+				<label>费用：</label><font id="multi_invest_rate">-</font>
+			</tr>
+			<tr height="10px;"></tr>
+			<div class="panel-body">
+				<table border="0">
+					<tr>
+						<td><label>渠道名称：</label></td>
+						<td>
+							<select id="id_select" multiple="multiple" class="form-control"></select>
+						</td>
+						<td width="100"></td>
+						<td><label>注册时间：</label></td>
+						<td>
+							<input type="text" class="form-control form_datetime_2" id="reg_begindate"  placeholder="请选择开始时间"/>
+						</td>
+						<td>&nbsp;-&nbsp; </td>
+						<td>
+							<input type="text" class="form-control form_datetime_2" id="reg_enddate"  placeholder="请选择结束时间"/>
+						</td>
+
+					</tr>
+					<tr height="10"></tr>
+
+
+					</tr>
+
+			<tr height="10px;"></tr>
+		</table>
+				<!--<a type="button" @click="reload" id="searchButton" class="btn btn-primary"><i class="fa fa-search"></i>  查询</a>-->
+				<a class="btn btn-primary" @click="reload" id="searchButton"><i class="fa fa-search"></i>&nbsp;查询</a>
+				<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+				<div style="text-align: right;">
+					<table id="jqGrid"></table>
+				</div>
+
+				<div id="jqGridPager"></div>
+		<div class="row">
+			<div class="panel panel-primary" id="showDiv" >
+				<div class="panel-heading">
+					<i class="fa fa-list"></i>  用户访问明细
+				</div>
+
+				<div class="panel-body">
+					<!-- 加载表格动画-->
+					<div>
+						<ul class="spinners">
+							<li class="active">
+								<div id="preloader_2">
+									<span></span>
+									<span></span>
+									<span></span>
+									<span></span>
+								</div>
+							</li>
+						</ul>
+					</div>
+					<div class="table-responsive">
+						<table id="reportTable" class="table table-hover">
+
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+
+			</div>
+	</div>
+</div>
+<script type="text/javascript">
+</script>
+<script src="${rc.contextPath}/js/channel/channelcost.js?_${date.systemTime}"></script>
+</body>
+</html>

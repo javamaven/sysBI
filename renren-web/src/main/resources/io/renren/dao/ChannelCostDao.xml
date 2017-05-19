@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.ChannelCostDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.ChannelCostEntity" id="dmReportChannelCostMap">
+		<result property="statPeriod" column="STAT_PERIOD"/>
+		<result property="channelName" column="CHANNEL_NAME"/>
+		<result property="channelLabel" column="CHANNEL_LABEL"/>
+		<result property="regCou" column="REG_COU"/>
+		<result property="regCost" column="REG_COST"/>
+		<result property="firstinvestCou" column="FIRSTINVEST_COU"/>
+		<result property="firstinvestMoney" column="FIRSTINVEST_MONEY"/>
+		<result property="firstCost" column="FIRST_COST"/>
+		<result property="firstROI" column="FIRST_ROI"/>
+		<result property="invMoney" column="INV_MONEY"/>
+		<result property="numROI" column="NUM_ROI"/>
+		<result property="actualCost" column="ACTUAL_COST"/>
+
+    </resultMap>
+
+
+	<select id="queryList" resultType="io.renren.entity.ChannelCostEntity">
+		DROP TABLE IF EXISTS TMP_dm_report_channel_cost_01;
+
+		CREATE TEMPORARY TABLE TMP_dm_report_channel_cost_01
+		SELECT
+		STAT_PERIOD,
+		CHANNEL_NAME,
+		CHANNEL_LABEL,
+		REG_COU,
+		FORMAT(ACTUAL_COST/REG_COU,2) AS REG_COST,
+		FIRSTINVEST_COU,
+		FIRSTINVEST_MONEY,
+		FORMAT(ACTUAL_COST/FIRSTINVEST_COU,2) AS FIRST_COST,
+		FORMAT(FIRSTINVEST_MONEY/ACTUAL_COST,2) AS FIRST_ROI,
+		INV_MONEY,
+		FORMAT(INV_MONEY/ACTUAL_COST,2) as NUM_ROI,
+		ACTUAL_COST
+		from dm_report_channel_cost
+		where 1=1
+		<if test="channelName!=null and channelName.size()!=0">
+			AND CHANNEL_NAME IN
+			<foreach item="channelName" collection="channelName" open="(" separator="," close=")">
+				#{channelName}
+			</foreach>
+		</if>
+		<if test="reg_begindate != null and reg_begindate.trim() != '' and reg_enddate != null and reg_enddate.trim() != ''">
+			AND STAT_PERIOD BETWEEN #{reg_begindate} AND #{reg_enddate}
+		</if>
+		;
+		select *
+		from TMP_dm_report_channel_cost_01;
+
+	</select>
+	<select id="queryExport" resultType="io.renren.entity.ChannelCostEntity">
+
+		select *
+		from TMP_dm_report_channel_cost_01;
+
+	</select>
+
+
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from TMP_dm_report_channel_cost_01
+	</select>
+
+	<select id="queryChannel" resultType="io.renren.entity.ChannelCostEntity">
+		SELECT
+		'空' AS CHANNEL_NAME
+		UNION ALL
+		SELECT DISTINCT  CHANNEL_NAME
+		FROM  dm_report_channel_cost  WHERE 1=1
+	</select>
+
+	<select id="queryTotalList" resultType="io.renren.entity.ChannelCostEntity">
+		DROP TABLE IF EXISTS MAX_TIME;
+
+		CREATE TEMPORARY TABLE MAX_TIME
+		select max(STAT_PERIOD) AS STAT_PERIOD from TMP_dm_report_channel_cost_01
+		;
+		select
+		sum(REG_COU) as registerUserNum,
+		format(sum(REG_COST)/sum(REG_COU),5) as investUserNum,
+		sum(FIRSTINVEST_COU) as firstInvestRate,
+		sum(FIRSTINVEST_MONEY) as totalInvestAmount,
+		format(sum(FIRSTINVEST_MONEY)/sum(FIRSTINVEST_COU),'') as firstInvestAmount,
+		sum(FIRST_ROI) as changeInvestAmount,
+		sum(INV_MONEY) as multiInvestUserNum,
+		sum(NUM_ROI) as multiInvestAmount,
+		sum(ACTUAL_COST) as multiInvestRate
+		from TMP_dm_report_channel_cost_01
+		where 1=1
+		and STAT_PERIOD=(SELECT STAT_PERIOD FROM MAX_TIME)
+		<include refid="cond"/>
+		;
+
+	</select>
+	<sql id="cond">
+		<if test="startTime != null and startTime.trim() != '' ">
+			<![CDATA[ and STAT_PERIOD >=  #{startTime}  ]]>
+		</if>
+		<if test="endTime != null and endTime.trim() != '' ">
+			<![CDATA[ and STAT_PERIOD <=  #{endTime}  ]]>
+		</if>
+	</sql>
+</mapper>
