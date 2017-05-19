@@ -214,8 +214,8 @@ $("#searchButton").click(function(){
              action : getAction("id_select"),
              userID :document.getElementById("user_Id").value,
               userName :document.getElementById("user_name").value,
-              start_action_time: document.getElementById("start_action_time").value+" 00:00:00",
-              end_action_time:document.getElementById("end_action_time").value+" 23:59:59"
+              start_action_time: document.getElementById("start_action_time").value,
+              end_action_time:document.getElementById("end_action_time").value
           };
     //加载数据
 

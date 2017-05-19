@@ -6,9 +6,9 @@ import io.renren.service.LogUserBehaviorService;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.Query;
 import io.renren.utils.R;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -42,6 +42,17 @@ public class LogUserBehaviorController {
 	@RequestMapping("/list")
 	@RequiresPermissions("logUserBehavior:list")
 	public R list(@RequestBody Map<String, Object> params){
+
+		String start_action_time = params.get("start_action_time") + "";
+		if (StringUtils.isNotEmpty(start_action_time)) {
+			params.put("start_action_time", start_action_time + " 00:00:00");
+		}
+		String end_action_time = params.get("end_action_time") + "";
+		if (StringUtils.isNotEmpty(end_action_time)) {
+			params.put("end_action_time", end_action_time + " 23:59:59");
+		}
+
+
 		//查询列表数据
 		Query query = new Query(params);
 
