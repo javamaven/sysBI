@@ -81,6 +81,7 @@
 
         SELECT *
         FROM TMP_01
+        ORDER BY USERNAME,ACTION_TIME
         ;
 
 
