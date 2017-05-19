@@ -152,7 +152,6 @@ public class DmReportInvestmentDailyController {
 		headMap.put("stage", "目前状态");
 
 		headMap.put("recoverAccountWait", "当前持有总金额");
-		headMap.put("cia", "CIA");
 
 		String title = "用户投资情况";
 

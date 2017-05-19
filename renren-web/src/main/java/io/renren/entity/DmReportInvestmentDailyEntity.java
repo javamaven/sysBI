@@ -32,7 +32,7 @@ public class DmReportInvestmentDailyEntity implements Serializable {
 	//涉及项目类型
 	private String borrowType;
 	//投资记录ID
-	private Integer pid;
+	private String pid;
 	//涉及项目名称
 	private String projectName;
 	//涉及项目本金
@@ -40,7 +40,7 @@ public class DmReportInvestmentDailyEntity implements Serializable {
 	//涉及项目期限
 	private Integer borrowPeriod;
 	//目前状态
-	private Integer stage;
+	private String stage;
 	//当前持有总金额
 	private BigDecimal recoverAccountWait;
 	//
@@ -157,13 +157,13 @@ public class DmReportInvestmentDailyEntity implements Serializable {
 	/**
 	 * 设置：投资记录ID
 	 */
-	public void setPid(Integer pid) {
+	public void setPid(String pid) {
 		this.pid = pid;
 	}
 	/**
 	 * 获取：投资记录ID
 	 */
-	public Integer getPid() {
+	public String getPid() {
 		return pid;
 	}
 	/**
@@ -205,13 +205,13 @@ public class DmReportInvestmentDailyEntity implements Serializable {
 	/**
 	 * 设置：目前状态
 	 */
-	public void setStage(Integer stage) {
+	public void setStage(String stage) {
 		this.stage = stage;
 	}
 	/**
 	 * 获取：目前状态
 	 */
-	public Integer getStage() {
+	public String getStage() {
 		return stage;
 	}
 	/**

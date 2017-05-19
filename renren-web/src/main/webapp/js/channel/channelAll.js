@@ -465,6 +465,23 @@ $("#searchButton").click(function() {
 
 });
 
+$('#btn_export').click(function(){
+    pageInfo = {
+        page : 1,
+        limit : 20,
+        reg_begindate  : document.getElementById("reg_begindate").value.replace(/-/g,""),
+        reg_enddate : document.getElementById("reg_enddate").value.replace(/-/g,""),
+        invest_enddate : document.getElementById("invest_enddate").value.replace(/-/g,""),
+        channelName  : getChannelName().toString().length == "0" ? null : getChannelName(),
+        investTimes : document.getElementById("invest_times").value
+    };
+    if(pageInfo){
+        executePost('../channel/channelAll/exportList', {'param':  JSON.stringify(pageInfo) } );
+    }else {
+        alert('请先查询数据!');
+    }
+});
+
 // 获取渠道信息
 function getChannelName(){
     var arrStr = new Array();

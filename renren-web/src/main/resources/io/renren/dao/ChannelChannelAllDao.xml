@@ -27,13 +27,13 @@
 		</if>
 		<if test="channelName!=null and channelName.size()!=0">
 			AND CHANNEL_NAME IN
-			<foreach item="channelName" collection="channelName" open="(" separator="," close=")">
-				#{channelName}
-			</foreach>
-		</if>
-		<if test="investTimes != null and investTimes.trim() != ''">
-			AND INVEST_TIMES  &lt;= #{investTimes}
-		</if>
+		<foreach item="channelName" collection="channelName" open="(" separator="," close=")">
+			#{channelName}
+		</foreach>
+	</if>
+	<if test="investTimes != null and investTimes.trim() != ''">
+		AND INVEST_TIMES  &lt;= #{investTimes}
+	</if>
 		;
 	</select>
 
@@ -80,5 +80,26 @@
 		FROM dim_channel CR  WHERE 1=1
 	</select>
 
-	
+
+
+	<select id="exportList" resultType="io.renren.entity.ChannelChannelAllEntity">
+		CALL PRO_CHANNEL_ALL(#{reg_begindate},#{reg_enddate},#{invest_enddate});
+
+		SELECT *
+		FROM TMP_CHANNEL_ALL_03
+		WHERE 1 = 1
+		<if test="channelName==null">
+			AND CHANNEL_NAME IN('百度','小米商店')
+		</if>
+		<if test="channelName!=null and channelName.size()!=0">
+			AND CHANNEL_NAME IN
+			<foreach item="channelName" collection="channelName" open="(" separator="," close=")">
+				#{channelName}
+			</foreach>
+		</if>
+		<if test="investTimes != null and investTimes.trim() != ''">
+			AND INVEST_TIMES  &lt;= #{investTimes}
+		</if>
+		;
+	</select>
 </mapper>

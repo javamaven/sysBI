@@ -19,6 +19,7 @@ public class ChannelChannelAllServiceImpl implements ChannelChannelAllService {
 		return channelChannelAllDao.queryList(map);
 	}
 
+
 	@Override
 	public int queryTotal(Map<String, Object> map) {
 		return channelChannelAllDao.queryTotal(map);

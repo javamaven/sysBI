@@ -92,14 +92,27 @@
 				WHEN TENDER_FROM = 5 THEN '微信或后台'
 				WHEN TENDER_FROM = - 1 THEN '系统' END TENDER_FROM, 
 			ADDTIME, 
-			BORROW_TYPE, 
+			case 
+				when BORROW_TYPE = 1 then '旧系统.普通标'
+				when BORROW_TYPE = 2 then '旧系统.债转标'
+				when BORROW_TYPE = 3 then '存管版.普通标'
+				when BORROW_TYPE = 4 then '存管版.债转标'
+				when BORROW_TYPE = 5 then '存管版.智投计划'
+				else BORROW_TYPE end BORROW_TYPE,
 			PID, 
 			PROJECT_NAME, 
 			TENDER_CAPITAL, 
 			BORROW_PERIOD, 
-			STAGE, 
-			RECOVER_ACCOUNT_WAIT, 
-			CIA
+			CASE
+				WHEN STAGE=1 THEN '待提交审核'
+				WHEN STAGE=2 THEN '审核中待发布'
+				WHEN STAGE=3 THEN '审核通过待排标'
+				WHEN STAGE=4 THEN '已发布筹款中'
+				WHEN STAGE=5 THEN '还款中'
+				WHEN STAGE=8 THEN '已结清'
+				WHEN STAGE=9 THEN '流标'
+			ELSE STAGE END AS STAGE,
+			RECOVER_ACCOUNT_WAIT
 		
 		from dm_report_investment_daily
        
@@ -113,7 +126,9 @@
 	</select>
 	
  	<select id="queryTotal" resultType="int">
-		select count(*) from dm_report_investment_daily 
+		select count(*) from dm_report_investment_daily
+		where 1=1
+		<include refid="cond"/>
 	</select>
 	 
 	<insert id="save" parameterType="io.renren.entity.DmReportInvestmentDailyEntity">
