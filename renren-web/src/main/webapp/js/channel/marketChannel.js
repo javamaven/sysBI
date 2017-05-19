@@ -115,7 +115,6 @@ function loadTableAjax(){
             a += d;
         };
         a = '['+a.substring(0,a.length-1)+']';
-
         var b = '['+
         '{field:"statPeriod",title:"日期",align:"center",valign:"middle",sortable:"true"},'+//居中对齐
         '{field:"channelHead",title:"主负责人",align:"center",valign:"middle",sortable:"true"},'+

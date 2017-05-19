@@ -46,6 +46,7 @@ public class MarketChannelController {
 	/**
 	 * 列表
 	 */
+	@ResponseBody
 	@RequestMapping("/list")
 	@RequiresPermissions("marketChannel:list")
 	public R list(@RequestBody Map<String, Object> params){

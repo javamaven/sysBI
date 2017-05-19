@@ -142,7 +142,9 @@
         format(CUMULATIVE_ROT,2) AS CUMULATIVE_ROT
         FROM TMP_dm_report_channel_data_01
         ;
-
+        select *
+        from  TMP_dm_report_channel_data_02
+        ;
 	</select>
 	
  	<select id="queryTotal" resultType="int">
