@@ -46,8 +46,8 @@ $(".form_datetime_2").
     setStartDate:new Date()
 });
 // 初始化时间
-//document.getElementById("STAT_PERIOD").value=getDate(2);
-//document.getElementById("STAT_PERIOD").value=getDate(1);
+document.getElementById("start_action_time").value=getDate(1);
+document.getElementById("end_action_time").value=getDate(1);
 
 
 // 自适应高度
