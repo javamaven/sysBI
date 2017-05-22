@@ -37,5 +37,11 @@ public class Constants {
 		 * 用户投资
 		 */
 		public static String USER_INVEST_INFO = "6";
+		
+		/**
+		 * 渠道负责人
+		 */
+		public static String MARKET_CHANNEL = "7";
+		
 	}
 }

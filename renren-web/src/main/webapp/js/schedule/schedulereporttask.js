@@ -4,7 +4,8 @@ var jobType = {
 	3:'渠道投资次数分析',//CHANNEL_INVEST_TIMES
 	4:'渠道续费数据汇总',//CHANNEL_RENEW
 	5:'用户激活情况',//USER_ACTIVE_INFO
-	6:'用户投资情况'//USER_INVEST_INFO
+	6:'用户投资情况',//USER_INVEST_INFO
+	7:'渠道负责人情况'//market_channel
 };
 
 $(function () {

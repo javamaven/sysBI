@@ -44,8 +44,10 @@ function tableHeight() {
 function getParams(){
 	var params = {
         	'statPeriod': $("#statPeriod").val(),
-
-
+        	'reg_begindate': document.getElementById("reg_begindate").value.replace(/-/g,""),
+        	'reg_enddate' : document.getElementById("reg_enddate").value.replace(/-/g,""),
+        	'channelName' : getChannelName().toString().length == "0" ? null : getChannelName(),
+        	'channelHead' :document.getElementById("channelHead").value
 	};
 	return params;
 }

@@ -5,6 +5,7 @@
 //	4:'CHANNEL_RENEW',
 //	5:'USER_ACTIVE_INFO',
 //	6:'USER_INVEST_INFO'
+//	7: market_channel
 //};
 function addTask(taskType) {
 	var task_name = $("#task_name").val();

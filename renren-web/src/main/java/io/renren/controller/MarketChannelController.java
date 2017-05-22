@@ -93,32 +93,11 @@ public class MarketChannelController {
 
 			va.add(MarketChannelUser);
 		}
-		Map<String,String> headMap = new LinkedHashMap<String,String>();
-		headMap.put("statPeriod","日期");
-		headMap.put("channelHead","主负责人");
-		headMap.put("type","渠道类型");
-		headMap.put("channelName","渠道名称");
-		headMap.put("actualCost","实际消费");
-		headMap.put("regCou","新增注册人");
-		headMap.put("firstinvestCou","新增首投人数");
-		headMap.put("firstinvestMoney","首投金额");
-		headMap.put("firstinvestYMoney","首投年化金额");
-		headMap.put("invCou","投资总人数");
-		headMap.put("invMoney","投资总金额");
-		headMap.put("invYMoney","年化投资总金额");
-		headMap.put("ddzMoney","点点赚购买金额");
-		headMap.put("regCost","注册成本");
-		headMap.put("firstinvestCost","首投成本");
-		headMap.put("avgFirstinvestMoney","人均首投");
-		headMap.put("regInvConversion","注册人投资转化率");
-		headMap.put("firstinvestRot","首投ROI");
-		headMap.put("cumulativeRot","累计ROI");
-
+		Map<String, String> headMap = marketChannelDataService.getExcelFields();
 
 		String title = "渠道负责人明细";
 
 		ExcelUtil.downloadExcelFile(title,headMap,va,response);
 	}
-
 	
 }
