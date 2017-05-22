@@ -28,6 +28,11 @@ public class SysPageController {
 	public String channel(@PathVariable("url") String url){
 		return "channel/" + url + ".html";
 	}
+	
+	@RequestMapping("schedule/{url}.html")
+	public String schedule(@PathVariable("url") String url){
+		return "schedule/" + url + ".html";
+	}
 
 	@RequestMapping("labelTag/{url}.html")
 	public String labelTag(@PathVariable("url") String url){

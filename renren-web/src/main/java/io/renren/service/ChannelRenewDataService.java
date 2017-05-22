@@ -1,9 +1,11 @@
 package io.renren.service;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Map;
 
 import io.renren.entity.ChannelRenewDataEntity;
+import io.renren.utils.PageUtils;
 
 public interface ChannelRenewDataService {
 
@@ -41,5 +43,9 @@ public interface ChannelRenewDataService {
 	void insert(ChannelRenewDataEntity channelRenewDataEntity);
 	
 	void delete(ChannelRenewDataEntity channelRenewDataEntity);
+
+	PageUtils query(Map<String, Object> params) throws ParseException;
+
+	Map<String, String> getExcelFields();
 
 }

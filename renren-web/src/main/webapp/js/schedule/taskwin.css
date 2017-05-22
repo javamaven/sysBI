@@ -1,0 +1,26 @@
+.inputClass {
+	height: 28px;
+	width: 340px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+
+.inputClassMin {
+	height: 28px;
+	width: 80px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+
+.areaClass {
+	height: 100px;
+	width: 340px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}

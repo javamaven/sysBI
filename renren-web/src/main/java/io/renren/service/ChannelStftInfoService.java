@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.renren.entity.ChannelStftInfoEntity;
+import io.renren.utils.PageUtils;
 
 public interface ChannelStftInfoService {
 
@@ -39,5 +40,9 @@ public interface ChannelStftInfoService {
 
 	// 10 项目投资金额,项目投资人数
 	List<ChannelStftInfoEntity> queryProInvestAmount(Map<String, Object> map);
+
+	PageUtils query(Map<String, Object> params);
+
+	Map<String, String> getExcelFields();
 
 }

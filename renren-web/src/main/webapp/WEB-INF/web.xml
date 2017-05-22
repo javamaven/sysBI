@@ -30,7 +30,10 @@
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
-	
+		<!-- 自定义监听器，启动的时候初始化报表配置任务 -->
+	<listener>   
+        <listener-class>io.renren.system.listener.WebContextListener</listener-class>  
+    </listener> 
 	<filter>
 		<filter-name>encodingFilter</filter-name>
 		<filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>

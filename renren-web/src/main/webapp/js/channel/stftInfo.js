@@ -8,7 +8,6 @@ $(function(){
 });
 
 var currDataList;
-
 function initExportFunction(){
 	$('#btn_exports').click(function(){
 //	    window.open("../channel/stft/exportExcel?list=" + JSON.stringify(currDataList),"_blank",'height=400,width=400,top=100,left=200,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no');
@@ -20,7 +19,7 @@ function initExportFunction(){
 	});
 
 }
-     
+
      
 function loadTableAjax(){
  $.ajax({
@@ -85,8 +84,8 @@ $(".form_datetime_2").
     setStartDate:new Date()
 });
 // 初始化时间
-document.getElementById("reg_begindate").value = addDate(getCurrDate(), -90);
-document.getElementById("reg_enddate").value = getYesterday();
+document.getElementById("inv_begindate").value = addDate(getCurrDate(), -90);
+document.getElementById("inv_enddate").value = getYesterday();
 
 
 // 自适应高度
@@ -98,10 +97,10 @@ function tableHeight() {
 var pageInfo = {
         page  : 1,
         limit : 10,
-        regBeginDate  : document.getElementById("reg_begindate").value.replace(/-/g,""),
+        invBeginDate  : document.getElementById("inv_begindate").value.replace(/-/g,""),
 //        invBeginDate  : document.getElementById("reg_begindate").value.replace(/-/g,""),
         invEndDate : document.getElementById("inv_enddate").value.replace(/-/g,""),
-        regEndDate : document.getElementById("reg_enddate").value.replace(/-/g,"")
+//        regEndDate : document.getElementById("reg_enddate").value.replace(/-/g,"")
     };
 
 // 表格加载
@@ -190,17 +189,21 @@ $("#searchButton").click(function(){
     //添加样式
     $(".spinners li").addClass("active");
     // 查询条件
-    pageInfo = {
-            page  : 1,
-            limit : 1000000,
-            channelName : getChannelName().toString().length == "0" ? null : getChannelName(),
-//            invBeginDate  : document.getElementById("reg_begindate").value.replace(/-/g,""),
-	        invEndDate : document.getElementById("inv_enddate").value.replace(/-/g,""),
-            regBeginDate: document.getElementById("reg_begindate").value.replace(/-/g,""),
-            regEndDate:document.getElementById("reg_enddate").value.replace(/-/g,"")
-        };
+    pageInfo = getParams();
     //加载数据
     loadTableAjax();
 });
+
+function getParams(){
+	var params = {
+            page  : 1,
+            limit : 10000,
+            channelName : getChannelName().toString().length == "0" ? null : getChannelName(),
+	        invEndDate : document.getElementById("inv_enddate").value.replace(/-/g,""),
+            invBeginDate: document.getElementById("inv_begindate").value.replace(/-/g,""),
+//            regEndDate:document.getElementById("reg_enddate").value.replace(/-/g,"")
+        };
+	return params;
+}
 
 

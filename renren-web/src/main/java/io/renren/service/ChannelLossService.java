@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.renren.entity.ChannelLossEntity;
+import io.renren.utils.PageUtils;
 
 public interface ChannelLossService {
 
@@ -24,4 +25,8 @@ public interface ChannelLossService {
 	List<ChannelLossEntity> queryTotalUseRedMoney(Map<String, Object> map);// 8：累积红包金额
 
 	List<ChannelLossEntity> queryDdzPerInvestAmount(Map<String, Object> map);// 9：点点赚平均投资金额
+
+	PageUtils query(Map<String, Object> params);
+
+	Map<String, String> getExcelFields();
 }

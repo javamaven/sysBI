@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -37,7 +38,6 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 
-
 public class ExcelUtil {
 	public static String NO_DEFINE = "no_define";// 未定义的字段
 	public static String DEFAULT_DATE_PATTERN = "yyyy年MM月dd日";// 默认日期格式
@@ -60,7 +60,7 @@ public class ExcelUtil {
 	 *            输出流
 	 */
 	public static void exportExcel(String title, Map<String, String> headMap, JSONArray jsonArray, String datePattern,
-								   int colWidth, OutputStream out) {
+			int colWidth, OutputStream out) {
 		if (datePattern == null)
 			datePattern = DEFAULT_DATE_PATTERN;
 		// 声明一个工作薄
@@ -91,7 +91,6 @@ public class ExcelUtil {
 		headerStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
 		headerStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
 
-
 		HSSFFont headerFont = workbook.createFont();
 		headerFont.setFontHeightInPoints((short) 12);
 		headerFont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
@@ -105,7 +104,6 @@ public class ExcelUtil {
 		cellStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
 		cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
 		cellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
-
 
 		HSSFFont cellFont = workbook.createFont();
 		cellFont.setBoldweight(HSSFFont.BOLDWEIGHT_NORMAL);
@@ -206,7 +204,7 @@ public class ExcelUtil {
 	 *            输出流
 	 */
 	public static void exportExcelX(String title, Map<String, String> headMap, JSONArray jsonArray, String datePattern,
-									int colWidth, OutputStream out) {
+			int colWidth, OutputStream out) {
 		if (datePattern == null)
 			datePattern = DEFAULT_DATE_PATTERN;
 		// 声明一个工作薄
@@ -221,7 +219,7 @@ public class ExcelUtil {
 		titleStyle.setFont((org.apache.poi.ss.usermodel.Font) titleFont);
 		// 列头样式
 		CellStyle headerStyle = workbook.createCellStyle();
-		/*headerStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);*/
+		/* headerStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND); */
 		headerStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
 		headerStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 		headerStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
@@ -233,14 +231,14 @@ public class ExcelUtil {
 		headerStyle.setFont((org.apache.poi.ss.usermodel.Font) headerFont);
 		// 单元格样式
 		CellStyle cellStyle = workbook.createCellStyle();
-		/*cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND);*/
+		/* cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND); */
 		cellStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
 		cellStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 		cellStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
 		cellStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
 		cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
 		cellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
-		org.apache.poi.ss.usermodel.Font cellFont =  workbook.createFont();
+		org.apache.poi.ss.usermodel.Font cellFont = workbook.createFont();
 		((org.apache.poi.ss.usermodel.Font) cellFont).setBoldweight(HSSFFont.BOLDWEIGHT_NORMAL);
 		cellStyle.setFont((org.apache.poi.ss.usermodel.Font) cellFont);
 		// 生成一个(带标题)表格
@@ -320,17 +318,45 @@ public class ExcelUtil {
 	/*
 	 * Web导出后台方法 Controller调用
 	 */
-	public static void downloadExcelFile(String title,Map<String,String> headMap,JSONArray ja,HttpServletResponse response){
+	public static void createExcelFile(String title, Map<String, String> headMap, JSONArray dataArray,
+			FileOutputStream outputStream) {
 		try {
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			ExcelUtil.exportExcelX(title,headMap,ja,null,0,os);
+			ExcelUtil.exportExcelX(title, headMap, dataArray, null, 0, os);
+			byte[] content = os.toByteArray();
+			InputStream is = new ByteArrayInputStream(content);
+			BufferedInputStream bis = new BufferedInputStream(is);
+			BufferedOutputStream bos = new BufferedOutputStream(outputStream);
+			byte[] buff = new byte[8192];
+			int bytesRead;
+			while (-1 != (bytesRead = bis.read(buff, 0, buff.length))) {
+				bos.write(buff, 0, bytesRead);
+			}
+			bis.close();
+			bos.close();
+			outputStream.flush();
+			outputStream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/*
+	 * Web导出后台方法 Controller调用
+	 */
+	public static void downloadExcelFile(String title, Map<String, String> headMap, JSONArray ja,
+			HttpServletResponse response) {
+		try {
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			ExcelUtil.exportExcelX(title, headMap, ja, null, 0, os);
 			byte[] content = os.toByteArray();
 			InputStream is = new ByteArrayInputStream(content);
 			// 设置response参数，可以打开下载页面
 			response.reset();
 
 			response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
-			response.setHeader("Content-Disposition", "attachment;filename="+ new String((title + ".xlsx").getBytes(), "iso-8859-1"));
+			response.setHeader("Content-Disposition",
+					"attachment;filename=" + new String((title + ".xlsx").getBytes(), "iso-8859-1"));
 			response.setContentLength(content.length);
 			ServletOutputStream outputStream = response.getOutputStream();
 			BufferedInputStream bis = new BufferedInputStream(is);
@@ -345,96 +371,59 @@ public class ExcelUtil {
 			bos.close();
 			outputStream.flush();
 			outputStream.close();
-		}catch (Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-
-    /* 下边是在controller里边调用的案例及十万条数据测试
-     * @ResponseBody
-	@RequestMapping(value = "partExport")
-    public void partExport(HttpServletResponse response) throws IOException{
-		int count = 10;
-        JSONArray ja = new JSONArray();
-        for(int i=0;i<10;i++){
-            Student s = new Student();
-            s.setName("POI"+i);
-            s.setAge(i);
-            s.setBirthday(new Date());
-            s.setHeight(i);
-            s.setWeight(i);
-            s.setSex(i/2==0?false:true);
-            ja.add(s);
-        }
-        Map<String,String> headMap = new LinkedHashMap<String,String>();
-        headMap.put("name","姓名");
-        headMap.put("age","年龄");
-        headMap.put("birthday","生日");
-        headMap.put("height","身高");
-        headMap.put("weight","体重");
-        headMap.put("sex","性别");
-
-        String title = "测试";
-        
-        ExcelUtil.downloadExcelFile(title,headMap,ja,response);
-        
-    }
-	
-	class Student {
-	    private String name;
-	    private int age;
-	    private Date birthday;
-	    private float height;
-	    private double weight;
-	    private boolean sex;
-
-	    public String getName() {
-	        return name;
-	    }
-
-	    public void setName(String name) {
-	        this.name = name;
-	    }
-
-	    public Integer getAge() {
-	        return age;
-	    }
-
-	    public Date getBirthday() {
-	        return birthday;
-	    }
-
-	    public void setBirthday(Date birthday) {
-	        this.birthday = birthday;
-	    }
-
-	    public float getHeight() {
-	        return height;
-	    }
-
-	    public void setHeight(float height) {
-	        this.height = height;
-	    }
-
-	    public double getWeight() {
-	        return weight;
-	    }
-
-	    public void setWeight(double weight) {
-	        this.weight = weight;
-	    }
-
-	    public boolean isSex() {
-	        return sex;
-	    }
-
-	    public void setSex(boolean sex) {
-	        this.sex = sex;
-	    }
-
-	    public void setAge(Integer age) {
-	        this.age = age;
-	    }
-	}*/
+	/*
+	 * 下边是在controller里边调用的案例及十万条数据测试
+	 * 
+	 * @ResponseBody
+	 * 
+	 * @RequestMapping(value = "partExport") public void
+	 * partExport(HttpServletResponse response) throws IOException{ int count =
+	 * 10; JSONArray ja = new JSONArray(); for(int i=0;i<10;i++){ Student s =
+	 * new Student(); s.setName("POI"+i); s.setAge(i); s.setBirthday(new
+	 * Date()); s.setHeight(i); s.setWeight(i); s.setSex(i/2==0?false:true);
+	 * ja.add(s); } Map<String,String> headMap = new
+	 * LinkedHashMap<String,String>(); headMap.put("name","姓名");
+	 * headMap.put("age","年龄"); headMap.put("birthday","生日");
+	 * headMap.put("height","身高"); headMap.put("weight","体重");
+	 * headMap.put("sex","性别");
+	 * 
+	 * String title = "测试";
+	 * 
+	 * ExcelUtil.downloadExcelFile(title,headMap,ja,response);
+	 * 
+	 * }
+	 * 
+	 * class Student { private String name; private int age; private Date
+	 * birthday; private float height; private double weight; private boolean
+	 * sex;
+	 * 
+	 * public String getName() { return name; }
+	 * 
+	 * public void setName(String name) { this.name = name; }
+	 * 
+	 * public Integer getAge() { return age; }
+	 * 
+	 * public Date getBirthday() { return birthday; }
+	 * 
+	 * public void setBirthday(Date birthday) { this.birthday = birthday; }
+	 * 
+	 * public float getHeight() { return height; }
+	 * 
+	 * public void setHeight(float height) { this.height = height; }
+	 * 
+	 * public double getWeight() { return weight; }
+	 * 
+	 * public void setWeight(double weight) { this.weight = weight; }
+	 * 
+	 * public boolean isSex() { return sex; }
+	 * 
+	 * public void setSex(boolean sex) { this.sex = sex; }
+	 * 
+	 * public void setAge(Integer age) { this.age = age; } }
+	 */
 }

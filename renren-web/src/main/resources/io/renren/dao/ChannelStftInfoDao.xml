@@ -61,12 +61,12 @@
 			</if>
 <!-- 			AND p.TENDER_SUBJECT IN (1, 2) -->
 				and p.TENDER_ACCOUNT_STATUS in (0,1)
-			<if test="regBeginDate != null and regBeginDate.trim() != '' ">
-			     <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]>
-			</if>
-			<if test="regEndDate != null and regEndDate.trim() != '' "  >
-			     <![CDATA[ and u.REGISTER_TIME <=  #{regEndDate}  ]]>
-			</if>
+<!-- 			<if test="regBeginDate != null and regBeginDate.trim() != '' "> -->
+<!-- 			     <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]> -->
+<!-- 			</if> -->
+<!-- 			<if test="regEndDate != null and regEndDate.trim() != '' "  > -->
+<!-- 			     <![CDATA[ and u.REGISTER_TIME <=  #{regEndDate}  ]]> -->
+<!-- 			</if> -->
 			
 			GROUP BY
 				u.ACTIVITY_TAG
@@ -89,12 +89,12 @@
 				     <![CDATA[ and d.CREATED_TIME_ <=  #{invEndDate}  ]]>
 				</if>
 				AND d.TYPE_ IN ('B', 'RP')
-				<if test="regBeginDate != null and regBeginDate.trim() != '' ">
-				     <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]>
-				</if>
-				<if test="regEndDate != null and regEndDate.trim() != '' "  >
-				     <![CDATA[ and u.REGISTER_TIME <=  #{regEndDate}  ]]>
-				</if>
+<!-- 				<if test="regBeginDate != null and regBeginDate.trim() != '' "> -->
+<!-- 				     <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]> -->
+<!-- 				</if> -->
+<!-- 				<if test="regEndDate != null and regEndDate.trim() != '' "  > -->
+<!-- 				     <![CDATA[ and u.REGISTER_TIME <=  #{regEndDate}  ]]> -->
+<!-- 				</if> -->
 				GROUP BY
 					u.ACTIVITY_TAG
 		) s
@@ -138,8 +138,8 @@
 									WHERE 1=1
 									and u.IS_BORROWER=0
 										<include refid="channelCond" />
-										AND u.REGISTER_TIME >= #{regBeginDate}
-										AND u.REGISTER_TIME &lt;= #{regEndDate}
+<!-- 										AND u.REGISTER_TIME >= #{regBeginDate} -->
+<!-- 										AND u.REGISTER_TIME &lt;= #{regEndDate} -->
 										and (
 											(
 												u.NORMAL_FIRSTINVEST_TIME IS NOT NULL
@@ -172,6 +172,7 @@
 		edw_user_basic u 
 	WHERE
 		1 = 1
+	and u.IS_BORROWER=0
 	<include refid="channelCond"/>
 	<if test="regBeginDate != null and regBeginDate.trim() != '' ">
 	 		<![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]>
@@ -179,6 +180,7 @@
 	<if test="regEndDate != null and regEndDate.trim() != '' "  >
 	 		<![CDATA[ and u.REGISTER_TIME <=  #{regEndDate}  ]]>
 	</if>
+
 	GROUP BY
 		u.ACTIVITY_TAG
 		
@@ -209,12 +211,12 @@ select s.ACTIVITY_TAG channelLabel, count(DISTINCT s.user_id) userInvestNum from
 			<if test="invEndDate != null and invEndDate.trim() != '' "  >
 			     <![CDATA[ and p.ADDTIME <=  #{invEndDate}  ]]>
 			</if>
-			<if test="regBeginDate != null and regBeginDate.trim() != '' ">
-			     <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]>
-			</if>
-			<if test="regEndDate != null and regEndDate.trim() != '' "  >
-			     <![CDATA[ and u.REGISTER_TIME <=  #{regEndDate}  ]]>
-			</if>
+<!-- 			<if test="regBeginDate != null and regBeginDate.trim() != '' "> -->
+<!-- 			     <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]> -->
+<!-- 			</if> -->
+<!-- 			<if test="regEndDate != null and regEndDate.trim() != '' "  > -->
+<!-- 			     <![CDATA[ and u.REGISTER_TIME <=  #{regEndDate}  ]]> -->
+<!-- 			</if> -->
 			GROUP BY
 				u.ACTIVITY_TAG,u.USER_ID
 union all 
@@ -235,12 +237,12 @@ union all
 			<if test="invEndDate != null and invEndDate.trim() != '' "  >
 			     <![CDATA[ and p.CREATED_TIME_ <=  #{invEndDate}  ]]>
 			</if>
-			<if test="regBeginDate != null and regBeginDate.trim() != '' ">
-			     <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]>
-			</if>
-			<if test="regEndDate != null and regEndDate.trim() != '' "  >
-			     <![CDATA[ and u.REGISTER_TIME <=  #{regEndDate}  ]]>
-			</if>							 
+<!-- 			<if test="regBeginDate != null and regBeginDate.trim() != '' "> -->
+<!-- 			     <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]> -->
+<!-- 			</if> -->
+<!-- 			<if test="regEndDate != null and regEndDate.trim() != '' "  > -->
+<!-- 			     <![CDATA[ and u.REGISTER_TIME <=  #{regEndDate}  ]]> -->
+<!-- 			</if>							  -->
 			GROUP BY
 				u.ACTIVITY_TAG, u.USER_ID
 
@@ -269,12 +271,12 @@ select s.ACTIVITY_TAG channelLabel, sum(money) userInvestAmount from (
 			<if test="invEndDate != null and invEndDate.trim() != '' "  >
 			     <![CDATA[ and p.ADDTIME <=  #{invEndDate}  ]]>
 			</if>
-			<if test="regBeginDate != null and regBeginDate.trim() != '' ">
-			     <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]>
-			</if>
-			<if test="regEndDate != null and regEndDate.trim() != '' "  >
-			     <![CDATA[ and u.REGISTER_TIME <=  #{regEndDate}  ]]>
-			</if>
+<!-- 			<if test="regBeginDate != null and regBeginDate.trim() != '' "> -->
+<!-- 			     <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]> -->
+<!-- 			</if> -->
+<!-- 			<if test="regEndDate != null and regEndDate.trim() != '' "  > -->
+<!-- 			     <![CDATA[ and u.REGISTER_TIME <=  #{regEndDate}  ]]> -->
+<!-- 			</if> -->
 			GROUP BY
 				u.ACTIVITY_TAG
 union all 
@@ -295,12 +297,12 @@ union all
 			<if test="invEndDate != null and invEndDate.trim() != '' "  >
 			     <![CDATA[ and p.CREATED_TIME_ <=  #{invEndDate}  ]]>
 			</if>
-			<if test="regBeginDate != null and regBeginDate.trim() != '' ">
-			     <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]>
-			</if>
-			<if test="regEndDate != null and regEndDate.trim() != '' "  >
-			     <![CDATA[ and u.REGISTER_TIME <=  #{regEndDate}  ]]>
-			</if>							 
+<!-- 			<if test="regBeginDate != null and regBeginDate.trim() != '' "> -->
+<!-- 			     <![CDATA[ and u.REGISTER_TIME  >=  #{regBeginDate}  ]]> -->
+<!-- 			</if> -->
+<!-- 			<if test="regEndDate != null and regEndDate.trim() != '' "  > -->
+<!-- 			     <![CDATA[ and u.REGISTER_TIME <=  #{regEndDate}  ]]> -->
+<!-- 			</if>							  -->
 			GROUP BY
 				u.ACTIVITY_TAG
 
@@ -329,8 +331,8 @@ select s.channelLabel,sum(s.firstInvestUserAmount) firstInvestUserAmount from (
 							1 = 1
 						and u.IS_BORROWER=0
 						<include refid="channelCond"/>
-						AND u.REGISTER_TIME >= #{regBeginDate}
-						AND u.REGISTER_TIME &lt;=  #{regEndDate}
+<!-- 						AND u.REGISTER_TIME >= #{regBeginDate} -->
+<!-- 						AND u.REGISTER_TIME &lt;=  #{regEndDate} -->
 						AND (
 							(
 								u.NORMAL_FIRSTINVEST_TIME IS NOT NULL
@@ -382,8 +384,8 @@ union all
 							1 = 1
 						and u.IS_BORROWER=0
 						<include refid="channelCond"/>
-						AND u.REGISTER_TIME >= #{regBeginDate}
-						AND u.REGISTER_TIME &lt;=  #{regEndDate}
+<!-- 						AND u.REGISTER_TIME >= #{regBeginDate} -->
+<!-- 						AND u.REGISTER_TIME &lt;=  #{regEndDate} -->
 						AND (
 							(
 								u.NORMAL_FIRSTINVEST_TIME IS NOT NULL
@@ -449,8 +451,8 @@ CALL project_multi_invest_amount(#{regBeginDate},#{regEndDate},#{invEndDate});
 				1 = 1
 			and u.IS_BORROWER=0
 			<include refid="channelCond"/>
-			AND u.REGISTER_TIME >=  #{regBeginDate}
-			AND u.REGISTER_TIME &lt;=  #{regEndDate}
+<!-- 			AND u.REGISTER_TIME >=  #{regBeginDate} -->
+<!-- 			AND u.REGISTER_TIME &lt;=  #{regEndDate} -->
 			AND (
 				(
 					u.NORMAL_FIRSTINVEST_TIME IS NOT NULL
@@ -495,8 +497,8 @@ CALL project_multi_invest_amount(#{regBeginDate},#{regEndDate},#{invEndDate});
 			WHERE
 				1 = 1
 			and u.IS_BORROWER=0
-			AND u.REGISTER_TIME >=  #{regBeginDate} 
-			AND u.REGISTER_TIME &lt;=  #{regEndDate} 
+<!-- 			AND u.REGISTER_TIME >=  #{regBeginDate}  -->
+<!-- 			AND u.REGISTER_TIME &lt;=  #{regEndDate}  -->
 			<include refid="channelCond"/>
 			AND (
 				(
@@ -545,8 +547,8 @@ CALL project_multi_invest_amount(#{regBeginDate},#{regEndDate},#{invEndDate});
 	AND p.ADDTIME &lt;=  #{invEndDate}
 	AND p.TENDER_SUBJECT = 1
 	and p.TENDER_ACCOUNT_STATUS in (0,1)
-	AND u.register_time >=  #{regBeginDate} 
-	AND u.register_time &lt;= #{regEndDate} 
+<!-- 	AND u.register_time >=  #{regBeginDate}  -->
+<!-- 	AND u.register_time &lt;= #{regEndDate}  -->
 	GROUP BY
 		u.activity_tag 
 

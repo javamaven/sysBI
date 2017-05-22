@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.renren.entity.ChannelInvestTimesEntity;
+import io.renren.utils.PageUtils;
 
 public interface ChannelInvestTimesService {
 
@@ -24,5 +25,9 @@ public interface ChannelInvestTimesService {
 	List<ChannelInvestTimesEntity> queryAllRedMoney(Map<String, Object> map);
 
 	List<ChannelInvestTimesEntity> queryDdzPerInvestAmount(Map<String, Object> map);
+
+	PageUtils query(Map<String, Object> params);
+
+	Map<String, String> getExcelFields();
 
 }

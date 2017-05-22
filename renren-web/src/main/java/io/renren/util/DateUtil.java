@@ -5,6 +5,8 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.apache.commons.lang.StringUtils;
+
 public class DateUtil {
 
 	private static SimpleDateFormat dateSdf = new SimpleDateFormat("yyyyMMdd");
@@ -70,6 +72,9 @@ public class DateUtil {
 	 * @return
 	 */
 	public static String getCurrDayBefore(String date, int days, String sdf) {
+		if(StringUtils.isEmpty(date)){
+			return "";
+		}
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat dateSdf2 = null;
 
@@ -84,6 +89,32 @@ public class DateUtil {
 			e.printStackTrace();
 		}
 		cal.add(Calendar.DATE, -days);
+		if (sdf != null && sdf.length() > 0) {
+			return dateSdf2.format(cal.getTime());
+		} else {
+			return dateSdf.format(cal.getTime());
+		}
+
+	}
+	
+	public static String getHourBefore(String date, int hours, String sdf) {
+		if(StringUtils.isEmpty(date)){
+			return "";
+		}
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat dateSdf2 = null;
+
+		try {
+			if (sdf != null && sdf.length() > 0) {
+				dateSdf2 = new SimpleDateFormat(sdf);
+				cal.setTime(dateSdf2.parse(date));
+			} else {
+				cal.setTime(dateSdf.parse(date));
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		cal.add(Calendar.HOUR_OF_DAY, -hours);
 		if (sdf != null && sdf.length() > 0) {
 			return dateSdf2.format(cal.getTime());
 		} else {

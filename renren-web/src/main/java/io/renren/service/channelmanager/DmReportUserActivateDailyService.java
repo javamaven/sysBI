@@ -6,6 +6,7 @@ import java.util.Map;
 
 import io.renren.entity.channelmanager.DmReportUserActivateDailyEntity;
 import io.renren.entity.channelmanager.UserActiveInfoEntity;
+import io.renren.utils.PageUtils;
 
 /**
  * 用户激活情况表
@@ -31,4 +32,12 @@ public interface DmReportUserActivateDailyService {
 	void deleteBatch(Integer[] statPeriods);
 	
 	UserActiveInfoEntity queryTotalList(Map<String, Object> map);
+
+	PageUtils query(Integer page, Integer limit, String statPeriod, String afterInvestBalance_start,
+			String afterInvestBalance_end, String startFirstInvestTime, String endFirstInvestTime,
+			String startTotalMoney, String endTotalMoney, String startTotalInvestAmount, String endTotalInvestAmount,
+			String startFirstInvestAmount, String endFirstInvestAmount, String startRegisterTime,
+			String endRegisterTime, String bangCard, String realName, String channelName);
+
+	Map<String, String> getExcelFields();
 }

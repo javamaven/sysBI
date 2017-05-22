@@ -239,16 +239,21 @@ $("#searchButton").click(function(){
     //添加样式
     $(".spinners li").addClass("active");
     // 查询条件
-    pageInfo = {
-            page  : 1,
-            limit : 10000,
-            channelName : getChannelName().toString().length == "0" ? null : getChannelName(),
-            invEndDate: document.getElementById("invest_enddate").value.replace(/-/g,""),
-            firstInvBeginDate: document.getElementById("reg_begindate").value.replace(/-/g,""),
-            firstInvEndDate:document.getElementById("reg_enddate").value.replace(/-/g,"")
-        };
+    pageInfo = getParams();
     //加载数据
     loadTableAjax();
 });
+
+function getParams(){
+	var params =  {
+         page  : 1,
+         limit : 10000,
+         channelName : getChannelName().toString().length == "0" ? null : getChannelName(),
+         invEndDate: document.getElementById("invest_enddate").value.replace(/-/g,""),
+         firstInvBeginDate: document.getElementById("reg_begindate").value.replace(/-/g,""),
+         firstInvEndDate:document.getElementById("reg_enddate").value.replace(/-/g,"")
+     };
+	return params;
+}
 
 

@@ -378,15 +378,17 @@ $("#searchButton").click(function(){
     //添加样式
     $(".spinners li").addClass("active");
     // 查询条件
-    pageInfo = {
-            page  : 1,
-            limit : 1000000,
-            channelName : getChannelName().toString().length == "0" ? null : getChannelName(),
-            date: $("#date").val()
-//            date:document.getElementById("date").value.replace(/-/g,"")
-        };
+    pageInfo = getParams();
     //加载数据
     loadTableAjax();
 });
 
-
+function getParams(){
+	var params =  {
+            page  : 1,
+            limit : 1000000,
+            channelName : getChannelName().toString().length == "0" ? null : getChannelName(),
+            date: $("#date").val()
+        };
+	return params;
+}
