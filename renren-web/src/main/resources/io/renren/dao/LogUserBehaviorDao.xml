@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.LogUserBehaviorDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.LogUserBehaviorEntity" id="LogUserBehaviorMap">
+        <result property="userID" column="USER_ID"/>
+        <result property="userName" column="USERNAME"/>
+        <result property="channlName" column="CHANNEL_NAME"/>
+        <result property="channlMark" column="CHANNEL_MARK"/>
+        <result property="actionTime" column="ACTION_TIME"/>
+        <result property="actionPlatform" column="ACTION_PLATFORM"/>
+        <result property="action" column="ACTION"/>
+        <result property="projectType" column="PROJECT_TYPE"/>
+        <result property="projectAmount" column="PROJECT_AMOUNT"/>
+        <result property="num" column="NUM"/>
+
+    </resultMap>
+
+
+	<select id="queryList" resultType="io.renren.entity.LogUserBehaviorEntity">
+
+        DROP TABLE IF EXISTS TMP_01;
+
+        CREATE TEMPORARY TABLE TMP_01
+        select
+        USER_ID,
+        IFNULL(USERNAME,'') AS USERNAME,
+        IFNULL(CHANNEL_NAME,'') AS channlName,
+        IFNULL(CHANNEL_MARK,'') AS channlMark,
+        ACTION_TIME,
+        CASE WHEN ACTION_PLATFORM= 1 THEN 'pc网站'
+        WHEN ACTION_PLATFORM= 2 THEN 'iosapp'
+        WHEN ACTION_PLATFORM= 3 THEN 'androidapp'
+        WHEN ACTION_PLATFORM= 4 THEN 'm站'
+        WHEN ACTION_PLATFORM= 8 THEN '移动端无法区分'
+        WHEN ACTION_PLATFORM= 9 THEN '后台创建'
+        WHEN ACTION_PLATFORM= 10 THEN '其他'
+        else '' end as ACTION_PLATFORM,
+        CASE WHEN ACTION= 1 THEN '注册'
+        WHEN ACTION= 2 THEN '实名认证'
+        WHEN ACTION= 3 THEN '绑卡'
+        WHEN ACTION= 4 THEN '投资'
+        WHEN ACTION= 5 THEN '转让'
+        WHEN ACTION= 6 THEN '充值'
+        WHEN ACTION= 7 THEN '自动投标'
+        else ACTION end as ACTION,
+        CASE WHEN PROJECT_TYPE= 1 THEN '旧系统.普通标'
+        WHEN PROJECT_TYPE= 2 THEN '旧系统.债转标'
+        WHEN PROJECT_TYPE= 3 THEN '存管版.普通标'
+        WHEN PROJECT_TYPE= 4 THEN '存管版.债转标'
+        WHEN PROJECT_TYPE= 5 THEN '存管版.智投计划'
+        else '' end as PROJECT_TYPE,
+        IFNULL(PROJECT_AMOUNT,' ') AS PROJECT_AMOUNT
+        from dm_report_user_action_log
+        WHERE 1=1
+        <if test="action!=null  and action.size()!=0">
+            AND ACTION IN
+            <foreach item="action" collection="action" open="(" separator="," close=")">
+                #{action}
+            </foreach>
+        </if>
+        <if test="actionPlatform!=null and actionPlatform.size()!=0">
+            AND ACTION_PLATFORM IN
+            <foreach item="actionPlatform" collection="actionPlatform" open="(" separator="," close=")">
+                #{actionPlatform}
+            </foreach>
+        </if>
+        <if test="userID != null and userID.trim() != ''">
+            AND USER_ID = #{userID}
+        </if>
+        <if test="userName != null and userName.trim() != ''">
+            AND USERNAME = #{userName}
+        </if>
+        <if test="start_action_time != null and start_action_time.trim() != '' and end_action_time != null and end_action_time.trim() != ''">
+            AND ACTION_TIME BETWEEN #{start_action_time} AND #{end_action_time}
+        </if>
+        ;
+
+
+        SELECT *
+        FROM TMP_01
+        ORDER BY USERNAME,ACTION_TIME
+        ;
+
+
+	</select>
+
+    <select id="queryTotal" resultType="int">
+        select count(*) from dm_report_user_action_log;
+    </select>
+
+
+    <select id="queryActionPlatform" resultType="io.renren.entity.LogUserBehaviorEntity">
+        SELECT * FROM (
+        SELECT 1 AS NUM,'pc网站' AS ACTION_PLATFORM
+        UNION ALL
+        SELECT 2 AS NUM,'iosapp' AS ACTION_PLATFORM
+        UNION ALL
+        SELECT 3 AS NUM,'androidapp' AS ACTION_PLATFORM
+        UNION ALL
+        SELECT 4 AS NUM,'m站' AS ACTION_PLATFORM
+        UNION ALL
+        SELECT 8 AS NUM,'移动端无法区分' AS ACTION_PLATFORM
+        UNION ALL
+        SELECT 9 AS NUM,'后台创建' AS ACTION_PLATFORM
+        UNION ALL
+        SELECT 10 AS NUM,'其他' AS ACTION_PLATFORM
+        )S
+    </select>
+
+    <select id="queryAction" resultType="io.renren.entity.LogUserBehaviorEntity">
+        SELECT * FROM (
+        SELECT 1 AS NUM,'注册' AS ACTION
+        UNION ALL
+        SELECT 2 AS NUM,'实名认证' AS ACTION
+        UNION ALL
+        SELECT 3 AS NUM,'绑卡' AS ACTION
+        UNION ALL
+        SELECT 4 AS NUM,'投资' AS ACTION
+        UNION ALL
+        SELECT 5 AS NUM,'转让' AS ACTION
+        UNION ALL
+        SELECT 6 AS NUM,'充值' AS ACTION
+        UNION ALL
+        SELECT 7 AS NUM,'自动投标' AS ACTION
+        )S
+
+    </select>
+
+    <select id="queryExport" resultType="io.renren.entity.LogUserBehaviorEntity">
+        select *
+        from TMP_01;
+
+    </select>
+
+
+</mapper>

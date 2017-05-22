@@ -40,6 +40,18 @@ function tableHeight() {
 	return $(window).height();
 }
 
+
+function getParams(){
+	var params = {
+        	'statPeriod': $("#statPeriod").val(),
+
+
+	};
+	return params;
+}
+
+
+
 // 查询条件
 var pageInfo = {
         page  : 1,
@@ -115,7 +127,6 @@ function loadTableAjax(){
             a += d;
         };
         a = '['+a.substring(0,a.length-1)+']';
-
         var b = '['+
         '{field:"statPeriod",title:"日期",align:"center",valign:"middle",sortable:"true"},'+//居中对齐
         '{field:"channelHead",title:"主负责人",align:"center",valign:"middle",sortable:"true"},'+
@@ -170,9 +181,16 @@ $(function(){
 
     loadChannel();
     loadTableAjax();
+initExportFunction();
+//$('#btn_exports').click(function(){
+//    window.open("../market/partExport","_blank",'height=400,width=400,top=100,left=200,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no');
+//});
 
-$('#btn_exports').click(function(){
-    window.open("../market/partExport","_blank",'height=400,width=400,top=100,left=200,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no');
 });
+function initExportFunction(){
+	$('#btn_exports').click(function(){
+		var params = getParams();
+		executePost('../market/partExport', {'params' : JSON.stringify(params)});
+	});
 
-});
+}
