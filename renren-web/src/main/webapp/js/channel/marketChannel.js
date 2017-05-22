@@ -40,6 +40,18 @@ function tableHeight() {
 	return $(window).height();
 }
 
+
+function getParams(){
+	var params = {
+        	'statPeriod': $("#statPeriod").val(),
+
+
+	};
+	return params;
+}
+
+
+
 // 查询条件
 var pageInfo = {
         page  : 1,
@@ -169,9 +181,16 @@ $(function(){
 
     loadChannel();
     loadTableAjax();
+initExportFunction();
+//$('#btn_exports').click(function(){
+//    window.open("../market/partExport","_blank",'height=400,width=400,top=100,left=200,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no');
+//});
 
-$('#btn_exports').click(function(){
-    window.open("../market/partExport","_blank",'height=400,width=400,top=100,left=200,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no');
 });
+function initExportFunction(){
+	$('#btn_exports').click(function(){
+		var params = getParams();
+		executePost('../market/partExport', {'params' : JSON.stringify(params)});
+	});
 
-});
+}

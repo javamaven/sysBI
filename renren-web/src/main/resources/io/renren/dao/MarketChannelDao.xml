@@ -91,6 +91,7 @@
 
         select *
         from  TMP_dm_report_channel_data_02
+        ORDER BY STAT_PERIOD DESC,CHANNEL_HEAD,TYPE,CHANNEL_NAME
         ;
     </select>
 
