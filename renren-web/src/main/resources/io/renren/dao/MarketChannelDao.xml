@@ -35,111 +35,43 @@
         CREATE TEMPORARY TABLE TMP_dm_report_channel_data_01
         SELECT
         STAT_PERIOD,
-        IFNULL(CD.CHANNEL_HEAD,'') AS CHANNEL_HEAD,
-        IFNULL(CD.TYPE,'') AS TYPE,
-        IFNULL(CD.CHANNEL_NAME,'') AS CHANNEL_NAME,
-        IFNULL(CD.ACTUAL_COST,0) AS ACTUAL_COST,
-        IFNULL(CD.REG_COU,0) AS REG_COU,
-        IFNULL(CD.FIRSTINVEST_COU,0) AS FIRSTINVEST_COU,
-        IFNULL(CD.FIRSTINVEST_MONEY,0) AS FIRSTINVEST_MONEY,
-        IFNULL(CD.FIRSTINVESTYEARAMOUNT,0) AS FIRSTINVEST_Y_MONEY,
-        IFNULL(CD.COUNT_USER,0) AS INV_COU,
-        IFNULL(CD.INV_MONEY,0) AS INV_MONEY,
-        IFNULL(CD.YEARAMOUNT,0) AS INV_Y_MONEY,
-        IFNULL(CD.DDZ_AMOUNT,0) AS DDZ_MONEY,
-        IFNULL((CD.ACTUAL_COST/CD.REG_COU),0) AS REG_COST,
-        IFNULL(CD.ACTUAL_COST/CD.FIRSTINVEST_COU,0) AS FIRSTINVEST_COST,
-        IFNULL(CD.FIRSTINVEST_MONEY/CD.FIRSTINVEST_COU,0) AS AVG_FIRSTINVEST_MONEY,
-        IFNULL(CD.FIRSTINVEST_COU/CD.REG_COU,0) AS REG_INV_CONVERSION,
-        IFNULL(CD.FIRSTINVEST_MONEY/CD.ACTUAL_COST,0) AS FIRSTINVEST_ROT,
-        IFNULL(CD.INV_MONEY/CD.ACTUAL_COST,0) AS CUMULATIVE_ROT
+        IFNULL(CHANNEL_HEAD,'') AS CHANNEL_HEAD,
+        IFNULL(TYPE,'') AS TYPE,
+        IFNULL(CHANNEL_NAME,'') AS CHANNEL_NAME,
+        IFNULL(ACTUAL_COST,0) AS ACTUAL_COST,
+        IFNULL(REG_COU,0) AS REG_COU,
+        IFNULL(FIRSTINVEST_COU,0) AS FIRSTINVEST_COU,
+        IFNULL(FIRSTINVEST_MONEY,0) AS FIRSTINVEST_MONEY,
+        IFNULL(FIRSTINVESTYEARAMOUNT,0) AS FIRSTINVEST_Y_MONEY,
+        IFNULL(COUNT_USER,0) AS INV_COU,
+        IFNULL(INV_MONEY,0) AS INV_MONEY,
+        IFNULL(YEARAMOUNT,0) AS INV_Y_MONEY,
+        IFNULL(DDZ_AMOUNT,0) AS DDZ_MONEY,
+        FORMAT((IFNULL(ACTUAL_COST/REG_COU,0)),2) AS REG_COST,
+        FORMAT((IFNULL(ACTUAL_COST/FIRSTINVEST_COU,0)),2) AS FIRSTINVEST_COST,
+        FORMAT((IFNULL(FIRSTINVEST_MONEY/FIRSTINVEST_COU,0)),2) AS AVG_FIRSTINVEST_MONEY,
+        FORMAT((IFNULL(FIRSTINVEST_COU/REG_COU,0)),2) AS REG_INV_CONVERSION,
+        FORMAT((IFNULL(FIRSTINVEST_MONEY/ACTUAL_COST,0)),2) AS FIRSTINVEST_ROT,
+        FORMAT((IFNULL(INV_MONEY/ACTUAL_COST,0)),2) AS CUMULATIVE_ROT
         FROM
-        dm_report_channel_cost CD
+        dm_report_channel_owner
         WHERE 1=1
         <if test="channelName!=null and channelName.size()!=0">
-            AND CD.CHANNEL_NAME IN
+            AND CHANNEL_NAME IN
             <foreach item="channelName" collection="channelName" open="(" separator="," close=")">
                 #{channelName}
             </foreach>
         </if>
         <if test="channelHead != null and channelHead.trim() != ''">
-            AND CD.CHANNEL_HEAD = #{channelHead}
+            AND CHANNEL_HEAD = #{channelHead}
         </if>
         <if test="reg_begindate != null and reg_begindate.trim() != '' and reg_enddate != null and reg_enddate.trim() != ''">
-            AND CD.STAT_PERIOD BETWEEN #{reg_begindate} AND #{reg_enddate}
+            AND STAT_PERIOD BETWEEN #{reg_begindate} AND #{reg_enddate}
         </if>
         ;
-        <!--CREATE TEMPORARY TABLE TMP_dm_report_channel_data_02-->
-        <!--SELECT-->
-        <!--'' as STAT_PERIOD,-->
-        <!--'all-总计' AS CHANNEL_HEAD,-->
-        <!--'' AS TYPE,-->
-        <!--'' AS CHANNEL_NAME,-->
-        <!--SUM(IFNULL(ACTUAL_COST,0)) AS ACTUAL_COST,-->
-        <!--SUM(IFNULL(REG_COU,0)) AS REG_COU,-->
-        <!--SUM(IFNULL(FIRSTINVEST_COU,0)) AS FIRSTINVEST_COU,-->
-        <!--SUM(IFNULL(FIRSTINVEST_MONEY,0)) AS FIRSTINVEST_MONEY,-->
-        <!--SUM(IFNULL(FIRSTINVEST_Y_MONEY,0)) AS FIRSTINVEST_Y_MONEY,-->
-        <!--SUM(IFNULL(INV_COU,0)) AS INV_COU,-->
-        <!--SUM(IFNULL(INV_MONEY,0)) AS INV_MONEY,-->
-        <!--SUM(IFNULL(INV_Y_MONEY,0)) AS INV_Y_MONEY,-->
-        <!--SUM(IFNULL(DDZ_MONEY,0)) AS DDZ_MONEY,-->
-        <!--SUM(IFNULL(REG_COST,0)) AS REG_COST,-->
-        <!--SUM(IFNULL(FIRSTINVEST_COST,0)) AS FIRSTINVEST_COST,-->
-        <!--SUM(IFNULL(AVG_FIRSTINVEST_MONEY,0)) AS AVG_FIRSTINVEST_MONEY,-->
-        <!--SUM(IFNULL(REG_INV_CONVERSION,0)) AS REG_INV_CONVERSION,-->
-        <!--SUM(IFNULL(FIRSTINVEST_ROT,0)) AS FIRSTINVEST_ROT,-->
-        <!--SUM(IFNULL(CUMULATIVE_ROT,0)) AS CUMULATIVE_ROT-->
-        <!--FROM TMP_dm_report_channel_data_01-->
-        <!--;-->
 
-
-
-
-        <!--SELECT-->
-        <!--'' as STAT_PERIOD,-->
-        <!--'all-总计' AS CHANNEL_HEAD,-->
-        <!--'' AS TYPE,-->
-        <!--'' AS CHANNEL_NAME,-->
-        <!--ACTUAL_COST,-->
-        <!--REG_COU,-->
-        <!--FIRSTINVEST_COU,-->
-        <!--FIRSTINVEST_MONEY,-->
-        <!--FIRSTINVEST_Y_MONEY,-->
-        <!--INV_COU,-->
-        <!--INV_MONEY,-->
-        <!--INV_Y_MONEY,-->
-        <!--DDZ_MONEY,-->
-        <!--format(REG_COST,2) AS REG_COST,-->
-        <!--format(FIRSTINVEST_COST,2) AS FIRSTINVEST_COST,-->
-        <!--format(AVG_FIRSTINVEST_MONEY,2) AS AVG_FIRSTINVEST_MONEY,-->
-        <!--format(REG_INV_CONVERSION,2) AS REG_INV_CONVERSION,-->
-        <!--format(FIRSTINVEST_ROT,2) AS FIRSTINVEST_ROT,-->
-        <!--format(CUMULATIVE_ROT,2) AS CUMULATIVE_ROT-->
-        <!--FROM TMP_dm_report_channel_data_02-->
-
-        <!--UNION ALL-->
         CREATE TEMPORARY TABLE TMP_dm_report_channel_data_02
-        SELECT
-        STAT_PERIOD,
-        CHANNEL_HEAD,
-        TYPE,
-        CHANNEL_NAME,
-        ACTUAL_COST,
-        REG_COU,
-        FIRSTINVEST_COU,
-        FIRSTINVEST_MONEY,
-        FIRSTINVEST_Y_MONEY,
-        INV_COU,
-        INV_MONEY,
-        INV_Y_MONEY,
-        DDZ_MONEY,
-        format(REG_COST,2) AS REG_COST,
-        format(FIRSTINVEST_COST,2) AS FIRSTINVEST_COST,
-        format(AVG_FIRSTINVEST_MONEY,2) AS AVG_FIRSTINVEST_MONEY,
-        format(REG_INV_CONVERSION,2) AS REG_INV_CONVERSION,
-        format(FIRSTINVEST_ROT,2) AS FIRSTINVEST_ROT,
-        format(CUMULATIVE_ROT,2) AS CUMULATIVE_ROT
+        SELECT *
         FROM TMP_dm_report_channel_data_01
         ;
         select *
@@ -155,50 +87,6 @@
 
     <select id="queryExport" resultType="io.renren.entity.MarketChannelEntity">
 
-        <!--SELECT-->
-        <!--'' as STAT_PERIOD,-->
-        <!--'all-总计' AS CHANNEL_HEAD,-->
-        <!--'' AS TYPE,-->
-        <!--'' AS CHANNEL_NAME,-->
-        <!--ACTUAL_COST,-->
-        <!--REG_COU,-->
-        <!--FIRSTINVEST_COU,-->
-        <!--FIRSTINVEST_MONEY,-->
-        <!--FIRSTINVEST_Y_MONEY,-->
-        <!--INV_COU,-->
-        <!--INV_MONEY,-->
-        <!--INV_Y_MONEY,-->
-        <!--DDZ_MONEY,-->
-        <!--format(REG_COST,2) AS REG_COST,-->
-        <!--format(FIRSTINVEST_COST,2) AS FIRSTINVEST_COST,-->
-        <!--format(AVG_FIRSTINVEST_MONEY,2) AS AVG_FIRSTINVEST_MONEY,-->
-        <!--format(REG_INV_CONVERSION,2) AS REG_INV_CONVERSION,-->
-        <!--format(FIRSTINVEST_ROT,2) AS FIRSTINVEST_ROT,-->
-        <!--format(CUMULATIVE_ROT,2) AS CUMULATIVE_ROT-->
-        <!--FROM TMP_dm_report_channel_data_02-->
-
-        <!--UNION ALL-->
-        <!--SELECT-->
-        <!--STAT_PERIOD,-->
-        <!--CHANNEL_HEAD,-->
-        <!--TYPE,-->
-        <!--CHANNEL_NAME,-->
-        <!--ACTUAL_COST,-->
-        <!--REG_COU,-->
-        <!--FIRSTINVEST_COU,-->
-        <!--FIRSTINVEST_MONEY,-->
-        <!--FIRSTINVEST_Y_MONEY,-->
-        <!--INV_COU,-->
-        <!--INV_MONEY,-->
-        <!--INV_Y_MONEY,-->
-        <!--DDZ_MONEY,-->
-        <!--format(REG_COST,2) AS REG_COST,-->
-        <!--format(FIRSTINVEST_COST,2) AS FIRSTINVEST_COST,-->
-        <!--format(AVG_FIRSTINVEST_MONEY,2) AS AVG_FIRSTINVEST_MONEY,-->
-        <!--format(REG_INV_CONVERSION,2) AS REG_INV_CONVERSION,-->
-        <!--format(FIRSTINVEST_ROT,2) AS FIRSTINVEST_ROT,-->
-        <!--format(CUMULATIVE_ROT,2) AS CUMULATIVE_ROT-->
-        <!--FROM TMP_dm_report_channel_data_01-->
         select *
         from  TMP_dm_report_channel_data_02
         ;
