@@ -10,7 +10,7 @@ function getChannelName(){
 
 function getDate(datatype){
     var today = new Date(new Date()-24*60*60*1000);
-    var halfYearAgo = new Date(new Date()-24*60*60*1000*182);
+    var halfYearAgo = new Date(new Date()-24*60*60*1000*2);
     var startdate;
     var enddate;
     startdate = (today.getFullYear()) +"-" +
@@ -169,6 +169,7 @@ $("#searchButton").click(function(){
             page  : 1,
             limit : 10,
             channelName : getChannelName().toString().length == "0" ? null : getChannelName(),
+            channelName_a : getChannelName().toString().length == "0" ? null : getChannelName(),
             channelHead :document.getElementById("channelHead").value,
             reg_begindate: document.getElementById("reg_begindate").value.replace(/-/g,""),
             reg_enddate:document.getElementById("reg_enddate").value.replace(/-/g,"")
