@@ -105,34 +105,14 @@ function initTableGrid(){
 					}
 				}
 			},
-			{ label: '目前状态', name: 'stage', index: '$STAGE', width: 80,align:'right' ,
-				formatter:function(cellvalue, options, rowObject){
-					if(cellvalue == '1'){
-						return '待提交审核';
-					}else if(cellvalue == '2'){
-						return '审核中待发布';
-					}else if(cellvalue == '3'){
-						return '审核通过待排标';
-					}else if(cellvalue == '4'){
-						return '已发布筹款中';
-					}else if(cellvalue == '5'){
-						return '还款中';
-					}else if(cellvalue == '8'){
-						return '已结清';
-					}else if(cellvalue == '9'){
-						return '流标';
-					}else {
-						return cellvalue;
-					}
-				}
-			}
+			{ label: '目前状态', name: 'stage', index: '$STAGE', width: 80,align:'right'}
 			
 //			STAGE 项目阶段（1待提交审核 2审核中待发布、3审核通过待排标、4已发布筹款中、5还款中、8已结清、9流标） 
 //			,				
 //			{ label: 'CIA', name: 'cia', index: '$CIA', width: 80 ,align:'right'}			
         ],
 		viewrecords: true,
-        height: 385,
+        height: 390,
         rowNum: 10,
 		rowList : [10,30,50],
         rownumbers: true, 

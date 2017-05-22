@@ -1,6 +1,7 @@
 package io.renren.service;
 
 import io.renren.entity.DmReportInvestmentDailyEntity;
+import io.renren.utils.PageUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -29,4 +30,9 @@ public interface DmReportInvestmentDailyService {
 	void deleteBatch(String[] statPeriods);
 	
 	DmReportInvestmentDailyEntity queryTotalList(Map<String, Object> map);
+
+	PageUtils query(Integer page, Integer limit, String userId, String userName, String channelId, String channelName,
+			String investStartTime, String investEndTime, String operPlatform, String withProType);
+
+	Map<String, String> getExcelFields();
 }

@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.schedule.ScheduleReportTaskDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.schedule.ScheduleReportTaskEntity" id="scheduleReportTaskMap">
+        <result property="id" column="ID"/>
+        <result property="taskName" column="TASK_NAME"/>
+        <result property="taskConetent" column="TASK_CONETENT"/>
+        <result property="taskType" column="TASK_TYPE"/>
+        <result property="isRunning" column="IS_RUNNING"/>
+        <result property="lastSendTime" column="LAST_SEND_TIME"/>
+        <result property="sendType" column="SEND_TYPE"/>
+        <result property="sendRate" column="SEND_RATE"/>
+        <result property="receiveEmail" column="RECEIVE_EMAIL"/>
+        <result property="chaosongEmail" column="CHAOSONG_EMAIL"/>
+        <result property="condition" column="CONDITION"/>
+        <result property="timeCost" column="TIME_COST"/>
+        <result property="description" column="DESCRIPTION"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.schedule.ScheduleReportTaskEntity">
+		select * from schedule_report_task where ID = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.schedule.ScheduleReportTaskEntity">
+		select * from schedule_report_task
+        where 1=1
+        <if test="taskName != null">
+			and task_name = #{taskName}
+		</if>
+		
+		<if test="taskNameLike != null">
+			AND task_name like CONCAT('%',#{taskNameLike},'%' )  
+		</if>
+		
+		<if test="isRunning != null">
+			and is_running = #{isRunning}
+		</if>
+		
+		<if test="existsName != null">
+			and id != #{existsName}
+		</if>
+        
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from schedule_report_task 
+		
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.schedule.ScheduleReportTaskEntity" useGeneratedKeys="true" keyProperty="id">
+		insert into schedule_report_task
+		(
+			`TASK_NAME`, 
+			`TASK_CONETENT`, 
+			`TASK_TYPE`, 
+			`SEND_TYPE`, 
+			`SEND_RATE`, 
+			`RECEIVE_EMAIL`, 
+			`CHAOSONG_EMAIL`, 
+			`CONDITION`, 
+			`TIME_COST`, 
+			`IS_RUNNING`, 
+			`DESCRIPTION`
+		)
+		values
+		(
+			#{taskName}, 
+			#{taskConetent}, 
+			#{taskType}, 
+			#{sendType}, 
+			#{sendRate}, 
+			#{receiveEmail}, 
+			#{chaosongEmail}, 
+			#{condition}, 
+			#{timeCost}, 
+			#{isRunning}, 
+			#{description}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.schedule.ScheduleReportTaskEntity">
+		update schedule_report_task 
+		<set>
+			<if test="taskName != null">`TASK_NAME` = #{taskName}, </if>
+			<if test="taskType != null">`TASK_TYPE` = #{taskType}, </if>
+			<if test="taskConetent != null">`TASK_CONETENT` = #{taskConetent}, </if>
+			<if test="lastSendTime != null">`LAST_SEND_TIME` = #{lastSendTime}, </if>
+			<if test="sendType != null">`SEND_TYPE` = #{sendType}, </if>
+			<if test="sendRate != null">`SEND_RATE` = #{sendRate}, </if>
+			<if test="receiveEmail != null">`RECEIVE_EMAIL` = #{receiveEmail}, </if>
+			<if test="chaosongEmail != null">`CHAOSONG_EMAIL` = #{chaosongEmail}, </if>
+			<if test="condition != null">`CONDITION` = #{condition}, </if>
+			<if test="timeCost != null">`TIME_COST` = #{timeCost}, </if>
+			<if test="isRunning != null">`IS_RUNNING` = #{isRunning}, </if>
+			<if test="description != null">`DESCRIPTION` = #{description}</if>
+		</set>
+		where ID = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from schedule_report_task where ID = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from schedule_report_task where ID in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>

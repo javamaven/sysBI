@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.schedule.ScheduleReportTaskLogDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.schedule.ScheduleReportTaskLogEntity" id="scheduleReportTaskLogMap">
+        <result property="id" column="ID"/>
+        <result property="taskId" column="TASK_ID"/>
+        <result property="timeCost" column="TIME_COST"/>
+        <result property="sendResult" column="SEND_RESULT"/>
+        <result property="params" column="PARAMS"/>
+        <result property="receiveEmal" column="RECEIVE_EMAL"/>
+        <result property="chaosongEmail" column="CHAOSONG_EMAIL"/>
+        <result property="emailValue" column="EMAIL_VALUE"/>
+        <result property="time" column="TIME"/>
+        <result property="desc" column="DESC"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.schedule.ScheduleReportTaskLogEntity">
+		select * from schedule_report_task_log where ID = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.schedule.ScheduleReportTaskLogEntity">
+		select * from schedule_report_task_log
+       	where 1=1
+       	
+		<if test="taskId != null and taskId.trim() != '' ">
+			and TASK_ID = #{taskId}
+		</if>
+		
+		
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from schedule_report_task_log 
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.schedule.ScheduleReportTaskLogEntity">
+		insert into schedule_report_task_log
+		(
+			`ID`, 
+			`TASK_ID`, 
+			`TIME_COST`, 
+			`SEND_RESULT`, 
+			`PARAMS`, 
+			`RECEIVE_EMAL`, 
+			`CHAOSONG_EMAIL`, 
+			`EMAIL_VALUE`, 
+			`TIME`, 
+			`DESC`
+		)
+		values
+		(
+			#{id}, 
+			#{taskId}, 
+			#{timeCost}, 
+			#{sendResult}, 
+			#{params}, 
+			#{receiveEmal}, 
+			#{chaosongEmail}, 
+			#{emailValue}, 
+			#{time}, 
+			#{desc}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.schedule.ScheduleReportTaskLogEntity">
+		update schedule_report_task_log 
+		<set>
+			<if test="taskId != null">`TASK_ID` = #{taskId}, </if>
+			<if test="timeCost != null">`TIME_COST` = #{timeCost}, </if>
+			<if test="sendResult != null">`SEND_RESULT` = #{sendResult}, </if>
+			<if test="params != null">`PARAMS` = #{params}, </if>
+			<if test="receiveEmal != null">`RECEIVE_EMAL` = #{receiveEmal}, </if>
+			<if test="chaosongEmail != null">`CHAOSONG_EMAIL` = #{chaosongEmail}, </if>
+			<if test="emailValue != null">`EMAIL_VALUE` = #{emailValue}, </if>
+			<if test="time != null">`TIME` = #{time}, </if>
+			<if test="desc != null">`DESC` = #{desc}</if>
+		</set>
+		where ID = #{id}
+	</update>
+	
+	<delete id="delete">
+		delete from schedule_report_task_log where ID = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from schedule_report_task_log where ID in 
+		<foreach item="id" collection="array" open="(" separator="," close=")">
+			#{id}
+		</foreach>
+	</delete>
+
+</mapper>
