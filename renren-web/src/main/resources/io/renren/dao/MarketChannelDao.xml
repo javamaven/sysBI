@@ -34,41 +34,73 @@
 
         CREATE TEMPORARY TABLE TMP_dm_report_channel_data_01
         SELECT
-        STAT_PERIOD,
-        IFNULL(CHANNEL_HEAD,'') AS CHANNEL_HEAD,
-        IFNULL(TYPE,'') AS TYPE,
-        IFNULL(CHANNEL_NAME,'') AS CHANNEL_NAME,
-        IFNULL(ACTUAL_COST,0) AS ACTUAL_COST,
-        IFNULL(REG_COU,0) AS REG_COU,
-        IFNULL(FIRSTINVEST_COU,0) AS FIRSTINVEST_COU,
-        IFNULL(FIRSTINVEST_MONEY,0) AS FIRSTINVEST_MONEY,
-        IFNULL(FIRSTINVESTYEARAMOUNT,0) AS FIRSTINVEST_Y_MONEY,
-        IFNULL(COUNT_USER,0) AS INV_COU,
-        IFNULL(INV_MONEY,0) AS INV_MONEY,
-        IFNULL(YEARAMOUNT,0) AS INV_Y_MONEY,
-        IFNULL(DDZ_AMOUNT,0) AS DDZ_MONEY,
-        FORMAT((IFNULL(ACTUAL_COST/REG_COU,0)),2) AS REG_COST,
-        FORMAT((IFNULL(ACTUAL_COST/FIRSTINVEST_COU,0)),2) AS FIRSTINVEST_COST,
-        FORMAT((IFNULL(FIRSTINVEST_MONEY/FIRSTINVEST_COU,0)),2) AS AVG_FIRSTINVEST_MONEY,
-        FORMAT((IFNULL(FIRSTINVEST_COU/REG_COU,0)),2) AS REG_INV_CONVERSION,
-        FORMAT((IFNULL(FIRSTINVEST_MONEY/ACTUAL_COST,0)),2) AS FIRSTINVEST_ROT,
-        FORMAT((IFNULL(INV_MONEY/ACTUAL_COST,0)),2) AS CUMULATIVE_ROT
+        MAX(CO.STAT_PERIOD) AS STAT_PERIOD,
+        IFNULL(CO.CHANNEL_HEAD,'') AS CHANNEL_HEAD,
+        IFNULL(CO.TYPE,'') AS TYPE,
+        IFNULL(CO.CHANNEL_NAME,'') AS CHANNEL_NAME,
+        IFNULL((SUM(ACTUAL_COST)),0) AS ACTUAL_COST,
+        IFNULL((SUM(REG_COU)),0) AS REG_COU,
+        IFNULL((SUM(FIRSTINVEST_COU)),0) AS FIRSTINVEST_COU,
+        IFNULL((SUM(FIRSTINVEST_MONEY)),0) AS FIRSTINVEST_MONEY,
+        IFNULL((SUM(FIRSTINVESTYEARAMOUNT)),0) AS FIRSTINVEST_Y_MONEY,
+        IFNULL((MAX(TMP.INV_COU)),0) AS INV_COU,
+        IFNULL((SUM(INV_MONEY)),0) AS INV_MONEY,
+        IFNULL((SUM(YEARAMOUNT)),0) AS INV_Y_MONEY,
+        IFNULL((SUM(DDZ_AMOUNT)),0) AS DDZ_MONEY,
+        FORMAT(IFNULL((SUM(ACTUAL_COST))/(SUM(REG_COU)),0),2) AS REG_COST,
+        FORMAT(IFNULL((SUM(ACTUAL_COST))/(SUM(FIRSTINVEST_COU)),0),2) AS FIRSTINVEST_COST,
+        FORMAT(IFNULL((SUM(FIRSTINVEST_MONEY))/(SUM(FIRSTINVEST_COU)),0),2) AS AVG_FIRSTINVEST_MONEY,
+        FORMAT(IFNULL((SUM(FIRSTINVEST_COU))/(SUM(REG_COU)),0),2) AS REG_INV_CONVERSION,
+        FORMAT(IFNULL((SUM(FIRSTINVEST_MONEY))/(SUM(ACTUAL_COST)),0),2) AS FIRSTINVEST_ROT,
+        FORMAT(IFNULL((SUM(INV_MONEY))/(SUM(ACTUAL_COST)),0),2) AS CUMULATIVE_ROT
         FROM
-        dm_report_channel_owner
+        dm_report_channel_owner CO
+        LEFT JOIN (
+        SELECT
+        DC.CHANNEL_NAME,
+        DC.CHANNEL_HEAD,
+        DC.PAYMENT_WAY AS TYPE,
+        COUNT(DISTINCT UAD.USER_ID) AS INV_COU
+        FROM
+        dm_report_user_activate_daily UAD
+
+        JOIN Dim_Channel DC ON (UAD.CHANNEL_ID = DC.CHANNEL_ID)
         WHERE 1=1
+        AND FIRST_INVEST_TIME is not null
+        <if test="channelName_a!=null and channelName_a.size()!=0">
+            AND UAD.CHANNEL_NAME IN
+            <foreach item="channelName_a" collection="channelName_a" open="(" separator="," close=")">
+                #{channelName}
+            </foreach>
+        </if>
+        <if test="reg_begindate != null and reg_begindate.trim() != '' and reg_enddate != null and reg_enddate.trim() != ''">
+            AND DATE_FORMAT(STR_TO_DATE(REGISTER_TIME,'%Y-%m-%d %H:%i:%s'),'%Y%m%d') BETWEEN #{reg_begindate} AND #{reg_enddate}
+        </if>
+        GROUP BY
+        DC.CHANNEL_NAME,
+        DC.CHANNEL_HEAD,
+        DC.PAYMENT_WAY
+        ) TMP ON (CO.CHANNEL_NAME=TMP.CHANNEL_NAME
+        AND CO.CHANNEL_HEAD= TMP.CHANNEL_HEAD AND CO.TYPE=TMP.TYPE)
+        where 1=1
         <if test="channelName!=null and channelName.size()!=0">
-            AND CHANNEL_NAME IN
+            AND CO.CHANNEL_NAME IN
             <foreach item="channelName" collection="channelName" open="(" separator="," close=")">
                 #{channelName}
             </foreach>
         </if>
-        <if test="channelHead != null and channelHead.trim() != ''">
-            AND CHANNEL_HEAD = #{channelHead}
-        </if>
         <if test="reg_begindate != null and reg_begindate.trim() != '' and reg_enddate != null and reg_enddate.trim() != ''">
-            AND STAT_PERIOD BETWEEN #{reg_begindate} AND #{reg_enddate}
+            AND CO.STAT_PERIOD BETWEEN #{reg_begindate} AND #{reg_enddate}
         </if>
+        <if test="channelHead != null and channelHead.trim() != ''">
+            AND CO.CHANNEL_HEAD = #{channelHead}
+        </if>
+        GROUP BY
+        IFNULL(CO.CHANNEL_HEAD,''),
+        IFNULL(CO.TYPE,''),
+        IFNULL(CO.CHANNEL_NAME,'')
         ;
+
 
         CREATE TEMPORARY TABLE TMP_dm_report_channel_data_02
         SELECT *
@@ -95,7 +127,22 @@
         ;
     </select>
 
+    <sql id="cond">
 
+        <if test="channelName!=null and channelName.size()!=0">
+            AND CHANNEL_NAME IN
+            <foreach item="channelName" collection="channelName" open="(" separator="," close=")">
+                #{channelName}
+            </foreach>
+        </if>
+        <if test="channelHead != null and channelHead.trim() != ''">
+            AND CHANNEL_HEAD = #{channelHead}
+        </if>
+        <if test="reg_begindate != null and reg_begindate.trim() != '' and reg_enddate != null and reg_enddate.trim() != ''">
+            AND STAT_PERIOD BETWEEN #{reg_begindate} AND #{reg_enddate}
+        </if>
+
+    </sql>
 
 
 </mapper>
