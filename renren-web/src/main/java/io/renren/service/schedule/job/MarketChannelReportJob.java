@@ -15,7 +15,6 @@ import org.quartz.PersistJobDataAfterExecution;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
-import io.renren.entity.ChannelStftInfoEntity;
 import io.renren.entity.MarketChannelEntity;
 import io.renren.entity.schedule.ScheduleReportTaskEntity;
 import io.renren.entity.schedule.ScheduleReportTaskLogEntity;
@@ -26,7 +25,6 @@ import io.renren.service.schedule.entity.JobVo;
 import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
-import io.renren.utils.PageUtils;
 
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
