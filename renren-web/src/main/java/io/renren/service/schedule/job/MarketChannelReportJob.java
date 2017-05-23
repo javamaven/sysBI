@@ -26,6 +26,11 @@ import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
 
+/**
+ * 渠道负责人推送任务
+ * @author Administrator
+ *
+ */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
 public class MarketChannelReportJob implements Job {
