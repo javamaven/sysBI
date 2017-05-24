@@ -131,8 +131,9 @@
 
     <select id="queryExport" resultType="io.renren.entity.LogUserBehaviorEntity">
         select *
-        from TMP_01;
-
+        from TMP_01
+        ORDER BY USERNAME,ACTION_TIME
+        ;
     </select>
 
 
