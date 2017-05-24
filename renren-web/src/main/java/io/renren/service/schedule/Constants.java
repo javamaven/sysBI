@@ -48,5 +48,11 @@ public class Constants {
 		 */
 		public static String CHANNEL_ALL = "8";
 		
+		/**
+		 * 用户行为日志
+		 */
+		public static String USER_BEHAVIOR = "9";
+		
+		
 	}
 }

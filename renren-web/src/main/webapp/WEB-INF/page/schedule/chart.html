@@ -8,10 +8,11 @@
 
 
 <body>
-	<script src="${rc.contextPath}/js/schedule/chart.js?_${date.systemTime}"></script>
 	 <script>
-	 var paramsJson = ${param}
+	 var ctx = "${rc.contextPath}";
+	 var paramsJson = ${param};
      </script>
+	<script src="${rc.contextPath}/js/schedule/chart.js?_${date.systemTime}"></script>
     
     <div style="width: 1000px; height: 500px;" id="chartDiv">
 	</div>

@@ -17,6 +17,7 @@ import io.renren.service.schedule.job.ChannelRenewReportJob;
 import io.renren.service.schedule.job.ChannelStFtReportJob;
 import io.renren.service.schedule.job.MarketChannelReportJob;
 import io.renren.service.schedule.job.UserActiveReportJob;
+import io.renren.service.schedule.job.UserBehaviorReportJob;
 import io.renren.service.schedule.job.UserInvestReportJob;
 
 /**
@@ -85,6 +86,8 @@ public class ScheduleReportTaskEntity implements Serializable {
 			jobVo.setJobClass(MarketChannelReportJob.class);
 		}else if (Constants.TaskType.CHANNEL_ALL.equals(jobVo.getJobType())) {
 			jobVo.setJobClass(ChannelAllReportJob.class);
+		}else if (Constants.TaskType.USER_BEHAVIOR.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(UserBehaviorReportJob.class);
 		}
 		jobVo.setTaskEntity(this);
 		return jobVo;
