@@ -74,7 +74,7 @@ if (system.args.length !== 2) {
             //打开回调的URL
             // 打开课程对应的淘宝商品详情页。
             page.onConsoleMessage = function(msg, lineNum, sourceId) {
-            	  console.log('CONSOLE: ' + msg + " +++++++++lineNum=" + lineNum);
+//            	  console.log('CONSOLE: ' + msg + " +++++++++lineNum=" + lineNum);
             	};
             page.open(param.callback,settings, function(status) {
                 if(status !== "success") {
