@@ -10,6 +10,7 @@ import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.Query;
 import io.renren.utils.R;
+import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -63,8 +64,6 @@ public class DailyController {
 
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType,"aa");
-
-
 
 
 

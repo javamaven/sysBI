@@ -21,10 +21,10 @@
 		STAT_PERIOD,
 		INDICATORS_NAME,
 		indicators_value,
-		sequential,
-		compared,
+		CONCAT(sequential*100,'%') as sequential ,
+		CONCAT(compared*100,'%') as compared,
 		month_mean_value,
-		month_mean_value_than,
+		CONCAT(month_mean_value_than*100,'%') as month_mean_value_than,
 		NUM
 		FROM mdtxbi.DM_REPORT_DAILY
 		WHERE 1=1

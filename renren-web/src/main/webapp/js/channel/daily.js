@@ -131,8 +131,10 @@ function loadTableAjax(){
             d = d.substring(0,d.length-1) + '},';
             a += d;
         };
+
         a = '['+a.substring(0,a.length-1)+']';
         //alert(a);
+
         var b = '['+
         '{field:"statPeriod",title:"日期",align:"center",valign:"middle",class:""},'+
         '{field:"indicatorsName",title:"指标名字",align:"left",valign:"middle"},'+
@@ -171,6 +173,7 @@ $("#searchButton").click(function(){
             reg_enddate:document.getElementById("reg_enddate").value.replace(/-/g,"")
         };
     //加载数据
+
     loadTableAjax();
 });
 
