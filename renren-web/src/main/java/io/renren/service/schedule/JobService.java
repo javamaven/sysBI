@@ -57,6 +57,7 @@ public class JobService {
 			addJob(jobVo, jobVo.getJobClass());
 		}
 	}
+
 	/**
 	 * 判断任务是否存在
 	 * 

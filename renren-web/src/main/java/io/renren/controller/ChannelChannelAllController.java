@@ -1,13 +1,12 @@
 package io.renren.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import io.renren.entity.ChannelChannelAllEntity;
-import io.renren.service.ChannelChannelAllService;
-import io.renren.utils.ExcelUtil;
-import io.renren.utils.PageUtils;
-import io.renren.utils.Query;
-import io.renren.utils.R;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,12 +14,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+
+import io.renren.entity.ChannelChannelAllEntity;
+import io.renren.service.ChannelChannelAllService;
+import io.renren.utils.ExcelUtil;
+import io.renren.utils.PageUtils;
+import io.renren.utils.Query;
+import io.renren.utils.R;
 
 /**
  * 渠道总体情况
@@ -71,15 +73,7 @@ public class ChannelChannelAllController extends AbstractController {
 			va.add(entity);
 		}
 
-		Map<String,String> headMap = new LinkedHashMap<String,String>();
-		headMap.put("channelName","渠道");
-		headMap.put("investTimes","投资次数");
-		headMap.put("stayPer","留存率");
-		headMap.put("investUsers","投资用户数");
-		headMap.put("moneyVoucherPer","次均红包金额");
-		headMap.put("moneyInvestPer","次均投资金额");
-		headMap.put("moneyInvsetYearPer","平均投资期限");
-		headMap.put("borrowPeriodPer","平均投资间隔");
+		Map<String, String> headMap = channelChannelAllService.getExcelFields();
 
 		String title = "渠道分次投资情况";
 

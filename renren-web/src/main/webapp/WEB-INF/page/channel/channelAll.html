@@ -21,32 +21,39 @@
 						<td>
 							<select id="id_select" multiple="multiple" class="form-control"  ></select>
 						</td>
-						<td width="100"></td>
+						<td width="20px;"></td>
 						<td><label>投资次数：</label></td>
 						<td>
 							<input type="text" class="form-control" id="invest_times" placeholder="请输入" value ="24"/>
 						</td>
-						<td width="100"></td>
-						<td><label>投资结束时间：</label></td>
-						<td>
-							<input type="text"class="form-control form_datetime_2"  id="invest_enddate" value="" placeholder="请选择投资结束时间"/>
+						<td width="20px;"></td>
+						<td style="width: 320px;">
+							<label style="display:inline">投资结束时间：</label>
+<!-- 						</td> -->
+<!-- 						<td> -->
+							<input type="text" style="width: 200px;display:inline" class="form-control form_datetime_2"  id="invest_enddate" value="" placeholder="请选择投资结束时间"/>
 						</td>
 					</tr>
 					<tr height="10"></tr>
 					<tr>
-						<td><label>注册开始时间：</label></td>
+						<td style="width: 120px;"><label>注册开始时间：</label></td>
 						<td>
 							<input type="text"class="form-control form_datetime_2" id="reg_begindate"  placeholder="请选择注册开始时间"/>
 						</td>
-						<td width="100"></td>
-						<td><label>注册结束时间：</label></td>
+						<td width="20px;"></td>
+						<td style="width: 120px;"><label>注册结束时间：</label></td>
 						<td>
 							<input type="text"class="form-control form_datetime_2"  id="reg_enddate"  placeholder="请选择注册结束时间"/>
 						</td>
-						<td width="100"></td>
+						<td width="20px;"></td>
 						<td>
 							<button type="button" id="searchButton" class="btn btn-primary"><i class="fa fa-search"></i>  查询</button>
+<!-- 						</td> -->
+<!-- 						<td> -->
 							<a class="btn btn-primary" id="btn_export"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+<!-- 						</td> -->
+<!-- 						<td> -->
+							<button class="btn btn-primary" data-toggle="modal" onclick="openTaskWin();" data-target="#schedule_add_task">添加定时任务</button>
 						</td>
 					</tr>
 				</table>
@@ -101,10 +108,91 @@
 			</div>
 		</div>
 	</div>
+	
+	
+				<!-- 模态框（Modal） -->
+	<div class="modal fade" id="schedule_add_task" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel"><font style="font-weight: bold;">创建定时任务</font></h4>
+				</div>
+				<div class="modal-body" style="height: 320px;">
+				
+					<form class="form-horizontal" style="padding-top: 0px;line-height: -1.2">
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="firstname" class="col-sm-2 control-label">任务名称：</label>
+							<div class="col-sm-10">
+								<input type="text" class="inputClass"  height="29" id="task_name" placeholder="任务名称">
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">发送方式：</label>
+							<div class="col-sm-10">
+								<select id="send_type" class="inputClassMin">
+								  <option value ="email">邮件</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">调度频率：</label>
+							<div class="col-sm-10">
+								<input type="text" class="inputClass"  height="29" id="send_rate" value="* * * * * ?" placeholder="* * * * * ?">
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">收件人：</label>
+							<div class="col-sm-10">
+								<input type="text" class="inputClass"  height="29" id="receive_email" placeholder="收件人,多个收件人用逗号隔开">
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">抄送人：</label>
+							<div class="col-sm-10">
+								<input type="text" class="inputClass" height="29"  id="chaosong_email" placeholder="抄送人,多个抄送人用逗号隔开">
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">日期偏移：</label>
+							<div class="col-sm-10">
+								<input type="text" class="inputClassMin" id="date_offset_num" value="1" placeholder="1"/>
+								<select id="date_offset" class="inputClassMin" >
+									<option value ="day" selected="selected">天</option>
+									<option value ="hour">小时</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">查询条件：</label>
+							<div class="col-sm-10">
+								<textarea class="areaClass" disabled="disabled" id="query_params" rows="3"></textarea>
+							</div>
+						</div>
+					</form>
+									
+				
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+					</button>
+					<button type="button" class="btn btn-primary" onclick="addTask(8)">
+						确定
+					</button>
+				</div>
+			</div><!-- /.modal-content -->
+		</div>
+		<!-- /.modal -->
+	</div>
+	
+	
 </div>
 <script type="text/javascript">
-
 </script>
+<link rel="stylesheet" href="${rc.contextPath}/js/schedule/taskwin.css"></link>
+<script src="${rc.contextPath}/js/schedule/addtask.js?_${date.systemTime}"></script>
 <script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
 <script src="${rc.contextPath}/js/channel/channelAll.js?_${date.systemTime}"></script>
 </body>

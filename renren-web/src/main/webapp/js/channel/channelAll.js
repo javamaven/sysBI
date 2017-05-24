@@ -466,7 +466,16 @@ $("#searchButton").click(function() {
 });
 
 $('#btn_export').click(function(){
-    pageInfo = {
+    pageInfo = getParams();
+    if(pageInfo){
+        executePost('../channel/channelAll/exportList', {'param':  JSON.stringify(pageInfo) } );
+    }else {
+        alert('请先查询数据!');
+    }
+});
+
+function getParams(){
+	var params = {
         page : 1,
         limit : 20,
         reg_begindate  : document.getElementById("reg_begindate").value.replace(/-/g,""),
@@ -475,12 +484,8 @@ $('#btn_export').click(function(){
         channelName  : getChannelName().toString().length == "0" ? null : getChannelName(),
         investTimes : document.getElementById("invest_times").value
     };
-    if(pageInfo){
-        executePost('../channel/channelAll/exportList', {'param':  JSON.stringify(pageInfo) } );
-    }else {
-        alert('请先查询数据!');
-    }
-});
+	return params;
+}
 
 // 获取渠道信息
 function getChannelName(){
