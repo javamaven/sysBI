@@ -1,12 +1,13 @@
 var jobType = {
-	1:'渠道首投复投情况',//CHANNEL_STFT
-	2:'渠道流失分析',//CHANNEL_LOSS
-	3:'渠道投资次数分析',//CHANNEL_INVEST_TIMES
-	4:'渠道续费数据汇总',//CHANNEL_RENEW
-	5:'用户激活情况',//USER_ACTIVE_INFO
-	6:'用户投资情况',//USER_INVEST_INFO
-	7:'渠道负责人情况',//market_channel
-	8:'渠道分次投资情况'//market_channel
+	1:'渠道首投复投情况',// CHANNEL_STFT
+	2:'渠道流失分析',// CHANNEL_LOSS
+	3:'渠道投资次数分析',// CHANNEL_INVEST_TIMES
+	4:'渠道续费数据汇总',// CHANNEL_RENEW
+	5:'用户激活情况',// USER_ACTIVE_INFO
+	6:'用户投资情况',// USER_INVEST_INFO
+	7:'渠道负责人情况',// market_channel
+	8:'渠道分次投资情况',// market_channel
+	9:'用户行为日志'// user_behavior
 };
 
 $(function () {
@@ -15,6 +16,7 @@ $(function () {
 
 /**
  * 启动任务
+ * 
  * @param taskId
  * @returns
  */
@@ -63,6 +65,7 @@ function stopTask(taskId){
 }
 /**
  * 任务日志
+ * 
  * @returns
  */
 function taskLog(taskId){
@@ -95,7 +98,8 @@ function initTableGrid(){
 						return '';
 					}  
 				},					
-//				{ label: '任务内容', name: 'taskConetent', index: '$TASK_CONETENT', width: 80, align: 'right'  }, 			
+// { label: '任务内容', name: 'taskConetent', index: '$TASK_CONETENT', width: 80,
+// align: 'right' },
 				{ label: '上次推送时间', name: 'lastSendTime', index: '$LAST_SEND_TIME', width: 100, align: 'right'  }, 			
 				{ label: '发送方式', name: 'sendType', index: '$SEND_TYPE', width: 45, align: 'right'
 					,formatter:function(cellvalue, options, rowObject){
@@ -165,8 +169,8 @@ function initTableGrid(){
 	            order: "order"
 	        },
 	        gridComplete:function(){
-	        	//隐藏grid底部滚动条
-//	        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
+	        	// 隐藏grid底部滚动条
+// $("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
 	        }
 	    });
 }

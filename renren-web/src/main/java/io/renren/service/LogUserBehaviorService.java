@@ -1,9 +1,9 @@
 package io.renren.service;
 
-import io.renren.entity.LogUserBehaviorEntity;
-
 import java.util.List;
 import java.util.Map;
+
+import io.renren.entity.LogUserBehaviorEntity;
 
 /**
  * 渠道成本统计表
@@ -20,5 +20,6 @@ public interface LogUserBehaviorService {
 	
 	int queryTotal(Map<String, Object> map);
 	List<LogUserBehaviorEntity> queryExport();
+	Map<String, String> getExcelFields();
 
 }

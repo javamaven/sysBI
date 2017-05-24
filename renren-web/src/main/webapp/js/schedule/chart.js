@@ -1,3 +1,4 @@
+
 $(function () {
 	loadMainChart();//渠道分次投资图表
 });
@@ -38,13 +39,13 @@ function loadMainChart(){
     var scn5='';
     var scn6='';
     var legend_data= new Array();
-
+//console.info("++++++ctx+++++++++++" + ctx)
 
     $.ajax({
         type: "POST",
 //        url: "../queryChannelAllChart",
 //        url : "../../../channel/channelAll/mainChart",
-        url: '/bi_sys/common/create-chart-image/queryChannelAllChart',
+        url: ctx + '/common/create-chart-image/queryChannelAllChart',
         data: JSON.stringify(pageInfo),
         contentType: "application/json;charset=utf-8",
         success : function(msg) {

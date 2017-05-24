@@ -8,7 +8,7 @@ function tableHeight() {
 // 查询条件
 var pageInfo = {
         page  : 1,
-        limit : 10,
+        limit : 10
     };
 
 // 表格加载
@@ -41,7 +41,6 @@ function loadTableAjax(){
     data: JSON.stringify(pageInfo),
     contentType: "application/json;charset=utf-8",
     success : function(msg) {
-        console.log(msg);
         var a = '';
         for(var list in msg.page){
             var d = '{'
@@ -82,14 +81,18 @@ $("#searchButton").click(function(){
         $(".spinners li").addClass("active");
     // 查询条件
 
-     pageInfo = {
-            page  : 1,
-            limit : 10,
-
-        };
+     pageInfo = getParams();
     //加载数据
     loadTableAjax();
 });
+
+function getParams(){
+	var params = {
+        page  : 1,
+        limit : 10
+    };
+	return params;
+}
 
 $(function(){
 

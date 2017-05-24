@@ -56,18 +56,19 @@ function tableHeight() {
 }
 
 // 查询条件
-var pageInfo = {
-        page  : 1,
-        limit : 10,
-        userID :document.getElementById("user_Id").value,
-        userName :document.getElementById("user_name").value,
-//         channelName : getChannelName().toString().length == "0" ? null : getChannelName(),
-//      actionPlatform : getActionPlatform().toString().length == "0" ? null : getActionPlatform(),
-        //action : getAction().toString().length == "0" ? null : getAction(),
-        start_action_time  : document.getElementById("start_action_time").value,
-        end_action_time : document.getElementById("end_action_time").value
-    };
+var pageInfo = getParams() ;
 
+function getParams() {
+	var params = {
+		page : 1,
+		limit : 1000* 10000,
+		userID : document.getElementById("user_Id").value,
+		userName : document.getElementById("user_name").value,
+		start_action_time : document.getElementById("start_action_time").value,
+		end_action_time : document.getElementById("end_action_time").value
+	};
+	return params;
+}
 
 
 // 表格加载
@@ -146,7 +147,7 @@ function loadChannell(){
 };
 
 
-function getParams(){
+function getParams2(){
 	var params = {
         	'userID': $("#user_Id").val(),
 
@@ -234,7 +235,7 @@ $(function(){
 });
 function initExportFunction(){
 	$('#btn_exports').click(function(){
-		var params = getParams();
+		var params = getParams2();
 		executePost('../logUserBehavior/partExport', {'params' : JSON.stringify(params)});
 	});
 
