@@ -43,5 +43,10 @@ public class Constants {
 		 */
 		public static String MARKET_CHANNEL = "7";
 		
+		/**
+		 * 渠道分次投资情况
+		 */
+		public static String CHANNEL_ALL = "8";
+		
 	}
 }

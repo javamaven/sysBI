@@ -55,8 +55,10 @@ public class UserInvestReportJob implements Job {
 		MailUtil mailUtil = new MailUtil();
 		JobUtil jobUtil = new JobUtil();
 		try {
-			String condition = taskEntity.getCondition();
-			Map<String, Object> params = JSON.parseObject(condition, Map.class);
+//			String condition = taskEntity.getCondition();
+//			Map<String, Object> params = JSON.parseObject(condition, Map.class);
+			ScheduleReportTaskEntity queryObject = taskService.queryObject(taskEntity.getId());
+			Map<String, Object> params = JSON.parseObject(queryObject.getCondition(), Map.class);
 //			Integer page = params.get("page") == null ? 0 : Integer.parseInt(params.get("page").toString());
 //			Integer limit = params.get("limit") == null ? 0 : Integer.parseInt(params.get("limit").toString());
 			String userId = params.get("userId") + "";

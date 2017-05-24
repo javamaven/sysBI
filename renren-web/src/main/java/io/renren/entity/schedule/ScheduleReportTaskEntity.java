@@ -6,8 +6,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.util.StringUtils;
+
 import io.renren.service.schedule.Constants;
 import io.renren.service.schedule.entity.JobVo;
+import io.renren.service.schedule.job.ChannelAllReportJob;
 import io.renren.service.schedule.job.ChannelInvestTimesReportJob;
 import io.renren.service.schedule.job.ChannelLossReportJob;
 import io.renren.service.schedule.job.ChannelRenewReportJob;
@@ -80,6 +83,8 @@ public class ScheduleReportTaskEntity implements Serializable {
 			jobVo.setJobClass(UserInvestReportJob.class);
 		}else if (Constants.TaskType.MARKET_CHANNEL.equals(jobVo.getJobType())) {
 			jobVo.setJobClass(MarketChannelReportJob.class);
+		}else if (Constants.TaskType.CHANNEL_ALL.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(ChannelAllReportJob.class);
 		}
 		jobVo.setTaskEntity(this);
 		return jobVo;
@@ -257,7 +262,9 @@ public class ScheduleReportTaskEntity implements Serializable {
 			return Arrays.asList(split);
 		}
 		List<String> arrayList = new ArrayList<String>();
-		arrayList.add(receiveEmail);
+		if(!StringUtils.isEmpty(receiveEmail)){
+			arrayList.add(receiveEmail);
+		}
 		return arrayList;
 	}
 
@@ -267,7 +274,9 @@ public class ScheduleReportTaskEntity implements Serializable {
 			return Arrays.asList(split);
 		}
 		List<String> arrayList = new ArrayList<String>();
-		arrayList.add(chaosongEmail);
+		if(!StringUtils.isEmpty(chaosongEmail)){
+			arrayList.add(chaosongEmail);
+		}
 		return arrayList;
 	}
 

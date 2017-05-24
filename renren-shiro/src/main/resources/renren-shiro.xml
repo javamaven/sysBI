@@ -45,6 +45,10 @@
 				/api/**=anon
 	        	/login.html=anon
 	        	/sys/login=anon
+<!-- 				/common/create-chart-image/chart-report-id=anon -->
+<!-- 				/common/create-chart-image/queryChannelAllChart=anon -->
+				/common/create-chart-image/**=anon
+				/js/schedule/chart.js=anon
 	        	/captcha.jpg=anon
 	        	/**=authc
 	        </value>

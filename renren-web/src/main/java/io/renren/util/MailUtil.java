@@ -419,6 +419,101 @@ public class MailUtil {
 		return msg;
 	}
 
+	// String title, String content, List<String> receiverList, List<String>
+	// chaosongList,
+	// String attachFilePath
+	/**
+	 * 发送带附件，和正文贴图邮件
+	 * @param imgPaths	图片路径
+	 * @param content	邮件正文
+	 * @param title		邮件主题
+	 * @param receiverList	收件人
+	 * @param chaosongList	抄送人
+	 * @param attachFilePath	附件路径
+	 * @return
+	 */
+	public static boolean sendEmailWithAttachAndImg(String[] imgPaths, String content, String title,
+			List<String> receiverList, List<String> chaosongList, String attachFilePath) {
+		boolean ret = true;
+		if (StringUtils.isEmpty(ConfigProp.getEmailUserName()) || StringUtils.isEmpty(ConfigProp.getEmailHost())) {
+			throw new RuntimeException("没有设置邮件服务器信息，请检查");
+		}
+		String hostStr = props.get("mail.smtp.host") + "";
+		if (StringUtils.isEmpty(hostStr)) {
+			props.put("mail.smtp.host", ConfigProp.getEmailHost());
+		}
+		MimeMessage msg = new MimeMessage(Session.getInstance(props, new Authenticator() {
+			public PasswordAuthentication getPasswordAuthentication() {
+				return new PasswordAuthentication(ConfigProp.getEmailUserName(), ConfigProp.getEmailPassword());
+			}
+		}));
+		// 设置邮件的发件人
+		try {
+			msg.setFrom(new InternetAddress(ConfigProp.getEmailUserName(), ConfigProp.getEmailName()));			
+//			msg.setFrom(new InternetAddress(ConfigProp.getEmailUserName()));
+			// 设置多个收件人地址
+			InternetAddress[] internetAddressTo = new InternetAddress[receiverList.size()];
+			for (int i = 0; i < receiverList.size(); i++) {
+				internetAddressTo[i] = new InternetAddress(receiverList.get(i));
+			}
+			msg.setRecipients(Message.RecipientType.TO, internetAddressTo);
+
+			// 设置多个抄送地址
+			if (chaosongList != null && chaosongList.size() > 0) {
+				InternetAddress[] internetAddressCC = new InternetAddress[chaosongList.size()];
+				for (int i = 0; i < chaosongList.size(); i++) {
+					if(StringUtils.isEmpty(chaosongList.get(i))){
+						continue;
+					}
+					internetAddressCC[i] = new InternetAddress(chaosongList.get(i));
+				}
+				msg.setRecipients(Message.RecipientType.CC, internetAddressCC);
+			}
+
+			// 设置邮件的主题
+			msg.setSubject(title);
+			msg.setSentDate(new Date());
+
+			// 关系 正文和图片的
+			MimeMultipart multipart = new MimeMultipart();
+
+			// 创建附件
+			MimeBodyPart htmlBodyPart = new MimeBodyPart();
+			DataHandler dh1 = new DataHandler(new FileDataSource(attachFilePath));
+			htmlBodyPart.setDataHandler(dh1);
+			String filename1 = dh1.getName();
+			// MimeUtility 是一个工具类，encodeText（）用于处理附件字，防止中文乱码问题
+			htmlBodyPart.setFileName(MimeUtility.encodeText(filename1));
+
+			// 正文内容
+			Object htmlContent = buildMsgAndImg(imgPaths, content);
+			// 创建邮件的正文
+			MimeBodyPart text = new MimeBodyPart();
+			text.setContent(htmlContent, "text/html;charset=utf-8");
+			multipart.addBodyPart(text);
+
+			for (int i = 0; i < imgPaths.length; i++) {
+				// 创建图片
+				MimeBodyPart img = new MimeBodyPart();
+				DataHandler dh = new DataHandler(new FileDataSource(imgPaths[i]));
+				img.setDataHandler(dh);
+				// 创建图片的一个表示用于显示在邮件中显示
+				img.setContentID("png" + i);
+				multipart.addBodyPart(img);
+			}
+			// setContent(“邮件的正文内容”,”设置邮件内容的编码方式”)
+			multipart.addBodyPart(htmlBodyPart);
+			multipart.setSubType("related");// 设置正文与图片之间的关系
+			msg.setContent(multipart);
+			msg.saveChanges(); // 保存修改
+			Transport.send(msg);// 发送邮件
+		} catch (Exception e) {
+			ret = false;
+			e.printStackTrace();
+		}
+		return ret;
+	}
+
 	/**
 	 * 发送带有图片的附件
 	 * 
@@ -512,6 +607,22 @@ public class MailUtil {
 			e.printStackTrace();
 		}
 		return ret;
+	}
+
+	private static String buildMsgAndImg(String[] imgPaths, String content) {
+		String msg = content + "<br/><br/>";
+		String imgs = "";
+		int max_width = 1000;
+		int max_height = 500;
+		for (int i = 0; i < imgPaths.length; i++) {
+			String img = "<img style='position:absolute;border:1px solid #F2F2F2;";// border:1px
+			 img += "' src='cid:png" + i + "' />";
+			 imgs += img;
+		}
+		msg += "<div style='width: " + max_width + "px;height:" + max_height + "px;overflow: auto;'>";
+		msg += imgs;
+		msg += "</div>";
+		return msg;
 	}
 
 	private static String buildMsgAndImg(String[] imgPaths, List<Map<String, Object>> dashboardList, Mail mail) {

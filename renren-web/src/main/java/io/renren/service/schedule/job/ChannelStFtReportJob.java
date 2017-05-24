@@ -59,7 +59,7 @@ public class ChannelStFtReportJob implements Job {
 		PageUtils pages = null;
 		Map<String, Object> params = null;
 		try {
-//			String condition = taskEntity.getCondition();
+			// String condition = taskEntity.getCondition();
 			ScheduleReportTaskEntity queryObject = taskService.queryObject(taskEntity.getId());
 			params = JSON.parseObject(queryObject.getCondition(), Map.class);
 			String date_offset_num = params.get("date_offset_num") + "";
@@ -68,10 +68,10 @@ public class ChannelStFtReportJob implements Job {
 				String invBeginDate = params.get("invBeginDate").toString();
 				String invEndDate = params.get("invEndDate").toString();
 				int days = Integer.valueOf(splitArr[0]);
-				if("day".equals(splitArr[1])){
+				if ("day".equals(splitArr[1])) {
 					invBeginDate = DateUtil.getCurrDayBefore(invBeginDate, -days, "yyyyMMdd");
 					invEndDate = DateUtil.getCurrDayBefore(invEndDate, -days, "yyyyMMdd");
-				}else if("hour".equals(splitArr[1])){
+				} else if ("hour".equals(splitArr[1])) {
 					invBeginDate = DateUtil.getHourBefore(invBeginDate, -days, "yyyyMMdd");
 					invEndDate = DateUtil.getHourBefore(invEndDate, -days, "yyyyMMdd");
 				}
@@ -98,7 +98,7 @@ public class ChannelStFtReportJob implements Job {
 		} finally {
 			long l2 = System.currentTimeMillis();
 			updateRunningTime(taskEntity.getId(), l2 - l1, logVo.getParams());
-			
+
 			logVo.setTaskId(taskEntity.getId());
 			logVo.setChaosongEmail(taskEntity.getChaosongEmail());
 			logVo.setReceiveEmal(taskEntity.getReceiveEmail());
@@ -113,7 +113,7 @@ public class ChannelStFtReportJob implements Job {
 	 * 
 	 * @param id
 	 * @param timeCost
-	 * @param params 
+	 * @param params
 	 */
 	private void updateRunningTime(int id, long timeCost, String params) {
 		ScheduleReportTaskEntity entity = new ScheduleReportTaskEntity();

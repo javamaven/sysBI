@@ -10,6 +10,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Properties;
 
+import io.renren.system.listener.PrintscreenServiceListener;
+
 public class ConfigProp {
 	// public static Map<String, String> systemConfigCache = new
 	// ConcurrentHashMap<String, String>();
@@ -80,4 +82,25 @@ public class ConfigProp {
 		return p.getProperty("email.port");
 	}
 
+	public static String getPrintscreenServiceRequestChartUrl() {
+		return p.getProperty("printscreen.service.request.chart.url");
+	}
+
+	public static String getPrintscreenServiceURL() {
+		return p.getProperty("printscreen.service.url");
+	}
+
+	public static String getPrintscreenServicePort() {
+		return p.getProperty("printscreen.service.port");
+	}
+
+	/**
+	 * 后台截图存放目录
+	 * 
+	 * @return
+	 */
+	public static String getPrintscreenDir() {
+		// return p.getProperty("printscreen.dir");
+		return PrintscreenServiceListener.IMAGE_FILE_STORE_DIR;
+	}
 }
