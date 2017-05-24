@@ -41,13 +41,13 @@
 	    <!-- authc：该过滤器下的页面必须验证后才能访问,它是Shiro内置的一个拦截器org.apache.shiro.web.filter.authc.FormAuthenticationFilter -->  
 	    <property name="filterChainDefinitions">  
 	        <value>
+				/common/create-chart-image/chart-report-id=anon
+				/common/create-chart-image/queryChannelAllChart=anon
+				/common/create-chart-image/**=anon
 	        	/statics/**=anon
 				/api/**=anon
 	        	/login.html=anon
 	        	/sys/login=anon
-<!-- 				/common/create-chart-image/chart-report-id=anon -->
-<!-- 				/common/create-chart-image/queryChannelAllChart=anon -->
-				/common/create-chart-image/**=anon
 				/js/schedule/chart.js=anon
 	        	/captcha.jpg=anon
 	        	/**=authc
