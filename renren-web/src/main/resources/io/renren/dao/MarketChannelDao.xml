@@ -62,19 +62,19 @@
         DC.PAYMENT_WAY AS TYPE,
         COUNT(DISTINCT UAD.USER_ID) AS INV_COU
         FROM
-        dm_report_user_activate_daily UAD
+        edw_trading_project_detail UAD
 
-        JOIN Dim_Channel DC ON (UAD.CHANNEL_ID = DC.CHANNEL_ID)
+        left JOIN edw_user_basic EUB ON (UAD.USER_ID = EUB.USER_ID)
+        LEFT JOIN	dim_channel DC ON (EUB.CHANNEL_ID=DC.CHANNEL_ID)
         WHERE 1=1
-        AND FIRST_INVEST_TIME is not null
         <if test="channelName_a!=null and channelName_a.size()!=0">
-            AND UAD.CHANNEL_NAME IN
+            AND DC.CHANNEL_NAME IN
             <foreach item="channelName_a" collection="channelName_a" open="(" separator="," close=")">
                 #{channelName}
             </foreach>
         </if>
         <if test="reg_begindate != null and reg_begindate.trim() != '' and reg_enddate != null and reg_enddate.trim() != ''">
-            AND DATE_FORMAT(STR_TO_DATE(REGISTER_TIME,'%Y-%m-%d %H:%i:%s'),'%Y%m%d') BETWEEN #{reg_begindate} AND #{reg_enddate}
+            AND DATE_FORMAT(STR_TO_DATE(ADDTIME,'%Y-%m-%d %H:%i:%s'),'%Y%m%d') BETWEEN #{reg_begindate} AND #{reg_enddate}
         </if>
         GROUP BY
         DC.CHANNEL_NAME,
