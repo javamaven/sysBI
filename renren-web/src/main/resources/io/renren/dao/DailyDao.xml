@@ -29,10 +29,13 @@
 		FROM mdtxbi.DM_REPORT_DAILY
 		WHERE 1=1
 
-		<if test="STAT_PERIOD != null and STAT_PERIOD.trim() != ''">
-			AND STAT_PERIOD = #{STAT_PERIOD}
+		<if test="reg_begindate != null and reg_begindate.trim() != '' and reg_enddate != null and reg_enddate.trim() != ''">
+			AND STAT_PERIOD BETWEEN #{reg_begindate} AND #{reg_enddate}
 		</if>
 		;
+
+		SELECT *
+		FROM(
 		SELECT
 		STAT_PERIOD,
 		INDICATORS_NAME,
@@ -42,12 +45,28 @@
 		case when NUM in(7,8,9,10,11,12,15,16,37,38,39,40) then Format(month_mean_value,'') else Format(month_mean_value, 2) end AS month_mean_value,
 		month_mean_value_than,
 		NUM
-		FROM TMP ORDER BY NUM,INDICATORS_NAME;
+		FROM TMP ORDER BY NUM,INDICATORS_NAME) s
+		ORDER BY s.STAT_PERIOD DESC,s.NUM
+		;
+
 	</select>
 
 	<select id="queryExports" resultType="io.renren.entity.DailyEntity">
 
-		SELECT * FROM TMP ORDER BY NUM,INDICATORS_NAME;
+		SELECT *
+		FROM(
+		SELECT
+		STAT_PERIOD,
+		INDICATORS_NAME,
+		case when NUM in(7,8,9,10,11,12,15,16,37,38,39,40) then Format(indicators_value,'') else Format(indicators_value, 2) end AS indicators_value,
+		sequential,
+		compared,
+		case when NUM in(7,8,9,10,11,12,15,16,37,38,39,40) then Format(month_mean_value,'') else Format(month_mean_value, 2) end AS month_mean_value,
+		month_mean_value_than,
+		NUM
+		FROM TMP ORDER BY NUM,INDICATORS_NAME) s
+		ORDER BY s.STAT_PERIOD DESC,s.NUM
+		;
 	</select>
 
 

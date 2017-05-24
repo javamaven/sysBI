@@ -10,7 +10,7 @@
 //默认时间
 function getDate(datatype){
     var today = new Date(new Date()-24*60*60*1000*1);
-    var halfYearAgo = new Date(new Date()-24*60*60*1000*182);
+    var halfYearAgo = new Date(new Date()-24*60*60*1000*2);
     var startdate;
     var enddate;
     startdate = (today.getFullYear()) +"-" +
@@ -34,8 +34,8 @@ $(".form_datetime_2").
     setStartDate:new Date()
 });
 // 初始化时间
-//document.getElementById("STAT_PERIOD").value=getDate(2);
-document.getElementById("STAT_PERIOD").value=getDate(1);
+document.getElementById("reg_begindate").value=getDate(2);
+document.getElementById("reg_enddate").value=getDate(1);
 
 
 // 自适应高度
@@ -47,8 +47,8 @@ function tableHeight() {
 var pageInfo = {
         page  : 1,
         limit : 10,
-//        STAT_PERIOD  : document.getElementById("STAT_PERIOD").value.replace(/-/g,""),
-        STAT_PERIOD : document.getElementById("STAT_PERIOD").value.replace(/-/g,"")
+        reg_begindate  : document.getElementById("reg_begindate").value.replace(/-/g,""),
+        reg_enddate : document.getElementById("reg_enddate").value.replace(/-/g,"")
     };
 
 // 表格加载
@@ -105,7 +105,7 @@ function loadTable(columnsData,tableData){
 
 function getParams(){
 	var params = {
-        	'statPeriod': $("#STAT_PERIOD").val(),
+        	'statPeriod': $("#reg_begindate").val(),
 
 	};
 	return params;
@@ -167,8 +167,8 @@ $("#searchButton").click(function(){
             limit : 10,
 //            channelName : getChannelName().toString().length == "0" ? null : getChannelName(),
 //             indicatorsName :document.getElementById("indicatorsName").value,
-            STAT_PERIOD: document.getElementById("STAT_PERIOD").value.replace(/-/g,""),
-//            reg_enddate:document.getElementById("reg_enddate").value.replace(/-/g,"")
+            reg_begindate: document.getElementById("reg_begindate").value.replace(/-/g,""),
+            reg_enddate:document.getElementById("reg_enddate").value.replace(/-/g,"")
         };
     //加载数据
     loadTableAjax();
