@@ -92,7 +92,7 @@ public class ChannelLossReportJob implements Job {
 
 			mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
 					taskEntity.getChaosongEmailList(), attachFilePath);
-
+			logVo.setEmailValue(attachFilePath);
 			logVo.setSendResult("success");
 		} catch (Exception e) {
 			logVo.setSendResult("fail");
