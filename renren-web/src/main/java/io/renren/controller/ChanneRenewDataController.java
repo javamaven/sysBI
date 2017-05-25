@@ -23,7 +23,8 @@ import com.alibaba.fastjson.JSONArray;
 
 import io.renren.entity.ChannelRenewDataEntity;
 import io.renren.service.ChannelRenewDataService;
-import io.renren.system.jdbc.JdbcHelper;
+import io.renren.system.jdbc.DataSourceFactory;
+import io.renren.system.jdbc.JdbcUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
@@ -36,6 +37,9 @@ public class ChanneRenewDataController extends AbstractController {
 
 	@Autowired
 	private DruidDataSource dataSource;
+
+	@Autowired
+	private DataSourceFactory dataSourceFactory;
 
 	SimpleDateFormat dateSdf = new SimpleDateFormat("yyyyMMdd");
 	SimpleDateFormat dateTimeSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -50,11 +54,15 @@ public class ChanneRenewDataController extends AbstractController {
 	@RequiresPermissions("channel:channelAll:list")
 	public R queryTest(@RequestBody Map<String, Object> params) throws ParseException, SQLException {
 		long l1 = System.currentTimeMillis();
-		JdbcHelper jdbcHelper = new JdbcHelper(dataSource);
+		JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
+		List<Map<String, Object>> list = util.query("select * from excel_data limit 10");
 
-		String procedureSql = "call first_invest_year_roi_renew_day90(? , ?)";
-		List<Map<String, Object>> list = jdbcHelper.callableQuery(procedureSql, "2017-02-02 00:00:00",
-				"2017-05-03 23:59:59");
+		// JdbcHelper jdbcHelper = new JdbcHelper(dataSource);
+		// String procedureSql = "call first_invest_year_roi_renew_day90(? ,
+		// ?)";
+		// List<Map<String, Object>> list =
+		// jdbcHelper.callableQuery(procedureSql, "2017-02-02 00:00:00",
+		// "2017-05-03 23:59:59");
 		long l2 = System.currentTimeMillis();
 		System.err.println("list=" + list);
 		System.err.println("耗时=" + (l2 - l1));

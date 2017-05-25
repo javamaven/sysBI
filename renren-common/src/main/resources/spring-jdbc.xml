@@ -40,6 +40,49 @@
 		</property>
 	</bean>
 	
+	<!-- 本地数据源 -->
+	<bean id="dataSourceFactory" class="io.renren.system.jdbc.DataSourceFactory"
+		init-method="init" destroy-method="close">
+		<!-- mysql -->
+		<property name="mysqlUrl">
+			<value>${mysql.jdbc.url}</value>
+		</property>
+		<property name="mysqlUserName">
+			<value>${mysql.jdbc.username}</value>
+		</property>
+		<property name="mysqlPassword">
+			<value>${mysql.jdbc.password}</value>
+		</property>
+		<property name="mysqlDriver">
+			<value>${mysql.jdbc.driver}</value>
+		</property>
+		<property name="mysqlInitSize">
+			<value>${mysql.jdbc.initSize}</value>
+		</property>
+		<property name="mysqlMaxSize">
+			<value>${mysql.jdbc.maxSize}</value>
+		</property>
+		<!-- oracle -->
+		<property name="oracleUrl">
+			<value>${oracle.jdbc.url}</value>
+		</property>
+		<property name="oracleUserName">
+			<value>${oracle.jdbc.username}</value>
+		</property>
+		<property name="oraclePassword">
+			<value>${oracle.jdbc.password}</value>
+		</property>
+		<property name="oracleDriver">
+			<value>${oracle.jdbc.driver}</value>
+		</property>
+		<property name="oracleInitSize">
+			<value>${oracle.jdbc.initSize}</value>
+		</property>
+		<property name="oracleMaxSize">
+			<value>${oracle.jdbc.maxSize}</value>
+		</property>
+	</bean>
+	
 	<bean id="stat-filter" class="com.alibaba.druid.filter.stat.StatFilter">
 		<property name="slowSqlMillis" value="1000" />
 		<property name="logSlowSql" value="true" />
