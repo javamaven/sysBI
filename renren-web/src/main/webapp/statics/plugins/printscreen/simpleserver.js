@@ -74,11 +74,12 @@ if (system.args.length !== 2) {
             //打开回调的URL
             // 打开课程对应的淘宝商品详情页。
             page.onConsoleMessage = function(msg, lineNum, sourceId) {
-//            	  console.log('CONSOLE: ' + msg + " +++++++++lineNum=" + lineNum);
+            	  console.log('CONSOLE: ' + msg + " +++++++++lineNum=" + lineNum);
             	};
             page.open(param.callback,settings, function(status) {
-                if(status !== "success") {
-                    response.write('{success:false}');
+            	console.info("++++++++status++++++++" + status)
+                if(status != "success") {
+//                    response.write('{success:false}');
                 }
                 // 由于页面中的资源是动态加载的，需要setTimeout 10s 等待资源加载完，再操作页面。
                 setTimeout(function() {
