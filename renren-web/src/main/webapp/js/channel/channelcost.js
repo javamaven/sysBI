@@ -79,7 +79,7 @@ function loadTable(columnsData,tableData){
     });
     // 移除loading样式
      $(".spinners li").removeClass("active");
-    queryTotalInfo($("#stat_day").val());
+//    queryTotalInfo($("#stat_day").val());
 }
 //加载渠道数据
 function loadChannel(){
