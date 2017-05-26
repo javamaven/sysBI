@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>员工拉新统计表</title>
+#parse("sys/header.html")
+</head>
+<body>
+<div class="content">
+	<div style="padding: 10px 30px;">
+		<!--<div class="panel-body">-->
+
+		<!--<div class="form-group">-->
+		<!--<div class="col-md-3">-->
+		<!--<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>-->
+		<!--</div>-->
+		<!--</div>-->
+		<!--</div>-->
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<i class="fa fa-eye"></i>   查询条件
+			</div>
+			<div class="panel-body">
+				<div class="form-group">
+					<label  class="col-sm-2 control-label">统计日期</label>
+					<div class="col-md-3">
+						<input type="text"class="form-control form_datetime_2" id="STAT_PERIOD"  placeholder="请选择时间"/>
+					</div>
+
+
+
+					<div class="col-md-3">
+						<button type="button" id="searchButton" class="btn btn-primary"><i class="fa fa-search"></i>  查询</button>
+						<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+
+
+		<div class="row">
+			<div class="panel panel-primary" id="showDiv" >
+				<div class="panel-heading">
+					<i class="fa fa-list"></i>  指标明细
+				</div>
+
+				<div class="panel-body">
+					<!-- 加载表格动画-->
+					<div>
+						<ul class="spinners">
+							<li class="active">
+								<div id="preloader_2">
+									<span></span>
+									<span></span>
+									<span></span>
+									<span></span>
+								</div>
+							</li>
+						</ul>
+					</div>
+					<div class="table-responsive">
+						<table id="reportTable" class="table table-hover">
+
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script src="${rc.contextPath}/js/schedule/addtask.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/channel/insidelx.js?_${date.systemTime}"></script>
+</body>
+</html>
