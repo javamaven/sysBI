@@ -31,7 +31,7 @@ $(".form_datetime_2").
     setStartDate:new Date()
 });
 // 初始化时间
-document.getElementById("reg_begindate").value=getDate(2);
+document.getElementById("reg_begindate").value=getDate(1);
 document.getElementById("reg_enddate").value = getYesterday(1);
 
 
@@ -183,8 +183,9 @@ $("#searchButton").click(function(){
 $(function(){
 
     loadChannel();
-    loadTableAjax();
+//    loadTableAjax();
 initExportFunction();
+$(".spinners li").removeClass("active");
 //$('#btn_exports').click(function(){
 //    window.open("../market/partExport","_blank",'height=400,width=400,top=100,left=200,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no');
 //});

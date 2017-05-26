@@ -180,7 +180,8 @@ $("#searchButton").click(function(){
 $(function(){
 
 //    loadChannel();
-    loadTableAjax();
+//    loadTableAjax();
+ $(".spinners li").removeClass("active");
     initExportFunction();
 //$('#btn_exports').click(function(){
 ////    executePost('../channel/daily/partExport', {'params' : JSON.stringify(params)});

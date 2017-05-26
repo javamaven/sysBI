@@ -226,8 +226,9 @@ $("#searchButton").click(function(){
 $(function(){
      loadChannell();
     loadChannel();
-    loadTableAjax();
+//    loadTableAjax();
     initExportFunction();
+    $(".spinners li").removeClass("active");
 //$('#btn_exports').click(function(){
 //    window.open("../logUserBehavior/partExport","_blank",'height=400,width=400,top=100,left=200,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no');
 //});
