@@ -34,7 +34,7 @@ $(".form_datetime_2").
     setStartDate:new Date()
 });
 // 初始化时间
-document.getElementById("reg_begindate").value=getDate(2);
+document.getElementById("reg_begindate").value=getDate(1);
 document.getElementById("reg_enddate").value=getDate(1);
 
 
@@ -181,9 +181,9 @@ $("#searchButton").click(function(){
 $(function(){
 
 //    loadChannel();
-    loadTableAjax();
+//    loadTableAjax();
     initExportFunction();
-
+$(".spinners li").removeClass("active");
 
 });
 function initExportFunction(){
