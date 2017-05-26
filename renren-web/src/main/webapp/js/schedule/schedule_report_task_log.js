@@ -29,15 +29,41 @@ function initTableGrid(){
 					}  
 				},		
 				{ label: '查询参数', name: 'params', index: '$PARAMS', width: 80, align: 'right' }, 			
-				{ label: '收件人', name: 'receiveEmal', index: '$RECEIVE_EMAL', width: 80, align: 'right' }, 			
+				{ label: '收件人', name: 'receiveEmal', index: '$RECEIVE_EMAL', width: 100, align: 'right' }, 			
 				{ label: '抄送人', name: 'chaosongEmail', index: '$CHAOSONG_EMAIL', width: 80 , align: 'right'}, 			
-				{ label: '邮件内容', name: 'emailValue', index: '$EMAIL_VALUE', width: 80 , align: 'right'
+				{ label: '邮件内容', name: 'emailValue', index: '$EMAIL_VALUE', width: 100 , align: 'right'
 					,formatter:function(value, options, row){
-						return value;
-//						return '<a href="http://localhost:8080/bi-sys/attach-temp/a.txt">a.txt</a>';
+						var html = '';
+						if(value){
+							var index = value.indexOf('temp');
+							var endIndex = value.indexOf('png');
+							if(endIndex > 0){
+								var fileName = value.substring(index+5, endIndex+3);
+								var picHtml = '<a href="../temp/'+fileName+'" download="'+fileName+'" style="text-decoration:underline;color: black"><font color="black" style="font-size: 12px;font-weight: normal">'+fileName+'</font></a>';
+								html += picHtml;
+							}
+							
+							var index2 = value.indexOf('attach-temp');
+							var endIndex2 = value.indexOf('xlsx');
+							if(endIndex2 > 0){
+								var fileName2 = value.substring(index2+12, endIndex2+4);
+								var excelHtml = '<a href="../attach-temp/'+fileName2+'" download="'+fileName2+'" style="text-decoration:underline;color: black"><font color="black" style="font-size: 12px;font-weight: normal">'+fileName2+'</font></a>';
+								
+								if(html.length > 0){
+									html += '<br/>' + excelHtml;
+								}else{
+									html += excelHtml;
+								}
+								
+							}
+					
+							return html;
+						}
+						
+						return '';
 					}  
 				},		
-				{ label: '发送邮件结束时间', name: 'time', index: '$TIME', width: 80 , align: 'right'}, 			
+				{ label: '发送邮件结束时间', name: 'time', index: '$TIME', width: 90 , align: 'right'}, 			
 				{ label: '备注', name: 'desc', index: '$DESC', width: 80, align: 'right' }			
 	        ],
 			viewrecords: true,

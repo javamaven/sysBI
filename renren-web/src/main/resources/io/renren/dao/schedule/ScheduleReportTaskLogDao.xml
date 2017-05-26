@@ -37,6 +37,10 @@
 	
  	<select id="queryTotal" resultType="int">
 		select count(*) from schedule_report_task_log 
+		where 1=1
+		<if test="taskId != null and taskId.trim() != '' ">
+			and TASK_ID = #{taskId}
+		</if>
 	</select>
 	 
 	<insert id="save" parameterType="io.renren.entity.schedule.ScheduleReportTaskLogEntity">

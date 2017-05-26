@@ -103,6 +103,7 @@ public class ChannelAllReportJob implements Job {
 			mailUtil.sendEmailWithAttachAndImg(imgPaths, "自动推送，请勿回复", title, taskEntity.getReceiveEmailList(),
 					taskEntity.getChaosongEmailList(), attachFilePath);
 			logVo.setSendResult("success");
+			logVo.setEmailValue(attachFilePath + " ;" + fileName);
 		} catch (Exception e) {
 			logVo.setSendResult("fail");
 			logVo.setDesc(JobUtil.getStackTrace(e));
