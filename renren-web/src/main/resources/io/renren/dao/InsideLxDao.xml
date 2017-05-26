@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.InsideLxDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.InsideLxEntity" id="InsideLxMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="lxName" column="LX_NAME"/>
+        <result property="laxDep" column="LAX_DEP"/>
+        <result property="lxZmonth" column="LX_ZMONTH"/>
+        <result property="lxUserCou" column="LX_USER_COU"/>
+        <result property="lxUserTg" column="LX_USER_TG"/>
+        <result property="lxUserPw" column="LX_USER_PW"/>
+        <result property="reach" column="REACH"/>
+        <result property="lxDs" column="LX_DS"/>
+        <result property="jf" column="JF"/>
+        <result property="jfpw" column="JFPW"/>
+    </resultMap>
+
+
+	<select id="queryList" resultType="io.renren.entity.InsideLxEntity">
+
+        DROP TABLE IF EXISTS dm_report_inside_lx_01;
+        CREATE TEMPORARY TABLE dm_report_inside_lx_01 AS
+        select
+        STAT_PERIOD,
+        LX_NAME,
+        LAX_DEP,
+        IFNULL(LX_USER_COU,0)AS LX_USER_COU ,
+        IFNULL(LX_USER_TG,0)AS LX_USER_TG,
+        IFNULL(REACH,0) AS REACH,
+        IFNULL(LX_DS,0)AS LX_DS,
+        IFNULL(JF,0)AS JF,
+        IFNULL(LX_USER_PW,0) AS lxUserPw,
+        IFNULL(JFPW,0) AS JFPW
+        from dm_report_inside_lx
+        where 1=1
+        <if test="STAT_PERIOD != null and STAT_PERIOD.trim() != ''">
+            AND STAT_PERIOD = #{STAT_PERIOD}
+        </if>
+        ;
+        select *
+        from dm_report_inside_lx_01
+        ORDER BY LAX_DEP
+	</select>
+
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dm_report_inside_lx 
+	</select>
+
+    <select id="queryExport" resultType="io.renren.entity.InsideLxEntity">
+        select *
+        from dm_report_inside_lx_01
+        ORDER BY LAX_DEP
+
+    </select>
+
+</mapper>

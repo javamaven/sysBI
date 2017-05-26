@@ -105,7 +105,8 @@ function loadTable(columnsData,tableData){
 
 function getParams(){
 	var params = {
-        	'statPeriod': $("#reg_begindate").val(),
+        	'reg_begindate': $("#reg_begindate").val(),
+        	'reg_enddate': $("#reg_enddate").val(),
 
 	};
 	return params;

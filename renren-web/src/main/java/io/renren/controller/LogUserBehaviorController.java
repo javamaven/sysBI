@@ -43,6 +43,16 @@ public class LogUserBehaviorController {
 	@RequiresPermissions("logUserBehavior:list")
 	public R list(@RequestBody Map<String, Object> params){
 
+		String start_action_time = params.get("start_action_time") + "";
+		if (StringUtils.isNotEmpty(start_action_time)) {
+			params.put("start_action_time", start_action_time + " 00:00:00");
+		}
+		String end_action_time = params.get("end_action_time") + "";
+		if (StringUtils.isNotEmpty(end_action_time)) {
+			params.put("end_action_time", end_action_time + " 23:59:59");
+		}
+
+
 		//查询列表数据
 		Query query = new Query(params);
 		//查询列表数据

@@ -99,7 +99,9 @@ th {
 			</table>
 				<a class="btn btn-primary" @click="reload" id="query_cond"><i class="fa fa-search"></i>&nbsp;查询</a>
 				<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+				#if($shiro.hasPermission("schedulereporttask:addtask"))
 				<button class="btn btn-primary" data-toggle="modal" onclick="openTaskWin();" data-target="#schedule_add_task">添加定时任务</button>
+				#end
 		</div>
 		<div style="text-align: right;">
 	    	<table id="jqGrid"></table>

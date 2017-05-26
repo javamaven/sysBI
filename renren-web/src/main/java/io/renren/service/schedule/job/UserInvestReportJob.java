@@ -81,6 +81,7 @@ public class UserInvestReportJob implements Job {
 			mailUtil.sendWithAttach(title + "-每日报表", "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
 					taskEntity.getChaosongEmailList(), attachFilePath);
 			logVo.setSendResult("success");
+			logVo.setEmailValue(attachFilePath);
 		} catch (Exception e) {
 			logVo.setSendResult("fail");
 			logVo.setDesc(JobUtil.getStackTrace(e));

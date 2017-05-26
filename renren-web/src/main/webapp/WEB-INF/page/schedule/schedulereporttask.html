@@ -35,8 +35,9 @@ th {
 					#end
 				</td>
 			</tr>
-			
+			#if($shiro.hasPermission("schedulereporttasklog:list"))
 			<a class="btn btn-danger" style="float:right;" href="schedule_report_task_log.html">日志列表</a>
+			#end
 		</table>
 	    <table id="jqGrid"></table>
 	    <div id="jqGridPager"></div>

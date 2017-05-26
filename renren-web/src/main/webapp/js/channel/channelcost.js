@@ -49,6 +49,35 @@ function tableHeight() {
 	return $(window).height();
 }
 
+
+function queryTotalInfo(stataDay){
+	var params = getParams();
+	 $.ajax({
+	        type: "POST",
+	        url: "../channelcost/totalList",
+	        async: true,
+	        data: JSON.stringify(params),
+	        contentType: "application/json;charset=utf-8",
+	        success : function(retData) {
+	        	var data = retData.data;
+	        	$("#register_user_num").html(data.registerUserNum);
+	        	$("#invest_user_num").html(data.investUserNum);
+	        	$("#first_invest_rate").html(data.firstInvestRate);
+	        	$("#total_invest_amount").html(formatNumber(data.totalInvestAmount, 2));
+	        	$("#first_invest_amount").html(formatNumber(data.firstInvestAmount, 2));
+	        	$("#cre_invest_amount").html(formatNumber(data.changeInvestAmount, 2));
+	        	$("#multi_invest_user_num").html(data.multiInvestUserNum);
+	        	$("#multi_invest_amount").html(formatNumber(data.multiInvestAmount, 2));
+	        	$("#multi_invest_rate").html(formatNumber(data.multiInvestRate, 2));
+	        }
+	     });
+
+}
+
+
+
+
+
 // 查询条件
 var pageInfo = {
         page  : 1,
@@ -212,6 +241,8 @@ $("#searchButton").click(function(){
         $(".spinners li").addClass("active");
     // 查询条件
 
+
+
    pageInfo = {
               page  : 1,
               limit : 10,
@@ -220,6 +251,8 @@ $("#searchButton").click(function(){
               reg_enddate:document.getElementById("reg_enddate").value.replace(/-/g,"")
           };
     //加载数据
+
+
     loadTableAjax();
 
 });
@@ -228,7 +261,7 @@ $(function(){
 
     loadChannel();
     loadTableAjax();
-
+//    queryTotalInfo();
 $('#btn_exports').click(function(){
     window.open("../channel/partExport","_blank",'height=400,width=400,top=100,left=200,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no');
 });

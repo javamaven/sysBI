@@ -33,7 +33,7 @@ public class JobUtil {
 	public String buildAttachFile(JSONArray dataArray, String excelTitile, String fileName,
 			Map<String, String> fieldMap) throws IOException {
 		String path = this.getClass().getResource("/").getPath();
-		  String CurrentClassFilePath = JobUtil.class.getResource("").getPath();  
+//		String CurrentClassFilePath = JobUtil.class.getResource("").getPath();  
 		if(path.endsWith("classes")){
 			path = path.replace("classes", "");
 		}
@@ -46,7 +46,7 @@ public class JobUtil {
 		
 		File dir = new File(path + "/attach-temp");
 		String time = sdf.format(new Date());
-		String filePath = path + "/attach-temp" + File.separator + fileName + "-" + time + ".xlsx";
+		String filePath = path + "/attach-temp" + File.separator + time + ".xlsx";
 		File file = new File(filePath);
 		FileOutputStream outputStream = null;
 		try {
