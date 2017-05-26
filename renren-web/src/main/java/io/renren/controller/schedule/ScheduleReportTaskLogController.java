@@ -36,7 +36,7 @@ public class ScheduleReportTaskLogController {
 	 */
 	@ResponseBody
 	@RequestMapping("/list")
-	@RequiresPermissions("schedulereporttask:list")
+	@RequiresPermissions("schedulereporttasklog:list")
 	// public R list(Integer page, Integer limit){
 	public R list(@RequestParam Map<String, Object> params) {
 
@@ -56,7 +56,7 @@ public class ScheduleReportTaskLogController {
 	 */
 	@ResponseBody
 	@RequestMapping("/info/{id}")
-	@RequiresPermissions("schedulereporttask:info")
+	@RequiresPermissions("schedulereporttasklog:list")
 	public R info(@PathVariable("id") Integer id) {
 		ScheduleReportTaskLogEntity scheduleReportTaskLog = scheduleReportTaskLogService.queryObject(id);
 
@@ -68,7 +68,7 @@ public class ScheduleReportTaskLogController {
 	 */
 	@ResponseBody
 	@RequestMapping("/save")
-	@RequiresPermissions("schedulereporttask:save")
+	@RequiresPermissions("schedulereporttasklog:list")
 	public R save(@RequestBody ScheduleReportTaskLogEntity scheduleReportTaskLog) {
 		scheduleReportTaskLogService.save(scheduleReportTaskLog);
 
@@ -80,7 +80,7 @@ public class ScheduleReportTaskLogController {
 	 */
 	@ResponseBody
 	@RequestMapping("/update")
-	@RequiresPermissions("schedulereporttask:update")
+	@RequiresPermissions("schedulereporttasklog:list")
 	public R update(@RequestBody ScheduleReportTaskLogEntity scheduleReportTaskLog) {
 		scheduleReportTaskLogService.update(scheduleReportTaskLog);
 
@@ -92,7 +92,7 @@ public class ScheduleReportTaskLogController {
 	 */
 	@ResponseBody
 	@RequestMapping("/delete")
-	@RequiresPermissions("schedulereporttask:delete")
+	@RequiresPermissions("schedulereporttasklog:list")
 	public R delete(@RequestBody Integer[] ids) {
 		scheduleReportTaskLogService.deleteBatch(ids);
 
