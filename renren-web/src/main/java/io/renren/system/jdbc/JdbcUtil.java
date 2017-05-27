@@ -47,7 +47,7 @@ public class JdbcUtil {
 	public void returnConnection() {
 		if("oracle".equals(this.dbType)){
 			factory.returnOracleConnection(connection);
-		}else if("msyql".equals(this.dbType)){
+		}else if("mysql".equals(this.dbType)){
 			factory.returnMysqlConnection(connection);
 		}
 	}

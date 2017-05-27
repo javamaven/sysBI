@@ -27,14 +27,20 @@ public class MainController {
 	 * @throws SQLException
 	 */
 	@RequestMapping(value = "/queryRegisterUserNum")
-	public R queryRegisterUserNum() throws SQLException {
-		long l1 = System.currentTimeMillis();
-		JdbcUtil util = new JdbcUtil(dataSourceFactory, "oracle");
-		List<Map<String, Object>> list = util.query("select  COUNT(1) as  register_user  from  diyou_users");
-		Map<String, Object> map = list.get(0);
-		int register_user = Integer.parseInt(map.get("REGISTER_USER") + "");
-		long l2 = System.currentTimeMillis();
-		System.err.println("+++++++++queryRegisterUserNum,耗时：" + (l2 - l1));
+	public R queryRegisterUserNum()  {
+		int register_user = 0;
+		try {
+			long l1 = System.currentTimeMillis();
+			JdbcUtil util = new JdbcUtil(dataSourceFactory, "oracle");
+			List<Map<String, Object>> list = util.query("select  COUNT(1) as  register_user  from  diyou_users");
+			Map<String, Object> map = list.get(0);
+			register_user = Integer.parseInt(map.get("REGISTER_USER") + "");
+			long l2 = System.currentTimeMillis();
+			System.err.println("+++++++++queryRegisterUserNum,耗时：" + (l2 - l1));
+		} catch (Exception e) {
+			dataSourceFactory.reInitConnectionPoll();
+			e.printStackTrace();
+		}
 		return R.ok().put("register_user", register_user);
 	}
 	
@@ -68,14 +74,20 @@ public class MainController {
 	 * @return
 	 * @throws SQLException
 	 */
-	private double queryPutongTotalInvestAmount() throws SQLException{
-		long l1 = System.currentTimeMillis();
-		JdbcUtil util = new JdbcUtil(dataSourceFactory, "oracle");
-		List<Map<String, Object>> list = util.query(pt_total_amount);
-		Map<String, Object> map = list.get(0);
-		double total_amount = Double.parseDouble(map.get("TOTAL_AMOUNT") + "");
-		long l2 = System.currentTimeMillis();
-		System.err.println("+++++++++普通标交易总额："+total_amount+",耗时：" + (l2 - l1));
+	private double queryPutongTotalInvestAmount(){
+		double total_amount = 0;
+		try {
+			long l1 = System.currentTimeMillis();
+			JdbcUtil util = new JdbcUtil(dataSourceFactory, "oracle");
+			List<Map<String, Object>> list = util.query(pt_total_amount);
+			Map<String, Object> map = list.get(0);
+			total_amount = Double.parseDouble(map.get("TOTAL_AMOUNT") + "");
+			long l2 = System.currentTimeMillis();
+			System.err.println("+++++++++普通标交易总额："+total_amount+",耗时：" + (l2 - l1));
+		} catch (Exception e) {
+			dataSourceFactory.reInitConnectionPoll();
+			e.printStackTrace();
+		} 
 		return total_amount;
 	}
 	
@@ -169,16 +181,26 @@ public class MainController {
 	 * @throws SQLException
 	 */
 	@RequestMapping(value = "/queryTotalInvestAmount")
-	public R queryTotalInvestAmount() throws SQLException {
+	public R queryTotalInvestAmount() {
 		double total_amount = 0;
 		long l1 = System.currentTimeMillis();
-		total_amount += queryPutongTotalInvestAmount();
-		total_amount += queryChangeTotalInvestAmount();
-		total_amount += queryDdzTotalInvestAmount();
-		total_amount += queryCgTotalInvestAmount();
+		try {
+			total_amount += queryPutongTotalInvestAmount();
+			total_amount += queryChangeTotalInvestAmount();
+			total_amount += queryDdzTotalInvestAmount();
+			total_amount += queryCgTotalInvestAmount();
+		} catch (Exception e) {
+			dataSourceFactory.reInitConnectionPoll();
+			e.printStackTrace();
+		} 
 		long l2 = System.currentTimeMillis();
 		numberFormat.setGroupingUsed(false);  
 		System.err.println("+++++++++平台投资总额:"+numberFormat.format(total_amount)+",耗时：" + (l2 - l1));
+		
+//		System.err.println("++++++++++mysql连接池情况++++++++++++++");
+//		dataSourceFactory.printMysqlConnectionPoll();
+//		System.err.println("++++++++++oracle连接池情况++++++++++++++");
+//		dataSourceFactory.printOracleConnectionPoll();
 		return R.ok().put("total_amount", numberFormat.format(total_amount));
 	}
 }
