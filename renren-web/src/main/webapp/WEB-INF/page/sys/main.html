@@ -24,9 +24,9 @@
 <!-- 数字翻牌 触发用到 -->
 <div style="display: none;">
     <input id="typesomething"></input>
-    <a class="btn btn-primary" id="showme" onclick="showNum()">查询</a>
+    <a class="btn btn-primary" id="showme">查询</a>
     <input id="typesomething_2"></input>
-    <a class="btn btn-primary" id="showme_2" onclick="showNum()">查询</a>
+    <a class="btn btn-primary" id="showme_2">查询</a>
 </div>
 
 <div>
@@ -64,13 +64,12 @@
     <!-- 滚动列表 -->
     <div style="position:absolute; left:2.5%;top:76%;color:#FFF;background:#323c48;border-radius:10px 10px 10px 10px;" class="col-md-4">
         <div class="col-xs-12">
-            <ul class="demo2">
-                <li class="news-item">位于 广州市的小袋投资了 <span style="color:yellow; font-family:'楷体'; font-weight:bold;">￥6000元</span> 在上海市</li>
-                <li class="news-item">位于 佛山市的小袋投资了 <span style="color:yellow; font-family:'楷体'; font-weight:bold;">￥7000元</span> 在广州市</li>
-                <li class="news-item">位于 北京市的小袋投资了 <span style="color:yellow; font-family:'楷体'; font-weight:bold;">￥8000元</span> 在杭州市</li>
-                <li class="news-item">位于 厦门市的小袋投资了 <span style="color:yellow; font-family:'楷体'; font-weight:bold;">￥9000元</span> 在桂林市</li>
-                <li class="news-item">位于 长沙市的小袋投资了 <span style="color:yellow; font-family:'楷体'; font-weight:bold;">￥10000元</span> 在上海市</li>
-                <li class="news-item">位于 武汉市的小袋投资了 <span style="color:yellow; font-family:'楷体'; font-weight:bold;">￥16000元</span> 在杭州市</li>
+            <ul id="listPage" class="demo2">
+                <li class="news-item">.</li>
+                <li class="news-item">.</li>
+                <li class="news-item">.</li>
+                <li class="news-item">.</li>
+                <li class="news-item">.</li>
             </ul>
         </div>
     </div>
@@ -78,7 +77,69 @@
 
 <script type="text/javascript">
 
-	// odoo.default({ el:'.js-odoo',value:'3,218,123,000' });
+    function getTotalInvest(){
+     $.ajax({
+        type: "POST",
+        url: "../main/queryTotalInvestAmount",
+        //data: JSON.stringify(pageInfo),
+        contentType: "application/json;charset=utf-8",
+        success : function(msg) {
+                console.log(msg);
+                document.getElementById("typesomething").value=msg.total_amount;
+                $("#showme").click();
+            }
+        });
+    };
+
+    function getTotalUserNum(){
+     $.ajax({
+        type: "POST",
+        url: "../main/queryRegisterUserNum",
+        //data: JSON.stringify(pageInfo),
+        contentType: "application/json;charset=utf-8",
+        success : function(msg) {
+                console.log(msg);
+                document.getElementById("typesomething_2").value=msg.register_user;
+                $("#showme_2").click();
+            }
+        });
+    };
+
+
+
+	var arr = ['海门','招远','舟山','盐城','赤峰','青岛','乳山','金昌','泉州','莱西','日照','胶南','南通','拉萨','云浮','梅州','文登',
+	'上海','威海','承德','厦门','汕尾','潮州','丹东','太仓','曲靖','烟台','福州','即墨','抚顺','玉溪','阳泉','莱州','湖州',
+	'汕头','昆山','宁波','湛江','揭阳','荣成','常熟','东莞','河源','淮安','泰州','南宁','营口','惠州','江阴','蓬莱','韶关'];
+
+	var index = Math.floor((Math.random()*arr.length));
+
+	var strLi = '位于 '+arr[Math.floor((Math.random()*arr.length))] +' 的小袋投资了 ￥' +Number((Math.random()*100000).toFixed(2))+ '元 在 ' +arr[Math.floor((Math.random()*arr.length))]
+
+	function delStr(){
+		$('#listPage').find('li').each(function(){
+			if($(this).css("display")=="none"){
+				$(this).remove();
+			}
+		});
+	}
+
+	function addElementLi(obj) {
+　　　　var ul = document.getElementById(obj);
+　　　　//添加 li
+　　　　var li = document.createElement("li");
+　　　　//设置 li 属性，如 id
+　　　　// li.setAttribute("id", "newli");
+		li.setAttribute("class", "news-item");
+　　　　li.innerHTML = '位于 '+arr[Math.floor((Math.random()*arr.length))] +'市 的小袋投资了 ￥<span style="color:yellow; font-family:"楷体"; font-weight:bold;">' +Number((Math.random()*100000).toFixed(2))+ '元</span> 在 ' +arr[Math.floor((Math.random()*arr.length))] +'市';
+　　　　ul.appendChild(li);
+　　}
+
+	function buildLi(){
+		for(var i = 0 ; i<=10;i++)
+		{
+			addElementLi('listPage');
+		}
+	}
 
 
 	function formatNumber(num, precision, separator) {
@@ -99,22 +160,17 @@
 
 
 	$(function () {
-		showNum();
-		$("#showme").click();
-		$("#showme_2").click();
-		setInterval('$("#showme").click()', 5000);
-		setInterval('$("#showme_2").click()', 16000);
+
+        getTotalInvest();
+        getTotalUserNum();
+		buildLi();
+		setInterval('buildLi()', 10000);
+		setInterval('delStr()', 10000);
+		setInterval('getTotalInvest()', 30000);
+		setInterval('getTotalUserNum()', 30000);
+
+
 	});
-	var num = 2299732102231;
-	var perNum = 2029385;
-	function showNum(){
-		document.getElementById("typesomething").value=num;
-		document.getElementById("typesomething_2").value=perNum;
-		num +=rdData();
-		perNum +=randomData();
-	}
-
-
 
 	function show_num(n) {
 		var it = $(".t_num i");
