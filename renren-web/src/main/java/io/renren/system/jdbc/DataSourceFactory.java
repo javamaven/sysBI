@@ -4,6 +4,9 @@ import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.Iterator;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
 /**
  * 本地数据源
@@ -30,13 +33,16 @@ public class DataSourceFactory implements Serializable {
 	private int oracleInitSize;
 	private int oracleMaxSize;
 
-	private Connection[] mysqlConnections;// 保存数据库连接
-	private String[] mysqlConnStatus;// 已连可用Y 已连不可用N 未连接X
+	// private Connection[] mysqlConnections;// 保存数据库连接
+	// private String[] mysqlConnStatus;// 已连可用Y 已连不可用N 未连接X
+
+	private BlockingQueue<Connection> mysqlConnectQueue;
+
+	// private Connection[] oracleConnections;// 保存数据库连接
+	// private String[] oracleConnStatus;// 已连可用Y 已连不可用N 未连接X
 	// private Date[] lastQueryTime;// 时间戳
 
-	private Connection[] oracleConnections;// 保存数据库连接
-	private String[] oracleConnStatus;// 已连可用Y 已连不可用N 未连接X
-	// private Date[] lastQueryTime;// 时间戳
+	private BlockingQueue<Connection> oracleConnectQueue;
 
 	public DataSourceFactory() {
 
@@ -50,55 +56,48 @@ public class DataSourceFactory implements Serializable {
 		initOracleConnectPool();
 	}
 
+	public void printMysqlConnectionPoll() {
+		Iterator<Connection> iterator = mysqlConnectQueue.iterator();
+		while (iterator.hasNext()) {
+			System.err.println("++++++++++++++mysql-状态：" + iterator.next());
+		}
+	}
+
+	public void printOracleConnectionPoll() {
+		Iterator<Connection> iterator = oracleConnectQueue.iterator();
+		while (iterator.hasNext()) {
+			System.err.println("++++++++++++++oracle-状态：" + iterator.next());
+		}
+	}
+
 	public synchronized Connection getMysqlConnection() {
-		for (int i = 0; i < this.mysqlConnStatus.length; i++) {
-			String status = this.mysqlConnStatus[i];
-			if ("Y".equals(status)) {
-				this.mysqlConnStatus[i] = "N";
-				Connection conn = mysqlConnections[i];
-				if (conn != null) {
-					return conn;
-				} 
-			}
+		try {
+			return mysqlConnectQueue.take();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
 
 	public synchronized void returnMysqlConnection(Connection connection) {
-		for (int i = 0; i < this.mysqlConnStatus.length; i++) {
-			String status = this.mysqlConnStatus[i];
-			if (!"Y".equals(status)) {
-				this.mysqlConnStatus[i] = "Y";
-				this.mysqlConnections[i] = connection;
-			}
-		}
+		mysqlConnectQueue.offer(connection);
 	}
 
 	public synchronized Connection getOracleConnection() {
-		for (int i = 0; i < this.oracleConnStatus.length; i++) {
-			String status = this.oracleConnStatus[i];
-			if ("Y".equals(status)) {
-				this.oracleConnStatus[i] = "N";
-				return oracleConnections[i];
-			}
+		try {
+			return oracleConnectQueue.take();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
 		return null;
 	}
 
 	public synchronized void returnOracleConnection(Connection connection) {
-		for (int i = 0; i < this.oracleConnStatus.length; i++) {
-			String status = this.oracleConnStatus[i];
-			if (!"Y".equals(status)) {
-				this.oracleConnStatus[i] = "Y";
-				this.oracleConnections[i] = connection;
-			}
-		}
+		oracleConnectQueue.offer(connection);
 	}
 
 	private void initOracleConnectPool() {
-		oracleConnections = new Connection[this.oracleInitSize];
-		oracleConnStatus = new String[this.oracleInitSize];
-
+		oracleConnectQueue = new ArrayBlockingQueue<Connection>(this.oracleInitSize);
 		System.err.println("+++++++++初始化oracle连接池+++++++++++++++++");
 		if (oracleInitSize < 1) {
 			System.out.println("请正确设置连接池oracle个数");
@@ -112,8 +111,7 @@ public class DataSourceFactory implements Serializable {
 			}
 			for (int i = 0; i < this.oracleInitSize; i++) {
 				try {
-					this.oracleConnections[i] = createOracleConnection();
-					this.oracleConnStatus[i] = "Y";
+					oracleConnectQueue.add(createOracleConnection());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -132,8 +130,7 @@ public class DataSourceFactory implements Serializable {
 	}
 
 	private void initMysqlConnectPool() {
-		mysqlConnections = new Connection[this.mysqlInitSize];
-		mysqlConnStatus = new String[this.mysqlInitSize];
+		mysqlConnectQueue = new ArrayBlockingQueue<Connection>(this.mysqlInitSize);
 		System.err.println("+++++++++初始化mysql连接池+++++++++++++++++");
 		if (mysqlInitSize < 1) {
 			System.out.println("请正确设置mysql连接池个数");
@@ -147,8 +144,7 @@ public class DataSourceFactory implements Serializable {
 			}
 			for (int i = 0; i < this.mysqlInitSize; i++) {
 				try {
-					this.mysqlConnections[i] = createMysqlConnection();
-					this.mysqlConnStatus[i] = "Y";
+					mysqlConnectQueue.add(createMysqlConnection());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -165,26 +161,37 @@ public class DataSourceFactory implements Serializable {
 		}
 		return null;
 	}
+	
+	/**
+	 * 将连接全部释放掉，重新生成连接池
+	 */
+	public void reInitConnectionPoll(){
+		try {
+			close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		init();
+	}
 
 	public void close() {
 		System.err.println("+++++++++close+++++++++++++++++");
-		for (int i = 0; i < oracleConnections.length; i++) {
-			if (oracleConnections[i] != null) {
-				try {
-					oracleConnections[i].close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+		Iterator<Connection> iterator_ora = oracleConnectQueue.iterator();
+		while (iterator_ora.hasNext()) {
+			try {
+				iterator_ora.next().close();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 		}
 
-		for (int i = 0; i < mysqlConnections.length; i++) {
-			if (mysqlConnections[i] != null) {
-				try {
-					mysqlConnections[i].close();
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
+		Iterator<Connection> iterator = mysqlConnectQueue.iterator();
+		while (iterator.hasNext()) {
+			try {
+				iterator.next().close();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 		}
 	}
