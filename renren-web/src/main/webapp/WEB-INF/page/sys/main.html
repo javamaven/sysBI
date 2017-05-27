@@ -77,6 +77,34 @@
 
 <script type="text/javascript">
 
+  function queryInvestInfo(){
+      $.ajax({
+         type: "POST",
+//          async: false,
+         url: "../main/queryInvestInfo",
+         //data: JSON.stringify(pageInfo),
+         contentType: "application/json;charset=utf-8",
+         success : function(msg) {
+           addElementLiList('listPage', msg.data);
+
+//            initMap(msg.dituData);
+         }
+      });
+  };
+
+   function addElementLiList(obj, investDataList) {
+　　　    var ul = document.getElementById(obj);
+　　　    for (var i = 0; i < investDataList.length; i++) {
+　　　      var investData = investDataList[i];
+  　　　    var li = document.createElement("li");
+      li.setAttribute("class", "news-item");
+      li.innerHTML = '位于 ' + investData.CITY +'市 的小袋投资了 ￥<span style="color:yellow; font-family:"楷体"; font-weight:bold;">' + investData.TENDER_CAPITAL + '元</span> 在 ' + investData.TO_CITY +'市';　　　
+  　    ul.appendChild(li);
+    }
+　　  }
+
+
+
     function getTotalInvest(){
      $.ajax({
         type: "POST",
@@ -159,18 +187,22 @@
 	}
 
 
-	$(function () {
 
+ var investDataList = [];
+  $(function () {
         getTotalInvest();
         getTotalUserNum();
-		buildLi();
-		setInterval('buildLi()', 10000);
-		setInterval('delStr()', 10000);
-		setInterval('getTotalInvest()', 30000);
-		setInterval('getTotalUserNum()', 30000);
+        queryInvestInfo();
 
-
-	});
+//     buildLi();
+    setInterval('queryInvestInfo()', 1*60*60*1000);
+//     setInterval('queryInvestInfo()', 1*60*1000);
+//     setInterval('buildLi()', 1000);
+    setInterval('delStr()', 10000);
+    setInterval('getTotalInvest()', 30000);
+    setInterval('getTotalUserNum()', 30000);
+//     initMap();
+  });
 
 	function show_num(n) {
 		var it = $(".t_num i");
