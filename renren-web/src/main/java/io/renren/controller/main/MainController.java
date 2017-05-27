@@ -2,6 +2,10 @@ package io.renren.controller.main;
 
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -9,8 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.alibaba.druid.pool.DruidDataSource;
+
 import io.renren.system.jdbc.DataSourceFactory;
+import io.renren.system.jdbc.JdbcHelper;
 import io.renren.system.jdbc.JdbcUtil;
+import io.renren.util.DateUtil;
 import io.renren.utils.R;
 
 @RestController
@@ -19,6 +27,92 @@ public class MainController {
 
 	@Autowired
 	private DataSourceFactory dataSourceFactory;
+	
+	@Autowired
+	private DruidDataSource dataSource;
+	
+	String invest_info_sql = 
+			"SELECT " +
+			"	* " +
+			"FROM " +
+			"	dm_report_internal_display " +
+			"where 1=1 " +
+			"and addtime >= ? " +
+			"and addtime <= ? " +
+			"order by addtime asc ";
+	
+	/**
+	 * 平台投资情况滚动
+	 * @return
+	 * @throws ParseException
+	 * @throws SQLException
+	 */
+	@RequestMapping(value = "/queryInvestInfo")
+	public R queryInvestInfo()  {
+		List<Map<String,Object>> dataList = null;
+		List<List<Map<String,Object>>> dituData = new ArrayList<List<Map<String,Object>>>();
+		
+		List<Map<String,Object>> data = new ArrayList<Map<String,Object>>();
+		long l1 = System.currentTimeMillis();
+		System.err.println("++++++++time+++++++++++" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+		try {
+			JdbcHelper jdbcHelper = new JdbcHelper(dataSource);
+			String startTime = getStartTime();
+			String endTime = getEndTime();
+			dataList = jdbcHelper.query(invest_info_sql, startTime, endTime);
+//			for (int i = 0; i < dataList.size(); i++) {
+//				Map<String, Object> map = dataList.get(i);
+//				map.put("TENDER_CAPITAL", i);
+//				newList.add(map);
+//				if(i == 10){
+//					break;
+//				}
+//			}
+			List<Map<String,Object>> list;
+			for (int i = 0; i < dataList.size(); i++) {
+				list = new ArrayList<Map<String,Object>>();
+				Map<String,Object> city = new HashMap<String,Object>();
+				Map<String,Object> to_city = new HashMap<String,Object>();
+				Map<String, Object> map = dataList.get(i);
+				String CITY = map.get("CITY") + "";
+				String TO_CITY = map.get("TO_CITY") + "";
+				String TENDER_CAPITAL = map.get("TENDER_CAPITAL") + "";
+				city.put("name", CITY);
+				to_city.put("name", TO_CITY);
+				to_city.put("value", 5);
+//				to_city.put("money", TENDER_CAPITAL);
+				list.add(city);
+				list.add(to_city);
+				dituData.add(list);
+				data.add(to_city);
+			}
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		long l2 = System.currentTimeMillis();
+		System.err.println("+++++++++平台投资情况滚动,耗时：" + (l2 - l1));
+		Map<String,Object> ret = new HashMap<String,Object>();
+		ret.put("data", dataList);
+		ret.put("dituData", dituData);
+		ret.put("maopao_data", data);
+		return R.ok().put("data", dataList).put("dituData", dituData).put("maopao_data", data);
+//		return ret;
+	}
+	
+	
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH");
+	private String getEndTime() {
+		String currDate = sdf.format(new Date());
+		String currDayBefore = DateUtil.getCurrDayBefore(currDate, 2, "yyyy-MM-dd HH");
+		return currDayBefore + ":59:59";
+	}
+
+	private String getStartTime() {
+		String currDate = sdf.format(new Date());
+		String currDayBefore = DateUtil.getCurrDayBefore(currDate, 2, "yyyy-MM-dd HH");
+		return currDayBefore + ":00:00";
+	}
 
 	/**
 	 * 平台注册人数
