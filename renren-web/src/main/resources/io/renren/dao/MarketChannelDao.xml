@@ -96,6 +96,7 @@
             AND CO.CHANNEL_HEAD = #{channelHead}
         </if>
         GROUP BY
+        IFNULL(CO.STAT_PERIOD,''),
         IFNULL(CO.CHANNEL_HEAD,''),
         IFNULL(CO.TYPE,''),
         IFNULL(CO.CHANNEL_NAME,'')

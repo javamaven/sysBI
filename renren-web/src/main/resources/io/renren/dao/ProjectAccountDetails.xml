@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.DmReportFinRepaymentdetailDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.DmReportFinRepaymentdetailEntity" id="dmReportFinRepaymentdetailMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="sourcecaseno" column="SOURCECASENO"/>
+        <result property="customername" column="CUSTOMERNAME"/>
+        <result property="payformoney" column="PAYFORMONEY"/>
+        <result property="payformoneyout" column="PAYFORMONEYOUT"/>
+        <result property="planrepaydate" column="PLANREPAYDATE"/>
+        <result property="realredate" column="REALREDATE"/>
+        <result property="remain" column="REMAIN"/>
+        <result property="reinterest" column="REINTEREST"/>
+        <result property="rebackmain" column="REBACKMAIN"/>
+        <result property="rebackinterest" column="REBACKINTEREST"/>
+        <result property="reamercedmoney" column="REAMERCEDMONEY"/>
+        <result property="reamercedmoney3" column="REAMERCEDMONEY3"/>
+        <result property="realgetmoneydate" column="REALGETMONEYDATE"/>
+        <result property="reindex" column="REINDEX"/>
+        <result property="totpmts" column="TOTPMTS"/>
+        <result property="rebackservice" column="REBACKSERVICE"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.DmReportFinRepaymentdetailEntity">
+		select * from dm_report_fin_repaymentdetail where STAT_PERIOD = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.DmReportFinRepaymentdetailEntity">
+		select * from dm_report_fin_repaymentdetail
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by STAT_PERIOD desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dm_report_fin_repaymentdetail 
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.DmReportFinRepaymentdetailEntity">
+		insert into dm_report_fin_repaymentdetail
+		(
+			`STAT_PERIOD`, 
+			`SOURCECASENO`, 
+			`CUSTOMERNAME`, 
+			`PAYFORMONEY`, 
+			`PAYFORMONEYOUT`, 
+			`PLANREPAYDATE`, 
+			`REALREDATE`, 
+			`REMAIN`, 
+			`REINTEREST`, 
+			`REBACKMAIN`, 
+			`REBACKINTEREST`, 
+			`REAMERCEDMONEY`, 
+			`REAMERCEDMONEY3`, 
+			`REALGETMONEYDATE`, 
+			`REINDEX`, 
+			`TOTPMTS`, 
+			`REBACKSERVICE`
+		)
+		values
+		(
+			#{statPeriod}, 
+			#{sourcecaseno}, 
+			#{customername}, 
+			#{payformoney}, 
+			#{payformoneyout}, 
+			#{planrepaydate}, 
+			#{realredate}, 
+			#{remain}, 
+			#{reinterest}, 
+			#{rebackmain}, 
+			#{rebackinterest}, 
+			#{reamercedmoney}, 
+			#{reamercedmoney3}, 
+			#{realgetmoneydate}, 
+			#{reindex}, 
+			#{totpmts}, 
+			#{rebackservice}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.DmReportFinRepaymentdetailEntity">
+		update dm_report_fin_repaymentdetail 
+		<set>
+			<if test="sourcecaseno != null">`SOURCECASENO` = #{sourcecaseno}, </if>
+			<if test="customername != null">`CUSTOMERNAME` = #{customername}, </if>
+			<if test="payformoney != null">`PAYFORMONEY` = #{payformoney}, </if>
+			<if test="payformoneyout != null">`PAYFORMONEYOUT` = #{payformoneyout}, </if>
+			<if test="planrepaydate != null">`PLANREPAYDATE` = #{planrepaydate}, </if>
+			<if test="realredate != null">`REALREDATE` = #{realredate}, </if>
+			<if test="remain != null">`REMAIN` = #{remain}, </if>
+			<if test="reinterest != null">`REINTEREST` = #{reinterest}, </if>
+			<if test="rebackmain != null">`REBACKMAIN` = #{rebackmain}, </if>
+			<if test="rebackinterest != null">`REBACKINTEREST` = #{rebackinterest}, </if>
+			<if test="reamercedmoney != null">`REAMERCEDMONEY` = #{reamercedmoney}, </if>
+			<if test="reamercedmoney3 != null">`REAMERCEDMONEY3` = #{reamercedmoney3}, </if>
+			<if test="realgetmoneydate != null">`REALGETMONEYDATE` = #{realgetmoneydate}, </if>
+			<if test="reindex != null">`REINDEX` = #{reindex}, </if>
+			<if test="totpmts != null">`TOTPMTS` = #{totpmts}, </if>
+			<if test="rebackservice != null">`REBACKSERVICE` = #{rebackservice}</if>
+		</set>
+		where STAT_PERIOD = #{statPeriod}
+	</update>
+	
+	<delete id="delete">
+		delete from dm_report_fin_repaymentdetail where STAT_PERIOD = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from dm_report_fin_repaymentdetail where STAT_PERIOD in 
+		<foreach item="statPeriod" collection="array" open="(" separator="," close=")">
+			#{statPeriod}
+		</foreach>
+	</delete>
+
+</mapper>
