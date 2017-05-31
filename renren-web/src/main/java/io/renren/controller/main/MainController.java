@@ -186,6 +186,7 @@ public class MainController {
 		date = DateUtil.getCurrDayBefore(date, days, "yyyy-MM-dd HH:mm");
 		return date + ":00";
 	}
+	
 	private String getEndMinuteTime() {
 		String date = sdf_day.format(new Date());
 		int days = 1;
