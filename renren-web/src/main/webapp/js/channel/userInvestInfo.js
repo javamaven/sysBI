@@ -274,7 +274,7 @@ function getParams(){
         	'withProType': $("#with_pro_type").val(),
         	'channelId': $("#channel_id").val(),
         	'investStartTime': $("#start_invest_time").val(),
-        	'investEndTime': $("#start_invest_time").val(),
+        	'investEndTime': $("#end_invest_time").val(),
         	'channelName': getChannelName().toString().length == "0" ? null : getChannelName()
 	};
 	return params;

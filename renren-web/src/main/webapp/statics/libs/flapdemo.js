@@ -151,6 +151,18 @@ $(document).ready(function(){
 
     new FlapDemo('input.display', '#typesomething', '#showme');
 	new FlapDemo('input.display_persion', '#typesomething_2', '#showme_2');
-
 });
+
+function openMainWin(){
+	var url = 'http://localhost:8080/bi_sys/sys/main.html';
+	var tmp = window.open(url, "about:blank","fullscreen=yes,location=no,toolbar=no,menubar=no,scrollbars=no,resizable=yes,status=no")
+//	tmp.moveTo(0,0);
+//	tmp.resizeTo(screen.width,screen.height);
+//	tmp.focus();
+//	tmp.location='http://localhost:8080/bi_sys/sys/main.html';
+//	
+//	var width = screen.width;
+//	var height = screen.height;
+//	window.showModalDialog(url , null ,"dialogWidth="+width+";dialogHeight=" + height + ";status:no;help:no;");
+}
 
