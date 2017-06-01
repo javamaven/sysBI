@@ -6,9 +6,11 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,11 +44,34 @@ public class MainController {
 	@RequestMapping(value = "/queryInvestInfo")
 	public R queryInvestInfo()  {
 		List<Map<String,Object>> dataList = null;
+		Set<String> citySet = new HashSet<String>();
 		try {
 			JdbcHelper jdbcHelper = new JdbcHelper(dataSource);
 			String startTime = getStartTime();
 			String endTime = getEndTime();
 			dataList = jdbcHelper.query(SqlConstants.invest_info_sql, startTime, endTime);
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, Object> map = dataList.get(i);
+				String CITY = map.get("CITY") + "";
+				String TO_CITY = map.get("TO_CITY") + "";
+				if(StringUtils.isNotEmpty(CITY) && !"null".equals(CITY)){
+					citySet.add(CITY);
+				}
+				if(StringUtils.isNotEmpty(TO_CITY) && !"null".equals(TO_CITY)){
+					citySet.add(TO_CITY);
+				}
+			}
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, Object> map = dataList.get(i);
+				String CITY = map.get("CITY") + "";
+				String TO_CITY = map.get("TO_CITY") + "";
+				if(StringUtils.isEmpty(CITY) || "null".equals(CITY)){
+					map.put("CITY", citySet.toArray(new String[1])[new Random().nextInt(citySet.size())]);
+				}
+				if(StringUtils.isEmpty(TO_CITY) || "null".equals(TO_CITY)){
+					map.put("TO_CITY", citySet.toArray(new String[1])[new Random().nextInt(citySet.size())]);
+				}
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -66,16 +91,28 @@ public class MainController {
 		List<Map<String,Object>> dataList = null;
 		Map<String, Object> all = new HashMap<String,Object>();
 		List<Map<String, Object>> mark_point_data = null;
+		Set<String> citySet = new HashSet<String>();
 		try {
 			JdbcHelper jdbcHelper = new JdbcHelper(dataSource);
 			String startTime = getStartMinuteTime();
 			String endTime = getEndMinuteTime();
 			dataList = jdbcHelper.query(SqlConstants.query_ditu_sql, startTime, endTime);
-			all.putAll(genData(dataList, "1", 0, 4));
-			all.putAll(genData(dataList, "2", 4, 8));
-			all.putAll(genData(dataList, "3", 8, 12));
-			all.putAll(genData(dataList, "4", 12, 16));
-			all.putAll(genData(dataList, "5", 16, 20));
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, Object> map = dataList.get(i);
+				String CITY = map.get("CITY") + "";
+				String TO_CITY = map.get("TO_CITY") + "";
+				if(StringUtils.isNotEmpty(CITY) && !"null".equals(CITY)){
+					citySet.add(CITY);
+				}
+				if(StringUtils.isNotEmpty(TO_CITY) && !"null".equals(TO_CITY)){
+					citySet.add(TO_CITY);
+				}
+			}
+			all.putAll(genData(citySet, dataList, "1", 0, 4));
+			all.putAll(genData(citySet, dataList, "2", 4, 8));
+			all.putAll(genData(citySet, dataList, "3", 8, 12));
+			all.putAll(genData(citySet, dataList, "4", 12, 16));
+			all.putAll(genData(citySet, dataList, "5", 16, 20));
 			
 			mark_point_data = jdbcHelper.query(SqlConstants.query_register_charge_data, startTime, endTime);
 		} catch (Exception e) {
@@ -86,7 +123,7 @@ public class MainController {
 	}
 	
 	
-	private Map<String,Object> genData(List<Map<String, Object>> dataList, String index, int start, int end) {
+	private Map<String,Object> genData(Set<String> citySet, List<Map<String, Object>> dataList, String index, int start, int end) {
 		List<List<Map<String,Object>>> dituData = new ArrayList<List<Map<String,Object>>>();
 		
 		List<Map<String,Object>> data = new ArrayList<Map<String,Object>>();
@@ -99,6 +136,12 @@ public class MainController {
 			Map<String, Object> map = dataList.get(i);
 			String CITY = map.get("CITY") + "";
 			String TO_CITY = map.get("TO_CITY") + "";
+			if(StringUtils.isEmpty(CITY) || "null".equals(CITY)){
+				CITY = citySet.toArray(new String[1])[new Random().nextInt(citySet.size())];
+			}
+			if(StringUtils.isEmpty(TO_CITY) || "null".equals(TO_CITY)){
+				TO_CITY = citySet.toArray(new String[1])[new Random().nextInt(citySet.size())];
+			}
 			if(i < start){
 				continue;
 			}
@@ -106,17 +149,15 @@ public class MainController {
 				continue;
 			}
 			String TENDER_CAPITAL = map.get("TENDER_CAPITAL") + "";
-//			String INVEST_TIMES = map.get("INVEST_TIMES") + "";
+			String INVEST_TIMES = map.get("INVEST_TIMES") + "";
 			
 			city.put("name", CITY);
 			to_city.put("name", TO_CITY);
-			to_city.put("value", Double.parseDouble(TENDER_CAPITAL));
-			to_city.put("value", new Random().nextInt(100));
-//			to_city.put("value", Integer.parseInt(INVEST_TIMES));
+			to_city.put("value", Double.parseDouble(TENDER_CAPITAL) + "-" + INVEST_TIMES);
+//			to_city.put("value", Double.parseDouble(TENDER_CAPITAL) + "-" + new Random().nextInt(60));
 			to_city_map2.put("name", TO_CITY);
-			to_city_map2.put("value", Double.parseDouble(TENDER_CAPITAL));
-			to_city_map2.put("value", new Random().nextInt(100));
-//			to_city_map2.put("value", Integer.parseInt(INVEST_TIMES));
+			to_city_map2.put("value", Double.parseDouble(TENDER_CAPITAL) + "-" + INVEST_TIMES);
+//			to_city_map2.put("value", Double.parseDouble(TENDER_CAPITAL) + "-" + new Random().nextInt(60));
 			list.add(city);
 			list.add(to_city);
 			dituData.add(list);

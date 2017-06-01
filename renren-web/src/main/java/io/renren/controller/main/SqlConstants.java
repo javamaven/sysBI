@@ -101,8 +101,8 @@ public class SqlConstants {
 			"AND type=1 " +
 			"AND addtime >= ? " +
 			"AND addtime <= ? " +
-			"and CITY in ("+city_string+") " +
-			"and TO_CITY in ("+city_string+") " +
+			"and (CITY in ("+city_string+") or CITY is null ) " +
+			"and (TO_CITY in ("+city_string+") or CITY is null ) " +
 			"GROUP BY " +
 			"	city, " +
 			"	TO_CITY " +
@@ -119,6 +119,6 @@ public class SqlConstants {
 			"AND addtime >= ? " +
 			"AND addtime <= ? " +
 			"and type in (2,3) " +
-			"and CITY in ("+city_string+") " +
+			"and ( CITY in ("+city_string+") or CITY is null ) " +
 			"order by addtime  limit 200 ";
 }
