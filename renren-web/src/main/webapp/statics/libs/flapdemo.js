@@ -154,15 +154,14 @@ $(document).ready(function(){
 });
 
 function openMainWin(){
-	var url = 'http://localhost:8080/bi_sys/sys/main.html';
+	var width1 = document.documentElement.clientWidth;
+	var width2 = window.screen.width;
+	if(width1 == width2){
+		window.close();
+		return;
+	}
+	var url = '../sys/main.html';
 	var tmp = window.open(url, "about:blank","fullscreen=yes,location=no,toolbar=no,menubar=no,scrollbars=no,resizable=yes,status=no")
-//	tmp.moveTo(0,0);
-//	tmp.resizeTo(screen.width,screen.height);
-//	tmp.focus();
-//	tmp.location='http://localhost:8080/bi_sys/sys/main.html';
-//	
-//	var width = screen.width;
-//	var height = screen.height;
-//	window.showModalDialog(url , null ,"dialogWidth="+width+";dialogHeight=" + height + ";status:no;help:no;");
+//	window.showModalDialog(url , null ,"dialogWidth="+document.documentElement.clientWidth+";dialogHeight=" + document.documentElement.clientHeight + ";status=no;help=no;scroll=no;resizable=no;location=no;toolbar=no");
 }
 

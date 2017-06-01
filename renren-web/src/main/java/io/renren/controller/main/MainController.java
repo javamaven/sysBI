@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -41,54 +42,17 @@ public class MainController {
 	@RequestMapping(value = "/queryInvestInfo")
 	public R queryInvestInfo()  {
 		List<Map<String,Object>> dataList = null;
-		List<List<Map<String,Object>>> dituData = new ArrayList<List<Map<String,Object>>>();
-		String[] arr = {"吉首 ","亳州" ,"亳州" ,"七台河" ,"孝感" ,"阜阳"};
-		List<Map<String,Object>> data = new ArrayList<Map<String,Object>>();
 		try {
 			JdbcHelper jdbcHelper = new JdbcHelper(dataSource);
 			String startTime = getStartTime();
 			String endTime = getEndTime();
 			dataList = jdbcHelper.query(SqlConstants.invest_info_sql, startTime, endTime);
-			List<Map<String,Object>> list;
-			for (int i = 0; i < dataList.size(); i++) {
-				list = new ArrayList<Map<String,Object>>();
-				Map<String,Object> city = new HashMap<String,Object>();
-				Map<String,Object> to_city = new HashMap<String,Object>();
-				Map<String,Object> to_city_map2 = new HashMap<String,Object>();
-				Map<String, Object> map = dataList.get(i);
-				
-				String CITY = map.get("CITY") + "";
-				String TO_CITY = map.get("TO_CITY") + "";
-				boolean flag = false;
-				for (int j = 0; j < arr.length; j++) {
-					if(CITY.equals(arr[j]) || TO_CITY.equals(arr[j])){
-						flag = true;
-						break;
-					}
-				}
-				if(flag){
-					continue;
-				}
-				city.put("name", CITY);
-				to_city.put("name", TO_CITY);
-				to_city.put("value", 5);
-				
-				to_city_map2.put("name", TO_CITY);
-				to_city_map2.put("value", new Random().nextInt(200));
-				list.add(city);
-				list.add(to_city);
-				dituData.add(list);
-				data.add(to_city_map2);
-			}
-			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		Map<String,Object> ret = new HashMap<String,Object>();
 		ret.put("data", dataList);
-		ret.put("dituData", dituData);
-		ret.put("maopao_data", data);
-		return R.ok().put("data", dataList).put("dituData", dituData).put("maopao_data", data);
+		return R.ok().put("data", dataList);
 	}
 	
 	
@@ -101,6 +65,7 @@ public class MainController {
 	public R queryDituData()  {
 		List<Map<String,Object>> dataList = null;
 		Map<String, Object> all = new HashMap<String,Object>();
+		List<Map<String, Object>> mark_point_data = null;
 		try {
 			JdbcHelper jdbcHelper = new JdbcHelper(dataSource);
 			String startTime = getStartMinuteTime();
@@ -111,10 +76,13 @@ public class MainController {
 			all.putAll(genData(dataList, "3", 8, 12));
 			all.putAll(genData(dataList, "4", 12, 16));
 			all.putAll(genData(dataList, "5", 16, 20));
+			
+			mark_point_data = jdbcHelper.query(SqlConstants.query_register_charge_data, startTime, endTime);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return R.ok().put("data", all);
+		
+		return R.ok().put("data", all).put("mark_point_data", mark_point_data);
 	}
 	
 	
@@ -163,18 +131,20 @@ public class MainController {
 	
 	
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH");
-	private String getEndTime() {
-		String currDate = sdf.format(new Date());
-		String currDayBefore = DateUtil.getCurrDayBefore(currDate, 5, "yyyy-MM-dd HH");
-//		currDayBefore = DateUtil.getHourBefore(currDayBefore, -3, "yyyy-MM-dd HH");
-		return currDayBefore + ":59:59";
-	}
-
 	private String getStartTime() {
 		String currDate = sdf.format(new Date());
-		String currDayBefore = DateUtil.getCurrDayBefore(currDate, 5, "yyyy-MM-dd HH");
-//		currDayBefore = DateUtil.getHourBefore(currDayBefore, 1, "yyyy-MM-dd HH");
+		int days = 1;
+//		days = 2;//测试
+		String currDayBefore = DateUtil.getCurrDayBefore(currDate, days, "yyyy-MM-dd HH");
 		return currDayBefore + ":00:00";
+	}
+	
+	private String getEndTime() {
+		String currDate = sdf.format(new Date());
+		int days = 1;
+//		days = 2;//测试
+		String currDayBefore = DateUtil.getCurrDayBefore(currDate, days, "yyyy-MM-dd HH");
+		return currDayBefore + ":59:59";
 	}
 	
 	SimpleDateFormat sdf_day = new SimpleDateFormat("yyyy-MM-dd");
@@ -182,7 +152,7 @@ public class MainController {
 	private String getStartMinuteTime() {
 		String date = sdf_m.format(new Date());
 		int days = 1;
-//		days = 5;//测试
+//		days = 2;//测试
 		date = DateUtil.getCurrDayBefore(date, days, "yyyy-MM-dd HH:mm");
 		return date + ":00";
 	}
@@ -190,7 +160,7 @@ public class MainController {
 	private String getEndMinuteTime() {
 		String date = sdf_day.format(new Date());
 		int days = 1;
-//		days = 5;//测试
+//		days = 2;//测试
 		date = DateUtil.getCurrDayBefore(date, days, "yyyy-MM-dd");
 		return date + " 23:59:59";
 	}
@@ -259,7 +229,11 @@ public class MainController {
 		JdbcUtil util = new JdbcUtil(dataSourceFactory, "oracle");
 		List<Map<String, Object>> list = util.query(SqlConstants.ddz_total_amount);
 		Map<String, Object> map = list.get(0);
-		double total_amount = Double.parseDouble(map.get("DDZ_TOTAL_AMOUNT") + "");
+		String money = map.get("DDZ_TOTAL_AMOUNT") + "";
+		if(StringUtils.isEmpty(money) || "null".equals(money)){
+			money = "0";
+		}
+		double total_amount = Double.parseDouble(money);
 		return total_amount;
 	}
 	
