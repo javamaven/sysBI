@@ -8,6 +8,7 @@
 //	7: market_channel
 //	8: channel_all
 //	9: user_behavior
+//	10: licai_plan
 //};
 function addTask(taskType) {
 	var task_name = $("#task_name").val();
@@ -74,10 +75,11 @@ function addTask(taskType) {
 		'isRunning' : 0,
 		'chaosong_email' : $("#chaosong_email").val()
 	};
-	
+	var url = "../schedule/schedulereporttask/addTask"; 
+	url = "../../schedule/schedulereporttask/addTask"; 
 	$.ajax({
 		type : "POST",
-		url : "../schedule/schedulereporttask/addTask",
+		url : url,
 		data : JSON.stringify(task),
 		contentType : "application/json;charset=utf-8",
 		success : function(msg) {

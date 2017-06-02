@@ -43,12 +43,13 @@ function loadMainChart(){
 
     $.ajax({
         type: "POST",
-//        url: "../queryChannelAllChart",
-//        url : "../../../channel/channelAll/mainChart",
+//        url: ctx + '/main/queryRegisterUserNum',
         url: ctx + '/common/create-chart-image/queryChannelAllChart',
         data: JSON.stringify(pageInfo),
         contentType: "application/json;charset=utf-8",
         success : function(msg) {
+        	console.inf(msg)
+        	
         	msg = eval("("+msg+")");
         	
         	if(msg.channelNameList){

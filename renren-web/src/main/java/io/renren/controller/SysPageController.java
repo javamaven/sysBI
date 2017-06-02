@@ -38,6 +38,11 @@ public class SysPageController {
 	public String labelTag(@PathVariable("url") String url){
 		return "labelTag/" + url + ".html";
 	}
+	
+	@RequestMapping("yunying/dayreport/{url}.html")
+	public String yunying(@PathVariable("url") String url){
+		return "yunying/dayreport/" + url + ".html";
+	}
 
 	@RequestMapping("property/{url}.html")
 	public String property(@PathVariable("url") String url){

@@ -151,6 +151,17 @@ $(document).ready(function(){
 
     new FlapDemo('input.display', '#typesomething', '#showme');
 	new FlapDemo('input.display_persion', '#typesomething_2', '#showme_2');
-
 });
+
+function openMainWin(){
+	var width1 = document.documentElement.clientWidth;
+	var width2 = window.screen.width;
+	if(width1 == width2){
+		window.close();
+		return;
+	}
+	var url = '../sys/main.html';
+	var tmp = window.open(url, "about:blank","fullscreen=yes,location=no,toolbar=no,menubar=no,scrollbars=no,resizable=yes,status=no")
+//	window.showModalDialog(url , null ,"dialogWidth="+document.documentElement.clientWidth+";dialogHeight=" + document.documentElement.clientHeight + ";status=no;help=no;scroll=no;resizable=no;location=no;toolbar=no");
+}
 

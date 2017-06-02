@@ -122,6 +122,32 @@ public class DateUtil {
 		}
 
 	}
+	
+	public static String getMinutesBefore(String date, int minutes, String sdf) {
+		if(StringUtils.isEmpty(date)){
+			return "";
+		}
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat dateSdf2 = null;
+
+		try {
+			if (sdf != null && sdf.length() > 0) {
+				dateSdf2 = new SimpleDateFormat(sdf);
+				cal.setTime(dateSdf2.parse(date));
+			} else {
+				cal.setTime(dateSdf.parse(date));
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		cal.add(Calendar.MINUTE, -minutes);
+		if (sdf != null && sdf.length() > 0) {
+			return dateSdf2.format(cal.getTime());
+		} else {
+			return dateSdf.format(cal.getTime());
+		}
+
+	}
 
 	/**
 	 * 返回指定日期10天前日期
