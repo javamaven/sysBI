@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+#parse("sys/header.html")
+<style type="text/css">
+th.ui-th-column div {
+	white-space: normal !important;
+	height: auto !important;
+	padding: 0px;
+}
+</style>
+
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<table border="0">
+				<tr>
+					<td>
+						<label>日期：</label>
+					</td>
+					<td>
+						<input type="text" class="form-control form_datetime_2" id="stat_period"  placeholder="请选择日期"/>
+					</td>
+					<td>
+						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
+						<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+						#if($shiro.hasPermission("schedulereporttask:addtask"))
+						<button class="btn btn-primary" data-toggle="modal" onclick="openTaskWin();" data-target="#schedule_add_task">添加定时任务</button>
+						#end
+					</td>
+					
+				</tr>
+			</table>
+			
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+											<div class="form-group">
+			   	<div class="col-sm-2 control-label">销售总额</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportFcialPlanDaily.tenderAmount" placeholder="销售总额"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">15天期限</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportFcialPlanDaily.fifteenDay" placeholder="15天期限"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">1个月期限</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportFcialPlanDaily.oneMonths" placeholder="1个月期限"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">2个月期限</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportFcialPlanDaily.twoMonths" placeholder="2个月期限"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">3个月期限</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportFcialPlanDaily.threeMonths" placeholder="3个月期限"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">6个月期限</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportFcialPlanDaily.sixMonths" placeholder="6个月期限"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">9个月期限</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportFcialPlanDaily.nineMonths" placeholder="9个月期限"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">12个月期限</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportFcialPlanDaily.twelveMonths" placeholder="12个月期限"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">其他期限</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportFcialPlanDaily.otherMonths" placeholder="其他期限"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">明日锁定期结束（到期）计划金额</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportFcialPlanDaily.lockEndMoney" placeholder="明日锁定期结束（到期）计划金额"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">截止今日结束锁定期计划累计金额</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportFcialPlanDaily.lockEndMoneyHistory" placeholder="截止今日结束锁定期计划累计金额"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">昨日结束锁定期人数</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportFcialPlanDaily.lockEndP" placeholder="昨日结束锁定期人数"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">截止今日结束锁定期累计总人数</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportFcialPlanDaily.lockEndPHistory" placeholder="截止今日结束锁定期累计总人数"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">理财计划申请退出金额</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportFcialPlanDaily.quitMoney" placeholder="理财计划申请退出金额"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">理财计划申请退出人数</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportFcialPlanDaily.quitP" placeholder="理财计划申请退出人数"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">理财计划成功退出金额</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportFcialPlanDaily.quitSMoney" placeholder="理财计划成功退出金额"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">理财计划成功退出人数</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="dmReportFcialPlanDaily.quitSP" placeholder="理财计划成功退出人数"/>
+			    </div>
+			</div>
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+	
+	
+	
+	
+			<!-- 模态框（Modal） -->
+	<div class="modal fade" id="schedule_add_task" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel"><font style="font-weight: bold;">创建定时任务</font></h4>
+				</div>
+				<div class="modal-body" style="height: 320px;">
+				
+					<form class="form-horizontal" style="padding-top: 0px;line-height: -1.2">
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="firstname" class="col-sm-2 control-label">任务名称：</label>
+							<div class="col-sm-10">
+								<input type="text" class="inputClass"  height="29" id="task_name" placeholder="任务名称">
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">发送方式：</label>
+							<div class="col-sm-10">
+								<select id="send_type" class="inputClassMin">
+								  <option value ="email">邮件</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">调度频率：</label>
+							<div class="col-sm-10">
+								<input type="text" class="inputClass"  height="29" id="send_rate" value="* * * * * ?" placeholder="* * * * * ?">
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">收件人：</label>
+							<div class="col-sm-10">
+								<input type="text" class="inputClass"  height="29" id="receive_email" placeholder="收件人,多个收件人用逗号隔开">
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">抄送人：</label>
+							<div class="col-sm-10">
+								<input type="text" class="inputClass" height="29"  id="chaosong_email" placeholder="抄送人,多个抄送人用逗号隔开">
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">日期偏移：</label>
+							<div class="col-sm-10">
+								<input type="text" class="inputClassMin" id="date_offset_num" value="1" placeholder="1"/>
+								<select id="date_offset" class="inputClassMin" >
+									<option value ="day" selected="selected">天</option>
+									<option value ="hour">小时</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">查询条件：</label>
+							<div class="col-sm-10">
+								<textarea class="areaClass" disabled="disabled" id="query_params" rows="3"></textarea>
+							</div>
+						</div>
+					</form>
+									
+				
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+					</button>
+					<button type="button" class="btn btn-primary" onclick="addTask(10)">
+						确定
+					</button>
+				</div>
+			</div><!-- /.modal-content -->
+		</div>
+		<!-- /.modal -->
+	</div>
+	
+	
+	
+</div>
+<link rel="stylesheet" href="${rc.contextPath}/js/schedule/taskwin.css"></link>
+<script src="${rc.contextPath}/js/schedule/addtask.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/yunying/dayreport/dmreportfcialplandaily.js?_${date.systemTime}"></script>
+</body>
+</html>

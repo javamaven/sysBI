@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.yunying.dayreport.DmReportFcialPlanDailyDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.yunying.dayreport.DmReportFcialPlanDailyEntity" id="dmReportFcialPlanDailyMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="tenderAmount" column="TENDER_AMOUNT"/>
+        <result property="fifteenDay" column="FIFTEEN_DAY"/>
+        <result property="oneMonths" column="ONE_MONTHS"/>
+        <result property="twoMonths" column="TWO_MONTHS"/>
+        <result property="threeMonths" column="THREE_MONTHS"/>
+        <result property="sixMonths" column="SIX_MONTHS"/>
+        <result property="nineMonths" column="NINE_MONTHS"/>
+        <result property="twelveMonths" column="TWELVE_MONTHS"/>
+        <result property="otherMonths" column="OTHER_MONTHS"/>
+        <result property="lockEndMoney" column="LOCK_END_MONEY"/>
+        <result property="lockEndMoneyHistory" column="LOCK_END_MONEY_HISTORY"/>
+        <result property="lockEndP" column="LOCK_END_P"/>
+        <result property="lockEndPHistory" column="LOCK_END_P_HISTORY"/>
+        <result property="quitMoney" column="QUIT_MONEY"/>
+        <result property="quitP" column="QUIT_P"/>
+        <result property="quitSMoney" column="QUIT_S_MONEY"/>
+        <result property="quitSP" column="QUIT_S_P"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.yunying.dayreport.DmReportFcialPlanDailyEntity">
+		select * from dm_report_fcial_plan_daily where STAT_PERIOD = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.yunying.dayreport.DmReportFcialPlanDailyEntity">
+		select * from dm_report_fcial_plan_daily
+		where 1=1
+		<if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+		</if>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dm_report_fcial_plan_daily 
+		where 1=1
+		<if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+		</if>
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.yunying.dayreport.DmReportFcialPlanDailyEntity">
+		insert into dm_report_fcial_plan_daily
+		(
+			`STAT_PERIOD`, 
+			`TENDER_AMOUNT`, 
+			`FIFTEEN_DAY`, 
+			`ONE_MONTHS`, 
+			`TWO_MONTHS`, 
+			`THREE_MONTHS`, 
+			`SIX_MONTHS`, 
+			`NINE_MONTHS`, 
+			`TWELVE_MONTHS`, 
+			`OTHER_MONTHS`, 
+			`LOCK_END_MONEY`, 
+			`LOCK_END_MONEY_HISTORY`, 
+			`LOCK_END_P`, 
+			`LOCK_END_P_HISTORY`, 
+			`QUIT_MONEY`, 
+			`QUIT_P`, 
+			`QUIT_S_MONEY`, 
+			`QUIT_S_P`
+		)
+		values
+		(
+			#{statPeriod}, 
+			#{tenderAmount}, 
+			#{fifteenDay}, 
+			#{oneMonths}, 
+			#{twoMonths}, 
+			#{threeMonths}, 
+			#{sixMonths}, 
+			#{nineMonths}, 
+			#{twelveMonths}, 
+			#{otherMonths}, 
+			#{lockEndMoney}, 
+			#{lockEndMoneyHistory}, 
+			#{lockEndP}, 
+			#{lockEndPHistory}, 
+			#{quitMoney}, 
+			#{quitP}, 
+			#{quitSMoney}, 
+			#{quitSP}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.yunying.dayreport.DmReportFcialPlanDailyEntity">
+		update dm_report_fcial_plan_daily 
+		<set>
+			<if test="tenderAmount != null">`TENDER_AMOUNT` = #{tenderAmount}, </if>
+			<if test="fifteenDay != null">`FIFTEEN_DAY` = #{fifteenDay}, </if>
+			<if test="oneMonths != null">`ONE_MONTHS` = #{oneMonths}, </if>
+			<if test="twoMonths != null">`TWO_MONTHS` = #{twoMonths}, </if>
+			<if test="threeMonths != null">`THREE_MONTHS` = #{threeMonths}, </if>
+			<if test="sixMonths != null">`SIX_MONTHS` = #{sixMonths}, </if>
+			<if test="nineMonths != null">`NINE_MONTHS` = #{nineMonths}, </if>
+			<if test="twelveMonths != null">`TWELVE_MONTHS` = #{twelveMonths}, </if>
+			<if test="otherMonths != null">`OTHER_MONTHS` = #{otherMonths}, </if>
+			<if test="lockEndMoney != null">`LOCK_END_MONEY` = #{lockEndMoney}, </if>
+			<if test="lockEndMoneyHistory != null">`LOCK_END_MONEY_HISTORY` = #{lockEndMoneyHistory}, </if>
+			<if test="lockEndP != null">`LOCK_END_P` = #{lockEndP}, </if>
+			<if test="lockEndPHistory != null">`LOCK_END_P_HISTORY` = #{lockEndPHistory}, </if>
+			<if test="quitMoney != null">`QUIT_MONEY` = #{quitMoney}, </if>
+			<if test="quitP != null">`QUIT_P` = #{quitP}, </if>
+			<if test="quitSMoney != null">`QUIT_S_MONEY` = #{quitSMoney}, </if>
+			<if test="quitSP != null">`QUIT_S_P` = #{quitSP}</if>
+		</set>
+		where STAT_PERIOD = #{statPeriod}
+	</update>
+	
+	<delete id="delete">
+		delete from dm_report_fcial_plan_daily where STAT_PERIOD = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from dm_report_fcial_plan_daily where STAT_PERIOD in 
+		<foreach item="statPeriod" collection="array" open="(" separator="," close=")">
+			#{statPeriod}
+		</foreach>
+	</delete>
+
+</mapper>
