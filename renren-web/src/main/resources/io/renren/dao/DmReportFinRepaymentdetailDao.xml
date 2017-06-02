@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.DmReportFinRepaymentdetailDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.DmReportFinRepaymentdetailEntity" id="dmReportFinRepaymentdetailMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="sourcecaseno" column="SOURCECASENO"/>
+        <result property="customername" column="CUSTOMERNAME"/>
+        <result property="payformoney" column="PAYFORMONEY"/>
+        <result property="payformoneyout" column="PAYFORMONEYOUT"/>
+        <result property="planrepaydate" column="PLANREPAYDATE"/>
+        <result property="realredate" column="REALREDATE"/>
+        <result property="remain" column="REMAIN"/>
+        <result property="reinterest" column="REINTEREST"/>
+        <result property="rebackmain" column="REBACKMAIN"/>
+        <result property="rebackinterest" column="REBACKINTEREST"/>
+        <result property="reamercedmoney" column="REAMERCEDMONEY"/>
+        <result property="reamercedmoney3" column="REAMERCEDMONEY3"/>
+        <result property="realgetmoneydate" column="REALGETMONEYDATE"/>
+        <result property="reindex" column="REINDEX"/>
+        <result property="totpmts" column="TOTPMTS"/>
+        <result property="rebackservice" column="REBACKSERVICE"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.DmReportFinRepaymentdetailEntity">
+		select * from dm_report_fin_repaymentdetail where STAT_PERIOD = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.DmReportFinRepaymentdetailEntity">
+
+		DROP TABLE IF EXISTS TMP_001;
+		DROP TABLE IF EXISTS TMP_002;
+
+		CREATE TEMPORARY TABLE TMP_001
+		select
+		STAT_PERIOD,
+		SOURCECASENO,
+		CUSTOMERNAME,
+		PAYFORMONEY,
+		PAYFORMONEYOUT,
+		TOTPMTS,
+		REINDEX,
+		PLANREPAYDATE,
+		REALREDATE,
+		REMAIN,
+		REINTEREST,
+		REBACKMAIN,
+		REBACKINTEREST,
+		REAMERCEDMONEY,
+		REAMERCEDMONEY3,
+		REALGETMONEYDATE
+		from dm_report_fin_repaymentdetail
+		where 1=1
+		<if test="STAT_PERIOD != null and STAT_PERIOD.trim() != ''">
+			AND STAT_PERIOD = #{STAT_PERIOD}
+		</if>
+		<if test="SOURCECASENO != null and SOURCECASENO.trim() != ''">
+			AND SOURCECASENO = #{SOURCECASENO}
+		</if>
+		<if test="CUSTOMERNAME != null and CUSTOMERNAME.trim() != ''">
+			AND CUSTOMERNAME = #{CUSTOMERNAME}
+		</if>
+		<if test="PLANREPAYDATE != null and PLANREPAYDATE.trim() != ''">
+			AND PLANREPAYDATE = #{PLANREPAYDATE}
+		</if>
+		<if test="REALREDATE != null and REALREDATE.trim() != ''">
+			AND REALREDATE = #{REALREDATE}
+		</if>
+		;
+		select *
+		from TMP_001
+		ORDER BY REINDEX,CUSTOMERNAME
+
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from TMP_001
+	</select>
+
+	<select id="queryExport" resultType="io.renren.entity.DmReportFinRepaymentdetailEntity">
+
+		select *
+		from  TMP_001
+		ORDER BY REINDEX,CUSTOMERNAME
+		;
+	</select>
+
+</mapper>

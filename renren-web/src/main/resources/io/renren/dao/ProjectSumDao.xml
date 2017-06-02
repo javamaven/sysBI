@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.ProjectSumDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.ProjectSumEntity" id="dmReportFinRepaymentsumMap">
+        <result property="orgsimplename" column="ORGSIMPLENAME"/>
+        <result property="producttype" column="PRODUCTTYPE"/>
+        <result property="subproducttype" column="SUBPRODUCTTYPE"/>
+        <result property="sourcecaseno" column="SOURCECASENO"/>
+        <result property="department" column="DEPARTMENT"/>
+        <result property="developmanagername" column="DEVELOPMANAGERNAME"/>
+        <result property="workername" column="WORKERNAME"/>
+        <result property="customername" column="CUSTOMERNAME"/>
+        <result property="payformoney" column="PAYFORMONEY"/>
+        <result property="payformoneyout" column="PAYFORMONEYOUT"/>
+        <result property="loanyearlimit" column="LOANYEARLIMIT"/>
+        <result property="payforlimittime" column="PAYFORLIMITTIME"/>
+        <result property="giveoutmoneytime" column="GIVEOUTMONEYTIME"/>
+        <result property="willgetmoneydate" column="WILLGETMONEYDATE"/>
+        <result property="loanrate" column="LOANRATE"/>
+        <result property="interestRate" column="INTEREST_RATE"/>
+        <result property="otherRate" column="OTHER_RATE"/>
+        <result property="totalRateAmount" column="TOTAL_RATE_AMOUNT"/>
+        <result property="capitalCost" column="CAPITAL_COST"/>
+        <result property="otherRateAmount" column="OTHER_RATE_AMOUNT"/>
+        <result property="remain" column="REMAIN"/>
+        <result property="reinterest" column="REINTEREST"/>
+        <result property="rebackmain" column="REBACKMAIN"/>
+        <result property="rebackinterest" column="REBACKINTEREST"/>
+        <result property="waitCapital" column="WAIT_CAPITAL"/>
+        <result property="waitInterest" column="WAIT_INTEREST"/>
+        <result property="reamercedmoney3" column="REAMERCEDMONEY3"/>
+        <result property="reamercedmoney" column="REAMERCEDMONEY"/>
+        <result property="type" column="TYPE"/>
+        <result property="capitalSource" column="CAPITAL_SOURCE"/>
+        <result property="realgetmoneydate" column="REALGETMONEYDATE"/>
+        <result property="rebackservice" column="REBACKSERVICE"/>
+        <result property="repaymentWay" column="REPAYMENT_WAY"/>
+        <result property="carNoLocation" column="CAR_NO_LOCATION"/>
+        <result property="capitalDelistCompany" column="CAPITAL_DELIST_COMPANY"/>
+        <result property="exchange1" column="EXCHANGE1"/>
+        <result property="exchange2" column="EXCHANGE2"/>
+        <result property="borrowers" column="BORROWERS"/>
+        <result property="statPeriod" column="STAT_PERIOD"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.ProjectSumEntity">
+		select * from dm_report_fin_repaymentsum where ORGSIMPLENAME = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.ProjectSumEntity">
+        DROP TABLE IF EXISTS TMP_001;
+        DROP TABLE IF EXISTS TMP_002;
+
+        CREATE TEMPORARY TABLE TMP_001
+
+		select * from dm_report_fin_repaymentsum
+        where 1=1
+        <if test="STAT_PERIOD != null and STAT_PERIOD.trim() != ''">
+            AND STAT_PERIOD = #{STAT_PERIOD}
+        </if>
+        <if test="SOURCECASENO != null and SOURCECASENO.trim() != ''">
+            AND SOURCECASENO = #{SOURCECASENO}
+        </if>
+        <if test="CUSTOMERNAME != null and CUSTOMERNAME.trim() != ''">
+            AND CUSTOMERNAME = #{CUSTOMERNAME}
+        </if>
+        <if test="GIVEOUTMONEYTIME != null and GIVEOUTMONEYTIME.trim() != ''">
+            AND GIVEOUTMONEYTIME = #{GIVEOUTMONEYTIME}
+        </if>
+        <if test="WILLGETMONEYDATE != null and WILLGETMONEYDATE.trim() != ''">
+            AND WILLGETMONEYDATE = #{WILLGETMONEYDATE}
+        </if>
+        <if test="ISCOMPLETED != null and ISCOMPLETED.trim() != ''">
+            AND ISCOMPLETED = #{ISCOMPLETED}
+        </if>
+        <if test="ISSTAMP != null and ISSTAMP.trim() != ''">
+            AND ISSTAMP = #{ISSTAMP}
+        </if>
+        ;
+        select *
+        from TMP_001
+        ORDER BY CUSTOMERNAME
+
+    </select>
+
+    <select id="queryExport" resultType="io.renren.entity.ProjectSumEntity">
+
+        select *
+        from  TMP_001
+        ORDER BY CUSTOMERNAME
+        ;
+    </select>
+
+
+
+
+    <select id="queryTotal" resultType="int">
+		select count(*) from dm_report_fin_repaymentsum 
+	</select>
+	 
+
+</mapper>

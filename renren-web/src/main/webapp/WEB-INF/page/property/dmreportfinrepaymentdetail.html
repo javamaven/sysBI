@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>员工拉新统计表</title>
+	#parse("sys/header.html")
+</head>
+<body>
+<div class="content">
+	<div style="padding: 10px 30px;">
+		<!--<div class="panel-body">-->
+
+		<!--<div class="form-group">-->
+		<!--<div class="col-md-3">-->
+		<!--<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>-->
+		<!--</div>-->
+		<!--</div>-->
+		<!--</div>-->
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<i class="fa fa-eye"></i>   查询条件
+			</div>
+			<div class="panel-body">
+				<table border="0">
+					<tr>
+
+						<td><label>业务日期：</label></td>
+						<td>
+							<input type="text" class="form-control form_datetime_2" id="STAT_PERIOD" placeholder="请输入要查询的日期" />
+						</td>
+						<td width="100"></td>
+						<td><label>项目合同编号：</label></td>
+						<td>
+							<input type="text" class="form-control" id="SOURCECASENO" placeholder="请输入要查询的项目合同编号" />
+						</td>
+						<td width="100"></td>
+						<td><label>借款人：</label></td>
+						<td>
+							<input type="text" class="form-control" id="CUSTOMERNAME" placeholder="请输入要查询的借款人" />
+						</td>
+					</tr>
+					<tr height="10"></tr>
+					<tr>
+						<td><label>计划还款日：</label></td>
+						<td>
+							<input type="text" class="form-control form_datetime_2" id="PLANREPAYDATE" placeholder="请输入要查询的计划还款日" />
+						</td>
+						<td width="100"></td>
+						<td><label>实际还款日：</label></td>
+						<td>
+							<input type="text" class="form-control form_datetime_2	" id="REALREDATE" placeholder="请输入要查询的实际还款日" />
+						</td>
+						<td style="padding-left: 30px;">
+							<button type="button" id="searchButton" class="btn btn-primary"><i class="fa fa-search"></i>  查询</button>
+						</td>
+						<td>
+							<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+
+						</td>
+						<td>#if($shiro.hasPermission("schedulereporttask:addtask"))
+							<button class="btn btn-primary" data-toggle="modal" onclick="openTaskWin();" data-target="#schedule_add_task">添加定时任务</button>
+							#end</td>
+					</tr>
+
+				</table>
+
+
+			</div>
+
+		</div>
+
+
+
+		<div class="row">
+			<div class="panel panel-primary" id="showDiv" >
+				<div class="panel-heading">
+					<i class="fa fa-list"></i>
+				</div>
+
+				<div class="panel-body">
+					<!-- 加载表格动画-->
+					<div>
+						<ul class="spinners">
+							<li class="active">
+								<div id="preloader_2">
+									<span></span>
+									<span></span>
+									<span></span>
+									<span></span>
+								</div>
+							</li>
+						</ul>
+					</div>
+					<div class="table-responsive">
+						<table id="reportTable" class="table table-hover">
+
+						</table>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal fade" id="schedule_add_task" tabindex="-1" role="dialog"
+		 aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+							aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel"><font style="font-weight: bold;">创建定时任务</font></h4>
+				</div>
+				<div class="modal-body" style="height: 320px;">
+
+					<form class="form-horizontal" style="padding-top: 0px;line-height: -1.2">
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="firstname" class="col-sm-2 control-label">任务名称：</label>
+							<div class="col-sm-10">
+								<input type="text" class="inputClass"  height="29" id="task_name" placeholder="任务名称">
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">发送方式：</label>
+							<div class="col-sm-10">
+								<select id="send_type" class="inputClassMin">
+									<option value ="email">邮件</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">调度频率：</label>
+							<div class="col-sm-10">
+								<input type="text" class="inputClass"  height="29" id="send_rate" value="* * * * * ?" placeholder="* * * * * ?">
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">收件人：</label>
+							<div class="col-sm-10">
+								<input type="text" class="inputClass"  height="29" id="receive_email" placeholder="收件人,多个收件人用逗号隔开">
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">抄送人：</label>
+							<div class="col-sm-10">
+								<input type="text" class="inputClass" height="29"  id="chaosong_email" placeholder="抄送人,多个抄送人用逗号隔开">
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">日期偏移：</label>
+							<div class="col-sm-10">
+								<input type="text" class="inputClassMin" id="date_offset_num" value="1" placeholder=""/>
+								<select id="date_offset" class="inputClassMin" >
+									<option value ="day" selected="selected">天</option>
+									<option value ="hour">小时</option>
+								</select>
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">查询条件：</label>
+							<div class="col-sm-10">
+								<textarea class="areaClass" disabled="disabled" id="query_params" rows="3"></textarea>
+							</div>
+						</div>
+					</form>
+
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+					</button>
+					<button type="button" class="btn btn-primary" onclick="addTask(7)">
+						确定
+					</button>
+				</div>
+			</div><!-- /.modal-content -->
+		</div>
+		<!-- /.modal -->
+	</div>
+</div>
+<link rel="stylesheet" href="${rc.contextPath}/js/schedule/taskwin.css"></link>
+<script src="${rc.contextPath}/js/schedule/addtask.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/property/dmreportfinrepaymentdetail.js?_${date.systemTime}"></script>
+</body>
+</html>

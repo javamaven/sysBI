@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.PerformanceHisDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.PerformanceHisEntity" id="dmReportPerformLedgerHisMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="developmanagername" column="DEVELOPMANAGERNAME"/>
+        <result property="department" column="DEPARTMENT"/>
+        <result property="expectedPerformance" column="EXPECTED_PERFORMANCE"/>
+        <result property="actualPerformance" column="ACTUAL_PERFORMANCE"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.PerformanceHisEntity">
+		select * from dm_report_perform_ledger_his where STAT_PERIOD = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.PerformanceHisEntity">
+		DROP TABLE IF EXISTS TMP_001;
+
+
+		CREATE TEMPORARY TABLE TMP_001
+		select * from dm_report_perform_ledger_his
+		where 1=1
+		<if test="STAT_PERIOD != null and STAT_PERIOD.trim() != ''">
+			AND STAT_PERIOD = #{STAT_PERIOD}
+		</if>
+		;
+		select *
+		from  TMP_001
+
+
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dm_report_perform_ledger_his 
+	</select>
+
+	<select id="queryExport" resultType="io.renren.entity.PerformanceHisEntity">
+
+		select *
+		from  TMP_001
+
+		;
+	</select>
+
+</mapper>

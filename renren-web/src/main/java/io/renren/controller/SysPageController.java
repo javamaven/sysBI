@@ -39,4 +39,9 @@ public class SysPageController {
 		return "labelTag/" + url + ".html";
 	}
 
+	@RequestMapping("property/{url}.html")
+	public String property(@PathVariable("url") String url){
+		return "property/" + url + ".html";
+	}
+
 }
