@@ -45,11 +45,21 @@ public class MainController {
 	public R queryInvestInfo()  {
 		List<Map<String,Object>> dataList = null;
 		Set<String> citySet = new HashSet<String>();
+		int days = 1;
 		try {
 			JdbcHelper jdbcHelper = new JdbcHelper(dataSource);
-			String startTime = getStartTime();
-			String endTime = getEndTime();
-			dataList = jdbcHelper.query(SqlConstants.invest_info_sql, startTime, endTime);
+			while(true){
+				String startTime = getStartTime(days);
+				String endTime = getEndTime(days);
+				dataList = jdbcHelper.query(SqlConstants.invest_info_sql, startTime, endTime);
+				if(dataList.size() > 0){
+					break;
+				}
+				days++;
+				if(days == 7){
+					break;
+				}
+			}
 			for (int i = 0; i < dataList.size(); i++) {
 				Map<String, Object> map = dataList.get(i);
 				String CITY = map.get("CITY") + "";
@@ -92,11 +102,22 @@ public class MainController {
 		Map<String, Object> all = new HashMap<String,Object>();
 		List<Map<String, Object>> mark_point_data = null;
 		Set<String> citySet = new HashSet<String>();
+		int days = 1;
 		try {
 			JdbcHelper jdbcHelper = new JdbcHelper(dataSource);
-			String startTime = getStartMinuteTime();
-			String endTime = getEndMinuteTime();
-			dataList = jdbcHelper.query(SqlConstants.query_ditu_sql, startTime, endTime);
+			while(true){
+				String startTime = getStartMinuteTime(days);
+				String endTime = getEndMinuteTime(days);
+				dataList = jdbcHelper.query(SqlConstants.query_ditu_sql, startTime, endTime);
+				mark_point_data = jdbcHelper.query(SqlConstants.query_register_charge_data, startTime, endTime);
+				if(dataList.size() > 0){
+					break;
+				}
+				days++;
+				if(days == 7){
+					break;
+				}
+			}
 			for (int i = 0; i < dataList.size(); i++) {
 				Map<String, Object> map = dataList.get(i);
 				String CITY = map.get("CITY") + "";
@@ -114,7 +135,6 @@ public class MainController {
 			all.putAll(genData(citySet, dataList, "4", 12, 16));
 			all.putAll(genData(citySet, dataList, "5", 16, 20));
 			
-			mark_point_data = jdbcHelper.query(SqlConstants.query_register_charge_data, startTime, endTime);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -172,17 +192,17 @@ public class MainController {
 	
 	
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH");
-	private String getStartTime() {
+	private String getStartTime(int days) {
 		String currDate = sdf.format(new Date());
-		int days = 1;
+//		int days = 1;
 //		days = 3;//测试
 		String currDayBefore = DateUtil.getCurrDayBefore(currDate, days, "yyyy-MM-dd HH");
 		return currDayBefore + ":00:00";
 	}
 	
-	private String getEndTime() {
+	private String getEndTime(int days) {
 		String currDate = sdf.format(new Date());
-		int days = 1;
+//		int days = 1;
 //		days = 3;//测试
 		String currDayBefore = DateUtil.getCurrDayBefore(currDate, days, "yyyy-MM-dd HH");
 		return currDayBefore + ":59:59";
@@ -190,17 +210,17 @@ public class MainController {
 	
 	SimpleDateFormat sdf_day = new SimpleDateFormat("yyyy-MM-dd");
 	SimpleDateFormat sdf_m = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-	private String getStartMinuteTime() {
+	private String getStartMinuteTime(int days) {
 		String date = sdf_m.format(new Date());
-		int days = 1;
+//		int days = 1;
 //		days = 3;//测试
 		date = DateUtil.getCurrDayBefore(date, days, "yyyy-MM-dd HH:mm");
 		return date + ":00";
 	}
 	
-	private String getEndMinuteTime() {
+	private String getEndMinuteTime(int days) {
 		String date = sdf_day.format(new Date());
-		int days = 1;
+//		int days = 1;
 //		days = 3;//测试
 		date = DateUtil.getCurrDayBefore(date, days, "yyyy-MM-dd");
 		return date + " 23:59:59";
