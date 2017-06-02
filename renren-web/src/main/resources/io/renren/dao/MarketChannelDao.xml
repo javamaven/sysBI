@@ -34,7 +34,7 @@
 
         CREATE TEMPORARY TABLE TMP_dm_report_channel_data_01
         SELECT
-        MAX(CO.STAT_PERIOD) AS STAT_PERIOD,
+        IFNULL(CO.STAT_PERIOD,'') AS STAT_PERIOD,
         IFNULL(CO.CHANNEL_HEAD,'') AS CHANNEL_HEAD,
         IFNULL(CO.TYPE,'') AS TYPE,
         IFNULL(CO.CHANNEL_NAME,'') AS CHANNEL_NAME,
@@ -96,6 +96,7 @@
             AND CO.CHANNEL_HEAD = #{channelHead}
         </if>
         GROUP BY
+        IFNULL(CO.STAT_PERIOD,''),
         IFNULL(CO.CHANNEL_HEAD,''),
         IFNULL(CO.TYPE,''),
         IFNULL(CO.CHANNEL_NAME,'')
