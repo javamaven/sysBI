@@ -7,7 +7,9 @@ var jobType = {
 	6:'用户投资情况',// USER_INVEST_INFO
 	7:'渠道负责人情况',// market_channel
 	8:'渠道分次投资情况',// market_channel
-	9:'用户行为日志'// user_behavior
+	9:'用户行为日志',// user_behavior
+	10:'每日理财计划基本数据' ,//licai_plan
+	11:'每日基本数据' //every_day_basic_data
 };
 
 $(function () {

@@ -58,5 +58,10 @@ public class Constants {
 		 * 每日理财计划基本数据
 		 */
 		public static final String LICAI_PLAN = "10";
+
+		/**
+		 * 每日基本数据
+		 */
+		public static final String EVERY_DAY_BASIC_DATA_PLAN = "11";
 	}
 }

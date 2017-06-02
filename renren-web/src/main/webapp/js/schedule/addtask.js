@@ -9,6 +9,7 @@
 //	8: channel_all
 //	9: user_behavior
 //	10: licai_plan
+//	11: every_day_basic_data
 //};
 function addTask(taskType) {
 	var task_name = $("#task_name").val();
@@ -76,7 +77,9 @@ function addTask(taskType) {
 		'chaosong_email' : $("#chaosong_email").val()
 	};
 	var url = "../schedule/schedulereporttask/addTask"; 
-	url = "../../schedule/schedulereporttask/addTask"; 
+	if(taskType == 10 || taskType == 11){
+		url = "../../schedule/schedulereporttask/addTask"; 
+	}
 	$.ajax({
 		type : "POST",
 		url : url,

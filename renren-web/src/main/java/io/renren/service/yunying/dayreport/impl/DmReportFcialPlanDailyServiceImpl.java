@@ -56,7 +56,7 @@ public class DmReportFcialPlanDailyServiceImpl implements DmReportFcialPlanDaily
 	@Override
 	public Map<String, String> getExcelFields() {
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
-		headMap.put("statPeriod", "统计日期");
+		headMap.put("statPeriod", "日期");
 		headMap.put("tenderAmount", "销售总额");
 		headMap.put("fifteenDay", "15天期限");
 		headMap.put("oneMonths", "1个月期限");
