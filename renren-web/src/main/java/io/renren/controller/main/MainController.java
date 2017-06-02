@@ -175,7 +175,7 @@ public class MainController {
 	private String getStartTime() {
 		String currDate = sdf.format(new Date());
 		int days = 1;
-//		days = 2;//测试
+//		days = 3;//测试
 		String currDayBefore = DateUtil.getCurrDayBefore(currDate, days, "yyyy-MM-dd HH");
 		return currDayBefore + ":00:00";
 	}
@@ -183,7 +183,7 @@ public class MainController {
 	private String getEndTime() {
 		String currDate = sdf.format(new Date());
 		int days = 1;
-//		days = 2;//测试
+//		days = 3;//测试
 		String currDayBefore = DateUtil.getCurrDayBefore(currDate, days, "yyyy-MM-dd HH");
 		return currDayBefore + ":59:59";
 	}
@@ -193,7 +193,7 @@ public class MainController {
 	private String getStartMinuteTime() {
 		String date = sdf_m.format(new Date());
 		int days = 1;
-//		days = 2;//测试
+//		days = 3;//测试
 		date = DateUtil.getCurrDayBefore(date, days, "yyyy-MM-dd HH:mm");
 		return date + ":00";
 	}
@@ -201,7 +201,7 @@ public class MainController {
 	private String getEndMinuteTime() {
 		String date = sdf_day.format(new Date());
 		int days = 1;
-//		days = 2;//测试
+//		days = 3;//测试
 		date = DateUtil.getCurrDayBefore(date, days, "yyyy-MM-dd");
 		return date + " 23:59:59";
 	}
