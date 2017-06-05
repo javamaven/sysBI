@@ -52,18 +52,24 @@ th {
 			      <input type="text" class="form-control" v-model="scheduleReportTask.taskName" placeholder="任务名称"/>
 			    </div>
 			</div>
-<!-- 			<div class="form-group"> -->
-<!-- 			   	<div class="col-sm-2 control-label">任务类型</div> -->
-<!-- 			   	<div class="col-sm-10"> -->
-<!-- 			      <input type="text" disabled="disabled" class="form-control" v-model="scheduleReportTask.taskType" placeholder="任务类型"/> -->
-<!-- 			    </div> -->
-<!-- 			</div> -->
 			<div class="form-group">
 			   	<div class="col-sm-2 control-label">发送方式</div>
 			   	<div class="col-sm-10">
 			    	<select v-model="scheduleReportTask.sendType" style="height: 30px;width: 100px;">
 						<option selected="selected" value="email">邮件</option>
 					</select>
+			    </div>
+			</div>
+			<div class="form-group">
+			   	<div class="col-sm-2 control-label">收件人</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="scheduleReportTask.receiveEmail" placeholder="收件人,多个收件人用逗号隔开"/>
+			    </div>
+			</div>
+			<div class="form-group">
+				<div class="col-sm-2 control-label">抄送人</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="scheduleReportTask.chaosongEmail" placeholder="抄送人,多个抄送人用逗号隔开"/>
 			    </div>
 			</div>
 			<div class="form-group">

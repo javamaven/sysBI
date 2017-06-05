@@ -287,27 +287,34 @@ public class ScheduleReportTaskEntity implements Serializable {
 	public String getDescription() {
 		return description;
 	}
+	
 
 	public List<String> getReceiveEmailList() {
+		List<String> arrayList = new ArrayList<String>();
 		if (receiveEmail != null && receiveEmail.contains(",")) {
 			String[] split = receiveEmail.split(",");
-			return Arrays.asList(split);
-		}
-		List<String> arrayList = new ArrayList<String>();
-		if(!StringUtils.isEmpty(receiveEmail)){
-			arrayList.add(receiveEmail);
+			for (int i = 0; i < split.length; i++) {
+				arrayList.add(split[i]);
+			}
+		} else {
+			if (!StringUtils.isEmpty(receiveEmail)) {
+				arrayList.add(receiveEmail);
+			}
 		}
 		return arrayList;
 	}
 
 	public List<String> getChaosongEmailList() {
+		List<String> arrayList = new ArrayList<String>();
 		if (chaosongEmail != null && chaosongEmail.contains(",")) {
 			String[] split = chaosongEmail.split(",");
-			return Arrays.asList(split);
-		}
-		List<String> arrayList = new ArrayList<String>();
-		if(!StringUtils.isEmpty(chaosongEmail)){
-			arrayList.add(chaosongEmail);
+			for (int i = 0; i < split.length; i++) {
+				arrayList.add(split[i]);
+			}
+		} else {
+			if (!StringUtils.isEmpty(chaosongEmail)) {
+				arrayList.add(chaosongEmail);
+			}
 		}
 		return arrayList;
 	}
