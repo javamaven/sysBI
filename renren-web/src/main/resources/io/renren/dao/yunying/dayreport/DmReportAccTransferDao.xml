@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.yunying.dayreport.DmReportAccTransferDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.yunying.dayreport.DmReportAccTransferEntity" id="dmReportAccTransferMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="awaitAuditM" column="AWAIT_AUDIT_M"/>
+        <result property="processingM" column="PROCESSING_M"/>
+        <result property="successfulM" column="SUCCESSFUL_M"/>
+        <result property="failureM" column="FAILURE_M"/>
+        <result property="nthroughM" column="NTHROUGH_M"/>
+        <result property="pCou" column="P_COU"/>
+        <result property="recoverM" column="RECOVER_M"/>
+        <result property="recoverCou" column="RECOVER_COU"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.yunying.dayreport.DmReportAccTransferEntity">
+		select * from dm_report_acc_transfer where STAT_PERIOD = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.yunying.dayreport.DmReportAccTransferEntity">
+		select * from dm_report_acc_transfer
+        where 1=1
+       	<if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+		</if>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dm_report_acc_transfer 
+		where 1=1
+       	<if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+		</if>
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.yunying.dayreport.DmReportAccTransferEntity">
+		insert into dm_report_acc_transfer
+		(
+			`STAT_PERIOD`, 
+			`AWAIT_AUDIT_M`, 
+			`PROCESSING_M`, 
+			`SUCCESSFUL_M`, 
+			`FAILURE_M`, 
+			`NTHROUGH_M`, 
+			`P_COU`, 
+			`RECOVER_M`, 
+			`RECOVER_COU`
+		)
+		values
+		(
+			#{statPeriod}, 
+			#{awaitAuditM}, 
+			#{processingM}, 
+			#{successfulM}, 
+			#{failureM}, 
+			#{nthroughM}, 
+			#{pCou}, 
+			#{recoverM}, 
+			#{recoverCou}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.yunying.dayreport.DmReportAccTransferEntity">
+		update dm_report_acc_transfer 
+		<set>
+			<if test="awaitAuditM != null">`AWAIT_AUDIT_M` = #{awaitAuditM}, </if>
+			<if test="processingM != null">`PROCESSING_M` = #{processingM}, </if>
+			<if test="successfulM != null">`SUCCESSFUL_M` = #{successfulM}, </if>
+			<if test="failureM != null">`FAILURE_M` = #{failureM}, </if>
+			<if test="nthroughM != null">`NTHROUGH_M` = #{nthroughM}, </if>
+			<if test="pCou != null">`P_COU` = #{pCou}, </if>
+			<if test="recoverM != null">`RECOVER_M` = #{recoverM}, </if>
+			<if test="recoverCou != null">`RECOVER_COU` = #{recoverCou}</if>
+		</set>
+		where STAT_PERIOD = #{statPeriod}
+	</update>
+	
+	<delete id="delete">
+		delete from dm_report_acc_transfer where STAT_PERIOD = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from dm_report_acc_transfer where STAT_PERIOD in 
+		<foreach item="statPeriod" collection="array" open="(" separator="," close=")">
+			#{statPeriod}
+		</foreach>
+	</delete>
+
+</mapper>

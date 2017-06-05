@@ -20,8 +20,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
-import io.renren.entity.yunying.dayreport.DmReportBasicDailyEntity;
-import io.renren.service.yunying.dayreport.DmReportBasicDailyService;
+import io.renren.entity.yunying.dayreport.DmReportAccTransferEntity;
+import io.renren.service.yunying.dayreport.DmReportAccTransferService;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
@@ -32,20 +32,20 @@ import io.renren.utils.R;
  * 
  * @author chenshun
  * @email sunlightcs@gmail.com
- * @date 2017-06-02 15:24:09
+ * @date 2017-06-05 09:48:41
  */
 @Controller
-@RequestMapping(value = "/yunying/dmreportbasicdaily")
-public class DmReportBasicDailyController {
+@RequestMapping(value = "/yunying/dmreportacctransfer")
+public class DmReportAccTransferController {
 	@Autowired
-	private DmReportBasicDailyService service;
+	private DmReportAccTransferService service;
 	
 	/**
 	 * 列表
 	 */
 	@ResponseBody
 	@RequestMapping("/list")
-	@RequiresPermissions("dmreportbasicdaily:list")
+	@RequiresPermissions("dmreportacctransfer:list")
 	public R list(Integer page, Integer limit, String statPeriod){
 		Map<String, Object> map = new HashMap<>();
 		map.put("offset", (page - 1) * limit);
@@ -54,30 +54,17 @@ public class DmReportBasicDailyController {
 			map.put("statPeriod", statPeriod.replace("-", ""));
 		}
 		//查询列表数据
-		List<DmReportBasicDailyEntity> dmReportBasicDailyList = service.queryList(map);
+		List<DmReportAccTransferEntity> dmReportAccTransferList = service.queryList(map);
 		int total = service.queryTotal(map);
 		
-		PageUtils pageUtil = new PageUtils(dmReportBasicDailyList, total, limit, page);
+		PageUtils pageUtil = new PageUtils(dmReportAccTransferList, total, limit, page);
 		
 		return R.ok().put("page", pageUtil);
 	}
 	
-	
-	/**
-	 * 信息
-	 */
-	@ResponseBody
-	@RequestMapping("/info/{statPeriod}")
-	@RequiresPermissions("dmreportbasicdaily:info")
-	public R info(@PathVariable("statPeriod") String statPeriod){
-		DmReportBasicDailyEntity dmReportBasicDaily = service.queryObject(statPeriod);
-		
-		return R.ok().put("dmReportBasicDaily", dmReportBasicDaily);
-	}
-	
 	@ResponseBody
 	@RequestMapping("/exportExcel")
-	@RequiresPermissions("dmreportbasicdaily:list")
+	@RequiresPermissions("dmreportacctransfer:list")
 	public void partExport(String params, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String statPeriod = map.get("statPeriod") + "";
@@ -85,17 +72,29 @@ public class DmReportBasicDailyController {
 			map.put("statPeriod", statPeriod.replace("-", ""));
 		}
 		// 查询列表数据
-		List<DmReportBasicDailyEntity> dataList = service.queryList(map);
+		List<DmReportAccTransferEntity> dataList = service.queryList(map);
 		JSONArray va = new JSONArray();
 		for (int i = 0; i < dataList.size(); i++) {
-			DmReportBasicDailyEntity entity = dataList.get(i);
+			DmReportAccTransferEntity entity = dataList.get(i);
 			va.add(entity);
 		}
 		Map<String, String> headMap = service.getExcelFields();
 
-		String title = "每日基本数据";
+		String title = "每日资金迁移数据报告";
 
 		ExcelUtil.downloadExcelFile(title, headMap, va, response);
+	}
+	
+	/**
+	 * 信息
+	 */
+	@ResponseBody
+	@RequestMapping("/info/{statPeriod}")
+	@RequiresPermissions("dmreportacctransfer:info")
+	public R info(@PathVariable("statPeriod") String statPeriod){
+		DmReportAccTransferEntity dmReportAccTransfer = service.queryObject(statPeriod);
+		
+		return R.ok().put("dmReportAccTransfer", dmReportAccTransfer);
 	}
 	
 	/**
@@ -103,9 +102,9 @@ public class DmReportBasicDailyController {
 	 */
 	@ResponseBody
 	@RequestMapping("/save")
-	@RequiresPermissions("dmreportbasicdaily:save")
-	public R save(@RequestBody DmReportBasicDailyEntity dmReportBasicDaily){
-		service.save(dmReportBasicDaily);
+	@RequiresPermissions("dmreportacctransfer:save")
+	public R save(@RequestBody DmReportAccTransferEntity dmReportAccTransfer){
+		service.save(dmReportAccTransfer);
 		
 		return R.ok();
 	}
@@ -115,9 +114,9 @@ public class DmReportBasicDailyController {
 	 */
 	@ResponseBody
 	@RequestMapping("/update")
-	@RequiresPermissions("dmreportbasicdaily:update")
-	public R update(@RequestBody DmReportBasicDailyEntity dmReportBasicDaily){
-		service.update(dmReportBasicDaily);
+	@RequiresPermissions("dmreportacctransfer:update")
+	public R update(@RequestBody DmReportAccTransferEntity dmReportAccTransfer){
+		service.update(dmReportAccTransfer);
 		
 		return R.ok();
 	}
@@ -127,7 +126,7 @@ public class DmReportBasicDailyController {
 	 */
 	@ResponseBody
 	@RequestMapping("/delete")
-	@RequiresPermissions("dmreportbasicdaily:delete")
+	@RequiresPermissions("dmreportacctransfer:delete")
 	public R delete(@RequestBody String[] statPeriods){
 		service.deleteBatch(statPeriods);
 		

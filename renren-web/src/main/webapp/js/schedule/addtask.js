@@ -10,6 +10,7 @@
 //	9: user_behavior
 //	10: licai_plan
 //	11: every_day_basic_data
+//	12: every_day_acc_transfer
 //};
 function addTask(taskType) {
 	var task_name = $("#task_name").val();
@@ -77,7 +78,7 @@ function addTask(taskType) {
 		'chaosong_email' : $("#chaosong_email").val()
 	};
 	var url = "../schedule/schedulereporttask/addTask"; 
-	if(taskType == 10 || taskType == 11){
+	if(taskType == 10 || taskType == 11 || taskType == 12){
 		url = "../../schedule/schedulereporttask/addTask"; 
 	}
 	$.ajax({

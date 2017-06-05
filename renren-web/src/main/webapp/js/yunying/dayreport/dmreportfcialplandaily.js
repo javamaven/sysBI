@@ -147,12 +147,10 @@ var vm = new Vue({
 		},
 		reload: function (event) {
 			vm.showList = true;
-			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			$("#jqGrid").jqGrid("clearGridData");
 			$("#jqGrid").jqGrid('setGridParam',{ 
 				datatype:'json', 
-	            postData: getParams(), //发送数据  
-                page:page
+	            postData: getParams()
             }).trigger("reloadGrid");
 		}
 	}
@@ -160,7 +158,7 @@ var vm = new Vue({
 
 function getParams(){
 	var params = {
-        	'statPeriod': $("#stat_period").val(),
+        	'statPeriod': $("#stat_period").val()
 	};
 	return params;
 }

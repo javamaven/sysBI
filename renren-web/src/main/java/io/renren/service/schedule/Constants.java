@@ -63,5 +63,10 @@ public class Constants {
 		 * 每日基本数据
 		 */
 		public static final String EVERY_DAY_BASIC_DATA_PLAN = "11";
+		
+		/**
+		 * 每日资金迁移数据报告
+		 */
+		public static final String EVERY_DAY_ACC_TRANSFER = "12";
 	}
 }
