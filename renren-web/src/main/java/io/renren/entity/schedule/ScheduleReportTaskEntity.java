@@ -6,20 +6,11 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import io.renren.service.schedule.job.*;
 import org.springframework.util.StringUtils;
 
 import io.renren.service.schedule.Constants;
 import io.renren.service.schedule.entity.JobVo;
-import io.renren.service.schedule.job.ChannelAllReportJob;
-import io.renren.service.schedule.job.ChannelInvestTimesReportJob;
-import io.renren.service.schedule.job.ChannelLossReportJob;
-import io.renren.service.schedule.job.ChannelRenewReportJob;
-import io.renren.service.schedule.job.ChannelStFtReportJob;
-import io.renren.service.schedule.job.LicaiPlanReportJob;
-import io.renren.service.schedule.job.MarketChannelReportJob;
-import io.renren.service.schedule.job.UserActiveReportJob;
-import io.renren.service.schedule.job.UserBehaviorReportJob;
-import io.renren.service.schedule.job.UserInvestReportJob;
 
 /**
  * 报表推送任务配置表
@@ -91,6 +82,19 @@ public class ScheduleReportTaskEntity implements Serializable {
 			jobVo.setJobClass(UserBehaviorReportJob.class);
 		}else if (Constants.TaskType.LICAI_PLAN.equals(jobVo.getJobType())) {
 			jobVo.setJobClass(LicaiPlanReportJob.class);
+		}else if (Constants.TaskType.PROJECT_PARAMETER.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(ProjectParameterJob.class);
+		}else if (Constants.TaskType.PROJECT_PARAMETER_SUM.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(ProjectSumJob.class);
+		}
+		else if (Constants.TaskType.DEPOSITORY_TOTAL.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(DepositoryTotalJob.class);
+		}
+		else if (Constants.TaskType.PERFORMANCE_HIS.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(PerformanceHisJob.class);
+		}
+		else if (Constants.TaskType.PERFORMANCE_PARAMETER.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(PerformanceParameterJob.class);
 		}
 		jobVo.setTaskEntity(this);
 		return jobVo;

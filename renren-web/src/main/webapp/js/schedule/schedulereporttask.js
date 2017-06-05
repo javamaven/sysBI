@@ -7,7 +7,12 @@ var jobType = {
 	6:'用户投资情况',// USER_INVEST_INFO
 	7:'渠道负责人情况',// market_channel
 	8:'渠道分次投资情况',// market_channel
-	9:'用户行为日志'// user_behavior
+	9:'用户行为日志',// user_behavior
+	16:'项目台帐明细', //Project_parameter
+    17:'项目总台帐',//Project_parameter_sum
+    18:'存管报备',//Depository_total
+    19:'历史绩效发放记录',//performance_his
+    20:'绩效台帐'//performance_parameter
 };
 
 $(function () {

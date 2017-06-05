@@ -108,8 +108,11 @@ function loadTable(columnsData,tableData){
 
 function getParams(){
 	var params = {
-        	'statPeriod': $("#STAT_PERIOD").val(),
-
+            STAT_PERIOD: document.getElementById("STAT_PERIOD").value,
+            SOURCECASENO :document.getElementById("SOURCECASENO").value,
+            CUSTOMERNAME :document.getElementById("CUSTOMERNAME").value,
+            PLANREPAYDATE :document.getElementById("PLANREPAYDATE").value,
+            REALREDATE :document.getElementById("REALREDATE").value
 	};
 	return params;
 }

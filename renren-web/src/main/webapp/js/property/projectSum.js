@@ -108,7 +108,11 @@ function loadTable(columnsData,tableData){
 
 function getParams(){
 	var params = {
-        	'statPeriod': $("#STAT_PERIOD").val(),
+        	STAT_PERIOD: document.getElementById("STAT_PERIOD").value.replace(/-/g,""),
+            SOURCECASENO :document.getElementById("SOURCECASENO").value,
+            CUSTOMERNAME :document.getElementById("CUSTOMERNAME").value,
+            GIVEOUTMONEYTIME :document.getElementById("GIVEOUTMONEYTIME").value,
+            WILLGETMONEYDATE :document.getElementById("WILLGETMONEYDATE").value
 
 	};
 	return params;
@@ -204,7 +208,6 @@ $("#searchButton").click(function(){
             CUSTOMERNAME :document.getElementById("CUSTOMERNAME").value,
             GIVEOUTMONEYTIME :document.getElementById("GIVEOUTMONEYTIME").value,
             WILLGETMONEYDATE :document.getElementById("WILLGETMONEYDATE").value
-//            reg_enddate:document.getElementById("reg_enddate").value.replace(/-/g,"")
         };
     //加载数据
     loadTableAjax();

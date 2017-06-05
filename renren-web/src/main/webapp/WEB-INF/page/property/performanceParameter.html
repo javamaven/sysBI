@@ -25,13 +25,12 @@
 							<input type="text" class="form-control" id="DEPARTMENT" placeholder="请输入要查询的部门" />
 						</td>
 						<td style="padding-left: 30px;">
-							<button type="button" id="searchButton" class="btn btn-primary"><i class="fa fa-search"></i>  查询</button>
+							<button type="button" id="searchButton" class="btn btn-primary"><i class="fa fa-search"></i>查询</button>
 						</td>
-						<td>
-							<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
-
+						<td style="padding-left: 3px;">
+							<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>导出EXCEL</a>
 						</td>
-						<td>#if($shiro.hasPermission("schedulereporttask:addtask"))
+						<td style="padding-left: 3px;" >#if($shiro.hasPermission("schedulereporttask:addtask"))
 							<button class="btn btn-primary" data-toggle="modal" onclick="openTaskWin();" data-target="#schedule_add_task">添加定时任务</button>
 							#end</td>
 					</tr>
@@ -140,7 +139,7 @@
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">关闭
 				</button>
-				<button type="button" class="btn btn-primary" onclick="addTask(7)">
+				<button type="button" class="btn btn-primary" onclick="addTask(20)">
 					确定
 				</button>
 			</div>

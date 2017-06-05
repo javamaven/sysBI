@@ -9,6 +9,12 @@
 //	8: channel_all
 //	9: user_behavior
 //	10: licai_plan
+//
+//  16:Project_parameter
+//  17:Project_parameter_sum
+//  18:Depository_total
+//  19:performance_his
+//  20:performance_parameter
 //};
 function addTask(taskType) {
 	var task_name = $("#task_name").val();
