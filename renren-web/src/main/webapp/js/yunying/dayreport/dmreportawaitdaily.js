@@ -43,9 +43,10 @@ function initTableGrid(){
         rowNum: 10,
 		rowList : [10,30,50],
         rownumbers: true, 
-        rownumWidth: 25, 
         autowidth:true,
-        multiselect: true,
+        shrinkToFit: true,
+        autoScroll: false,
+        multiselect: false,
         pager: "#jqGridPager",
         jsonReader : {
             root: "page.list",

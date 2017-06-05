@@ -73,5 +73,10 @@ public class Constants {
 		 * 每日待收数据报告
 		 */
 		public static final String EVERY_DAY_AWAIT_DATA = "13";
+		
+		/**
+		 * 每日提现用户数据报告
+		 */
+		public static final String EVERY_DAY_GET_CASH = "14";
 	}
 }
