@@ -58,5 +58,51 @@ public class Constants {
 		 * 每日理财计划基本数据
 		 */
 		public static final String LICAI_PLAN = "10";
+
+		/**
+		 * 每日基本数据
+		 */
+		public static final String EVERY_DAY_BASIC_DATA_PLAN = "11";
+
+		/**
+		 * 每日资金迁移数据报告
+		 */
+		public static final String EVERY_DAY_ACC_TRANSFER = "12";
+
+		/**
+		 * 每日待收数据报告
+		 */
+		public static final String EVERY_DAY_AWAIT_DATA = "13";
+
+		/**
+		 * 每日提现用户数据报告
+		 */
+		public static final String EVERY_DAY_GET_CASH = "14";
+
+		/**
+		 * 项目账台明细
+		 */
+
+		public static final String PROJECT_PARAMETER = "16";
+
+		/**
+		 * 项目总台帐
+		 */
+		public static final String PROJECT_PARAMETER_SUM = "17";
+
+		/**
+		 * 存管报备总表
+		 */
+		public static final String DEPOSITORY_TOTAL = "18";
+		/**
+		 * 历史绩效发放记录
+		 */
+		public static final String PERFORMANCE_HIS = "19";
+		/**
+		 * 绩效台帐-分配表
+		 */
+		public static final String PERFORMANCE_PARAMETER = "20";
+
+
 	}
 }

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import io.renren.entity.DailyEntity;
 import io.renren.entity.InsideLxEntity;
 import io.renren.service.InsideLxService;
+import io.renren.service.UserBehaviorService;
 import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.Query;
@@ -38,7 +39,9 @@ import static io.renren.utils.ShiroUtils.getUserId;
 public class InsideLxController {
 	@Autowired
 	private InsideLxService insideLxService;
-	
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+	private  String reportType="拉新绩效表";
 	/**
 	 * 列表
 	 */
@@ -48,7 +51,8 @@ public class InsideLxController {
 	public R list(@RequestBody Map<String, Object> params) {
 
 
-
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 
 
 
@@ -64,6 +68,8 @@ public class InsideLxController {
 	@RequestMapping("/partExport")
 	public void partExport(HttpServletResponse response, HttpServletRequest request) throws IOException {
 
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 
 		List<InsideLxEntity> InsideList = insideLxService.queryExport();
 		JSONArray va = new JSONArray();
