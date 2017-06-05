@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import io.renren.service.schedule.job.*;
 import org.springframework.util.StringUtils;
 
 import io.renren.service.schedule.Constants;

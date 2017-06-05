@@ -63,7 +63,7 @@ public class DailyController {
 
 
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
-		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType,"aa");
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 
 
 
@@ -81,7 +81,7 @@ public class DailyController {
 	public void partExport(HttpServletResponse response, HttpServletRequest request) throws IOException {
 
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
-		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType,"aadddddddddddddddddddddddddd");
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 
 //		userBehaviorUtil.insert(logUserBehavior);
 

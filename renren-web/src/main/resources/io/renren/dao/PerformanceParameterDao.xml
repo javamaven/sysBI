@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.PerformanceParameterDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.PerformanceParameterEntity" id="dmReportPerformanceLedgerMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="developmanagername" column="DEVELOPMANAGERNAME"/>
+        <result property="department" column="DEPARTMENT"/>
+        <result property="payformoneyout" column="PAYFORMONEYOUT"/>
+        <result property="grossProfit" column="GROSS_PROFIT"/>
+        <result property="salaryCost" column="SALARY_COST"/>
+        <result property="reimbursement" column="REIMBURSEMENT"/>
+        <result property="rentShare" column="RENT_SHARE"/>
+        <result property="netMargin" column="NET_MARGIN"/>
+        <result property="commissionRatio" column="COMMISSION_RATIO"/>
+        <result property="availablePerformance" column="AVAILABLE_PERFORMANCE"/>
+        <result property="riskReserve" column="RISK_RESERVE"/>
+        <result property="settledAmount" column="SETTLED_AMOUNT"/>
+        <result property="settledAmtRate" column="SETTLED_AMT_RATE"/>
+        <result property="expectedPerformance" column="EXPECTED_PERFORMANCE"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.PerformanceParameterEntity">
+		select * from dm_report_performance_ledger where STAT_PERIOD = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.PerformanceParameterEntity">
+        DROP TABLE IF EXISTS TMP_001;
+
+
+        CREATE TEMPORARY TABLE TMP_001
+		select * from dm_report_performance_ledger
+        where 1=1
+        <if test="STAT_PERIOD != null and STAT_PERIOD.trim() != ''">
+            AND STAT_PERIOD = #{STAT_PERIOD}
+        </if>
+        <if test="DEPARTMENT != null and DEPARTMENT.trim() != ''">
+            AND DEPARTMENT = #{DEPARTMENT}
+        </if>
+        ;
+
+        select *
+        from  TMP_001
+
+
+	</select>
+
+
+    <select id="queryExport" resultType="io.renren.entity.PerformanceParameterEntity">
+
+        select *
+        from  TMP_001
+
+        ;
+    </select>
+
+</mapper>

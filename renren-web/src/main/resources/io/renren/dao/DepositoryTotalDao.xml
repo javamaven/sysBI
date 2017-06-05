@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.DepositoryTotalDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.DepositoryTotalEntity" id="dmReportCgReportMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="sourcecaseno" column="SOURCECASENO"/>
+        <result property="department" column="DEPARTMENT"/>
+        <result property="projectBelong" column="PROJECT_BELONG"/>
+        <result property="projectType" column="PROJECT_TYPE"/>
+        <result property="customername" column="CUSTOMERNAME"/>
+        <result property="payformoney" column="PAYFORMONEY"/>
+        <result property="loanrate" column="LOANRATE"/>
+        <result property="loanyearlimit" column="LOANYEARLIMIT"/>
+        <result property="payforlimittime" column="PAYFORLIMITTIME"/>
+        <result property="giveoutmoneytime" column="GIVEOUTMONEYTIME"/>
+        <result property="willgetmoneydate" column="WILLGETMONEYDATE"/>
+        <result property="iscompleted" column="ISCOMPLETED"/>
+        <result property="sendDeadline" column="SEND_DEADLINE"/>
+        <result property="isstamp" column="ISSTAMP"/>
+        <result property="sendDate" column="SEND_DATE"/>
+    </resultMap>
+
+
+	<select id="queryList" resultType="io.renren.entity.DepositoryTotalEntity">
+
+        DROP TABLE IF EXISTS TMP_001;
+        DROP TABLE IF EXISTS TMP_002;
+
+        CREATE TEMPORARY TABLE TMP_001
+		select * from dm_report_cg_report
+            where 1=1
+        <if test="STAT_PERIOD != null and STAT_PERIOD.trim() != ''">
+            AND STAT_PERIOD = #{STAT_PERIOD}
+        </if>
+        <if test="SOURCECASENO != null and SOURCECASENO.trim() != ''">
+            AND SOURCECASENO = #{SOURCECASENO}
+        </if>
+        <if test="CUSTOMERNAME != null and CUSTOMERNAME.trim() != ''">
+            AND CUSTOMERNAME = #{CUSTOMERNAME}
+        </if>
+        <if test="ISCOMPLETED != null and ISCOMPLETED.trim() != ''">
+            AND ISCOMPLETED = #{ISCOMPLETED}
+        </if>
+        <if test="ISSTAMP != null and ISSTAMP.trim() != ''">
+            AND ISSTAMP = #{ISSTAMP}
+        </if>
+        ;
+        select *
+        from TMP_001
+        order by CUSTOMERNAME
+        ;
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dm_report_cg_report
+	</select>
+
+    <select id="queryExport" resultType="io.renren.entity.DepositoryTotalEntity">
+
+    select *
+    from  TMP_001
+    order by CUSTOMERNAME
+    ;
+    </select>
+
+</mapper>
