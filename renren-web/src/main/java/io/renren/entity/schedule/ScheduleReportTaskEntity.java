@@ -16,6 +16,7 @@ import io.renren.service.schedule.job.ChannelLossReportJob;
 import io.renren.service.schedule.job.ChannelRenewReportJob;
 import io.renren.service.schedule.job.ChannelStFtReportJob;
 import io.renren.service.schedule.job.EveryDayAccTransferReportJob;
+import io.renren.service.schedule.job.EveryDayAwaitDataReportJob;
 import io.renren.service.schedule.job.EveryDayBasicDataReportJob;
 import io.renren.service.schedule.job.LicaiPlanReportJob;
 import io.renren.service.schedule.job.MarketChannelReportJob;
@@ -97,6 +98,8 @@ public class ScheduleReportTaskEntity implements Serializable {
 			jobVo.setJobClass(EveryDayBasicDataReportJob.class);
 		}else if (Constants.TaskType.EVERY_DAY_ACC_TRANSFER.equals(jobVo.getJobType())) {
 			jobVo.setJobClass(EveryDayAccTransferReportJob.class);
+		}else if (Constants.TaskType.EVERY_DAY_AWAIT_DATA.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(EveryDayAwaitDataReportJob.class);
 		}
 		jobVo.setTaskEntity(this);
 		return jobVo;

@@ -27,7 +27,7 @@ function initTableGrid(){
 	        url: '../dmreportfcialplandaily/list',
 	        datatype: "json",
 	        colModel: [			
-				{ label: '日期', name: 'statPeriod', index: '$STAT_PERIOD', width: 80, key: true ,align:'right'},
+				{ label: '日期', name: 'statPeriod', index: '$STAT_PERIOD', width: 90, key: true ,align:'right'},
 				{ label: '销售总额', name: 'tenderAmount', index: '$TENDER_AMOUNT', width: 80,align:'right' }, 			
 				{ label: '15天期限', name: 'fifteenDay', index: '$FIFTEEN_DAY', width: 80 ,align:'right'}, 			
 				{ label: '1个月期限', name: 'oneMonths', index: '$ONE_MONTHS', width: 80 ,align:'right'}, 			

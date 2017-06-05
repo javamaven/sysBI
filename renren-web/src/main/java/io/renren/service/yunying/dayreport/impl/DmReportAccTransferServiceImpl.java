@@ -27,13 +27,13 @@ public class DmReportAccTransferServiceImpl implements DmReportAccTransferServic
 	public List<DmReportAccTransferEntity> queryList(Map<String, Object> map){
 		List<DmReportAccTransferEntity> list = dmReportAccTransferDao.queryList(map);
 		for (int i = 0; i < list.size(); i++) {
-			DmReportAccTransferEntity dmReportAccTransferEntity = list.get(i);
-			String statPeriod = dmReportAccTransferEntity.getStatPeriod();
+			DmReportAccTransferEntity entity = list.get(i);
+			String statPeriod = entity.getStatPeriod();
 			if(statPeriod.length() == 8){
 				String year = statPeriod.substring(0, 4);
 				String month = statPeriod.substring(4, 6);
 				String day = statPeriod.substring(6, 8);
-				dmReportAccTransferEntity.setStatPeriod(year + "-" + month + "-" + day);
+				entity.setStatPeriod(year + "-" + month + "-" + day);
 			}
 		}
 		return list;

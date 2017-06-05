@@ -10,7 +10,8 @@ var jobType = {
 	9:'用户行为日志',// user_behavior
 	10:'每日理财计划基本数据' ,//licai_plan
 	11:'每日基本数据', //every_day_basic_data
-	12:'每日资金迁移数据报告' //every_day_acc_transfer
+	12:'每日资金迁移数据报告', //every_day_acc_transfer
+	13:'每日待收数据报告' //every_day_await_data
 };
 
 $(function () {

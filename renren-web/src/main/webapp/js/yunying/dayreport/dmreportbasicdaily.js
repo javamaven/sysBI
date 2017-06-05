@@ -28,7 +28,7 @@ function initTableGrid(){
         url: '../dmreportbasicdaily/list',
         datatype: "json",
         colModel: [			
-			{ label: '日期', name: 'statPeriod', index: '$STAT_PERIOD', width: 80, key: true,align:'right' },
+			{ label: '日期', name: 'statPeriod', index: '$STAT_PERIOD', width: 90, key: true,align:'right' },
 			{ label: '投资用户数', name: 'invCou', index: '$INV_COU', width: 90 ,align:'right'}, 			
 			{ label: '投资使用红包金额', name: 'usePackMoney', index: '$USE_PACK_MONEY', width: 80 ,align:'right'}, 			
 			{ label: '人均红包金额', name: 'avgUsePackMoney', index: '$AVG_USE_PACK_MONEY', width: 70 ,align:'right'}, 			
