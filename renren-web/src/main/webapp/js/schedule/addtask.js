@@ -13,6 +13,12 @@
 //	12: every_day_acc_transfer
 //	13: every_day_await_data
 //	14: every_day_get_cash
+//	15: every_day_recover_data
+//  16:Project_parameter
+//  17:Project_parameter_sum
+//  18:Depository_total
+//  19:performance_his
+//  20:performance_parameter
 //};
 function addTask(taskType) {
 	var task_name = $("#task_name").val();
@@ -80,7 +86,7 @@ function addTask(taskType) {
 		'chaosong_email' : $("#chaosong_email").val()
 	};
 	var url = "../schedule/schedulereporttask/addTask"; 
-	if(taskType == 10 || taskType == 11 || taskType == 12 || taskType == 13 || taskType == 14){
+	if(taskType == 10 || taskType == 11 || taskType == 12 || taskType == 13 || taskType == 14 || taskType == 15){
 		url = "../../schedule/schedulereporttask/addTask"; 
 	}
 	$.ajax({

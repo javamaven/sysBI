@@ -1,6 +1,7 @@
 package io.renren.controller.yunying.dayreport;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,8 +21,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
-import io.renren.entity.yunying.dayreport.DmReportAwaitDailyEntity;
-import io.renren.service.yunying.dayreport.DmReportAwaitDailyService;
+import io.renren.entity.yunying.dayreport.DmReportRecoverDataEntity;
+import io.renren.service.yunying.dayreport.DmReportRecoverDataService;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
@@ -32,20 +33,20 @@ import io.renren.utils.R;
  * 
  * @author chenshun
  * @email sunlightcs@gmail.com
- * @date 2017-06-05 10:50:43
+ * @date 2017-06-05 14:33:45
  */
 @Controller
-@RequestMapping(value = "/yunying/dmreportawaitdaily")
-public class DmReportAwaitDailyController {
+@RequestMapping(value = "/yunying/dmreportrecoverdata")
+public class DmReportRecoverDataController {
 	@Autowired
-	private DmReportAwaitDailyService service;
+	private DmReportRecoverDataService service;
 	
 	/**
 	 * 列表
 	 */
 	@ResponseBody
 	@RequestMapping("/list")
-	@RequiresPermissions("dmreportawaitdaily:list")
+	@RequiresPermissions("dmreportrecoverdata:list")
 	public R list(Integer page, Integer limit, String statPeriod){
 		Map<String, Object> map = new HashMap<>();
 		map.put("offset", (page - 1) * limit);
@@ -54,17 +55,17 @@ public class DmReportAwaitDailyController {
 			map.put("statPeriod", statPeriod.replace("-", ""));
 		}
 		//查询列表数据
-		List<DmReportAwaitDailyEntity> dmReportAwaitDailyList = service.queryList(map);
+		List<DmReportRecoverDataEntity> dmReportRecoverDataList = service.queryList(map);
 		int total = service.queryTotal(map);
 		
-		PageUtils pageUtil = new PageUtils(dmReportAwaitDailyList, total, limit, page);
+		PageUtils pageUtil = new PageUtils(dmReportRecoverDataList, total, limit, page);
 		
 		return R.ok().put("page", pageUtil);
 	}
 	
 	@ResponseBody
 	@RequestMapping("/exportExcel")
-	@RequiresPermissions("dmreportawaitdaily:list")
+	@RequiresPermissions("dmreportacctransfer:list")
 	public void partExport(String params, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String statPeriod = map.get("statPeriod") + "";
@@ -72,15 +73,15 @@ public class DmReportAwaitDailyController {
 			map.put("statPeriod", statPeriod.replace("-", ""));
 		}
 		// 查询列表数据
-		List<DmReportAwaitDailyEntity> dataList = service.queryList(map);
+		List<DmReportRecoverDataEntity> dataList = service.queryList(map);
 		JSONArray va = new JSONArray();
 		for (int i = 0; i < dataList.size(); i++) {
-			DmReportAwaitDailyEntity entity = dataList.get(i);
+			DmReportRecoverDataEntity entity = dataList.get(i);
 			va.add(entity);
 		}
 		Map<String, String> headMap = service.getExcelFields();
 
-		String title = "每日待收数据报告";
+		String title = "每日回款用户数据报告";
 
 		ExcelUtil.downloadExcelFile(title, headMap, va, response);
 	}
@@ -91,11 +92,11 @@ public class DmReportAwaitDailyController {
 	 */
 	@ResponseBody
 	@RequestMapping("/info/{statPeriod}")
-	@RequiresPermissions("dmreportawaitdaily:info")
-	public R info(@PathVariable("statPeriod") String statPeriod){
-		DmReportAwaitDailyEntity dmReportAwaitDaily = service.queryObject(statPeriod);
+	@RequiresPermissions("dmreportrecoverdata:info")
+	public R info(@PathVariable("statPeriod") BigDecimal statPeriod){
+		DmReportRecoverDataEntity dmReportRecoverData = service.queryObject(statPeriod);
 		
-		return R.ok().put("dmReportAwaitDaily", dmReportAwaitDaily);
+		return R.ok().put("dmReportRecoverData", dmReportRecoverData);
 	}
 	
 	/**
@@ -103,9 +104,9 @@ public class DmReportAwaitDailyController {
 	 */
 	@ResponseBody
 	@RequestMapping("/save")
-	@RequiresPermissions("dmreportawaitdaily:save")
-	public R save(@RequestBody DmReportAwaitDailyEntity dmReportAwaitDaily){
-		service.save(dmReportAwaitDaily);
+	@RequiresPermissions("dmreportrecoverdata:save")
+	public R save(@RequestBody DmReportRecoverDataEntity dmReportRecoverData){
+		service.save(dmReportRecoverData);
 		
 		return R.ok();
 	}
@@ -115,9 +116,9 @@ public class DmReportAwaitDailyController {
 	 */
 	@ResponseBody
 	@RequestMapping("/update")
-	@RequiresPermissions("dmreportawaitdaily:update")
-	public R update(@RequestBody DmReportAwaitDailyEntity dmReportAwaitDaily){
-		service.update(dmReportAwaitDaily);
+	@RequiresPermissions("dmreportrecoverdata:update")
+	public R update(@RequestBody DmReportRecoverDataEntity dmReportRecoverData){
+		service.update(dmReportRecoverData);
 		
 		return R.ok();
 	}
@@ -127,8 +128,8 @@ public class DmReportAwaitDailyController {
 	 */
 	@ResponseBody
 	@RequestMapping("/delete")
-	@RequiresPermissions("dmreportawaitdaily:delete")
-	public R delete(@RequestBody String[] statPeriods){
+	@RequiresPermissions("dmreportrecoverdata:delete")
+	public R delete(@RequestBody BigDecimal[] statPeriods){
 		service.deleteBatch(statPeriods);
 		
 		return R.ok();

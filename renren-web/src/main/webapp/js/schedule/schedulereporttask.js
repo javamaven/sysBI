@@ -12,7 +12,13 @@ var jobType = {
 	11:'每日基本数据', //every_day_basic_data
 	12:'每日资金迁移数据报告', //every_day_acc_transfer
 	13:'每日待收数据报告', //every_day_await_data
-	14:'每日提现用户数据报告' //every_day_get_cash
+	14:'每日提现用户数据报告', //every_day_get_cash
+	15:'每日回款用户数据报告', //every_day_recover_data
+	16:'项目台帐明细', //Project_parameter
+    17:'项目总台帐',//Project_parameter_sum
+    18:'存管报备',//Depository_total
+    19:'历史绩效发放记录',//performance_his
+    20:'绩效台帐'//performance_parameter
 };
 
 $(function () {

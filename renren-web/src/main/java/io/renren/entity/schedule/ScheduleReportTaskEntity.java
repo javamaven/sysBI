@@ -19,6 +19,7 @@ import io.renren.service.schedule.job.EveryDayAccTransferReportJob;
 import io.renren.service.schedule.job.EveryDayAwaitDataReportJob;
 import io.renren.service.schedule.job.EveryDayBasicDataReportJob;
 import io.renren.service.schedule.job.EveryDayGetCashReportJob;
+import io.renren.service.schedule.job.EveryDayRecoverDataReportJob;
 import io.renren.service.schedule.job.LicaiPlanReportJob;
 import io.renren.service.schedule.job.MarketChannelReportJob;
 import io.renren.service.schedule.job.UserActiveReportJob;
@@ -95,6 +96,16 @@ public class ScheduleReportTaskEntity implements Serializable {
 			jobVo.setJobClass(UserBehaviorReportJob.class);
 		}else if (Constants.TaskType.LICAI_PLAN.equals(jobVo.getJobType())) {
 			jobVo.setJobClass(LicaiPlanReportJob.class);
+		}else if (Constants.TaskType.PROJECT_PARAMETER.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(ProjectParameterJob.class);
+		}else if (Constants.TaskType.PROJECT_PARAMETER_SUM.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(ProjectSumJob.class);
+		}else if (Constants.TaskType.DEPOSITORY_TOTAL.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(DepositoryTotalJob.class);
+		}else if (Constants.TaskType.PERFORMANCE_HIS.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(PerformanceHisJob.class);
+		}else if (Constants.TaskType.PERFORMANCE_PARAMETER.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(PerformanceParameterJob.class);
 		}else if (Constants.TaskType.EVERY_DAY_BASIC_DATA_PLAN.equals(jobVo.getJobType())) {
 			jobVo.setJobClass(EveryDayBasicDataReportJob.class);
 		}else if (Constants.TaskType.EVERY_DAY_ACC_TRANSFER.equals(jobVo.getJobType())) {
@@ -103,6 +114,8 @@ public class ScheduleReportTaskEntity implements Serializable {
 			jobVo.setJobClass(EveryDayAwaitDataReportJob.class);
 		}else if (Constants.TaskType.EVERY_DAY_GET_CASH.equals(jobVo.getJobType())) {
 			jobVo.setJobClass(EveryDayGetCashReportJob.class);
+		}else if (Constants.TaskType.EVERY_DAY_RECOVER_DATA.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(EveryDayRecoverDataReportJob.class);
 		}
 		jobVo.setTaskEntity(this);
 		return jobVo;

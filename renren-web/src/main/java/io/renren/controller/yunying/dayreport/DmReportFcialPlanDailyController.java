@@ -1,8 +1,6 @@
 package io.renren.controller.yunying.dayreport;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +20,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
-import io.renren.entity.channelmanager.DmReportUserActivateDailyEntity;
 import io.renren.entity.yunying.dayreport.DmReportFcialPlanDailyEntity;
 import io.renren.service.yunying.dayreport.DmReportFcialPlanDailyService;
 import io.renren.utils.ExcelUtil;

@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
-import io.renren.entity.yunying.dayreport.DmReportBasicDailyEntity;
 import io.renren.entity.yunying.dayreport.DmReportCashDataEntity;
 import io.renren.service.yunying.dayreport.DmReportCashDataService;
 import io.renren.utils.ExcelUtil;
