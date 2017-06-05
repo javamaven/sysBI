@@ -151,7 +151,7 @@
 		pushSeriesData(retData.from_to_data_5, retData.to_data_5, 4);
 		pushMarkPoint(mark_point_data);
 		var option = {
-		    backgroundColor: '#1b1b1b',
+		    backgroundColor: '#404a59',
 		    color: ['#ff3333', 'orange', 'yellow','lime','aqua'],
 		    tooltip : {
 		        trigger: 'item',
@@ -214,7 +214,7 @@
 	                    borderColor:'rgba(100,149,237,1)',
 	                    borderWidth:0.5,
 	                    areaStyle:{
-	                        color: '#1b1b1b'
+	                        color: '#323c48'
 	                    }
 	                }
 	            },
@@ -227,7 +227,7 @@
 	                    normal: {
 	                        color:'#fff',
 	                        borderWidth:1,
-	                        borderColor:'rgba(30,144,255,0.5)'
+	                        borderColor:'rgba(30,144,255,0.5)',
 	                    }
 	                },
 	                data : [
@@ -455,10 +455,10 @@
 	            mapLocation: {x:'right',y:'center'},
 	            itemStyle:{
 	                normal:{
-	                    borderColor:'rgba(100,149,237,1)',
+	                    borderColor:'#404a59',
 	                    borderWidth:0.5,
 	                    areaStyle:{
-	                        color: '#1b1b1b'
+	                        color: '#323c48'
 	                    }
 	                }
 	            },
@@ -1065,6 +1065,12 @@
                 '青岛': [120.4651,36.3373],
                 '韶关': [113.7964,24.7028]
             };
+
+            window.addEventListener("resize",function(){
+                resizeWorldMapContainer();
+                myChart.resize();
+            });
+
     </script>
 </body>
 </html>

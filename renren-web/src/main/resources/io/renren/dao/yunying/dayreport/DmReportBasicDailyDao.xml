@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.yunying.dayreport.DmReportBasicDailyDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.yunying.dayreport.DmReportBasicDailyEntity" id="dmReportBasicDailyMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="invCou" column="INV_COU"/>
+        <result property="usePackMoney" column="USE_PACK_MONEY"/>
+        <result property="avgUsePackMoney" column="AVG_USE_PACK_MONEY"/>
+        <result property="accountMoney" column="ACCOUNT_MONEY"/>
+        <result property="avgMoney" column="AVG_MONEY"/>
+        <result property="yearMoney" column="YEAR_MONEY"/>
+        <result property="avgYearMoney" column="AVG_YEAR_MONEY"/>
+        <result property="spreadsMoney" column="SPREADS_MONEY"/>
+        <result property="discountCost" column="DISCOUNT_COST"/>
+        <result property="avgDiscountCost" column="AVG_DISCOUNT_COST"/>
+        <result property="forecastAwait" column="FORECAST_AWAIT"/>
+        <result property="fullAwait" column="FULL_AWAIT"/>
+        <result property="loanAwait" column="LOAN_AWAIT"/>
+        <result property="recoverMoney" column="RECOVER_MONEY"/>
+        <result property="monthNh" column="MONTH_NH"/>
+        <result property="newEndYearAwait" column="NEW_END_YEAR_AWAIT"/>
+        <result property="endYearAwait" column="END_YEAR_AWAIT"/>
+        <result property="allAwait" column="ALL_AWAIT"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.yunying.dayreport.DmReportBasicDailyEntity">
+		select * from dm_report_basic_daily where STAT_PERIOD = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.yunying.dayreport.DmReportBasicDailyEntity">
+		select * from dm_report_basic_daily
+       
+       	where 1=1
+       	<if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+		</if>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dm_report_basic_daily 
+		where 1=1
+		<if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+		</if>
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.yunying.dayreport.DmReportBasicDailyEntity">
+		insert into dm_report_basic_daily
+		(
+			`STAT_PERIOD`, 
+			`INV_COU`, 
+			`USE_PACK_MONEY`, 
+			`AVG_USE_PACK_MONEY`, 
+			`ACCOUNT_MONEY`, 
+			`AVG_MONEY`, 
+			`YEAR_MONEY`, 
+			`AVG_YEAR_MONEY`, 
+			`SPREADS_MONEY`, 
+			`DISCOUNT_COST`, 
+			`AVG_DISCOUNT_COST`, 
+			`FORECAST_AWAIT`, 
+			`FULL_AWAIT`, 
+			`LOAN_AWAIT`, 
+			`RECOVER_MONEY`, 
+			`MONTH_NH`, 
+			`NEW_END_YEAR_AWAIT`, 
+			`END_YEAR_AWAIT`, 
+			`ALL_AWAIT`
+		)
+		values
+		(
+			#{statPeriod}, 
+			#{invCou}, 
+			#{usePackMoney}, 
+			#{avgUsePackMoney}, 
+			#{accountMoney}, 
+			#{avgMoney}, 
+			#{yearMoney}, 
+			#{avgYearMoney}, 
+			#{spreadsMoney}, 
+			#{discountCost}, 
+			#{avgDiscountCost}, 
+			#{forecastAwait}, 
+			#{fullAwait}, 
+			#{loanAwait}, 
+			#{recoverMoney}, 
+			#{monthNh}, 
+			#{newEndYearAwait}, 
+			#{endYearAwait}, 
+			#{allAwait}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.yunying.dayreport.DmReportBasicDailyEntity">
+		update dm_report_basic_daily 
+		<set>
+			<if test="invCou != null">`INV_COU` = #{invCou}, </if>
+			<if test="usePackMoney != null">`USE_PACK_MONEY` = #{usePackMoney}, </if>
+			<if test="avgUsePackMoney != null">`AVG_USE_PACK_MONEY` = #{avgUsePackMoney}, </if>
+			<if test="accountMoney != null">`ACCOUNT_MONEY` = #{accountMoney}, </if>
+			<if test="avgMoney != null">`AVG_MONEY` = #{avgMoney}, </if>
+			<if test="yearMoney != null">`YEAR_MONEY` = #{yearMoney}, </if>
+			<if test="avgYearMoney != null">`AVG_YEAR_MONEY` = #{avgYearMoney}, </if>
+			<if test="spreadsMoney != null">`SPREADS_MONEY` = #{spreadsMoney}, </if>
+			<if test="discountCost != null">`DISCOUNT_COST` = #{discountCost}, </if>
+			<if test="avgDiscountCost != null">`AVG_DISCOUNT_COST` = #{avgDiscountCost}, </if>
+			<if test="forecastAwait != null">`FORECAST_AWAIT` = #{forecastAwait}, </if>
+			<if test="fullAwait != null">`FULL_AWAIT` = #{fullAwait}, </if>
+			<if test="loanAwait != null">`LOAN_AWAIT` = #{loanAwait}, </if>
+			<if test="recoverMoney != null">`RECOVER_MONEY` = #{recoverMoney}, </if>
+			<if test="monthNh != null">`MONTH_NH` = #{monthNh}, </if>
+			<if test="newEndYearAwait != null">`NEW_END_YEAR_AWAIT` = #{newEndYearAwait}, </if>
+			<if test="endYearAwait != null">`END_YEAR_AWAIT` = #{endYearAwait}, </if>
+			<if test="allAwait != null">`ALL_AWAIT` = #{allAwait}</if>
+		</set>
+		where STAT_PERIOD = #{statPeriod}
+	</update>
+	
+	<delete id="delete">
+		delete from dm_report_basic_daily where STAT_PERIOD = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from dm_report_basic_daily where STAT_PERIOD in 
+		<foreach item="statPeriod" collection="array" open="(" separator="," close=")">
+			#{statPeriod}
+		</foreach>
+	</delete>
+
+</mapper>

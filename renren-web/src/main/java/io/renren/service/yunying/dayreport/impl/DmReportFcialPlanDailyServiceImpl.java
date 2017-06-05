@@ -25,7 +25,19 @@ public class DmReportFcialPlanDailyServiceImpl implements DmReportFcialPlanDaily
 	
 	@Override
 	public List<DmReportFcialPlanDailyEntity> queryList(Map<String, Object> map){
-		return dmReportFcialPlanDailyDao.queryList(map);
+		
+		List<DmReportFcialPlanDailyEntity> list = dmReportFcialPlanDailyDao.queryList(map);
+		for (int i = 0; i < list.size(); i++) {
+			DmReportFcialPlanDailyEntity entity = list.get(i);
+			String statPeriod = entity.getStatPeriod();
+			if(statPeriod.length() == 8){
+				String year = statPeriod.substring(0, 4);
+				String month = statPeriod.substring(4, 6);
+				String day = statPeriod.substring(6, 8);
+				entity.setStatPeriod(year + "-" + month + "-" + day);
+			}
+		}
+		return list;
 	}
 	
 	@Override
@@ -56,7 +68,7 @@ public class DmReportFcialPlanDailyServiceImpl implements DmReportFcialPlanDaily
 	@Override
 	public Map<String, String> getExcelFields() {
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
-		headMap.put("statPeriod", "统计日期");
+		headMap.put("statPeriod", "日期");
 		headMap.put("tenderAmount", "销售总额");
 		headMap.put("fifteenDay", "15天期限");
 		headMap.put("oneMonths", "1个月期限");

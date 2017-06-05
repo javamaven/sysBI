@@ -18,31 +18,31 @@ import com.alibaba.fastjson.JSONArray;
 
 import io.renren.entity.schedule.ScheduleReportTaskEntity;
 import io.renren.entity.schedule.ScheduleReportTaskLogEntity;
-import io.renren.entity.yunying.dayreport.DmReportFcialPlanDailyEntity;
+import io.renren.entity.yunying.dayreport.DmReportAccTransferEntity;
 import io.renren.service.schedule.ScheduleReportTaskLogService;
 import io.renren.service.schedule.ScheduleReportTaskService;
 import io.renren.service.schedule.entity.JobVo;
-import io.renren.service.yunying.dayreport.DmReportFcialPlanDailyService;
+import io.renren.service.yunying.dayreport.DmReportAccTransferService;
 import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
 
 
 /**
- * 每日理财计划基本数据推送任务
+ * 每日资金迁移数据报告
  * @author Administrator
  *
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
-public class LicaiPlanReportJob implements Job {
+public class EveryDayAccTransferReportJob implements Job {
 	public final Logger log = Logger.getLogger(this.getClass());
 	private ScheduleReportTaskService taskService = SpringBeanFactory.getBean(ScheduleReportTaskService.class);
-	DmReportFcialPlanDailyService service = SpringBeanFactory.getBean(DmReportFcialPlanDailyService.class);
+	DmReportAccTransferService service = SpringBeanFactory.getBean(DmReportAccTransferService.class);
 	private ScheduleReportTaskLogService logService = SpringBeanFactory.getBean(ScheduleReportTaskLogService.class);
 
 	private ScheduleReportTaskLogEntity logVo;
-	String title = "每日理财计划基本数据";
+	String title = "每日资金迁移数据报告";
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -52,7 +52,7 @@ public class LicaiPlanReportJob implements Job {
 		JobDataMap jobDataMap = ctx.getJobDetail().getJobDataMap();
 		JobVo jobVo = (JobVo) jobDataMap.get("jobVo");
 		ScheduleReportTaskEntity taskEntity = jobVo.getTaskEntity();
-		log.info("+++++++++LicaiPlanReportJob+++++++++++++" + taskEntity);
+		log.info("+++++++++EveryDayAccTransferReportJob+++++++++++++" + taskEntity);
 		MailUtil mailUtil = new MailUtil();
 		JobUtil jobUtil = new JobUtil();
 		try {
@@ -75,10 +75,10 @@ public class LicaiPlanReportJob implements Job {
 			}
 			logVo.setParams(JSON.toJSONString(params));
 			
-			List<DmReportFcialPlanDailyEntity> queryList = service.queryList(params);
+			List<DmReportAccTransferEntity> queryList = service.queryList(params);
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < queryList.size(); i++) {
-				DmReportFcialPlanDailyEntity entity = queryList.get(i);
+				DmReportAccTransferEntity entity = queryList.get(i);
 				dataArray.add(entity);
 			}
 			String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
