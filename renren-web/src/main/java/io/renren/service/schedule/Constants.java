@@ -80,6 +80,11 @@ public class Constants {
 		public static final String EVERY_DAY_GET_CASH = "14";
 
 		/**
+		 * 每日回款用户数据报告
+		 */
+		public static final String EVERY_DAY_RECOVER_DATA = "15";
+		
+		/**
 		 * 项目账台明细
 		 */
 
@@ -102,7 +107,5 @@ public class Constants {
 		 * 绩效台帐-分配表
 		 */
 		public static final String PERFORMANCE_PARAMETER = "20";
-
-
 	}
 }

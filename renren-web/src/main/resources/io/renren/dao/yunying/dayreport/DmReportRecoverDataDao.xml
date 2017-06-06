@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.yunying.dayreport.DmReportRecoverDataDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.yunying.dayreport.DmReportRecoverDataEntity" id="dmReportRecoverDataMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="cgUserId" column="CG_USER_ID"/>
+        <result property="username" column="USERNAME"/>
+        <result property="phone" column="PHONE"/>
+        <result property="projectId" column="PROJECT_ID"/>
+        <result property="money" column="MONEY"/>
+        <result property="borrowPeriod" column="BORROW_PERIOD"/>
+        <result property="regTime" column="REG_TIME"/>
+        <result property="xmInvOneTime" column="XM_INV_ONE_TIME"/>
+        <result property="xmStJg" column="XM_ST_JG"/>
+        <result property="xmInvLastTime" column="XM_INV_LAST_TIME"/>
+        <result property="xmTzJg" column="XM_TZ_JG"/>
+        <result property="xmInvMoney" column="XM_INV_MONEY"/>
+        <result property="xmInvCou" column="XM_INV_COU"/>
+        <result property="useInvPackCou" column="USE_INV_PACK_COU"/>
+        <result property="zzFqCou" column="ZZ_FQ_COU"/>
+        <result property="periodJq" column="PERIOD_JQ"/>
+        <result property="czMoney" column="CZ_MONEY"/>
+        <result property="txCgMoney" column="TX_CG_MONEY"/>
+        <result property="dateCou" column="DATE_COU"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.yunying.dayreport.DmReportRecoverDataEntity">
+		select * from dm_report_recover_data where STAT_PERIOD = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.yunying.dayreport.DmReportRecoverDataEntity">
+		select * from dm_report_recover_data
+		where 1=1
+		<if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+		</if>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dm_report_recover_data 
+		where 1=1
+		<if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+		</if>
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.yunying.dayreport.DmReportRecoverDataEntity">
+		insert into dm_report_recover_data
+		(
+			`STAT_PERIOD`, 
+			`USER_ID`, 
+			`CG_USER_ID`, 
+			`USERNAME`, 
+			`PHONE`, 
+			`PROJECT_ID`, 
+			`MONEY`, 
+			`BORROW_PERIOD`, 
+			`REG_TIME`, 
+			`XM_INV_ONE_TIME`, 
+			`XM_ST_JG`, 
+			`XM_INV_LAST_TIME`, 
+			`XM_TZ_JG`, 
+			`XM_INV_MONEY`, 
+			`XM_INV_COU`, 
+			`USE_INV_PACK_COU`, 
+			`ZZ_FQ_COU`, 
+			`PERIOD_JQ`, 
+			`CZ_MONEY`, 
+			`TX_CG_MONEY`, 
+			`DATE_COU`
+		)
+		values
+		(
+			#{statPeriod}, 
+			#{userId}, 
+			#{cgUserId}, 
+			#{username}, 
+			#{phone}, 
+			#{projectId}, 
+			#{money}, 
+			#{borrowPeriod}, 
+			#{regTime}, 
+			#{xmInvOneTime}, 
+			#{xmStJg}, 
+			#{xmInvLastTime}, 
+			#{xmTzJg}, 
+			#{xmInvMoney}, 
+			#{xmInvCou}, 
+			#{useInvPackCou}, 
+			#{zzFqCou}, 
+			#{periodJq}, 
+			#{czMoney}, 
+			#{txCgMoney}, 
+			#{dateCou}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.yunying.dayreport.DmReportRecoverDataEntity">
+		update dm_report_recover_data 
+		<set>
+			<if test="userId != null">`USER_ID` = #{userId}, </if>
+			<if test="cgUserId != null">`CG_USER_ID` = #{cgUserId}, </if>
+			<if test="username != null">`USERNAME` = #{username}, </if>
+			<if test="phone != null">`PHONE` = #{phone}, </if>
+			<if test="projectId != null">`PROJECT_ID` = #{projectId}, </if>
+			<if test="money != null">`MONEY` = #{money}, </if>
+			<if test="borrowPeriod != null">`BORROW_PERIOD` = #{borrowPeriod}, </if>
+			<if test="regTime != null">`REG_TIME` = #{regTime}, </if>
+			<if test="xmInvOneTime != null">`XM_INV_ONE_TIME` = #{xmInvOneTime}, </if>
+			<if test="xmStJg != null">`XM_ST_JG` = #{xmStJg}, </if>
+			<if test="xmInvLastTime != null">`XM_INV_LAST_TIME` = #{xmInvLastTime}, </if>
+			<if test="xmTzJg != null">`XM_TZ_JG` = #{xmTzJg}, </if>
+			<if test="xmInvMoney != null">`XM_INV_MONEY` = #{xmInvMoney}, </if>
+			<if test="xmInvCou != null">`XM_INV_COU` = #{xmInvCou}, </if>
+			<if test="useInvPackCou != null">`USE_INV_PACK_COU` = #{useInvPackCou}, </if>
+			<if test="zzFqCou != null">`ZZ_FQ_COU` = #{zzFqCou}, </if>
+			<if test="periodJq != null">`PERIOD_JQ` = #{periodJq}, </if>
+			<if test="czMoney != null">`CZ_MONEY` = #{czMoney}, </if>
+			<if test="txCgMoney != null">`TX_CG_MONEY` = #{txCgMoney}, </if>
+			<if test="dateCou != null">`DATE_COU` = #{dateCou}</if>
+		</set>
+		where STAT_PERIOD = #{statPeriod}
+	</update>
+	
+	<delete id="delete">
+		delete from dm_report_recover_data where STAT_PERIOD = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from dm_report_recover_data where STAT_PERIOD in 
+		<foreach item="statPeriod" collection="array" open="(" separator="," close=")">
+			#{statPeriod}
+		</foreach>
+	</delete>
+
+</mapper>

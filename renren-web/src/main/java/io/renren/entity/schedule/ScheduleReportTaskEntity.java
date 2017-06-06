@@ -20,6 +20,7 @@ import io.renren.service.schedule.job.EveryDayAccTransferReportJob;
 import io.renren.service.schedule.job.EveryDayAwaitDataReportJob;
 import io.renren.service.schedule.job.EveryDayBasicDataReportJob;
 import io.renren.service.schedule.job.EveryDayGetCashReportJob;
+import io.renren.service.schedule.job.EveryDayRecoverDataReportJob;
 import io.renren.service.schedule.job.LicaiPlanReportJob;
 import io.renren.service.schedule.job.MarketChannelReportJob;
 import io.renren.service.schedule.job.UserActiveReportJob;
@@ -114,7 +115,8 @@ public class ScheduleReportTaskEntity implements Serializable {
 			jobVo.setJobClass(EveryDayAwaitDataReportJob.class);
 		}else if (Constants.TaskType.EVERY_DAY_GET_CASH.equals(jobVo.getJobType())) {
 			jobVo.setJobClass(EveryDayGetCashReportJob.class);
-
+		}else if (Constants.TaskType.EVERY_DAY_RECOVER_DATA.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(EveryDayRecoverDataReportJob.class);
 		}
 		jobVo.setTaskEntity(this);
 		return jobVo;
@@ -285,27 +287,34 @@ public class ScheduleReportTaskEntity implements Serializable {
 	public String getDescription() {
 		return description;
 	}
+	
 
 	public List<String> getReceiveEmailList() {
+		List<String> arrayList = new ArrayList<String>();
 		if (receiveEmail != null && receiveEmail.contains(",")) {
 			String[] split = receiveEmail.split(",");
-			return Arrays.asList(split);
-		}
-		List<String> arrayList = new ArrayList<String>();
-		if(!StringUtils.isEmpty(receiveEmail)){
-			arrayList.add(receiveEmail);
+			for (int i = 0; i < split.length; i++) {
+				arrayList.add(split[i]);
+			}
+		} else {
+			if (!StringUtils.isEmpty(receiveEmail)) {
+				arrayList.add(receiveEmail);
+			}
 		}
 		return arrayList;
 	}
 
 	public List<String> getChaosongEmailList() {
+		List<String> arrayList = new ArrayList<String>();
 		if (chaosongEmail != null && chaosongEmail.contains(",")) {
 			String[] split = chaosongEmail.split(",");
-			return Arrays.asList(split);
-		}
-		List<String> arrayList = new ArrayList<String>();
-		if(!StringUtils.isEmpty(chaosongEmail)){
-			arrayList.add(chaosongEmail);
+			for (int i = 0; i < split.length; i++) {
+				arrayList.add(split[i]);
+			}
+		} else {
+			if (!StringUtils.isEmpty(chaosongEmail)) {
+				arrayList.add(chaosongEmail);
+			}
 		}
 		return arrayList;
 	}
