@@ -1,14 +1,13 @@
 package io.renren.controller;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.renren.service.UserBehaviorService;
+import io.renren.util.UserBehaviorUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +26,8 @@ import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 /**
  * 用户投资情况表
  * 
@@ -37,6 +38,10 @@ import io.renren.utils.R;
 public class DmReportInvestmentDailyController {
 	@Autowired
 	private DmReportInvestmentDailyService service;
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+
+	private  String reportType="用户投资情况表";
 
 	/**
 	 * 列表
@@ -46,6 +51,9 @@ public class DmReportInvestmentDailyController {
 	@RequiresPermissions("dmreportinvestmentdaily:list")
 	public R list(Integer page, Integer limit, String userId, String userName, String channelId, String channelName,
 			String investStartTime, String investEndTime, String operPlatform, String withProType, String statPeriod) {
+
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查询",reportType," ");
 		PageUtils pageUtil = service.query(page, limit, userId, userName, channelId, channelName, investStartTime,
 				investEndTime, operPlatform, withProType);
 		return R.ok().put("page", pageUtil);
@@ -81,6 +89,9 @@ public class DmReportInvestmentDailyController {
 	@RequestMapping("/exportExcel")
 	@RequiresPermissions("dmreportinvestmentdaily:list")
 	public void partExport(String params, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
+
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String investStartTime = map.get("investStartTime") + "";
 		if (StringUtils.isNotEmpty(investStartTime)) {

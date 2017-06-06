@@ -71,7 +71,7 @@
 		;
 		select *
 		from TMP_001
-		ORDER BY REINDEX,CUSTOMERNAME
+		ORDER BY CUSTOMERNAME
 
 	</select>
 	

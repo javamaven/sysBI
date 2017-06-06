@@ -3,6 +3,8 @@ package io.renren.controller;
 import com.alibaba.fastjson.JSONArray;
 import io.renren.entity.LogUserBehaviorEntity;
 import io.renren.service.LogUserBehaviorService;
+import io.renren.service.UserBehaviorService;
+import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.Query;
 import io.renren.utils.R;
@@ -17,13 +19,16 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 
 /**
- * 渠道成本统计表
+ * 用户行为日志
  * 
  * @author chenshun
  * @email sunlightcs@gmail.com
@@ -34,6 +39,9 @@ import java.util.Map;
 public class LogUserBehaviorController {
 	@Autowired
 	private LogUserBehaviorService logUserBehaviorService;
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+	private  String reportType="用户行为日志";
 	
 	/**
 	 * 列表
@@ -42,7 +50,8 @@ public class LogUserBehaviorController {
 	@RequestMapping("/list")
 	@RequiresPermissions("logUserBehavior:list")
 	public R list(@RequestBody Map<String, Object> params){
-
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 
 
 		//查询列表数据
@@ -55,7 +64,8 @@ public class LogUserBehaviorController {
 	@ResponseBody
 	@RequestMapping("/partExport")
 	public void partExport(HttpServletResponse response, HttpServletRequest request) throws IOException {
-
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 
 		List<LogUserBehaviorEntity> MarketChannelList = logUserBehaviorService.queryExport();
 		JSONArray va = new JSONArray();

@@ -43,7 +43,7 @@ public class DmReportFinRepaymentdetailEntity implements Serializable {
 	//已还违约金
 	private BigDecimal reamercedmoney3;
 	//项目结清日
-	private Date realgetmoneydate;
+	private String realgetmoneydate;
 	//期次
 	private BigDecimal reindex;
 	//总期数
@@ -210,13 +210,13 @@ public class DmReportFinRepaymentdetailEntity implements Serializable {
 	/**
 	 * 设置：项目结清日
 	 */
-	public void setRealgetmoneydate(Date realgetmoneydate) {
+	public void setRealgetmoneydate(String realgetmoneydate) {
 		this.realgetmoneydate = realgetmoneydate;
 	}
 	/**
 	 * 获取：项目结清日
 	 */
-	public Date getRealgetmoneydate() {
+	public String getRealgetmoneydate() {
 		return realgetmoneydate;
 	}
 	/**

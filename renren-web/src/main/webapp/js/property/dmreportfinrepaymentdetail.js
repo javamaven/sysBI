@@ -140,7 +140,7 @@ function loadTableAjax(){
         a = '['+a.substring(0,a.length-1)+']';
 //        alert(a);
         var b = '['+
-        '{field:"statPeriod",title:"统计日期",align:"center",valign:"middle" },'+
+        '{field:"statPeriod",title:"　统计日期　",align:"center",valign:"middle" },'+
         '{field:"sourcecaseno",title:"项目合同编号",align:"center",valign:"middle"},'+
         '{field:"customername",title:"借款人",align:"center",valign:"middle"},'+
         '{field:"payformoney",title:"借款金额",align:"center",valign:"middle"},'+

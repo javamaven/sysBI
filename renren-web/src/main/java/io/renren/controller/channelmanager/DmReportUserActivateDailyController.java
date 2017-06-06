@@ -1,14 +1,13 @@
 package io.renren.controller.channelmanager;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.renren.service.UserBehaviorService;
+import io.renren.util.UserBehaviorUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +27,8 @@ import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 /**
  * 用户激活情况表
  * 
@@ -38,6 +39,9 @@ import io.renren.utils.R;
 public class DmReportUserActivateDailyController {
 	@Autowired
 	private DmReportUserActivateDailyService service;
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+	private  String reportType="用户激活情况表";
 
 	/**
 	 * 列表
@@ -50,6 +54,10 @@ public class DmReportUserActivateDailyController {
 			String endFirstInvestTime, String startTotalMoney, String endTotalMoney, String startTotalInvestAmount,
 			String endTotalInvestAmount, String startFirstInvestAmount, String endFirstInvestAmount,
 			String startRegisterTime, String endRegisterTime, String bangCard, String realName, String channelName) {
+
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+
 		PageUtils pageUtil = service.query(page, limit, statPeriod, afterInvestBalance_start, afterInvestBalance_end,
 				startFirstInvestTime, endFirstInvestTime, startTotalMoney, endTotalMoney, startTotalInvestAmount,
 				endTotalInvestAmount, startFirstInvestAmount, endFirstInvestAmount, startRegisterTime, endRegisterTime,
@@ -95,6 +103,9 @@ public class DmReportUserActivateDailyController {
 		}
 
 		System.err.println("++++++++++map: " + map);
+
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 
 		// 查询列表数据
 		List<DmReportUserActivateDailyEntity> dataList = service.queryList(map);

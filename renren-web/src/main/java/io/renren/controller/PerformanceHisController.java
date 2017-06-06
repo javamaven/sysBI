@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import io.renren.entity.DepositoryTotalEntity;
 import io.renren.entity.PerformanceHisEntity;
 import io.renren.service.PerformanceHisService;
+import io.renren.service.UserBehaviorService;
+import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.Query;
 import io.renren.utils.R;
@@ -17,8 +19,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static io.renren.utils.ShiroUtils.getUserId;
 
 
 /**
@@ -33,6 +38,9 @@ import java.util.Map;
 public class PerformanceHisController {
 	@Autowired
 	private PerformanceHisService dmReportPerformLedgerHisService;
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+	private  String reportType="历史绩效发放记录表";
 	
 	/**
 	 * 列表
@@ -41,7 +49,8 @@ public class PerformanceHisController {
 	@RequestMapping("/list")
 	@RequiresPermissions("dmreportperformledgerhis:list")
 	public R list(@RequestBody Map<String, Object> params) {
-
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 
 		//查询列表数据
 		Query query = new Query(params);
@@ -53,7 +62,8 @@ public class PerformanceHisController {
 	@ResponseBody
 	@RequestMapping("/partExport")
 	public void partExport(HttpServletResponse response, HttpServletRequest request) throws IOException {
-
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 
 		List<PerformanceHisEntity> PerformanceHisList = dmReportPerformLedgerHisService.queryExport();
 		JSONArray va = new JSONArray();

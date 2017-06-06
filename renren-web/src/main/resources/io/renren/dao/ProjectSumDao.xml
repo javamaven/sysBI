@@ -82,7 +82,7 @@
         ;
         select *
         from TMP_001
-        ORDER BY CUSTOMERNAME
+        ORDER BY PRODUCTTYPE,ORGSIMPLENAME,STAT_PERIOD desc
 
     </select>
 
@@ -90,7 +90,7 @@
 
         select *
         from  TMP_001
-        ORDER BY CUSTOMERNAME
+        ORDER BY PRODUCTTYPE,ORGSIMPLENAME,STAT_PERIOD desc
         ;
     </select>
 

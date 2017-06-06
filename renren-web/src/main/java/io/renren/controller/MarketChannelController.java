@@ -5,6 +5,7 @@ import io.renren.entity.ChannelChannelAllEntity;
 import io.renren.entity.DailyEntity;
 import io.renren.entity.MarketChannelEntity;
 import io.renren.service.MarketChannelService;
+import io.renren.service.UserBehaviorService;
 import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
@@ -41,6 +42,9 @@ import static io.renren.utils.ShiroUtils.getUserId;
 public class MarketChannelController {
 	@Autowired
 	private MarketChannelService marketChannelDataService;
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+	private  String reportType="渠道负责人表";
 
 
 	/**
@@ -52,7 +56,10 @@ public class MarketChannelController {
 	public R list(@RequestBody Map<String, Object> params){
 		//查询列表数据
 		Query query = new Query(params);
-		
+
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+
 		//查询列表数据
 		List<MarketChannelEntity> dmReportChannelDataList = marketChannelDataService.queryList(query);
 		int total = marketChannelDataService.queryTotal(query);
@@ -65,7 +72,8 @@ public class MarketChannelController {
 	@RequestMapping("/partExport")
 	public void partExport(HttpServletResponse response, HttpServletRequest request) throws IOException {
 
-
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		List<MarketChannelEntity> MarketChannelList = marketChannelDataService.queryExport();
 		JSONArray va = new JSONArray();
 

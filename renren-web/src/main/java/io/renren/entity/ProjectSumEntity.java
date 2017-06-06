@@ -77,7 +77,7 @@ public class ProjectSumEntity implements Serializable {
 	//资金来源
 	private String capitalSource;
 	//项目结清日
-	private Date realgetmoneydate;
+	private String realgetmoneydate;
 	//手续费收入
 	private BigDecimal rebackservice;
 	//还款方式
@@ -458,13 +458,13 @@ public class ProjectSumEntity implements Serializable {
 	/**
 	 * 设置：项目结清日
 	 */
-	public void setRealgetmoneydate(Date realgetmoneydate) {
+	public void setRealgetmoneydate(String realgetmoneydate) {
 		this.realgetmoneydate = realgetmoneydate;
 	}
 	/**
 	 * 获取：项目结清日
 	 */
-	public Date getRealgetmoneydate() {
+	public String getRealgetmoneydate() {
 		return realgetmoneydate;
 	}
 	/**

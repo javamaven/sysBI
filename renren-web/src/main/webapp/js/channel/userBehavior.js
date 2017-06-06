@@ -1,4 +1,31 @@
+function getDate(datatype){
+    var today = new Date(new Date()-24*60*60*1000*1);
+    var halfYearAgo = new Date(new Date()-24*60*60*1000*182);
+    var startdate;
+    var enddate;
+    startdate = (today.getFullYear()) +"-" +
+        (today.getMonth() + 1 >9  ? (today.getMonth() + 1 ) : "0"+(today.getMonth() + 1 )) + "-" +
+        (today.getDate() > 9 ? today.getDate() : "0" + today.getDate());
+    enddate = (halfYearAgo.getFullYear()) +"-" +
+        (halfYearAgo.getMonth() + 1 >9  ? (halfYearAgo.getMonth() + 1 ) : "0"+(halfYearAgo.getMonth() + 1 ))+"-01";
+    return datatype==1 ? startdate : enddate;
 
+
+
+};
+//时间格式
+$(".form_datetime_2").
+    datetimepicker({
+    format: 'yyyy-mm-dd',
+    minView:'month',
+    language: 'zh-CN',
+    autoclose:true,
+    todayBtn : true,
+    setStartDate:new Date()
+});
+// 初始化时间
+document.getElementById("endStatDate").value=getDate(1);
+document.getElementById("beginStatDate").value=getDate(1);
 
 // 自适应高度
 function tableHeight() {
@@ -8,7 +35,10 @@ function tableHeight() {
 // 查询条件
 var pageInfo = {
         page  : 1,
-        limit : 10
+        limit : 10,
+            beginStatDate: document.getElementById("beginStatDate").value,
+            endStatDate: document.getElementById("endStatDate").value,
+            userName: document.getElementById("userName").value
     };
 
 // 表格加载
@@ -33,6 +63,26 @@ function loadTable(columnsData,tableData){
 }
 
 function loadTableAjax(){
+
+var userName =  document.getElementById("userName").value;
+if(!userName){
+    userName = null;
+}
+var beginStatDate =  document.getElementById("beginStatDate").value;
+if(!beginStatDate){
+    beginStatDate = null;
+}
+var endStatDate =  document.getElementById("endStatDate").value;
+if(!endStatDate){
+    endStatDate = null;
+}
+pageInfo = {
+        page  : 1,
+        limit : 10,
+        beginStatDate:beginStatDate,
+        endStatDate:endStatDate,
+            userName: userName
+    };
  $.ajax({
   //请求方式
     type: "POST",
@@ -80,22 +130,62 @@ $("#searchButton").click(function(){
         //添加样式
         $(".spinners li").addClass("active");
     // 查询条件
+var pageInfo = {
+        page  : 1,
+        limit : 10,
+            beginStatDate: document.getElementById("beginStatDate").value,
+             endStatDate: document.getElementById("endStatDate").value,
+            userName: document.getElementById("userName").value
+    };
 
-     pageInfo = getParams();
+
     //加载数据
     loadTableAjax();
 });
 
+
+
+
 function getParams(){
 	var params = {
-        page  : 1,
-        limit : 10
+          'beginStatDate': $("#beginStatDate").val(),
+          'userName': $("#userName").val()
     };
 	return params;
 }
 
 $(function(){
-
-    loadTableAjax();
+$(".spinners li").removeClass("active");
+//    loadTableAjax();
+initExportFunction();
 
 });
+
+ function initExportFunction(){
+ var userName =  document.getElementById("userName").value;
+ if(!userName){
+     userName = null;
+ }
+ var beginStatDate =  document.getElementById("beginStatDate").value;
+ if(!beginStatDate){
+     beginStatDate = null;
+ }
+ pageInfo = {
+         page  : 1,
+         limit : 10,
+         beginStatDate:beginStatDate,
+             userName: userName
+     };
+ 	$('#btn_exports').click(function(){
+ 		var params = getParams();
+ 		executePost('../black/userBehavior/partExport', {'params' : JSON.stringify(params)});
+ 	});
+
+ }
+//function initExportFunction(){
+//	$('#btn_exports').click(function(){
+//		var params = getParams();
+//		executePost('../black/userBehavior/exportExcel', {'params' : JSON.stringify(params)});
+//	});
+//
+//}

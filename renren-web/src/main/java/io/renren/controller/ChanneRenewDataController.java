@@ -4,12 +4,15 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.renren.service.UserBehaviorService;
+import io.renren.util.UserBehaviorUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,6 +43,11 @@ public class ChanneRenewDataController extends AbstractController {
 
 	@Autowired
 	private DataSourceFactory dataSourceFactory;
+
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+
+	private  String reportType="渠道续费数据提取汇总";
 
 	SimpleDateFormat dateSdf = new SimpleDateFormat("yyyyMMdd");
 	SimpleDateFormat dateTimeSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -78,6 +86,11 @@ public class ChanneRenewDataController extends AbstractController {
 	@RequestMapping("/queryChannelRenewDataList")
 	@RequiresPermissions("channel:channelAll:list")
 	public R queryChannelRenewDataList(@RequestBody Map<String, Object> params) throws ParseException {
+
+
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+
 		long startTime = System.currentTimeMillis();
 		PageUtils pageUtil = service.query(params);
 		long endTime = System.currentTimeMillis();
@@ -90,6 +103,11 @@ public class ChanneRenewDataController extends AbstractController {
 	@RequestMapping("/exportExcel")
 	@RequiresPermissions("channel:channelAll:list")
 	public void partExport(String list, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
+
+
 		List<ChannelRenewDataEntity> dataList = JSON.parseArray(list, ChannelRenewDataEntity.class);
 		JSONArray va = new JSONArray();
 		//

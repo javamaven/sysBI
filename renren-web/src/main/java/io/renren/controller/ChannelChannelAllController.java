@@ -1,12 +1,15 @@
 package io.renren.controller;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.renren.service.UserBehaviorService;
+import io.renren.util.UserBehaviorUtil;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,6 +27,8 @@ import io.renren.utils.PageUtils;
 import io.renren.utils.Query;
 import io.renren.utils.R;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 /**
  * 渠道总体情况
  *
@@ -36,13 +41,19 @@ import io.renren.utils.R;
 public class ChannelChannelAllController extends AbstractController {
 	@Autowired
 	private ChannelChannelAllService channelChannelAllService;
+	@Autowired
+	private UserBehaviorService userBehaviorService;
 
+	private  String reportType="渠道分次投资情况";
 	/**
 	 * 所有列表
 	 */
 	@RequestMapping("/list")
 	@RequiresPermissions("channel:channelAll:list")
 	public R list(@RequestBody Map<String, Object> params){
+
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		//查询列表数据
 		Query query = new Query(params);
 
@@ -62,7 +73,8 @@ public class ChannelChannelAllController extends AbstractController {
 	@RequiresPermissions("channel:channelAll:list")
 	public void exportList(String param,HttpServletRequest request, HttpServletResponse response)throws IOException {
 		//查询列表数据
-
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String,Object> map = JSON.parseObject(param, Map.class);
 		Query query = new Query(map);
 		//查询数据

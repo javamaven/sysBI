@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import io.renren.entity.LabelTagManagerEntity;
 import io.renren.service.LabelTagManagerService;
+import io.renren.service.UserBehaviorService;
+import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -30,6 +32,9 @@ import static io.renren.utils.ShiroUtils.getUserId;
 public class LabelTagManagerController {
 	@Autowired
 	private LabelTagManagerService labelTagManagerService;
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+	private  String reportType="标签表";
 	
 	/**
 	 * 保存
@@ -96,6 +101,8 @@ public class LabelTagManagerController {
 	@RequiresPermissions("labelTagManager:delete")
 	public R delete(@RequestBody Map<String, Object> params){
 
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"删除",reportType," ");
 		long struUserId = getUserId();
 		// 获取用户账号
 		String strUsername = labelTagManagerService.querySysUser(struUserId);
@@ -112,6 +119,8 @@ public class LabelTagManagerController {
 	@RequestMapping("/exists")
 	@RequiresPermissions("labelTagManager:save")
 	public R exists(@RequestBody Map<String, Object> params){
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 
 		long struUserId = getUserId();
 		// 获取用户账号

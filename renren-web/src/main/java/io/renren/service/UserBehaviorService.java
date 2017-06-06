@@ -12,4 +12,6 @@ public interface UserBehaviorService {
     void insert(Map<String, Object> map);
     List<UserBehaviorEntity> queryList(Map<String, Object> map);
     String querySysUsers(Long id);
+    Map<String, String> getExcelFields();
+    List<UserBehaviorEntity> queryExport();
 }

@@ -14,10 +14,15 @@
 	</resultMap>
 
 	<select id="queryList" resultType="io.renren.entity.UserBehaviorEntity">
+
 		call sys_user_oper_log(#{beginStatDate},#{endStatDate},#{userName});
 
 	</select>
 
+	<select id="queryExport" resultType="io.renren.entity.UserBehaviorEntity">
+
+		call sys_user_oper_log(#{beginStatDate},#{endStatDate},#{userName});
+	</select>
 
 
 	<insert id="insert"  parameterType="io.renren.entity.UserBehaviorEntity">

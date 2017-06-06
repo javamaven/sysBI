@@ -1,12 +1,15 @@
 package io.renren.controller;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONArray;
 import io.renren.entity.DmReportFinRepaymentdetailEntity;
+import io.renren.service.UserBehaviorService;
+import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.Query;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -24,6 +27,8 @@ import io.renren.utils.R;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 
 /**
  * 项目总台帐
@@ -37,7 +42,9 @@ import javax.servlet.http.HttpServletResponse;
 public class ProjectSumController {
 	@Autowired
 	private ProjectSumService dmReportFinRepaymentsumService;
-	
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+	private  String reportType="项目总台帐";
 	/**
 	 * 列表
 	 */
@@ -46,6 +53,8 @@ public class ProjectSumController {
 	@RequiresPermissions("dmreportfinrepaymentsum:list")
 	public R list(@RequestBody Map<String, Object> params) {
 
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 
 		//查询列表数据
 		Query query = new Query(params);
@@ -58,6 +67,8 @@ public class ProjectSumController {
 	@RequestMapping("/partExport")
 	public void partExport(HttpServletResponse response, HttpServletRequest request) throws IOException {
 
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 
 		List<ProjectSumEntity> ProjectSumList = dmReportFinRepaymentsumService.queryExport();
 		JSONArray va = new JSONArray();

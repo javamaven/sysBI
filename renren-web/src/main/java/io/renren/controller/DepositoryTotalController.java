@@ -3,6 +3,8 @@ package io.renren.controller;
 import com.alibaba.fastjson.JSONArray;
 import io.renren.entity.DepositoryTotalEntity;
 import io.renren.service.DepositoryTotalService;
+import io.renren.service.UserBehaviorService;
+import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.Query;
 import io.renren.utils.R;
@@ -16,8 +18,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static io.renren.utils.ShiroUtils.getUserId;
 
 
 /**
@@ -32,6 +37,11 @@ import java.util.Map;
 public class DepositoryTotalController {
 	@Autowired
 	private DepositoryTotalService dmReportCgReportService;
+
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+
+	private  String reportType="存管报备总表";
 	
 	/**
 	 * 列表
@@ -40,6 +50,9 @@ public class DepositoryTotalController {
 	@RequestMapping("/list")
 	@RequiresPermissions("dmreportcgreport:list")
 	public R list(@RequestBody Map<String, Object> params) {
+
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 
 
 		//查询列表数据
@@ -53,6 +66,8 @@ public class DepositoryTotalController {
 	@RequestMapping("/partExport")
 	public void partExport(HttpServletResponse response, HttpServletRequest request) throws IOException {
 
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 
 		List<DepositoryTotalEntity> DepositoryTotalList = dmReportCgReportService.queryExport();
 		JSONArray va = new JSONArray();
@@ -82,7 +97,7 @@ public class DepositoryTotalController {
 		}
 		Map<String, String> headMap = dmReportCgReportService.getExcelFields();
 
-		String title = "项目台帐明细";
+		String title = "存管报备总表";
 
 		ExcelUtil.downloadExcelFile(title,headMap,va,response);
 	}

@@ -1,12 +1,15 @@
 package io.renren.controller;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import com.alibaba.fastjson.JSONArray;
 import io.renren.entity.PerformanceHisEntity;
+import io.renren.service.UserBehaviorService;
+import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.Query;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -25,6 +28,8 @@ import io.renren.utils.R;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 
 /**
  * 绩效台帐-分配表
@@ -38,6 +43,9 @@ import javax.servlet.http.HttpServletResponse;
 public class PerformanceParameterController {
 	@Autowired
 	private PerformanceParameterService dmReportPerformanceLedgerService;
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+	private  String reportType="绩效台帐分配表";
 	
 	/**
 	 * 列表
@@ -46,6 +54,8 @@ public class PerformanceParameterController {
 	@RequestMapping("/list")
 	@RequiresPermissions("dmreportperformanceledger:list")
 	public R list(@RequestBody Map<String, Object> params) {
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 
 
 		//查询列表数据
@@ -58,6 +68,8 @@ public class PerformanceParameterController {
 	@ResponseBody
 	@RequestMapping("/partExport")
 	public void partExport(HttpServletResponse response, HttpServletRequest request) throws IOException {
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 
 
 		List<PerformanceParameterEntity> PerformanceParameterList = dmReportPerformanceLedgerService.queryExport();

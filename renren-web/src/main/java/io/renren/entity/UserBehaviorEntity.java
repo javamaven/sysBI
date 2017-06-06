@@ -22,6 +22,7 @@ public class UserBehaviorEntity implements Serializable {
     private String exportTimes;
     private String editTimes;
     private String deleteTimes;
+    private String statData;
 
 
     public String getStatDate() {
@@ -118,5 +119,13 @@ public class UserBehaviorEntity implements Serializable {
 
     public void setEXECSQL(String EXECSQL) {
         this.EXECSQL = EXECSQL;
+    }
+
+    public String getStatData() {
+        return statData;
+    }
+
+    public void setStatData(String statData) {
+        this.statData = statData;
     }
 }

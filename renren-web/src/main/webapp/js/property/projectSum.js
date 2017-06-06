@@ -147,16 +147,16 @@ function loadTableAjax(){
         '{field:"subproducttype",title:"产品分类子类",align:"center",valign:"middle"},'+
         '{field:"sourcecaseno",title:"项目合同编号",align:"center",valign:"middle"},'+
         '{field:"department",title:"部门",align:"center",valign:"middle"},'+
-        '{field:"developmanagername",title:"总监",align:"center",valign:"middle"},'+
+        '{field:"developmanagername",title:"　总监　",align:"center",valign:"middle"},'+
         '{field:"workername",title:"　　经办　　",align:"center",valign:"middle"},'+
         '{field:"customername",title:"借款人",align:"center",valign:"middle"},'+
         '{field:"payformoney",title:"借款金额",align:"center",valign:"middle"},'+
         '{field:"payformoneyout",title:"放款金额",align:"center",valign:"middle"},'+
         '{field:"loanyearlimit",title:"贷款月数",align:"center",valign:"middle"},'+
         '{field:"payforlimittime",title:"贷款天数",align:"center",valign:"middle"},'+
-        '{field:"giveoutmoneytime",title:"开始时间",align:"center",valign:"middle"},'+
-        '{field:"willgetmoneydate",title:"到期时间",align:"center",valign:"middle"},'+
-        '{field:"totalRateAmount",title:"总利率",align:"center",valign:"middle"},'+
+        '{field:"giveoutmoneytime",title:"　开始时间　",align:"center",valign:"middle"},'+
+        '{field:"willgetmoneydate",title:"　到期时间　",align:"center",valign:"middle"},'+
+        '{field:"totalRateAmount",title:"总利率（金额）",align:"center",valign:"middle"},'+
         '{field:"interestRate",title:"发标利率",align:"center",valign:"middle"},'+
         '{field:"otherRate",title:"其它利率",align:"center",valign:"middle"},'+
         '{field:"capitalCost",title:"资金成本",align:"center",valign:"middle"},'+

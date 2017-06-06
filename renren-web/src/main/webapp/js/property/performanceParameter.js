@@ -108,9 +108,9 @@ function loadTableAjax(){
         a = '['+a.substring(0,a.length-1)+']';
 //        alert(a);
         var b = '['+
-        '{field:"statPeriod",title:"业务日期",align:"center",valign:"middle" },'+
-        '{field:"developmanagername",title:"总监",align:"center",valign:"middle"},'+
-        '{field:"department",title:"部门",align:"center",valign:"middle"},'+
+        '{field:"statPeriod",title:"　业务日期　",align:"center",valign:"middle" },'+
+        '{field:"developmanagername",title:"　总监　",align:"center",valign:"middle"},'+
+        '{field:"department",title:"　部门　",align:"center",valign:"middle"},'+
         '{field:"payformoneyout",title:"放款金额",align:"center",valign:"middle"},'+
         '{field:"grossProfit",title:"毛利",align:"center",valign:"middle"},'+
         '{field:"salaryCost",title:"工资成本",align:"center",valign:"middle"},'+
@@ -166,7 +166,7 @@ $(function(){
 function initExportFunction(){
 	$('#btn_exports').click(function(){
 		var params = getParams();
-		executePost('../dmreportperformanceledger/partExport', {'params' : JSON.stringify(params)});
+		executePost('../dmreportfinrepaymentsum/partExport', {'params' : JSON.stringify(params)});
 	});
 
 }

@@ -11,4 +11,5 @@ import java.util.Map;
 public  interface  UserBehaviorDao extends BaseDao<UserBehaviorEntity> {
     void  insert(Map<String, Object> map);
     String querySysUsers(Long id);
+    List<UserBehaviorEntity> queryExport();
 }

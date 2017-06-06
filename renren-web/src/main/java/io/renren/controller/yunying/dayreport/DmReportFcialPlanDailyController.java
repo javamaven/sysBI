@@ -1,15 +1,13 @@
 package io.renren.controller.yunying.dayreport;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import io.renren.service.UserBehaviorService;
+import io.renren.util.UserBehaviorUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +27,8 @@ import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 /**
  * 
  * 
@@ -41,6 +41,10 @@ import io.renren.utils.R;
 public class DmReportFcialPlanDailyController {
 	@Autowired
 	private DmReportFcialPlanDailyService service;
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+
+	private  String reportType="每日理财计划基本数据";
 
 	/**
 	 * 列表
@@ -49,6 +53,9 @@ public class DmReportFcialPlanDailyController {
 	@RequestMapping("/list")
 	@RequiresPermissions("dmreportfcialplandaily:list")
 	public R list(Integer page, Integer limit, String statPeriod) {
+
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		Map<String, Object> map = new HashMap<>();
 		map.put("offset", (page - 1) * limit);
 		map.put("limit", limit);
@@ -74,6 +81,8 @@ public class DmReportFcialPlanDailyController {
 		if (StringUtils.isNotEmpty(statPeriod)) {
 			map.put("statPeriod", statPeriod.replace("-", ""));
 		}
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		// 查询列表数据
 		List<DmReportFcialPlanDailyEntity> dataList = service.queryList(map);
 		JSONArray va = new JSONArray();

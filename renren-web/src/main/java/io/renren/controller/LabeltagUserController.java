@@ -5,6 +5,8 @@ import io.renren.entity.LabelTagManagerEntity;
 import io.renren.entity.LabeltagUserEntity;
 import io.renren.service.LabelTagManagerService;
 import io.renren.service.LabeltagUserService;
+import io.renren.service.UserBehaviorService;
+import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.R;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +41,9 @@ public class LabeltagUserController {
 	private LabeltagUserService labeltagUserService;
 	@Autowired
 	private LabelTagManagerService labelTagManagerService;
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+	private  String reportType="用户标签表";
 	
 	/**
 	 * 列表
@@ -46,7 +52,8 @@ public class LabeltagUserController {
 	@RequestMapping("/list")
 	@RequiresPermissions("labeltaguser:list")
 	public R list(@RequestBody Map<String, Object> params){
-
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		long struUserId= getUserId();
 		// 获取用户账号
 		String strUsername = labelTagManagerService.querySysUser(struUserId);
@@ -112,6 +119,10 @@ public class LabeltagUserController {
 	@RequestMapping("/partExport")
 	@RequiresPermissions("labeltaguser:export")
 	public void partExport(HttpServletResponse response) throws IOException {
+
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
+
 		List<LabeltagUserEntity> LabeltagList = labeltagUserService.queryExport();
 		JSONArray ja = new JSONArray();
 

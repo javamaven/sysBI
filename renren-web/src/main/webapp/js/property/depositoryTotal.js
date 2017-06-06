@@ -116,7 +116,7 @@ function loadTableAjax(){
         var b = '['+
         '{field:"statPeriod",title:"统计日期",align:"center",valign:"middle" },'+
         '{field:"sourcecaseno",title:"平台项目编号",align:"center",valign:"middle"},'+
-        '{field:"department",title:"部门",align:"center",valign:"middle"},'+
+        '{field:"department",title:"　部门　",align:"center",valign:"middle"},'+
         '{field:"projectBelong",title:"项目归属",align:"center",valign:"middle"},'+
         '{field:"projectType",title:"项目类型",align:"center",valign:"middle"},'+
         '{field:"customername",title:"借款人",align:"center",valign:"middle"},'+
@@ -124,8 +124,8 @@ function loadTableAjax(){
         '{field:"loanrate",title:"利率",align:"center",valign:"middle"},'+
         '{field:"loanyearlimit",title:"期限-月",align:"center",valign:"middle"},'+
         '{field:"payforlimittime",title:"期限-日",align:"center",valign:"middle"},'+
-        '{field:"giveoutmoneytime",title:"满标放款日",align:"center",valign:"middle"},'+
-        '{field:"willgetmoneydate",title:"到期日",align:"center",valign:"middle"},'+
+        '{field:"giveoutmoneytime",title:"　满标放款日　",align:"center",valign:"middle"},'+
+        '{field:"willgetmoneydate",title:"　　到期日　　",align:"center",valign:"middle"},'+
         '{field:"iscompleted",title:"资料签名、盖章是否完全",align:"center",valign:"middle"},'+
         '{field:"sendDeadline",title:"纸质文本最迟寄送日（发标5个工作日内）",align:"center",valign:"middle"},'+
         '{field:"isstamp",title:"纸文本是否盖章",align:"center",valign:"middle"},'+

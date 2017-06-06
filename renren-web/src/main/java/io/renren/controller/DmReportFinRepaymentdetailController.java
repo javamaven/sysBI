@@ -1,6 +1,7 @@
 package io.renren.controller;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,6 +9,8 @@ import java.util.Map;
 import com.alibaba.fastjson.JSONArray;
 import io.renren.entity.InsideLxEntity;
 import io.renren.entity.MarketChannelEntity;
+import io.renren.service.UserBehaviorService;
+import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.Query;
 import org.apache.commons.lang.StringUtils;
@@ -27,6 +30,8 @@ import io.renren.utils.R;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 
 /**
  * 项目台帐明细
@@ -40,6 +45,11 @@ import javax.servlet.http.HttpServletResponse;
 public class DmReportFinRepaymentdetailController {
 	@Autowired
 	private DmReportFinRepaymentdetailService dmReportFinRepaymentdetailService;
+
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+
+	private  String reportType="项目台帐明细";
 	
 	/**
 	 * 列表
@@ -49,6 +59,8 @@ public class DmReportFinRepaymentdetailController {
 	@RequiresPermissions("dmreportfinrepaymentdetail:list")
 	public R list(@RequestBody Map<String, Object> params) {
 
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 
 		//查询列表数据
 		Query query = new Query(params);
@@ -61,7 +73,8 @@ public class DmReportFinRepaymentdetailController {
 	@RequestMapping("/partExport")
 	public void partExport(HttpServletResponse response, HttpServletRequest request) throws IOException {
 
-
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		List<DmReportFinRepaymentdetailEntity> DmReportFinRepaymentdetailList = dmReportFinRepaymentdetailService.queryExport();
 		JSONArray va = new JSONArray();
 
