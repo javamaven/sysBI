@@ -119,6 +119,6 @@ public class SqlConstants {
 			"AND addtime >= ? " +
 			"AND addtime <= ? " +
 			"and type in (2,3) " +
-			"and ( CITY in ("+city_string+") or CITY is null ) " +
+			"and ( CITY in ("+city_string+")  ) " +
 			"order by addtime  limit 200 ";
 }
