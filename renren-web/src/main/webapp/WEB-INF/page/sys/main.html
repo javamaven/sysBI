@@ -44,7 +44,7 @@
     <div style="position:absolute; left:2.5%;top:18%;" class="col-md-4">
         <img src="../statics/picture/tj_tit-3.png" style="width:70%;height:70%;"/>
     </div>
-    <!-- 平台注册人数 翻牌 -->
+    <!-- 平台服务人数 翻牌 -->
     <div style="position:absolute; left:2.5%;top:28%;" class="col-md-12">
         <!-- <div class="js-odoo"></div> -->
         <div class="activity_2"></div><input class="display_persion" />
@@ -663,6 +663,35 @@
 	            }
 	       });
     };
+    // 两个时间相隔天数
+    function getDays(strDateStart,strDateEnd){
+       var strSeparator = "-"; //日期分隔符
+       var oDate1;
+       var oDate2;
+       var iDays;
+       oDate1= strDateStart.split(strSeparator);
+       oDate2= strDateEnd.split(strSeparator);
+       var strDateS = new Date(oDate1[0], oDate1[1]-1, oDate1[2]);
+       var strDateE = new Date(oDate2[0], oDate2[1]-1, oDate2[2]);
+       iDays = parseInt(Math.abs(strDateS - strDateE ) / 1000 / 60 / 60 /24)//把相差的毫秒数转换为天数
+       return iDays ;
+    };
+    //获取当前时间
+    function getNowFormatDate() {
+        var date = new Date();
+        var seperator1 = "-";
+        var year = date.getFullYear();
+        var month = date.getMonth() + 1;
+        var strDate = date.getDate();
+        if (month >= 1 && month <= 9) {
+            month = "0" + month;
+        }
+        if (strDate >= 0 && strDate <= 9) {
+            strDate = "0" + strDate;
+        }
+        var currentdate = year + seperator1 + month + seperator1 + strDate;
+        return currentdate;
+    }
 
     function getTotalUserNum(){
      	$.ajax({
@@ -672,7 +701,7 @@
 	        contentType: "application/json;charset=utf-8",
 	        success : function(msg) {
 	                console.log(msg);
-	                document.getElementById("typesomething_2").value=msg.register_user;
+	                document.getElementById("typesomething_2").value=msg.register_user+1500000-getDays("2017-06-01",getNowFormatDate())*100;
 	                $("#showme_2").click();
 	        }
         });
