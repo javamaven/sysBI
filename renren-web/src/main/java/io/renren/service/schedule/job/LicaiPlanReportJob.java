@@ -1,6 +1,7 @@
 package io.renren.service.schedule.job;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +59,8 @@ public class LicaiPlanReportJob implements Job {
 		try {
 			ScheduleReportTaskEntity queryObject = taskService.queryObject(taskEntity.getId());
 			Map<String, Object> params = JSON.parseObject(queryObject.getCondition(), Map.class);
-
+			Map<String, Object> queryParams = new HashMap<String, Object>();
+			queryParams.putAll(params);
 			String date_offset_num = params.get("date_offset_num") + "";
 			String[] splitArr = date_offset_num.split("-");
 			if (!"0".equals(splitArr[0])) {
@@ -70,22 +72,25 @@ public class LicaiPlanReportJob implements Job {
 					}else if("hour".equals(splitArr[1])){
 						statPeriod = DateUtil.getHourBefore(statPeriod, -days, "yyyy-MM-dd");
 					}
-					params.put("statPeriod", statPeriod.replace("-", ""));
 				}
+				params.put("statPeriod", statPeriod);
+				queryParams.put("statPeriod", statPeriod.replace("-", ""));
 			}
 			logVo.setParams(JSON.toJSONString(params));
-			
-			List<DmReportFcialPlanDailyEntity> queryList = service.queryList(params);
+			List<DmReportFcialPlanDailyEntity> queryList = service.queryList(queryParams);
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < queryList.size(); i++) {
 				DmReportFcialPlanDailyEntity entity = queryList.get(i);
 				dataArray.add(entity);
 			}
-			String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
-
-			mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
-					taskEntity.getChaosongEmailList(), attachFilePath);
-			logVo.setEmailValue(attachFilePath);
+			if(queryList.size() > 0){
+				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
+				mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
+						taskEntity.getChaosongEmailList(), attachFilePath);
+				logVo.setEmailValue(attachFilePath);
+			}else{
+				logVo.setEmailValue("查询没有返回数据");
+			}
 			logVo.setSendResult("success");
 		} catch (Exception e) {
 			logVo.setSendResult("fail");

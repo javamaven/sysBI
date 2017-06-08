@@ -23,7 +23,11 @@ var jobType = {
 
 $(function () {
    initTableGrid();
+   
+   initEvent();
 });
+
+
 
 /**
  * 启动任务
@@ -214,6 +218,14 @@ var vm = new Vue({
 		},
 		saveOrUpdate: function (event) {
 			var url = vm.scheduleReportTask.id == null ? "../schedule/schedulereporttask/save" : "../schedule/schedulereporttask/update";
+			var sendRate1 = $("#sendRate1").val();
+			var sendRate2 = $("#sendRate2").val();
+			var checked = $('input:radio[name="Fruit"]:checked').val();
+			if(checked == 'time'){
+				vm.scheduleReportTask.sendRate = sendRate1;
+			}else if(checked == 'crontab'){
+				vm.scheduleReportTask.sendRate = sendRate2;
+			}
 			$.ajax({
 				type: "POST",
 			    url: url,

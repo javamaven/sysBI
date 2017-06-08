@@ -1,6 +1,7 @@
 package io.renren.controller.schedule;
 
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -129,6 +130,23 @@ public class ScheduleReportTaskController {
 			scheduleReportTaskService.save(scheduleReportTask);
 		}
 		return R.ok().put("total", queryList.size());
+	}
+	
+	/**
+	 * 获取Crontab执行时间
+	 */
+	@ResponseBody
+	@RequestMapping("/getRunTime")
+	public R getRunTime(@RequestBody Map<String,Object> params) {
+//		String selectType = params.get("selectType") + "";
+		String date = params.get("date") + "";
+		List<String> ret = new ArrayList<String>();
+		try {
+			ret = CronExpressionUtil.nextRunTimes(date, 5);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		return R.ok().put("data", ret);
 	}
 
 	/**
