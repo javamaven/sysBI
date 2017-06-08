@@ -28,9 +28,9 @@ import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
 
-
 /**
  * 每日理财计划基本数据推送任务
+ * 
  * @author Administrator
  *
  */
@@ -45,9 +45,21 @@ public class LicaiPlanReportJob implements Job {
 	private ScheduleReportTaskLogEntity logVo;
 	String title = "每日理财计划基本数据";
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(JobExecutionContext ctx) throws JobExecutionException {
+		for (int i = 0; i < 4; i++) {// 失败则重跑3次
+			boolean success = run(ctx);
+			if (success) {
+				break;
+			}
+		}
+		logService.save(logVo);
+		updateRunningTime();
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean run(JobExecutionContext ctx) {
+		boolean flag = true;
 		logVo = new ScheduleReportTaskLogEntity();
 		long l1 = System.currentTimeMillis();
 		JobDataMap jobDataMap = ctx.getJobDetail().getJobDataMap();
@@ -65,11 +77,11 @@ public class LicaiPlanReportJob implements Job {
 			String[] splitArr = date_offset_num.split("-");
 			if (!"0".equals(splitArr[0])) {
 				String statPeriod = params.get("statPeriod") + "";
-				if(StringUtils.isNotEmpty(statPeriod)){
+				if (StringUtils.isNotEmpty(statPeriod)) {
 					int days = Integer.valueOf(splitArr[0]);
-					if("day".equals(splitArr[1])){
+					if ("day".equals(splitArr[1])) {
 						statPeriod = DateUtil.getCurrDayBefore(statPeriod, -days, "yyyy-MM-dd");
-					}else if("hour".equals(splitArr[1])){
+					} else if ("hour".equals(splitArr[1])) {
 						statPeriod = DateUtil.getHourBefore(statPeriod, -days, "yyyy-MM-dd");
 					}
 				}
@@ -83,30 +95,29 @@ public class LicaiPlanReportJob implements Job {
 				DmReportFcialPlanDailyEntity entity = queryList.get(i);
 				dataArray.add(entity);
 			}
-			if(queryList.size() > 0){
+			if (queryList.size() > 0) {
 				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
 				mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
 						taskEntity.getChaosongEmailList(), attachFilePath);
 				logVo.setEmailValue(attachFilePath);
-			}else{
+			} else {
 				logVo.setEmailValue("查询没有返回数据");
 			}
 			logVo.setSendResult("success");
 		} catch (Exception e) {
+			flag = false;
 			logVo.setSendResult("fail");
 			logVo.setDesc(JobUtil.getStackTrace(e));
 			e.printStackTrace();
 		} finally {
 			long l2 = System.currentTimeMillis();
-			updateRunningTime(taskEntity.getId(), l2 - l1, logVo.getParams());
-
 			logVo.setTaskId(taskEntity.getId());
 			logVo.setChaosongEmail(taskEntity.getChaosongEmail());
 			logVo.setReceiveEmal(taskEntity.getReceiveEmail());
 			logVo.setTimeCost((int) (l2 - l1));
 			logVo.setTime(new Date());
-			logService.save(logVo);
 		}
+		return flag;
 	}
 
 	/**
@@ -115,16 +126,15 @@ public class LicaiPlanReportJob implements Job {
 	 * @param id
 	 * @param timeCost
 	 */
-	private void updateRunningTime(int id, long timeCost, String params) {
+	private void updateRunningTime() {
 		ScheduleReportTaskEntity entity = new ScheduleReportTaskEntity();
-		entity.setId(id);
+		entity.setId(logVo.getTaskId());
 		entity.setLastSendTime(new Date());
-		System.err.println("+++++++++timeCost+++++++++++++" + timeCost);
-		entity.setTimeCost((int) timeCost);
-		entity.setCondition(params);
+		System.err.println("+++++++++timeCost+++++++++++++" + logVo.getTimeCost());
+		entity.setTimeCost(logVo.getTimeCost());
+		entity.setCondition(logVo.getParams());
 		taskService.update(entity);
 
 	}
-
 
 }

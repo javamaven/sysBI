@@ -79,28 +79,37 @@ public class SqlConstants {
 	
 	static String cg_total_amount = 
 			"SELECT " +
-			"	SUM(tender_capital) CG_TOTAL_AMOUNT " +
+			"  SUM(tender_capital) CG_TOTAL_AMOUNT " +
 			"FROM " +
-			"	( " +
-			"		SELECT " +
-			"			IFNULL(tender_capital / 100, 0) AS tender_capital " +
-			"		FROM " +
-			"			project_tender_detail " +
-			"		WHERE " +
-			"			1 = 1 " +
-			"		AND tender_account_status IN (0, 1) " +
-			"		AND id NOT IN ( " +
-			"			SELECT " +
-			"				tender_detail_id " +
-			"			FROM " +
-			"				financial_plan_order_detail " +
-			"		) " +
-			"		UNION ALL " +
-			"			SELECT " +
-			"				IFNULL(tender_amount / 100, 0) " +
-			"			FROM " +
-			"				mdtx_business.financial_plan_order " +
-			"	) S ";
+			"  ( " +
+			"    SELECT " +
+			"      IFNULL( " +
+			"        CASE a.tender_subject " +
+			"        WHEN 1 THEN " +
+			"          a.tender_capital / 100 " +
+			"        WHEN 2 THEN " +
+			"          b.pay_amount / 100 " +
+			"        END, " +
+			"        0 " +
+			"      ) tender_capital " +
+			"    FROM " +
+			"      project_tender_detail a " +
+			"    LEFT JOIN creditor_purchase_order b ON a.id = b.relate_tender_detail_id " +
+			"    WHERE " +
+			"      a.tender_account_status IN (0, 1) " +
+			"    AND a.id NOT IN ( " +
+			"      SELECT " +
+			"        tender_detail_id " +
+			"      FROM " +
+			"        financial_plan_order_detail " +
+			"    ) " +
+			"    UNION ALL " +
+			"      SELECT " +
+			"        IFNULL(tender_amount / 100, 0) " +
+			"      FROM " +
+			"        financial_plan_order " +
+			"  ) S ";
+
 	
 	//点点赚交易总额
 	static String ddz_total_amount = 
