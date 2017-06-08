@@ -1,3 +1,12 @@
+$(function(){
+    loadChannell();
+    loadChannel();
+//    loadTableAjax();
+    initExportFunction();
+    $(".spinners li").removeClass("active");
+	initEvent();
+});
+
 function getAction(select_id){
     var reslist=$("#"+select_id).select2("data"); //多选
     var arrStr = new Array();
@@ -223,17 +232,6 @@ $("#searchButton").click(function(){
     loadTableAjax();
 });
 
-$(function(){
-     loadChannell();
-    loadChannel();
-//    loadTableAjax();
-    initExportFunction();
-    $(".spinners li").removeClass("active");
-//$('#btn_exports').click(function(){
-//    window.open("../logUserBehavior/partExport","_blank",'height=400,width=400,top=100,left=200,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no');
-//});
-
-});
 function initExportFunction(){
 	$('#btn_exports').click(function(){
 		var params = getParams2();

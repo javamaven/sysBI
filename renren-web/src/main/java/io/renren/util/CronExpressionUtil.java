@@ -142,8 +142,8 @@ public class CronExpressionUtil {
 
 	public static boolean isRight(String cron) {
 		try {
-			String nextRunTime = nextRunTime(cron);
-			if (nextRunTime == null || "".equals(nextRunTime.trim())) {
+			List<String> list = nextRunTimes(cron, 5);
+			if (list == null || list.size() == 0) {
 				return false;
 			}
 		} catch (ParseException e) {

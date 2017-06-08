@@ -95,15 +95,18 @@ public class ChannelAllReportJob implements Job {
 				dataArray.add(entity);
 			}
 			String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
-
-			// 生成图片
-			String fileName = ConfigProp.getPrintscreenDir() + File.separator + createChartImage.getFileName();
-			createChartImage.createChannelAllPicture(fileName, JSON.toJSONString(params));
-			String[] imgPaths = new String[] { fileName };
-			mailUtil.sendEmailWithAttachAndImg(imgPaths, "自动推送，请勿回复", title, taskEntity.getReceiveEmailList(),
-					taskEntity.getChaosongEmailList(), attachFilePath);
+			if(queryList.size() > 0){
+				// 生成图片
+				String fileName = ConfigProp.getPrintscreenDir() + File.separator + createChartImage.getFileName();
+				createChartImage.createChannelAllPicture(fileName, JSON.toJSONString(params));
+				String[] imgPaths = new String[] { fileName };
+				mailUtil.sendEmailWithAttachAndImg(imgPaths, "自动推送，请勿回复", title, taskEntity.getReceiveEmailList(),
+						taskEntity.getChaosongEmailList(), attachFilePath);
+				logVo.setEmailValue(attachFilePath + " ;" + fileName);
+			}else{
+				logVo.setEmailValue("查询没有返回数据");
+			}
 			logVo.setSendResult("success");
-			logVo.setEmailValue(attachFilePath + " ;" + fileName);
 		} catch (Exception e) {
 			logVo.setSendResult("fail");
 			logVo.setDesc(JobUtil.getStackTrace(e));

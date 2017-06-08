@@ -26,10 +26,19 @@ function addTask(taskType) {
 		alert('任务名称不能为空');
 		return;
 	}
-	var send_rate = $("#send_rate").val();
-	if (!send_rate) {
-		alert('调度频率不能为空');
-		return;
+//	var send_rate = $("#send_rate").val();
+//	if (!send_rate) {
+//		alert('调度频率不能为空');
+//		return;
+//	}
+	var sendRate1 = $("#sendRate1").val();
+	var sendRate2 = $("#sendRate2").val();
+	var checked = $('input:radio[name="Fruit"]:checked').val();
+	var send_rate = '';
+	if(checked == 'time'){
+		send_rate = sendRate1;
+	}else if(checked == 'crontab'){
+		send_rate = sendRate2;
 	}
 	var receive_email = $("#receive_email").val();
 	if (!receive_email) {
@@ -117,9 +126,6 @@ function openTaskWin(){
 }
 
 
-function openCrontabWin(){
-	
-}
 var currSelectType = 'one';
 function selectType(type){
 	currSelectType = type;
@@ -180,7 +186,7 @@ function showTime(){
  * 验证一下
  * @returns
  */
-function validateCron(){
+function validateCron(type){
 	var params = {};
 	var crontab = '';
 	if('one' == currSelectType){
@@ -193,7 +199,7 @@ function validateCron(){
 			var minute = one_time1.substring(14, 16);
 			crontab = '0 '+minute+' '+hour+' '+day+' '+month+' ? ' + year;
 			params.date = crontab;
-			queryNextFiveRunTime(params);
+			queryNextFiveRunTime(params, type);
 		}else{
 			alert('请先选择执行时间')
 			return;
@@ -210,7 +216,7 @@ function validateCron(){
 				crontab = '0 '+minute+' '+hour+' * * ? ';
 			}
 			params.date = crontab;
-			queryNextFiveRunTime(params);
+			queryNextFiveRunTime(params, type);
 		}else{
 			alert('请先选择执行时间')
 			return;
@@ -227,7 +233,7 @@ function validateCron(){
 				crontab = '0 '+minute+' '+hour+' * * ? ';
 			}
 			params.date = crontab;
-			queryNextFiveRunTime(params);
+			queryNextFiveRunTime(params, type);
 		}else{
 			alert('请先选择执行时间')
 			return;
@@ -244,7 +250,7 @@ function validateCron(){
 				crontab = '0 '+minute+' '+hour+' * * ?';
 			}
 			params.date = crontab;
-			queryNextFiveRunTime(params);
+			queryNextFiveRunTime(params, type);
 		}else{
 			alert('请先选择执行时间')
 			return;
@@ -261,7 +267,7 @@ function validateCron(){
 				crontab = '0 '+minute+' '+hour+' * * ?';
 			}
 			params.date = crontab;
-			queryNextFiveRunTime(params);
+			queryNextFiveRunTime(params, type);
 		}else{
 			alert('请先选择执行时间')
 			return;
@@ -273,8 +279,8 @@ function validateCron(){
  * 点击确定按钮，保存当前的crontab表达式
  * @returns
  */
-function setCrontabValue(){
-	validateCron();
+function setCrontabValue(type){
+	validateCron(type);
 	$("#sendRate1").val($("#crontab_text").html());
 	$("#sendRate2").val($("#crontab_text").html());
 }
@@ -304,12 +310,16 @@ function getMonthDays(){
 	}
 	return ret;
 }
-function queryNextFiveRunTime(params){
+function queryNextFiveRunTime(params, type){
+	var url = "../schedule/schedulereporttask/getRunTime";
+	if(type && type == 'yunying'){
+		url = "../../schedule/schedulereporttask/getRunTime";
+	}
 	params.selectType = currSelectType;
 	$.ajax({
 		type: "POST",
 		async: false,
-		url: "../schedule/schedulereporttask/getRunTime",
+		url: url,
 		data: JSON.stringify(params),
 		contentType: "application/json;charset=utf-8",
 	    success : function(msg) {

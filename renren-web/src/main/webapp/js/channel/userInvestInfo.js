@@ -4,6 +4,7 @@ $(function () {
 	initExportFunction();
     initTableGrid();
     queryTotalInfo();
+    initEvent();
 });
 function initExportFunction(){
 	$('#btn_exports').click(function(){

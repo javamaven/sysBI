@@ -1,25 +1,30 @@
 package io.renren.service.schedule.job;
 
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.log4j.Logger;
+import org.quartz.DisallowConcurrentExecution;
+import org.quartz.Job;
+import org.quartz.JobDataMap;
+import org.quartz.JobExecutionContext;
+import org.quartz.JobExecutionException;
+import org.quartz.PersistJobDataAfterExecution;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+
 import io.renren.entity.DepositoryTotalEntity;
-import io.renren.entity.ProjectSumEntity;
 import io.renren.entity.schedule.ScheduleReportTaskEntity;
 import io.renren.entity.schedule.ScheduleReportTaskLogEntity;
 import io.renren.service.DepositoryTotalService;
-import io.renren.service.ProjectSumService;
 import io.renren.service.schedule.ScheduleReportTaskLogService;
 import io.renren.service.schedule.ScheduleReportTaskService;
 import io.renren.service.schedule.entity.JobVo;
 import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
-import org.apache.log4j.Logger;
-import org.quartz.*;
-
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
@@ -73,11 +78,14 @@ public class DepositoryTotalJob implements Job {
 				DepositoryTotalEntity entity = (DepositoryTotalEntity)queryList.get(i);
 				dataArray.add(entity);
 			}
-			String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
-
-			mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
-					taskEntity.getChaosongEmailList(), attachFilePath);
-			logVo.setEmailValue(attachFilePath);
+			if(queryList.size() > 0){
+				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
+				mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
+						taskEntity.getChaosongEmailList(), attachFilePath);
+				logVo.setEmailValue(attachFilePath);
+			}else{
+				logVo.setEmailValue("查询没有返回数据");
+			}
 			logVo.setSendResult("success");
 		} catch (Exception e) {
 			logVo.setSendResult("fail");

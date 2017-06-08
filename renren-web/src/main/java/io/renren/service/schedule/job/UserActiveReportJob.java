@@ -101,11 +101,15 @@ public class UserActiveReportJob implements Job {
 				ChannelStftInfoEntity entity = (ChannelStftInfoEntity) pages.getList().get(i);
 				dataArray.add(entity);
 			}
-			String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
-
-			mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
-					taskEntity.getChaosongEmailList(), attachFilePath);
-			logVo.setEmailValue(attachFilePath);
+			if(dataArray.size() > 0){
+				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
+				
+				mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
+						taskEntity.getChaosongEmailList(), attachFilePath);
+				logVo.setEmailValue(attachFilePath);
+			}else{
+				logVo.setEmailValue("查询没有返回数据");
+			}
 			logVo.setSendResult("success");
 		} catch (Exception e) {
 			logVo.setSendResult("fail");
