@@ -17,32 +17,37 @@
 	</select>
 
 	<select id="queryList" resultType="io.renren.entity.PerformanceHisEntity">
-		DROP TABLE IF EXISTS TMP_001;
 
-
-		CREATE TEMPORARY TABLE TMP_001
 		select * from dm_report_perform_ledger_his
 		where 1=1
-		<if test="STAT_PERIOD != null and STAT_PERIOD.trim() != ''">
-			AND STAT_PERIOD = #{STAT_PERIOD}
+		<if test="statPeriod != null and statPeriod.trim() != ''">
+			AND STAT_PERIOD = #{statPeriod}
 		</if>
-		;
-		select *
-		from  TMP_001
+
+		<if test="page != null and limit != null">
+			limit #{page}, #{limit}
+		</if>
 
 
 	</select>
 	
  	<select id="queryTotal" resultType="int">
-		select count(*) from dm_report_perform_ledger_his 
+		select count(*) from dm_report_perform_ledger_his
+		where 1=1
+		<if test="statPeriod != null and statPeriod.trim() != ''">
+			AND STAT_PERIOD = #{statPeriod}
+		</if>
 	</select>
 
 	<select id="queryExport" resultType="io.renren.entity.PerformanceHisEntity">
 
-		select *
-		from  TMP_001
+		select * from dm_report_perform_ledger_his
+		where 1=1
+		<if test="statPeriod != null and statPeriod.trim() != ''">
+			AND STAT_PERIOD = #{statPeriod}
+		</if>
 
-		;
+
 	</select>
 
 </mapper>

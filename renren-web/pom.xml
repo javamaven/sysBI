@@ -47,7 +47,7 @@
 		    <version>12.1.0.1-atlassian-hosted</version>
 		</dependency>
 
-		
+
         <dependency>
             <groupId>io.renren</groupId>
             <artifactId>renren-common</artifactId>

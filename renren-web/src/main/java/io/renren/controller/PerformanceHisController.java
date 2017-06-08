@@ -7,6 +7,7 @@ import io.renren.service.PerformanceHisService;
 import io.renren.service.UserBehaviorService;
 import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
+import io.renren.utils.PageUtils;
 import io.renren.utils.Query;
 import io.renren.utils.R;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -41,23 +42,56 @@ public class PerformanceHisController {
 	@Autowired
 	private UserBehaviorService userBehaviorService;
 	private  String reportType="历史绩效发放记录表";
-	
+
+	static class Page{
+		private int total;
+		private List<?> rows;
+		public int getTotal() {
+			return total;
+		}
+		public void setTotal(int total) {
+			this.total = total;
+		}
+		public List<?> getRows() {
+			return rows;
+		}
+		public void setRows(List<?> rows) {
+			this.rows = rows;
+		}
+		public Page(int total, List<?> rows) {
+			super();
+			this.total = total;
+			this.rows = rows;
+		}
+
+	}
+
 	/**
 	 * 列表
 	 */
 	@ResponseBody
 	@RequestMapping("/list")
 	@RequiresPermissions("dmreportperformledgerhis:list")
-	public R list(@RequestBody Map<String, Object> params) {
+	public Page list(Map<String, Object> params, Integer page, Integer limit, String statPeriod) {
+
+		System.err.println("+++++++++++++++++++++++params+++++++++++++++++++++++++++++++++++" + params);
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
-
+		params.put("page", (page - 1) * limit);
+		params.put("limit", limit);
+		params.put("statPeriod", statPeriod);
 		//查询列表数据
 		Query query = new Query(params);
+		int total = dmReportPerformLedgerHisService.queryTotal(params);
 		//查询列表数据
 		List< PerformanceHisEntity> dmReportDailyDataList = dmReportPerformLedgerHisService.queryList(query);
 
-		return R.ok().put("page", dmReportDailyDataList);
+		Page page1 = new Page(total, dmReportDailyDataList);
+//		PageUtils pageUtils = new PageUtils(dmReportDailyDataList, total, query.getLimit(), query.getPage());
+//		return R.ok().put("page", page1);
+		return page1;
+
+
 	}
 	@ResponseBody
 	@RequestMapping("/partExport")
