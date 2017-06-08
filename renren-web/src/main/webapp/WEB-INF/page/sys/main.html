@@ -664,7 +664,7 @@
         if(mod_times==30){
             mod_times=0;
         }else{
-            console.log("add:"+(parseInt(after_invest)-parseInt(before_invest)));
+            //console.log("add:"+(parseInt(after_invest)-parseInt(before_invest)));
             var after_value = (parseInt(after_invest)-parseInt(before_invest))/30;
             document.getElementById("typesomething").value=parseInt(before_invest)+parseInt(after_value)*mod_times;
             $("#showme").click();
@@ -682,7 +682,7 @@
 	        //data: JSON.stringify(pageInfo),
 	        contentType: "application/json;charset=utf-8",
 	        success : function(msg) {
-	                console.log(msg);
+	                //console.log(msg);
 	                if(first_load==0){
                         before_invest =msg.total_amount;
                         after_invest = msg.total_amount;
@@ -739,7 +739,7 @@
 	        //data: JSON.stringify(pageInfo),
 	        contentType: "application/json;charset=utf-8",
 	        success : function(msg) {
-	                console.log(msg);
+	                //console.log(msg);
 	                document.getElementById("typesomething_2").value=msg.register_user+1500000-getDays("2017-06-01",getNowFormatDate())*100;
 	                $("#showme_2").click();
 	        }
