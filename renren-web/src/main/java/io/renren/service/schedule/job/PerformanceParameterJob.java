@@ -38,9 +38,21 @@ public class PerformanceParameterJob implements Job {
 	private ScheduleReportTaskLogEntity logVo;
 	String title = "绩效台帐-分配表";
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(JobExecutionContext ctx) throws JobExecutionException {
+		for (int i = 0; i < 4; i++) {// 失败则重跑3次
+			boolean success = run(ctx);
+			if (success) {
+				break;
+			}
+		}
+		logService.save(logVo);
+		updateRunningTime();
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean run(JobExecutionContext ctx) {
+		boolean flag = true;
 		logVo = new ScheduleReportTaskLogEntity();
 		long l1 = System.currentTimeMillis();
 		JobDataMap jobDataMap = ctx.getJobDetail().getJobDataMap();
@@ -89,35 +101,34 @@ public class PerformanceParameterJob implements Job {
 			}
 			logVo.setSendResult("success");
 		} catch (Exception e) {
+			flag = false;
 			logVo.setSendResult("fail");
 			logVo.setDesc(JobUtil.getStackTrace(e));
 			e.printStackTrace();
 		} finally {
 			long l2 = System.currentTimeMillis();
-			updateRunningTime(taskEntity.getId(), l2 - l1, logVo.getParams());
-
 			logVo.setTaskId(taskEntity.getId());
 			logVo.setChaosongEmail(taskEntity.getChaosongEmail());
 			logVo.setReceiveEmal(taskEntity.getReceiveEmail());
 			logVo.setTimeCost((int) (l2 - l1));
 			logVo.setTime(new Date());
-			logService.save(logVo);
 		}
+		return flag;
 	}
-
+	
 	/**
 	 * 更新最后运行时间
 	 * 
 	 * @param id
 	 * @param timeCost
 	 */
-	private void updateRunningTime(int id, long timeCost, String params) {
+	private void updateRunningTime() {
 		ScheduleReportTaskEntity entity = new ScheduleReportTaskEntity();
-		entity.setId(id);
+		entity.setId(logVo.getTaskId());
 		entity.setLastSendTime(new Date());
-		System.err.println("+++++++++timeCost+++++++++++++" + timeCost);
-		entity.setTimeCost((int) timeCost);
-		entity.setCondition(params);
+		System.err.println("+++++++++timeCost+++++++++++++" + logVo.getTimeCost());
+		entity.setTimeCost(logVo.getTimeCost());
+		entity.setCondition(logVo.getParams());
 		taskService.update(entity);
 
 	}

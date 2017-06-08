@@ -43,9 +43,21 @@ public class UserInvestReportJob implements Job {
 	private ScheduleReportTaskLogEntity logVo;
 	String title = "用户投资情况";
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(JobExecutionContext ctx) throws JobExecutionException {
+		for (int i = 0; i < 4; i++) {// 失败则重跑3次
+			boolean success = run(ctx);
+			if (success) {
+				break;
+			}
+		}
+		logService.save(logVo);
+		updateRunningTime();
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean run(JobExecutionContext ctx) {
+		boolean flag = true;
 		logVo = new ScheduleReportTaskLogEntity();
 		long l1 = System.currentTimeMillis();
 		JobDataMap jobDataMap = ctx.getJobDetail().getJobDataMap();
@@ -55,12 +67,15 @@ public class UserInvestReportJob implements Job {
 		MailUtil mailUtil = new MailUtil();
 		JobUtil jobUtil = new JobUtil();
 		try {
-//			String condition = taskEntity.getCondition();
-//			Map<String, Object> params = JSON.parseObject(condition, Map.class);
+			// String condition = taskEntity.getCondition();
+			// Map<String, Object> params = JSON.parseObject(condition,
+			// Map.class);
 			ScheduleReportTaskEntity queryObject = taskService.queryObject(taskEntity.getId());
 			Map<String, Object> params = JSON.parseObject(queryObject.getCondition(), Map.class);
-//			Integer page = params.get("page") == null ? 0 : Integer.parseInt(params.get("page").toString());
-//			Integer limit = params.get("limit") == null ? 0 : Integer.parseInt(params.get("limit").toString());
+			// Integer page = params.get("page") == null ? 0 :
+			// Integer.parseInt(params.get("page").toString());
+			// Integer limit = params.get("limit") == null ? 0 :
+			// Integer.parseInt(params.get("limit").toString());
 			String userId = params.get("userId") + "";
 			String userName = params.get("userName") + "";
 			String channelId = params.get("channelId") + "";
@@ -69,38 +84,37 @@ public class UserInvestReportJob implements Job {
 			String investEndTime = params.get("investEndTime") + "";
 			String operPlatform = params.get("operPlatform") + "";
 			String withProType = params.get("withProType") + "";
-			PageUtils pages = service.query(1, 1000*10000, userId, userName, channelId, channelName, investStartTime,
+			PageUtils pages = service.query(1, 1000 * 10000, userId, userName, channelId, channelName, investStartTime,
 					investEndTime, operPlatform, withProType);
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < pages.getList().size(); i++) {
 				DmReportInvestmentDailyEntity entity = (DmReportInvestmentDailyEntity) pages.getList().get(i);
 				dataArray.add(entity);
 			}
-			if(dataArray.size() > 0){
+			if (dataArray.size() > 0) {
 				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
-				
+
 				mailUtil.sendWithAttach(title + "-每日报表", "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
 						taskEntity.getChaosongEmailList(), attachFilePath);
 				logVo.setEmailValue(attachFilePath);
-			}else{
+			} else {
 				logVo.setEmailValue("查询没有返回数据");
 			}
 			logVo.setSendResult("success");
 		} catch (Exception e) {
+			flag = false;
 			logVo.setSendResult("fail");
 			logVo.setDesc(JobUtil.getStackTrace(e));
 			e.printStackTrace();
 		} finally {
 			long l2 = System.currentTimeMillis();
-			updateRunningTime(taskEntity.getId(), l2 - l1);
-			
 			logVo.setTaskId(taskEntity.getId());
 			logVo.setChaosongEmail(taskEntity.getChaosongEmail());
 			logVo.setReceiveEmal(taskEntity.getReceiveEmail());
 			logVo.setTimeCost((int) (l2 - l1));
 			logVo.setTime(new Date());
-			logService.save(logVo);
 		}
+		return flag;
 	}
 
 	/**
@@ -109,12 +123,13 @@ public class UserInvestReportJob implements Job {
 	 * @param id
 	 * @param timeCost
 	 */
-	private void updateRunningTime(int id, long timeCost) {
+	private void updateRunningTime() {
 		ScheduleReportTaskEntity entity = new ScheduleReportTaskEntity();
-		entity.setId(id);
+		entity.setId(logVo.getTaskId());
 		entity.setLastSendTime(new Date());
-		System.err.println("+++++++++timeCost+++++++++++++" + timeCost);
-		entity.setTimeCost((int) timeCost);
+		System.err.println("+++++++++timeCost+++++++++++++" + logVo.getTimeCost());
+		entity.setTimeCost(logVo.getTimeCost());
+		entity.setCondition(logVo.getParams());
 		taskService.update(entity);
 
 	}
