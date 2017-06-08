@@ -76,6 +76,7 @@ public class SqlConstants {
 			"WHERE " +
 			"	project_complete_date > '0000-00-00' ";
 	//存管版交易总额
+	
 	static String cg_total_amount = 
 			"SELECT " +
 			"	SUM(tender_capital) CG_TOTAL_AMOUNT " +
