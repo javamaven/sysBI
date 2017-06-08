@@ -2,18 +2,20 @@ package io.renren.util;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import org.apache.commons.lang.StringUtils;
 import org.quartz.CronExpression;
 import org.quartz.TriggerUtils;
 import org.quartz.impl.triggers.CronTriggerImpl;
+import org.quartz.spi.OperableTrigger;
 
 public class CronExpressionUtil {
 	static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -25,8 +27,10 @@ public class CronExpressionUtil {
 	 */
 	public static void main(String[] args) throws ParseException, InterruptedException {
 		String cron = "* * * * * ?";
+//		cron = "0 25 05 06 06 ? 2017";
+		cron = "0 50 10 ? * 1,2";
 		long l1 = System.currentTimeMillis();
-		System.err.println(nextRunTime(cron));
+		System.err.println(nextRunTimes(cron, 5));
 		long l2 = System.currentTimeMillis();
 		System.err.println("耗时：" + (l2 - l1));
 		// CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
@@ -56,6 +60,69 @@ public class CronExpressionUtil {
 	 * @return
 	 * @throws ParseException
 	 */
+	public static List<String> nextRunTimes(String cron, int times) throws ParseException {
+		CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
+		cronTriggerImpl.setCronExpression(cron);// 这里写要准备猜测的cron表达式
+		Calendar calendar = Calendar.getInstance();
+		Date now = calendar.getTime();
+		calendar.add(Calendar.DAY_OF_MONTH, 10000);// 把统计的区间段设置为从现在到2年后的今天（主要是为了方法通用考虑，如那些1个月跑一次的任务，如果时间段设置的较短就不足20条)
+		List<String> ret = new ArrayList<String>();
+		try {
+			List<Date> dates = computeFireTimesBetween(cronTriggerImpl, null, now, calendar.getTime());// 这个是重点，一行代码搞定~~
+			for (int i = 0; i < dates.size(); i++) {
+				ret.add(sdf.format(dates.get(i)));
+				if(ret.size() == times){
+					break;
+				}
+			}
+		} catch (Exception e) {
+			return ret;
+		}
+		return ret;
+	}
+
+	public static List<Date> computeFireTimesBetween(OperableTrigger trigg, org.quartz.Calendar cal, Date from,
+			Date to) {
+		LinkedList<Date> lst = new LinkedList<Date>();
+
+		OperableTrigger t = (OperableTrigger) trigg.clone();
+
+		if (t.getNextFireTime() == null) {
+			t.setStartTime(from);
+			t.setEndTime(to);
+			t.computeFirstFireTime(cal);
+		}
+
+		while (true) {
+			Date d = t.getNextFireTime();
+			if (d != null) {
+				if (d.before(from)) {
+					t.triggered(cal);
+					continue;
+				}
+				if (d.after(to)) {
+					break;
+				}
+				lst.add(d);
+				if (lst.size() >= 10) {
+					break;
+				}
+				t.triggered(cal);
+			} else {
+				break;
+			}
+		}
+
+		return java.util.Collections.unmodifiableList(lst);
+	}
+
+	/**
+	 * 下次执行时间
+	 * 
+	 * @param cron
+	 * @return
+	 * @throws ParseException
+	 */
 	public static String nextRunTime(String cron) throws ParseException {
 		CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
 		cronTriggerImpl.setCronExpression(cron);// 这里写要准备猜测的cron表达式
@@ -75,8 +142,8 @@ public class CronExpressionUtil {
 
 	public static boolean isRight(String cron) {
 		try {
-			String nextRunTime = nextRunTime(cron);
-			if (StringUtils.isEmpty(nextRunTime)) {
+			List<String> list = nextRunTimes(cron, 5);
+			if (list == null || list.size() == 0) {
 				return false;
 			}
 		} catch (ParseException e) {

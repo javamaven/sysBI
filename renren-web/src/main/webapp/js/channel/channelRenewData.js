@@ -1,11 +1,8 @@
 $(function(){
 	initQueryDate();
     loadChannel();
-//    loadTableAjax();
     initExportFunction();
-    // 移除loading样式
-    $(".spinners li").removeClass("active");
-    
+    initEvent();
 });
 
 //初始化时间

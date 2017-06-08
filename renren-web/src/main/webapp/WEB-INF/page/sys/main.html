@@ -122,10 +122,14 @@
     	 }
       
 	 }
-	 
+
+
 	$(function () {
+
+        setInterval('mod_invest()', 1000);
+
 	    queryDituData();
-	  		 
+
 	    queryInvestInfo();
 		getTotalInvest();
 	    getTotalUserNum();
@@ -133,8 +137,8 @@
 	    setInterval('queryInvestInfo()', 5*60*1000);
 	    setInterval('queryDituData()', 1*60*1000);
 	    setInterval('delStr()', 10000);
-	    setInterval('getTotalInvest()', 30000);
-	    setInterval('getTotalUserNum()', 30000);
+	    setInterval('getTotalInvest()', 30*1000);
+	    setInterval('getTotalUserNum()', 30*1000);
 	});
 	 
 	var seriesData = [];
@@ -650,6 +654,27 @@
 	    }
 　　  }
 
+
+    var before_invest=0;
+    var after_invest=0;
+    var mod_times = 0;
+
+    //分段更新
+    function mod_invest(){
+        if(mod_times==30){
+            mod_times=0;
+        }else{
+            //console.log("add:"+(parseInt(after_invest)-parseInt(before_invest)));
+            var after_value = (parseInt(after_invest)-parseInt(before_invest))/30;
+            document.getElementById("typesomething").value=parseInt(before_invest)+parseInt(after_value)*mod_times;
+            $("#showme").click();
+            mod_times++;
+        }
+    }
+
+
+    var first_load=0;
+
     function getTotalInvest(){
     	 $.ajax({
 	        type: "POST",
@@ -657,12 +682,26 @@
 	        //data: JSON.stringify(pageInfo),
 	        contentType: "application/json;charset=utf-8",
 	        success : function(msg) {
-	                console.log(msg);
-	                document.getElementById("typesomething").value=msg.total_amount;
+	                //console.log(msg);
+	                if(first_load==0){
+                        before_invest =msg.total_amount;
+                        after_invest = msg.total_amount;
+	                    document.getElementById("typesomething").value=after_invest;
+	                    first_load++;
+	                }else{
+                        before_invest =after_invest;
+                        //after_invest = parseInt(msg.total_amount)+parseInt(200000);
+                        after_invest = parseInt(msg.total_amount);
+	                    document.getElementById("typesomething").value=before_invest;
+	                }
 	                $("#showme").click();
 	            }
 	       });
     };
+
+
+
+
     // 两个时间相隔天数
     function getDays(strDateStart,strDateEnd){
        var strSeparator = "-"; //日期分隔符
@@ -700,7 +739,7 @@
 	        //data: JSON.stringify(pageInfo),
 	        contentType: "application/json;charset=utf-8",
 	        success : function(msg) {
-	                console.log(msg);
+	                //console.log(msg);
 	                document.getElementById("typesomething_2").value=msg.register_user+1500000-getDays("2017-06-01",getNowFormatDate())*100;
 	                $("#showme_2").click();
 	        }

@@ -8,6 +8,7 @@ $(function () {
 	initTimeCond();
 	initTable();
 	queryTotalInfo(stataDay);
+	initEvent();
 });
 /**
  * 将数值四舍五入后格式化.

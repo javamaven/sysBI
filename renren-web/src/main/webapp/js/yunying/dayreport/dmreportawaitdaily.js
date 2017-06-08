@@ -2,6 +2,7 @@ $(function () {
 	initTableGrid();
 	initTimeCond();
 	initExportFunction();
+	initEvent();
 });
 function initExportFunction(){
 	$('#btn_exports').click(function(){

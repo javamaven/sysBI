@@ -1,8 +1,7 @@
 $(function(){
     loadChannel();
     initExportFunction();
-    // 移除loading样式
-    $(".spinners li").removeClass("active");
+    initEvent();
 });
 
 

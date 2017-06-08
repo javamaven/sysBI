@@ -1,10 +1,7 @@
 $(function(){
     loadChannel();
     initExportFunction();
-    
-//    loadTableAjax();
-    // 移除loading样式
-    $(".spinners li").removeClass("active");
+    initEvent();
 });
 
 var currDataList;

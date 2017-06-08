@@ -17,7 +17,7 @@ import io.renren.utils.ExcelUtil;
 
 public class JobUtil {
 
-	private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 
 	/**
 	 * 生成附件

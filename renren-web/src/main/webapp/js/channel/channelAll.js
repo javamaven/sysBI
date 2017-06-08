@@ -1,4 +1,8 @@
-
+$(function(){
+    loadChannel();
+    loadTableAjax();
+    initEvent();
+});
 function getDate(datatype){
     var today = new Date(new Date()-24*60*60*1000);
     var halfYearAgo = new Date(new Date()-24*60*60*1000*91);
@@ -496,10 +500,3 @@ function getChannelName(){
     return  arrStr;
 }
 
-$(function(){
-
-    loadChannel();
-    loadTableAjax();
-
-
-});

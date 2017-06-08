@@ -1,3 +1,9 @@
+$(function(){
+    loadChannel();
+    initExportFunction();
+    $(".spinners li").removeClass("active");
+	initEvent();
+});
 
 // 获取渠道信息
 function getChannelName(){
@@ -180,17 +186,7 @@ $("#searchButton").click(function(){
     loadTableAjax();
 });
 
-$(function(){
 
-    loadChannel();
-//    loadTableAjax();
-initExportFunction();
-$(".spinners li").removeClass("active");
-//$('#btn_exports').click(function(){
-//    window.open("../market/partExport","_blank",'height=400,width=400,top=100,left=200,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no');
-//});
-
-});
 function initExportFunction(){
 	$('#btn_exports').click(function(){
 		var params = getParams();

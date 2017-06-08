@@ -28,6 +28,7 @@ import io.renren.util.MailUtil;
 
 /**
  * 渠道负责人推送任务
+ * 
  * @author Administrator
  *
  */
@@ -42,9 +43,21 @@ public class MarketChannelReportJob implements Job {
 	private ScheduleReportTaskLogEntity logVo;
 	String title = "渠道负责人情况";
 
-	@SuppressWarnings("unchecked")
 	@Override
 	public void execute(JobExecutionContext ctx) throws JobExecutionException {
+		for (int i = 0; i < 4; i++) {// 失败则重跑3次
+			boolean success = run(ctx);
+			if (success) {
+				break;
+			}
+		}
+		logService.save(logVo);
+		updateRunningTime();
+	}
+
+	@SuppressWarnings("unchecked")
+	private boolean run(JobExecutionContext ctx) {
+		boolean flag = true;
 		logVo = new ScheduleReportTaskLogEntity();
 		long l1 = System.currentTimeMillis();
 		JobDataMap jobDataMap = ctx.getJobDetail().getJobDataMap();
@@ -63,10 +76,10 @@ public class MarketChannelReportJob implements Job {
 				String reg_begindate = params.get("reg_begindate").toString();
 				String reg_enddate = params.get("reg_enddate").toString();
 				int days = Integer.valueOf(splitArr[0]);
-				if("day".equals(splitArr[1])){
+				if ("day".equals(splitArr[1])) {
 					reg_begindate = DateUtil.getCurrDayBefore(reg_begindate, -days, "yyyyMMdd");
 					reg_enddate = DateUtil.getCurrDayBefore(reg_enddate, -days, "yyyyMMdd");
-				}else if("hour".equals(splitArr[1])){
+				} else if ("hour".equals(splitArr[1])) {
 					reg_begindate = DateUtil.getHourBefore(reg_begindate, -days, "yyyyMMdd");
 					reg_enddate = DateUtil.getHourBefore(reg_enddate, -days, "yyyyMMdd");
 				}
@@ -74,34 +87,36 @@ public class MarketChannelReportJob implements Job {
 				params.put("reg_enddate", reg_enddate);
 			}
 			logVo.setParams(JSON.toJSONString(params));
-			
+
 			List<MarketChannelEntity> queryList = service.queryList(params);
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < queryList.size(); i++) {
 				MarketChannelEntity entity = queryList.get(i);
 				dataArray.add(entity);
 			}
-			String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
-
-			mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
-					taskEntity.getChaosongEmailList(), attachFilePath);
-			logVo.setEmailValue(attachFilePath);
+			if (queryList.size() > 0) {
+				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
+				mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
+						taskEntity.getChaosongEmailList(), attachFilePath);
+				logVo.setEmailValue(attachFilePath);
+			} else {
+				logVo.setEmailValue("查询没有返回数据");
+			}
 			logVo.setSendResult("success");
 		} catch (Exception e) {
+			flag = false;
 			logVo.setSendResult("fail");
 			logVo.setDesc(JobUtil.getStackTrace(e));
 			e.printStackTrace();
 		} finally {
 			long l2 = System.currentTimeMillis();
-			updateRunningTime(taskEntity.getId(), l2 - l1, logVo.getParams());
-
 			logVo.setTaskId(taskEntity.getId());
 			logVo.setChaosongEmail(taskEntity.getChaosongEmail());
 			logVo.setReceiveEmal(taskEntity.getReceiveEmail());
 			logVo.setTimeCost((int) (l2 - l1));
 			logVo.setTime(new Date());
-			logService.save(logVo);
 		}
+		return flag;
 	}
 
 	/**
@@ -110,16 +125,15 @@ public class MarketChannelReportJob implements Job {
 	 * @param id
 	 * @param timeCost
 	 */
-	private void updateRunningTime(int id, long timeCost, String params) {
+	private void updateRunningTime() {
 		ScheduleReportTaskEntity entity = new ScheduleReportTaskEntity();
-		entity.setId(id);
+		entity.setId(logVo.getTaskId());
 		entity.setLastSendTime(new Date());
-		System.err.println("+++++++++timeCost+++++++++++++" + timeCost);
-		entity.setTimeCost((int) timeCost);
-		entity.setCondition(params);
+		System.err.println("+++++++++timeCost+++++++++++++" + logVo.getTimeCost());
+		entity.setTimeCost(logVo.getTimeCost());
+		entity.setCondition(logVo.getParams());
 		taskService.update(entity);
 
 	}
-
 
 }
