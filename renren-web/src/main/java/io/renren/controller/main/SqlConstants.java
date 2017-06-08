@@ -68,13 +68,38 @@ public class SqlConstants {
 			"AND tc.maxaddtime <= TO_NUMBER( SYSDATE -TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 "; 
 	
 	//存管版交易总额
-	static String cg_total_amount = 
+	static String cg_total_amount_bak = 
 			"SELECT " +
 			"	IFNULL(SUM(borrow_account), 0) / 100 CG_TOTAL_AMOUNT " +
 			"FROM " +
 			"	project " +
 			"WHERE " +
 			"	project_complete_date > '0000-00-00' ";
+	//存管版交易总额
+	static String cg_total_amount = 
+			"SELECT " +
+			"	SUM(tender_capital) CG_TOTAL_AMOUNT " +
+			"FROM " +
+			"	( " +
+			"		SELECT " +
+			"			IFNULL(tender_capital / 100, 0) AS tender_capital " +
+			"		FROM " +
+			"			project_tender_detail " +
+			"		WHERE " +
+			"			1 = 1 " +
+			"		AND tender_account_status IN (0, 1) " +
+			"		AND id NOT IN ( " +
+			"			SELECT " +
+			"				tender_detail_id " +
+			"			FROM " +
+			"				financial_plan_order_detail " +
+			"		) " +
+			"		UNION ALL " +
+			"			SELECT " +
+			"				IFNULL(tender_amount / 100, 0) " +
+			"			FROM " +
+			"				mdtx_business.financial_plan_order " +
+			"	) S ";
 	
 	//点点赚交易总额
 	static String ddz_total_amount = 
