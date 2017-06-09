@@ -118,7 +118,7 @@
         //<img src="../statics/picture/xd-3.gif" style="width:30%;height:30%;"/>
         var div_map = document.getElementById("map_xiaodai");
         var img_map = document.getElementById("map_xd");
-        img_map.setAttribute('src','../statics/picture/xd-'+Math.round(Math.random()*9)+'.gif');
+        img_map.setAttribute('src','../statics/picture/xd-'+Math.round(Math.random()*8+1)+'.gif');
         var xd_left = Math.round(Math.random()*50 + 40);
         var xd_top = Math.round(Math.random()*50 + 30);
         div_map.style.cssText="position:absolute; left:"+xd_left+"%;top:"+xd_top+"%;";
@@ -711,6 +711,7 @@
 
     //分段更新
     function mod_invest(){
+
         if(mod_times==30){
             mod_times=0;
         }else{
