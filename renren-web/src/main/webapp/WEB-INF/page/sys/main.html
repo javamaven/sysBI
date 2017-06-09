@@ -34,7 +34,7 @@
     <div id="main">	</div>
     <!-- 地图上的小袋 -->
     <div style="position:absolute; left:65%;top:20%;" class="col-md-3" id = "map_xiaodai">
-        <img src="../statics/picture/happy.gif" style="width:30%;height:30%;"/>
+        <img src="../statics/picture/xd-3.gif" style="width:30%;height:30%;" id="map_xd"/>
     </div>
     <!-- 公司logo -->
     <div style="position:absolute; left:2.5%;top:5%;" class="col-md-3">
@@ -115,7 +115,10 @@
    //地图上的小袋，随机出现
    function randon_style(){
         $("#map_xiaodai").removeAttr("style");
+        //<img src="../statics/picture/xd-3.gif" style="width:30%;height:30%;"/>
         var div_map = document.getElementById("map_xiaodai");
+        var img_map = document.getElementById("map_xd");
+        img_map.setAttribute('src','../statics/picture/xd-'+Math.round(Math.random()*9)+'.gif');
         var xd_left = Math.round(Math.random()*50 + 40);
         var xd_top = Math.round(Math.random()*50 + 30);
         div_map.style.cssText="position:absolute; left:"+xd_left+"%;top:"+xd_top+"%;";
