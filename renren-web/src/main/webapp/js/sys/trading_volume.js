@@ -1,5 +1,6 @@
 $(function() {
 	initInvestQushiEcharts();
+	
 	setInterval('queryQushiData()', 30*60*1000);
 });
 
