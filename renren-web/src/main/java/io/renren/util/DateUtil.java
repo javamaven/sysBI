@@ -13,10 +13,12 @@ public class DateUtil {
 	private static SimpleDateFormat dateTimeSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 	public static void main(String[] args) {
-		System.out.println(dateTimeSdf.format(new Date()));
-		System.out.println("getCurrDayStr=" + getCurrDayStr());
-		System.out.println("getCurrDayBefore=" + getCurrDayBefore(1));
-		System.out.println("getCurrDayBefore=" + getCurrDayBefore("20170423", 1 ,null));
+//		System.out.println(dateTimeSdf.format(new Date()));
+//		System.out.println("getCurrDayStr=" + getCurrDayStr());
+//		System.out.println("getCurrDayBefore=" + getCurrDayBefore(1));
+//		System.out.println("getCurrDayBefore=" + getCurrDayBefore("20170423", 1, null));
+		
+		System.out.println("getNextMinutes=" + getNextMinutes("2017-06-09 17:00", 30, "yyyy-MM-dd HH:mm"));
 	}
 
 	public static String formatDate(Date date) {
@@ -72,7 +74,7 @@ public class DateUtil {
 	 * @return
 	 */
 	public static String getCurrDayBefore(String date, int days, String sdf) {
-		if(StringUtils.isEmpty(date)){
+		if (StringUtils.isEmpty(date)) {
 			return "";
 		}
 		Calendar cal = Calendar.getInstance();
@@ -96,9 +98,26 @@ public class DateUtil {
 		}
 
 	}
-	
+
+	public static String getNextMinutes(String date, int minutes, String sdf) {
+		if (StringUtils.isEmpty(date)) {
+			return "";
+		}
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat dateSdf2 = null;
+		try {
+			dateSdf2 = new SimpleDateFormat(sdf);
+			cal.setTime(dateSdf2.parse(date));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		cal.add(Calendar.MINUTE, minutes);
+		return dateSdf2.format(cal.getTime());
+
+	}
+
 	public static String getHourBefore(String date, int hours, String sdf) {
-		if(StringUtils.isEmpty(date)){
+		if (StringUtils.isEmpty(date)) {
 			return "";
 		}
 		Calendar cal = Calendar.getInstance();
@@ -122,9 +141,9 @@ public class DateUtil {
 		}
 
 	}
-	
+
 	public static String getMinutesBefore(String date, int minutes, String sdf) {
-		if(StringUtils.isEmpty(date)){
+		if (StringUtils.isEmpty(date)) {
 			return "";
 		}
 		Calendar cal = Calendar.getInstance();
