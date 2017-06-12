@@ -3,7 +3,18 @@ $(function(){
 
 //    initTableGrid();
 });
-
+function queryParams(params) {  //配置参数
+    var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+      limit: params.pageSize,   //页面大小
+      page: params.pageNumber,  //页码
+      minSize: $("#leftLabel").val(),
+      maxSize: $("#rightLabel").val(),
+      minPrice: $("#priceleftLabel").val(),
+      maxPrice: $("#pricerightLabel").val(),
+       statPeriod: $("#STAT_PERIOD").val(),
+    };
+    return temp;
+  }
 function initTableGrid(){
 	//初始化Table
     $('#reportTable').bootstrapTable({
@@ -17,7 +28,7 @@ function initTableGrid(){
         pagination: true,                   //是否显示分页（*）
         sortable: false,                     //是否启用排序
         sortOrder: "asc",                   //排序方式
-        queryParams: getQueryParams(), //参数
+        queryParams: queryParams, //参数
         queryParamsType: "page", //参数格式,发送标准的RESTFul类型的参数请求
         sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
         pageNumber: 1,                       //初始化加载第一页，默认第一页
@@ -101,7 +112,7 @@ function getQueryParams(){
 
 function getParams(){
 	var params = {
-        	STAT_PERIOD: document.getElementById("STAT_PERIOD").value
+        	statPeriod: $("#STAT_PERIOD").val()
 
 	};
 	return params;
@@ -115,25 +126,20 @@ function print(obj){
 	}
 }
 
-function reload(){
-
-	$("#reportTable").bootstrapTable('refreshOptions',getQueryParams());
-}
+//function reload(){
+//
+//	$("#reportTable").bootstrapTable('refreshOptions',getQueryParams());
+//}
 
 $("#searchButton").click(function(){
-	reload();
-	 $('#reportTable').bootstrapTable('refresh', {});
+//reload();
+	getQueryParams();
     // 显示之前，先把当前表格销毁
       $('#reportTable').bootstrapTable('destroy');
 
-    // 查询条件
 
-     pageInfo = {
-            page  : 1,
-            limit : 20,
-            statPeriod: $("#STAT_PERIOD").val()
 
-        };
+
     //加载数据
     initTableGrid();
 

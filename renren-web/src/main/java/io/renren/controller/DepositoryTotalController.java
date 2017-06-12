@@ -1,5 +1,6 @@
 package io.renren.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import io.renren.entity.DepositoryTotalEntity;
 import io.renren.service.DepositoryTotalService;
@@ -42,64 +43,79 @@ public class DepositoryTotalController {
 	private UserBehaviorService userBehaviorService;
 
 	private  String reportType="存管报备总表";
-	
+	static class Page{
+		private int total;
+		private List<?> rows;
+		public int getTotal() {
+			return total;
+		}
+		public void setTotal(int total) {
+			this.total = total;
+		}
+		public List<?> getRows() {
+			return rows;
+		}
+		public void setRows(List<?> rows) {
+			this.rows = rows;
+		}
+		public Page(int total, List<?> rows) {
+			super();
+			this.total = total;
+			this.rows = rows;
+		}
+
+	}
 	/**
 	 * 列表
 	 */
 	@ResponseBody
 	@RequestMapping("/list")
 	@RequiresPermissions("dmreportcgreport:list")
-	public R list(@RequestBody Map<String, Object> params) {
 
+	public Page list(Map<String, Object> params, Integer page, Integer limit, String statPeriod,String sourcecaseno,
+					 String customername,String iscompleted,String isstamp ) {
+
+		System.err.println("+++++++++++++++++++++++params+++++++++++++++++++++++++++++++++++" + params);
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
-
-
+		params.put("page", (page - 1) * limit);
+		params.put("limit", limit);
+		params.put("statPeriod", statPeriod);
+		params.put("sourcecaseno", sourcecaseno);
+		params.put("customername", customername);
+		params.put("iscompleted", iscompleted);
+		params.put("isstamp", isstamp);
 		//查询列表数据
 		Query query = new Query(params);
+		int total = dmReportCgReportService.queryTotal(params);
 		//查询列表数据
-		List<DepositoryTotalEntity> dmReportDailyDataList = dmReportCgReportService.queryList(query);
+		List< DepositoryTotalEntity> dmReportDailyDataList = dmReportCgReportService.queryList(query);
 
-		return R.ok().put("page", dmReportDailyDataList);
+		Page page1 = new Page(total, dmReportDailyDataList);
+		return page1;
+
 	}
 	@ResponseBody
 	@RequestMapping("/partExport")
-	public void partExport(HttpServletResponse response, HttpServletRequest request) throws IOException {
+	public void partExport(String params,HttpServletResponse response, HttpServletRequest request) throws IOException {
 
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 
-		List<DepositoryTotalEntity> DepositoryTotalList = dmReportCgReportService.queryExport();
+		Map<String,Object> map = JSON.parseObject(params, Map.class);
+		List<DepositoryTotalEntity> PerformanceHisList = dmReportCgReportService.queryList(map);
 		JSONArray va = new JSONArray();
-
-		for(int i = 0 ; i < DepositoryTotalList.size() ; i++) {
-			DepositoryTotalEntity DepositoryTotal = new DepositoryTotalEntity();
-			DepositoryTotal.setStatPeriod(DepositoryTotalList.get(i).getStatPeriod());
-			DepositoryTotal.setSourcecaseno(DepositoryTotalList.get(i).getSourcecaseno());
-			DepositoryTotal.setDepartment(DepositoryTotalList.get(i).getDepartment());
-
-
-			DepositoryTotal.setProjectBelong(DepositoryTotalList.get(i).getProjectBelong());
-			DepositoryTotal.setProjectType(DepositoryTotalList.get(i).getProjectType());
-			DepositoryTotal.setCustomername(DepositoryTotalList.get(i).getCustomername());
-			DepositoryTotal.setPayformoney(DepositoryTotalList.get(i).getPayformoney());
-			DepositoryTotal.setLoanrate(DepositoryTotalList.get(i).getLoanrate());
-			DepositoryTotal.setLoanyearlimit(DepositoryTotalList.get(i).getLoanyearlimit());
-			DepositoryTotal.setPayforlimittime(DepositoryTotalList.get(i).getPayforlimittime());
-			DepositoryTotal.setGiveoutmoneytime(DepositoryTotalList.get(i).getGiveoutmoneytime());
-			DepositoryTotal.setWillgetmoneydate(DepositoryTotalList.get(i).getWillgetmoneydate());
-			DepositoryTotal.setIscompleted(DepositoryTotalList.get(i).getIscompleted());
-			DepositoryTotal.setSendDeadline(DepositoryTotalList.get(i).getSendDeadline());
-			DepositoryTotal.setIsstamp(DepositoryTotalList.get(i).getIsstamp());
-
-
-			va.add(DepositoryTotal);
+		for (int i = 0; i < PerformanceHisList.size(); i++) {
+			DepositoryTotalEntity entity = PerformanceHisList.get(i);
+			va.add(entity);
 		}
+
 		Map<String, String> headMap = dmReportCgReportService.getExcelFields();
 
 		String title = "存管报备总表";
 
 		ExcelUtil.downloadExcelFile(title,headMap,va,response);
+
 	}
 
 }

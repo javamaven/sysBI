@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import io.renren.entity.InsideLxEntity;
 import io.renren.entity.MarketChannelEntity;
@@ -50,6 +51,28 @@ public class DmReportFinRepaymentdetailController {
 	private UserBehaviorService userBehaviorService;
 
 	private  String reportType="项目台帐明细";
+	static class Page{
+		private int total;
+		private List<?> rows;
+		public int getTotal() {
+			return total;
+		}
+		public void setTotal(int total) {
+			this.total = total;
+		}
+		public List<?> getRows() {
+			return rows;
+		}
+		public void setRows(List<?> rows) {
+			this.rows = rows;
+		}
+		public Page(int total, List<?> rows) {
+			super();
+			this.total = total;
+			this.rows = rows;
+		}
+
+	}
 	
 	/**
 	 * 列表
@@ -57,55 +80,53 @@ public class DmReportFinRepaymentdetailController {
 	@ResponseBody
 	@RequestMapping("/list")
 	@RequiresPermissions("dmreportfinrepaymentdetail:list")
-	public R list(@RequestBody Map<String, Object> params) {
 
+	public Page list(Map<String, Object> params, Integer page, Integer limit, String statPeriod,String sourcecaseno,
+					 String customername,String planrepaydate,String realredate ) {
+
+		System.err.println("+++++++++++++++++++++++params+++++++++++++++++++++++++++++++++++" + params);
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
-
+		params.put("page", (page - 1) * limit);
+		params.put("limit", limit);
+		params.put("statPeriod", statPeriod);
+		params.put("sourcecaseno", sourcecaseno);
+		params.put("customername", customername);
+		params.put("planrepaydate", planrepaydate);
+		params.put("realredate", realredate);
 		//查询列表数据
 		Query query = new Query(params);
+		int total = dmReportFinRepaymentdetailService.queryTotal(params);
 		//查询列表数据
-		List<DmReportFinRepaymentdetailEntity> dmReportDailyDataList = dmReportFinRepaymentdetailService.queryList(query);
+		List< DmReportFinRepaymentdetailEntity> dmReportDailyDataList = dmReportFinRepaymentdetailService.queryList(query);
 
-		return R.ok().put("page", dmReportDailyDataList);
+		Page page1 = new Page(total, dmReportDailyDataList);
+		return page1;
+
 	}
 	@ResponseBody
 	@RequestMapping("/partExport")
-	public void partExport(HttpServletResponse response, HttpServletRequest request) throws IOException {
+	public void partExport(String params, HttpServletResponse response, HttpServletRequest request) throws IOException {
 
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
-		List<DmReportFinRepaymentdetailEntity> DmReportFinRepaymentdetailList = dmReportFinRepaymentdetailService.queryExport();
+
+		Map<String,Object> map = JSON.parseObject(params, Map.class);
+		List<DmReportFinRepaymentdetailEntity> PerformanceHisList = dmReportFinRepaymentdetailService.queryList(map);
 		JSONArray va = new JSONArray();
-
-		for(int i = 0 ; i < DmReportFinRepaymentdetailList.size() ; i++) {
-			DmReportFinRepaymentdetailEntity DmReportFinRepaymentdetail = new DmReportFinRepaymentdetailEntity();
-			DmReportFinRepaymentdetail.setStatPeriod(DmReportFinRepaymentdetailList.get(i).getStatPeriod());
-			DmReportFinRepaymentdetail.setSourcecaseno(DmReportFinRepaymentdetailList.get(i).getSourcecaseno());
-			DmReportFinRepaymentdetail.setCustomername(DmReportFinRepaymentdetailList.get(i).getCustomername());
-			DmReportFinRepaymentdetail.setPayformoney(DmReportFinRepaymentdetailList.get(i).getPayformoney());
-			DmReportFinRepaymentdetail.setPayformoneyout(DmReportFinRepaymentdetailList.get(i).getPayformoneyout());
-			DmReportFinRepaymentdetail.setTotpmts(DmReportFinRepaymentdetailList.get(i).getTotpmts());
-			DmReportFinRepaymentdetail.setReindex(DmReportFinRepaymentdetailList.get(i).getReindex());
-			DmReportFinRepaymentdetail.setPlanrepaydate(DmReportFinRepaymentdetailList.get(i).getPlanrepaydate());
-			DmReportFinRepaymentdetail.setRealredate(DmReportFinRepaymentdetailList.get(i).getRealredate());
-			DmReportFinRepaymentdetail.setRemain(DmReportFinRepaymentdetailList.get(i).getRemain());
-			DmReportFinRepaymentdetail.setReinterest(DmReportFinRepaymentdetailList.get(i).getReinterest());
-			DmReportFinRepaymentdetail.setRebackmain(DmReportFinRepaymentdetailList.get(i).getRebackmain());
-			DmReportFinRepaymentdetail.setRebackinterest(DmReportFinRepaymentdetailList.get(i).getRebackinterest());
-			DmReportFinRepaymentdetail.setReamercedmoney(DmReportFinRepaymentdetailList.get(i).getReamercedmoney());
-			DmReportFinRepaymentdetail.setReamercedmoney3(DmReportFinRepaymentdetailList.get(i).getReamercedmoney3());
-			DmReportFinRepaymentdetail.setRealgetmoneydate(DmReportFinRepaymentdetailList.get(i).getRealgetmoneydate());
-
-
-			va.add(DmReportFinRepaymentdetail);
+		for (int i = 0; i < PerformanceHisList.size(); i++) {
+			DmReportFinRepaymentdetailEntity entity = PerformanceHisList.get(i);
+			va.add(entity);
 		}
+
 		Map<String, String> headMap = dmReportFinRepaymentdetailService.getExcelFields();
 
 		String title = "项目台帐明细";
 
 		ExcelUtil.downloadExcelFile(title,headMap,va,response);
 	}
+
+
 
 
 }

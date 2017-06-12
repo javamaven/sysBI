@@ -1,12 +1,84 @@
 
-//// 获取渠道信息（查找）
-//function getChannelName(){
-//    var arrStr = new Array();
-//    $(".select2-selection__choice").each(function(){
-//        arrStr.push($(this).attr("title"))
-//        });
-//    return  arrStr;
-//}
+$(function(){
+    initExportFunction();
+
+//    initTableGrid();
+});
+function queryParams(params) {  //配置参数
+    var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+      limit: params.pageSize,   //页面大小
+      page: params.pageNumber,  //页码
+      minSize: $("#leftLabel").val(),
+      maxSize: $("#rightLabel").val(),
+      minPrice: $("#priceleftLabel").val(),
+      maxPrice: $("#pricerightLabel").val(),
+      statPeriod: $("#STAT_PERIOD").val(),
+      sourcecaseno: $("#SOURCECASENO").val(),
+      customername: $("#CUSTOMERNAME").val(),
+      planrepaydate: $("#PLANREPAYDATE").val(),
+      realredate: $("#REALREDATE").val()
+
+    };
+    return temp;
+  }
+function initTableGrid(){
+	//初始化Table
+    $('#reportTable').bootstrapTable({
+        url: "../dmreportfinrepaymentdetail/list", //请求后台的URL（*）
+        data: JSON.stringify(getQueryParams()),
+        dataType: "json",
+        method: 'get',                      //请求方式（*）
+        //toolbar: '#toolbar',                //工具按钮用哪个容器
+        striped: true,                      //是否显示行间隔色
+        cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+        pagination: true,                   //是否显示分页（*）
+        sortable: false,                     //是否启用排序
+        sortOrder: "asc",                   //排序方式
+        queryParams: queryParams, //参数
+        queryParamsType: "page", //参数格式,发送标准的RESTFul类型的参数请求
+        sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+        pageNumber: 1,                       //初始化加载第一页，默认第一页
+        pageSize: 20,                       //每页的记录行数（*）并控制分页
+        pageList: [20, 50, 100, 200],        //可供选择的每页的行数（*）
+//        search: true,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+        strictSearch: true,
+        showColumns: true,                  //是否显示所有的列
+        showRefresh: true,                  //是否显示刷新按钮
+        minimumCountColumns: 2,             //最少允许的列数
+        clickToSelect: true,                //是否启用点击选中行
+        height: tableHeight(),                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+        uniqueId: "ID",                     //每一行的唯一标识，一般为主键列
+//        showToggle: true,                    //是否显示详细视图和列表视图的切换按钮
+//        cardView: false,                    //是否显示详细视图
+        detailView: false ,                  //是否显示父子表
+        formatNoMatches: function () {  //没有匹配的结果
+            return '无符合条件的记录';
+          },
+
+        columns:  [
+            {field:"statPeriod",title:"　统计日期　",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"sourcecaseno",title:"项目合同编号",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"customername",title:"借款人",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"payformoney",title:"借款金额",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"payformoneyout",title:"放款金额",align:"center",valign:"middle",sortable:"true"},
+            {field:"totpmts",title:"总期数",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"reindex",title:"还款期数",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"planrepaydate",title:"计划还款日",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"realredate",title:"实际还款日期",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"remain",title:"应还本金",align:"center",valign:"middle",sortable:"true"},
+            {field:"reinterest",title:"应还利息",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"rebackmain",title:"已还本金",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"rebackinterest",title:"已还利息",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"reamercedmoney",title:"已还罚息",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"reamercedmoney3",title:"已还违约金",align:"center",valign:"middle",sortable:"true"},
+            {field:"realgetmoneydate",title:"项目结清日",align:"center",valign:"middle",sortable:"true"}
+        ]
+
+    });
+}
+
+
+
 //默认时间
 function getDate(datatype){
     var today = new Date(new Date()-24*60*60*1000*1);
@@ -43,166 +115,62 @@ function tableHeight() {
 	return $(window).height();
 }
 
-// 查询条件
-var pageInfo = {
-        page  : 1,
-        limit : 10,
-            STAT_PERIOD: document.getElementById("STAT_PERIOD").value,
-            SOURCECASENO :document.getElementById("SOURCECASENO").value,
-            CUSTOMERNAME :document.getElementById("CUSTOMERNAME").value,
-            PLANREPAYDATE :document.getElementById("PLANREPAYDATE").value,
-            REALREDATE :document.getElementById("REALREDATE").value
-    };
 
-// 表格加载
-function loadTable(columnsData,tableData){
-    $('#reportTable').bootstrapTable({
-        method: 'get',
-        cache: false,
-        height: tableHeight(),
-        pagination: true,
-        pageSize: 20,
-        pageNumber:1,
-        pageList: [10, 20, 50, 100, 200, 500],
-        // search: true,
-        // showColumns: true,
-        // showExport: true,
-        clickToSelect: true,
-        columns: eval("("+columnsData+")"),
-        data :eval("("+tableData+")") ,
-        formatNoMatches: function(){
-            return '无符合条件的记录';
-        }
-    });
-    // 移除loading样式
-            $(".spinners li").removeClass("active");
+function getQueryParams(){
+
+	return {
+	        page  :1,
+	        limit :20,
+	        statPeriod: $("#STAT_PERIOD").val(),
+            sourcecaseno: $("#SOURCECASENO").val(),
+            customername: $("#CUSTOMERNAME").val(),
+            planrepaydate: $("#PLANREPAYDATE").val(),
+            realredate: $("#REALREDATE").val()
+	    };
 }
-//加载渠道数据
-//function loadChannel(){
-//    var str = '';
-//    var i = 0;
-//    $.ajax({
-//      //请求方式
-//        type: "POST",
-//          //发送请求的地址
-//        url: "../channel/channelAll/getChannel",
-//        //stringifya
-//        data: JSON.stringify(),
-//        contentType: "application/json;charset=utf-8",
-//        success : function(msg) {
-//            console.log(msg);
-//            for(var list in msg.Channel){
-//                for(var key in msg.Channel[list]){
-//                    if(key == "channelName")
-//                        str += '<option value="'+(i++)+'">' + msg.Channel[list][key] + "</option>";
-//                }
-//            }
-//
-//            $("#id_select").select2({
-//                maximumSelectionLength: 1
-//            });
-//            $("#id_select").append(str);
-//        }
-//     });
-//}
+
+
 
 function getParams(){
 	var params = {
-            STAT_PERIOD: document.getElementById("STAT_PERIOD").value,
-            SOURCECASENO :document.getElementById("SOURCECASENO").value,
-            CUSTOMERNAME :document.getElementById("CUSTOMERNAME").value,
-            PLANREPAYDATE :document.getElementById("PLANREPAYDATE").value,
-            REALREDATE :document.getElementById("REALREDATE").value
+        	statPeriod: $("#STAT_PERIOD").val(),
+            sourcecaseno: $("#SOURCECASENO").val(),
+            customername: $("#CUSTOMERNAME").val(),
+            planrepaydate: $("#PLANREPAYDATE").val(),
+            realredate: $("#REALREDATE").val()
+
 	};
 	return params;
 }
 
 
-function loadTableAjax(){
- $.ajax({
-  //请求方式
-    type: "POST",
-    //发送请求的地址
-    url: "../dmreportfinrepaymentdetail/list",
-    data: JSON.stringify(pageInfo),
-    contentType: "application/json;charset=utf-8",
-    success : function(msg) {
-        console.log(msg);
-        var a = '';
-        for(var list in msg.page){
-            var d = '{'
-            for(var key in msg.page[list]){
-                d += '"' + key + '":"' + msg.page[list][key] + '",';
-            }
-            d = d.substring(0,d.length-1) + '},';
-            a += d;
-        };
-        a = '['+a.substring(0,a.length-1)+']';
-//        alert(a);
-        var b = '['+
-        '{field:"statPeriod",title:"　统计日期　",align:"center",valign:"middle" },'+
-        '{field:"sourcecaseno",title:"项目合同编号",align:"center",valign:"middle"},'+
-        '{field:"customername",title:"借款人",align:"center",valign:"middle"},'+
-        '{field:"payformoney",title:"借款金额",align:"center",valign:"middle"},'+
-        '{field:"payformoneyout",title:"放款金额",align:"center",valign:"middle"},'+
-        '{field:"totpmts",title:"总期数",align:"center",valign:"middle"},'+
-        '{field:"reindex",title:"还款期数",align:"center",valign:"middle"},'+
-        '{field:"planrepaydate",title:"计划还款日",align:"center",valign:"middle"},'+
-        '{field:"realredate",title:"实际还款日期",align:"center",valign:"middle"},'+
-        '{field:"remain",title:"应还本金",align:"center",valign:"middle"},'+
-        '{field:"reinterest",title:"应还利息",align:"center",valign:"middle"},'+
-        '{field:"rebackmain",title:"已还本金",align:"center",valign:"middle"},'+
-        '{field:"rebackinterest",title:"已还利息",align:"center",valign:"middle"},'+
-        '{field:"reamercedmoney",title:"已还罚息",align:"center",valign:"middle"},'+
-        '{field:"reamercedmoney3",title:"已还违约金",align:"center",valign:"middle"},'+
-        '{field:"realgetmoneydate",title:"项目结清日",align:"center",valign:"middle"},'+
-        ']';
 
-        //加载数据
-        loadTable(b,a);
-
-        $(window).resize(function () {
-            $('#reportTable').bootstrapTable('resetView');
-        });
-
-
-        }
-    });
+function print(obj){
+	for(var key in obj){
+		alert(key + " = " + obj[key])
+	}
 }
 
+//function reload(){
+//
+//	$("#reportTable").bootstrapTable('refreshOptions',getQueryParams());
+//}
+
 $("#searchButton").click(function(){
+//reload();
+	getQueryParams();
     // 显示之前，先把当前表格销毁
       $('#reportTable').bootstrapTable('destroy');
-        //添加样式
-        $(".spinners li").addClass("active");
-    // 查询条件
 
-     pageInfo = {
-            page  : 1,
-            limit : 10,
-            STAT_PERIOD: document.getElementById("STAT_PERIOD").value,
-            SOURCECASENO :document.getElementById("SOURCECASENO").value,
-            CUSTOMERNAME :document.getElementById("CUSTOMERNAME").value,
-            PLANREPAYDATE :document.getElementById("PLANREPAYDATE").value,
-            REALREDATE :document.getElementById("REALREDATE").value
-//            reg_enddate:document.getElementById("reg_enddate").value.replace(/-/g,"")
-        };
+
+
+
     //加载数据
-    loadTableAjax();
-});
+    initTableGrid();
 
-$(function(){
-
-//    loadChannel();
-//    loadTableAjax();
- $(".spinners li").removeClass("active");
-    initExportFunction();
-//$('#btn_exports').click(function(){
-////    executePost('../channel/daily/partExport', {'params' : JSON.stringify(params)});
-//    window.open("../channel/daily/partExport","_blank",'height=400,width=400,top=100,left=200,toolbar=no,menubar=no,scrollbars=no,resizable=no,location=no,status=no');
-//});
 
 });
+
 function initExportFunction(){
 	$('#btn_exports').click(function(){
 		var params = getParams();
@@ -210,3 +178,4 @@ function initExportFunction(){
 	});
 
 }
+

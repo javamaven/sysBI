@@ -22,38 +22,36 @@
         <result property="expectedPerformance" column="EXPECTED_PERFORMANCE"/>
     </resultMap>
 
-	<select id="queryObject" resultType="io.renren.entity.PerformanceParameterEntity">
-		select * from dm_report_performance_ledger where STAT_PERIOD = #{value}
-	</select>
+
 
 	<select id="queryList" resultType="io.renren.entity.PerformanceParameterEntity">
-        DROP TABLE IF EXISTS TMP_001;
 
-
-        CREATE TEMPORARY TABLE TMP_001
 		select * from dm_report_performance_ledger
         where 1=1
-        <if test="STAT_PERIOD != null and STAT_PERIOD.trim() != ''">
-            AND STAT_PERIOD = #{STAT_PERIOD}
+        <if test="statPeriod != null and statPeriod.trim() != ''">
+            AND STAT_PERIOD = #{statPeriod}
         </if>
-        <if test="DEPARTMENT != null and DEPARTMENT.trim() != ''">
-            AND DEPARTMENT = #{DEPARTMENT}
+        <if test="department != null and department.trim() != ''">
+            AND DEPARTMENT = #{department}
+        </if>
+        <if test="page != null and limit != null">
+            limit #{page}, #{limit}
         </if>
         ;
-
-        select *
-        from  TMP_001
-
 
 	</select>
 
-
-    <select id="queryExport" resultType="io.renren.entity.PerformanceParameterEntity">
-
-        select *
-        from  TMP_001
-
-        ;
+    <select id="queryTotal" resultType="int">
+        select count(*) from dm_report_perform_ledger_his
+        where 1=1
+        <if test="statPeriod != null and statPeriod.trim() != ''">
+            AND STAT_PERIOD = #{statPeriod}
+        </if>
+        <if test="department != null and department.trim() != ''">
+            AND DEPARTMENT = #{department}
+        </if>
     </select>
+
+
 
 </mapper>

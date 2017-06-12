@@ -30,10 +30,6 @@
 
 	<select id="queryList" resultType="io.renren.entity.DmReportFinRepaymentdetailEntity">
 
-		DROP TABLE IF EXISTS TMP_001;
-		DROP TABLE IF EXISTS TMP_002;
-
-		CREATE TEMPORARY TABLE TMP_001
 		select
 		STAT_PERIOD,
 		SOURCECASENO,
@@ -53,38 +49,44 @@
 		REALGETMONEYDATE
 		from dm_report_fin_repaymentdetail
 		where 1=1
-		<if test="STAT_PERIOD != null and STAT_PERIOD.trim() != ''">
-			AND STAT_PERIOD = #{STAT_PERIOD}
+		<if test="statPeriod != null and statPeriod.trim() != ''">
+			AND STAT_PERIOD = #{statPeriod}
 		</if>
-		<if test="SOURCECASENO != null and SOURCECASENO.trim() != ''">
-			AND SOURCECASENO = #{SOURCECASENO}
+		<if test="sourcecaseno != null and sourcecaseno.trim() != ''">
+			AND SOURCECASENO = #{sourcecaseno}
 		</if>
-		<if test="CUSTOMERNAME != null and CUSTOMERNAME.trim() != ''">
-			AND CUSTOMERNAME = #{CUSTOMERNAME}
+		<if test="customername != null and customername.trim() != ''">
+			AND CUSTOMERNAME = #{customername}
 		</if>
-		<if test="PLANREPAYDATE != null and PLANREPAYDATE.trim() != ''">
-			AND PLANREPAYDATE = #{PLANREPAYDATE}
+		<if test="planrepaydate != null and planrepaydate.trim() != ''">
+			AND PLANREPAYDATE = #{planrepaydate}
 		</if>
-		<if test="REALREDATE != null and REALREDATE.trim() != ''">
-			AND REALREDATE = #{REALREDATE}
+		<if test="realredate != null and realredate.trim() != ''">
+			AND REALREDATE = #{realredate}
 		</if>
-		;
-		select *
-		from TMP_001
-		ORDER BY CUSTOMERNAME
-
+		<if test="page != null and limit != null">
+			limit #{page}, #{limit}
+		</if>
 	</select>
 	
  	<select id="queryTotal" resultType="int">
-		select count(*) from TMP_001
+		select count(*) from dm_report_fin_repaymentdetail
+		where 1=1
+		<if test="statPeriod != null and statPeriod.trim() != ''">
+			AND STAT_PERIOD = #{statPeriod}
+		</if>
+		<if test="sourcecaseno != null and sourcecaseno.trim() != ''">
+			AND SOURCECASENO = #{sourcecaseno}
+		</if>
+		<if test="customername != null and customername.trim() != ''">
+			AND CUSTOMERNAME = #{customername}
+		</if>
+		<if test="planrepaydate != null and planrepaydate.trim() != ''">
+			AND PLANREPAYDATE = #{planrepaydate}
+		</if>
+		<if test="realredate != null and realredate.trim() != ''">
+			AND REALREDATE = #{realredate}
+		</if>
+
 	</select>
-
-	<select id="queryExport" resultType="io.renren.entity.DmReportFinRepaymentdetailEntity">
-
-		select *
-		from  TMP_001
-		ORDER BY REINDEX,CUSTOMERNAME
-		;
-	</select>
-
 </mapper>

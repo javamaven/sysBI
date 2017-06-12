@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import io.renren.entity.PerformanceHisEntity;
 import io.renren.service.UserBehaviorService;
@@ -46,63 +47,83 @@ public class PerformanceParameterController {
 	@Autowired
 	private UserBehaviorService userBehaviorService;
 	private  String reportType="绩效台帐分配表";
-	
+	static class Page{
+		private int total;
+		private List<?> rows;
+		public int getTotal() {
+			return total;
+		}
+		public void setTotal(int total) {
+			this.total = total;
+		}
+		public List<?> getRows() {
+			return rows;
+		}
+		public void setRows(List<?> rows) {
+			this.rows = rows;
+		}
+		public Page(int total, List<?> rows) {
+			super();
+			this.total = total;
+			this.rows = rows;
+		}
+
+	}
 	/**
 	 * 列表
 	 */
 	@ResponseBody
 	@RequestMapping("/list")
 	@RequiresPermissions("dmreportperformanceledger:list")
-	public R list(@RequestBody Map<String, Object> params) {
+
+	public Page list(Map<String, Object> params, Integer page, Integer limit, String statPeriod,String department) {
+		System.err.println("+++++++++++++++++++++++params+++++++++++++++++++++++++++++++++++" + params);
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+		params.put("page", (page - 1) * limit);
+		params.put("limit", limit);
+		params.put("statPeriod", statPeriod);
+		params.put("department", department);
 
 
 		//查询列表数据
 		Query query = new Query(params);
+		int total = dmReportPerformanceLedgerService.queryTotal(params);
 		//查询列表数据
-		List<PerformanceParameterEntity> dmReportDailyDataList = dmReportPerformanceLedgerService.queryList(query);
+		List< PerformanceParameterEntity> dmReportDailyDataList = dmReportPerformanceLedgerService.queryList(query);
 
-		return R.ok().put("page", dmReportDailyDataList);
+		Page page1 = new Page(total, dmReportDailyDataList);
+		return page1;
+
+
 	}
+
 	@ResponseBody
 	@RequestMapping("/partExport")
-	public void partExport(HttpServletResponse response, HttpServletRequest request) throws IOException {
+	public void partExport(String params, HttpServletRequest request, HttpServletResponse response) throws IOException {
+
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 
 
-		List<PerformanceParameterEntity> PerformanceParameterList = dmReportPerformanceLedgerService.queryExport();
+		Map<String,Object> map = JSON.parseObject(params, Map.class);
+//		String statPeriod = map.get("statPeriod") + "";
+//		if (StringUtils.isNotEmpty(statPeriod)) {
+//			map.put("statPeriod", statPeriod);
+//		}
+		List<PerformanceParameterEntity> PerformanceParameterList = dmReportPerformanceLedgerService.queryList(map);
 		JSONArray va = new JSONArray();
 
-		for(int i = 0 ; i < PerformanceParameterList.size() ; i++) {
-			PerformanceParameterEntity PerformanceParameter = new PerformanceParameterEntity();
-			PerformanceParameter.setStatPeriod(PerformanceParameterList.get(i).getStatPeriod());
-
-			PerformanceParameter.setDevelopmanagername(PerformanceParameterList.get(i).getDevelopmanagername());
-			PerformanceParameter.setDepartment(PerformanceParameterList.get(i).getDepartment());
-			PerformanceParameter.setPayformoneyout(PerformanceParameterList.get(i).getPayformoneyout());
-			PerformanceParameter.setGrossProfit(PerformanceParameterList.get(i).getGrossProfit());
-			PerformanceParameter.setSalaryCost(PerformanceParameterList.get(i).getSalaryCost());
-			PerformanceParameter.setReimbursement(PerformanceParameterList.get(i).getReimbursement());
-			PerformanceParameter.setRentShare(PerformanceParameterList.get(i).getRentShare());
-			PerformanceParameter.setNetMargin(PerformanceParameterList.get(i).getNetMargin());
-			PerformanceParameter.setCommissionRatio(PerformanceParameterList.get(i).getCommissionRatio());
-			PerformanceParameter.setAvailablePerformance(PerformanceParameterList.get(i).getAvailablePerformance());
-			PerformanceParameter.setRiskReserve(PerformanceParameterList.get(i).getRiskReserve());
-			PerformanceParameter.setSettledAmount(PerformanceParameterList.get(i).getSettledAmount());
-			PerformanceParameter.setSettledAmtRate(PerformanceParameterList.get(i).getSettledAmtRate());
-			PerformanceParameter.setExpectedPerformance(PerformanceParameterList.get(i).getExpectedPerformance());
-
-
-			va.add(PerformanceParameter);
+		for (int i = 0; i < PerformanceParameterList.size(); i++) {
+			PerformanceParameterEntity entity = PerformanceParameterList.get(i);
+			va.add(entity);
 		}
+
 		Map<String, String> headMap = dmReportPerformanceLedgerService.getExcelFields();
 
 		String title = "绩效台帐";
 
 		ExcelUtil.downloadExcelFile(title,headMap,va,response);
 	}
-
 	
 }
