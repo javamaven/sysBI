@@ -4,14 +4,20 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.ServletOutputStream;
@@ -28,12 +34,18 @@ import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.poi.ss.usermodel.DateUtil;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFCell;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -426,4 +438,105 @@ public class ExcelUtil {
 	 * 
 	 * public void setAge(Integer age) { this.age = age; } }
 	 */
+	
+	
+	
+	
+    public Map<String, Object> parseExcel(String fileName) {
+
+        // 1.准备返回的变量
+        Map<String, Object> resultMap = new HashMap<String, Object>();
+        String message = "success";
+        List<Map<String, Object>> stones = new ArrayList<Map<String, Object>>();
+
+        boolean isE2007 = false; // 判断是否是excel2007格式
+        if (fileName.endsWith("xlsx")) {
+            isE2007 = true;
+        }
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
+
+        // 2.准备workbook
+        // 同时支持Excel 2003、2007
+        File excelFile = new File(fileName); // 创建文件对象
+        Workbook workbook = null;
+        // 根据文件格式(2003或者2007)来初始化
+        try {
+            FileInputStream is = new FileInputStream(excelFile); // 文件流
+            if (isE2007) {
+                workbook = new XSSFWorkbook(is);
+            } else {
+                workbook = new HSSFWorkbook(is);
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // 3.遍历集合，组装结果
+        int sheetCount = workbook.getNumberOfSheets(); // Sheet的数量
+        // 遍历每个Sheet
+        for (int s = 0; s < sheetCount; s++) {
+            Sheet sheet = workbook.getSheetAt(s);
+            int rowCount = sheet.getPhysicalNumberOfRows(); // 获取总行数
+            Map<String, Object> map = null;
+            // 遍历每一行
+            for (int r = 1; r < rowCount; r++) {
+                map = new HashMap<String ,Object>();
+                Row row = sheet.getRow(r);
+                int cellCount = row.getPhysicalNumberOfCells(); // 获取总列数
+                // 遍历每一列
+                for (int c = 0; c < cellCount; c++) {
+                    Cell cell = row.getCell(c);
+                    int cellType = cell.getCellType();
+                    String cellStringValue = null;
+                    switch (cellType) {
+                    case Cell.CELL_TYPE_STRING: // 文本
+                        cellStringValue = cell.getStringCellValue();
+                        break;
+                    case Cell.CELL_TYPE_NUMERIC: // 数字、日期
+                        if (DateUtil.isCellDateFormatted(cell)) {
+                            cellStringValue = fmt.format(cell.getDateCellValue()); // 日期型
+                        } else {
+                            cellStringValue = String.valueOf(cell.getNumericCellValue()); // 数字
+                            if (cellStringValue.contains("E")) {
+                                cellStringValue = String.valueOf(new Double(cell.getNumericCellValue()).longValue()); // 数字
+                            }
+                        }
+                        break;
+                    case Cell.CELL_TYPE_BOOLEAN: // 布尔型
+                        cellStringValue = String.valueOf(cell.getBooleanCellValue());
+                        break;
+                    case Cell.CELL_TYPE_BLANK: // 空白
+                        cellStringValue = cell.getStringCellValue();
+                        break;
+                    case Cell.CELL_TYPE_ERROR: // 错误
+                        cellStringValue = "错误";
+                        break;
+                    case Cell.CELL_TYPE_FORMULA: // 公式
+                        cellStringValue = "错误";
+                        break;
+                    default:
+                        cellStringValue = "错误";
+                    }
+
+                    if (cellStringValue.equals("错误")) {
+                        message = "解析Excel时发生错误，第[" + (s + 1) + "]sheet，第[" + (row.getRowNum() + 1) + "]行，第[" + (c + 1)
+                                + "]列解析错误";
+                        resultMap.put("message", message);
+                        return resultMap;
+                    }
+
+                    cellStringValue = cellStringValue.trim();
+                }
+               
+                stones.add(map);
+            }
+        }
+        resultMap.put("message", message);
+        resultMap.put("list", stones);
+        return resultMap;
+    }
+	
+	
 }

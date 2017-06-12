@@ -61,6 +61,9 @@ public class EveryDayAccTransferReportJob implements Job {
 	private boolean run(JobExecutionContext ctx) {
 		boolean flag = true;
 		logVo = new ScheduleReportTaskLogEntity();
+		if(true){
+//			return flag;
+		}
 		long l1 = System.currentTimeMillis();
 		JobDataMap jobDataMap = ctx.getJobDetail().getJobDataMap();
 		JobVo jobVo = (JobVo) jobDataMap.get("jobVo");
