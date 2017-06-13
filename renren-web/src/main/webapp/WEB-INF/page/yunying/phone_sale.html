@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>电销</title>
+#parse("sys/header.html")
+<style type="text/css">
+.inputClass {
+	height: 30px;
+	width: 130px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+.inputClass2 {
+	height: 30px;
+	width: 200px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+</style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div class="grid-btn">
+<!-- 		<input style="margin-left: 120px;margin-top: 20px;" name="REPORT_TYPE" checked="checked" type="radio" value="day_report" />日报 -->
+<!-- 		<input style="margin-left: 20px;" name="REPORT_TYPE" type="radio" value="month_report" />月报 -->
+
+
+		<table border="0" style="margin-left: 40px;">
+			<tr height="20px;"></tr>
+			<tr>
+				<td>
+					<label>报表类型：</label>
+				</td>
+				<td>
+					<select id="day_or_month_report" class="inputClass" >
+						<option value ="day" selected="selected">电销日报</option>
+						<option value ="month">电销月报</option>
+					</select>
+				</td>
+			</tr>
+			<tr height="10px;"></tr>
+			<tr id="report_type_select_tr" style="display: none;">
+				<td>
+					<label>列表信息：</label>
+				</td>
+				<td>
+					<select id="report_type_select" class="inputClass" >
+						<option value ="list" selected="selected">明细信息</option>
+						<option value ="total">汇总信息</option>
+					</select>
+				</td>
+			</tr>
+			<tr height="10px;"></tr>
+			<tr>
+				<td>
+					<label>投资结束时间：</label>
+				</td>
+				<td>
+					<input type="text" class="inputClass2 form_datetime_2" id="invest_end_time"  placeholder="请选择日期"/>
+				</td>
+				<td>
+					&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
+					
+					<a class="btn btn-primary" id="upload"><i class="fa fa-plus"></i>&nbsp;Excel导入</a>
+					<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;Excel导出</a>
+				</td>
+				
+			</tr>
+		</table>
+	</div>
+	<div id="day_list_div">
+	    <table id="jqGrid_day_list"></table>
+	    <div id="jqGridPager_day_list"></div>
+	</div>
+	<div id="month_div">
+		<div id="month_list_div">
+		    <table id="jqGrid_month_list"></table>
+		    <div id="jqGridPager_month_list"></div>
+		</div>
+	    <div id="month_total_div">
+		    <table id="jqGrid_month_total"></table>
+		    <div id="jqGridPager_month_total"></div>
+		</div>
+	</div>
+</div>    
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/yunying/phone_sale.js?_${date.systemTime}"></script>
+</body>
+</html>

@@ -299,17 +299,31 @@ public class ExcelUtil {
 				SXSSFCell newCell = dataRow.createCell(i);
 
 				Object o = jo.get(properties[i]);
-				String cellValue = "";
-				if (o == null)
-					cellValue = "";
-				else if (o instanceof Date)
-					cellValue = new SimpleDateFormat(datePattern).format(o);
-				else if (o instanceof Float || o instanceof Double)
-					cellValue = new BigDecimal(o.toString()).setScale(2, BigDecimal.ROUND_HALF_UP).toString();
-				else
-					cellValue = o.toString();
-
-				newCell.setCellValue(cellValue);
+				if (o == null){
+					newCell.setCellValue("");
+				}else if (o instanceof Date){
+					newCell.setCellValue(new SimpleDateFormat(datePattern).format(o));
+				}else if (o instanceof Float){
+					BigDecimal setScale = new BigDecimal(o.toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
+					newCell.setCellValue(setScale.floatValue());
+				}else if (o instanceof Double){
+					BigDecimal setScale = new BigDecimal(o.toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
+					newCell.setCellValue(setScale.doubleValue());
+				}else if(o instanceof Integer){
+					newCell.setCellValue(Integer.parseInt(o.toString()));
+				}else if(o instanceof BigDecimal){
+					BigDecimal big = new BigDecimal(o.toString());
+					int intValue = big.intValue();
+					double doubleValue = big.doubleValue();
+					if(doubleValue > intValue){
+						newCell.setCellValue(doubleValue);
+					}else{
+						newCell.setCellValue(intValue);
+					}
+				}else{
+					newCell.setCellValue(o.toString());
+				}
+				
 				newCell.setCellStyle(cellStyle);
 			}
 			rowIndex++;
@@ -442,7 +456,7 @@ public class ExcelUtil {
 	
 	
 	
-    public Map<String, Object> parseExcel(String fileName) {
+    public static Map<String, Object> parseExcel(File file,String fileName, String[] fields) {
 
         // 1.准备返回的变量
         Map<String, Object> resultMap = new HashMap<String, Object>();
@@ -450,14 +464,20 @@ public class ExcelUtil {
         List<Map<String, Object>> stones = new ArrayList<Map<String, Object>>();
 
         boolean isE2007 = false; // 判断是否是excel2007格式
-        if (fileName.endsWith("xlsx")) {
+        if (fileName != null && fileName.endsWith("xlsx")) {
             isE2007 = true;
         }
+        isE2007 = true;
         SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd");
 
         // 2.准备workbook
         // 同时支持Excel 2003、2007
-        File excelFile = new File(fileName); // 创建文件对象
+        File excelFile = null;
+        if(file != null){
+        	excelFile = file;
+        }else{
+        	excelFile = new File(fileName); // 创建文件对象
+        }
         Workbook workbook = null;
         // 根据文件格式(2003或者2007)来初始化
         try {
@@ -528,6 +548,7 @@ public class ExcelUtil {
                     }
 
                     cellStringValue = cellStringValue.trim();
+                    map.put(fields[c], cellStringValue);
                 }
                
                 stones.add(map);

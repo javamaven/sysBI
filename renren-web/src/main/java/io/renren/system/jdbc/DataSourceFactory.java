@@ -33,6 +33,12 @@ public class DataSourceFactory implements Serializable {
 	private int oracleInitSize;
 	private int oracleMaxSize;
 
+	/** 26数据库 */
+	private String oracleUrl26;
+	private String oracleUserName26;
+	private String oraclePassword26;
+	private String oracleDriver26;
+
 	// private Connection[] mysqlConnections;// 保存数据库连接
 	// private String[] mysqlConnStatus;// 已连可用Y 已连不可用N 未连接X
 
@@ -161,17 +167,17 @@ public class DataSourceFactory implements Serializable {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * 将连接全部释放掉，重新生成连接池
 	 */
-	public void reInitConnectionPoll(){
+	public void reInitConnectionPoll() {
 		try {
 			close();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
+
 		init();
 	}
 
@@ -194,6 +200,22 @@ public class DataSourceFactory implements Serializable {
 				e.printStackTrace();
 			}
 		}
+	}
+
+	/**
+	 * 获取26数据库
+	 * 
+	 * @return
+	 */
+	public Connection getOracle26Connection() {
+		try {
+			Class.forName(this.oracleDriver26);// 加载Oracle驱动程序
+			return DriverManager.getConnection(this.oracleUrl26, this.oracleUserName26, this.oraclePassword26);// 获取连接
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+
 	}
 
 	public String getMysqlUrl() {
@@ -290,6 +312,38 @@ public class DataSourceFactory implements Serializable {
 
 	public void setOracleMaxSize(int oracleMaxSize) {
 		this.oracleMaxSize = oracleMaxSize;
+	}
+
+	public String getOracleUrl26() {
+		return oracleUrl26;
+	}
+
+	public void setOracleUrl26(String oracleUrl26) {
+		this.oracleUrl26 = oracleUrl26;
+	}
+
+	public String getOracleUserName26() {
+		return oracleUserName26;
+	}
+
+	public void setOracleUserName26(String oracleUserName26) {
+		this.oracleUserName26 = oracleUserName26;
+	}
+
+	public String getOraclePassword26() {
+		return oraclePassword26;
+	}
+
+	public void setOraclePassword26(String oraclePassword26) {
+		this.oraclePassword26 = oraclePassword26;
+	}
+
+	public String getOracleDriver26() {
+		return oracleDriver26;
+	}
+
+	public void setOracleDriver26(String oracleDriver26) {
+		this.oracleDriver26 = oracleDriver26;
 	}
 
 }

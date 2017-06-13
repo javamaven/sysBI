@@ -1,0 +1,136 @@
+with tmp as (
+SELECT 
+  A.USER_NAME, -- 用户名 对应客服给的EXCEL
+  A.USER_ID, -- 用户ID，后台数据查询用
+  A.call_person, -- 电销人员
+  A.call_result, -- 电销结果
+  A.call_date, -- 电销时间
+  A.mark, -- 标记，1-内部，2-外包
+  TIME_START, -- 统计结束时间
+  TIME_END -- 统计开始时间
+FROM (
+select  
+  CASE WHEN TUD.USER_NAME <> DU.USERNAME THEN DU2.PHONE ELSE TUD.USER_NAME END AS USER_NAME,-- 名字不同则取电话号码作为名字
+  NVL(DU.USER_ID,DU2.USER_ID) AS USER_ID,
+  tud.call_person,
+  call_result,
+  TO_CHAR(tud.call_date,'yyyyMMdd') AS call_date,
+  tud.STAT_MONTH,
+  NVL(DU.ACTIVITY_TAG,DU2.ACTIVITY_TAG) AS ACTIVITY_TAG,
+  mark,
+  CASE WHEN TO_CHAR(SYSDATE,'yyyyMMdd') BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE,-1),'yyyyMM')||'01' AND TO_CHAR(SYSDATE,'yyyyMM')||'04'
+       THEN TO_CHAR(SYSDATE,'yyyyMM')||'03'
+       ELSE TO_CHAR(ADD_MONTHS(SYSDATE,1),'yyyyMM')||'03' END  
+  AS TIME_END,
+  CASE WHEN mark=1 THEN TO_CHAR(tud.call_date,'yyyyMMdd') ELSE  
+       CASE WHEN TO_CHAR(SYSDATE,'yyyyMMdd') BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE,-1),'yyyyMM')||'01' AND TO_CHAR(SYSDATE,'yyyyMM')||'04'  
+         THEN TO_CHAR(ADD_MONTHS(SYSDATE,-1),'yyyyMM')||'01'
+           ELSE TO_CHAR(SYSDATE,'yyyyMM')||'01' END 
+   END AS TIME_START
+from 
+ PHONE_SALE_EXCEL_DATA tud      
+ left join dm_report_merge_user DU ON (tud.USER_NAME = DU.USERNAME)
+ left join dm_report_merge_user DU2 ON (tud.USER_NAME = DU2.PHONE) 
+)A
+GROUP BY A.USER_NAME,A.USER_ID,A.call_person,A.call_result,
+A.call_date,A.mark,TIME_END,TIME_START
+),
+TMP_DETIAL AS (
+SELECT 
+  TMP.USER_NAME,
+  MU.REALNAME,
+  TMP.call_person,
+  TMP.CALL_RESULT,
+  TMP.CALL_DATE,
+  CASE WHEN PD.TENDER_SUBJECT=2 THEN NVL(PD.TEND_CASH,0) ELSE NVL(PD.TENDER_CAPITAL,0) END AS MONEY_INVEST,
+  CASE WHEN PD.TENDER_SUBJECT=2 THEN 0 ELSE NVL(PD.TEND_VOUCHE,0) END AS MONEY_VOUCHE,
+  CASE WHEN PD.TENDER_SUBJECT=2 THEN NVL(PD.TEND_CASH,0) * PD.BORROW_PERIOD /360 ELSE NVL(PD.TENDER_CAPITAL,0)* PD.BORROW_PERIOD /360 END AS MONEY_YEAR_INVSET,
+  TO_CHAR(PD.ADDTIME,'yyyyMMDD') AS TIME_INVEST,
+  CASE WHEN PD.FROM_SYS=0 THEN 0.01  
+       WHEN PD.FROM_SYS=1 THEN 1
+      ELSE 0  END AS FROM_SYS, -- 0-普通 1-存管
+  TMP.TIME_START,
+  TMP.TIME_END,
+  tmp.MARK,
+  ROW_NUMBER()OVER(PARTITION BY PD.USER_ID ORDER BY PD.ADDTIME DESC) AS RANK_DESC,
+  ROW_NUMBER()OVER(PARTITION BY PD.USER_ID ORDER BY PD.ADDTIME ASC) AS ASC_DESC  
+FROM 
+  tmp 
+  LEFT JOIN edw_merge_project_detail pd 
+       ON (TMP.USER_ID=PD.USER_ID 
+          and PD.TENDER_ACCOUNT_STATUS IN (0,1) 
+          and  TO_CHAR(PD.ADDTIME,'yyyyMMDD') BETWEEN tmp.TIME_START AND tmp.TIME_END
+          )
+  left join dm_report_merge_user MU on (pd.user_id=MU.USER_ID)  
+),
+TMP_ALL AS (
+SELECT 
+  "电销人员",
+  "客户总量(人)",
+  "有效客户外呼数(人)",
+  "投资人数(人)",
+  "投资总额(元)",
+  ROUND("年化投资总额(元)",2) AS "年化投资总额(元)",
+  ROUND(("年化投资总额(元)"/"投资人数(人)"),2) AS "人均年化投资额(元)",
+  ROUND(("有效客户外呼数(人)"/"客户总量(人)"),4) * 100||'%' AS "接通率",
+  ROUND(("投资人数(人)"/"有效客户外呼数(人)"),4) * 100||'%' AS "有效外呼转化率",  
+  ROUND(("投资人数(人)"/"客户总量(人)"),4) * 100||'%' AS "总体转化率" 
+FROM (
+  SELECT 
+    "电销人员",
+    COUNT(DISTINCT "用户名") AS "客户总量(人)",
+    COUNT(DISTINCT CASE WHEN "电销结果" IN ('接通','成功沟通','无兴趣（通话中挂机、贷款）','有兴趣（资金已准备到位）') THEN "用户名" END) AS "有效客户外呼数(人)",
+    COUNT(DISTINCT CASE WHEN "是否投资"='是' AND "电销结果" IN ('接通','成功沟通','无兴趣（通话中挂机、贷款）','有兴趣（资金已准备到位）') AND "有效投资人数">0 THEN "用户名" END) AS "投资人数(人)",
+    SUM(CASE WHEN "是否投资"='是' AND "电销结果" IN ('接通','成功沟通','无兴趣（通话中挂机、贷款）','有兴趣（资金已准备到位）') THEN "实际投资金额" ELSE 0 END) AS "投资总额(元)",
+    SUM(CASE WHEN "是否投资"='是' AND "电销结果" IN ('接通','成功沟通','无兴趣（通话中挂机、贷款）','有兴趣（资金已准备到位）')THEN "年化投资金额" ELSE 0 END) AS "年化投资总额(元)"
+  FROM
+  (
+    SELECT
+      USER_NAME AS "用户名",
+      CALL_PERSON AS "电销人员",
+      CALL_RESULT AS "电销结果",
+      CASE WHEN SUM(MONEY_INVEST)>=100 THEN '是' ELSE '否' END AS "是否投资",
+      SUM(CASE WHEN TIME_INVEST>=CALL_DATE THEN MONEY_INVEST ELSE 0 END) AS "实际投资金额",
+      SUM(CASE WHEN TIME_INVEST>=CALL_DATE THEN MONEY_VOUCHE ELSE 0 END) AS "销售奖励金额",
+      ROUND(SUM(CASE WHEN TIME_INVEST>=CALL_DATE THEN MONEY_YEAR_INVSET ELSE 0 END),2) AS "年化投资金额",
+      SUM(CASE WHEN TIME_INVEST>=CALL_DATE THEN 1 ELSE 0 END) AS "有效投资人数"
+    FROM TMP_DETIAL TD 
+    WHERE MARK=2 -- 1-内部。2-外包
+    GROUP BY 
+      USER_NAME,
+      REALNAME,
+      CALL_PERSON,
+      CALL_RESULT,
+      CALL_DATE   
+  )  
+  GROUP BY 
+    "电销人员"
+)  
+)
+SELECT 
+  "电销人员",
+  "客户总量(人)",
+  "有效客户外呼数(人)",
+  "投资人数(人)",
+  "投资总额(元)",
+  "年化投资总额(元)",
+  "人均年化投资额(元)",
+  "接通率",
+  "有效外呼转化率",  
+  "总体转化率" 
+FROM TMP_ALL
+UNION ALL
+
+SELECT 
+  '合计' AS "电销人员",
+  SUM("客户总量(人)") AS "客户总量(人)",
+  SUM("有效客户外呼数(人)") AS "有效客户外呼数(人)",
+  SUM("投资人数(人)") AS "投资人数(人)",
+  SUM("投资总额(元)") AS "投资总额(元)",
+  ROUND(SUM("年化投资总额(元)"),2) AS "年化投资总额(元)",
+  ROUND((SUM("年化投资总额(元)")/SUM("投资人数(人)")),2) AS "人均年化投资额(元)",
+  ROUND((SUM("有效客户外呼数(人)")/SUM("客户总量(人)")),4) * 100||'%' AS "接通率",
+  ROUND((SUM("投资人数(人)")/SUM("有效客户外呼数(人)")),4) * 100||'%' AS "有效外呼转化率",  
+  ROUND((SUM("投资人数(人)")/SUM("客户总量(人)")),4) * 100||'%' AS "总体转化率"
+
+FROM TMP_ALL  
