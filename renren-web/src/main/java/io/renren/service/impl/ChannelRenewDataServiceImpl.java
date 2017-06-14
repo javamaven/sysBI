@@ -316,9 +316,9 @@ public class ChannelRenewDataServiceImpl implements ChannelRenewDataService {
 				vo.setDay30FirstInvestYearAmount(NumberUtil.keepPrecision(en.getDay30FirstInvestYearAmount(), 2));
 //				vo.setDay30MultiRate(en.getDay30MultiRate());
 //				vo.setDay30MultiRateText(NumberUtil.keepPrecision((double) en.getDay30MultiRate() * 100, 2) + "%");
-				vo.setDay30MultiInvestAmountRate(en.getDay30MultiInvestAmountRate());
-				vo.setDay30MultiInvestAmountRateText(
-						NumberUtil.keepPrecision((double) en.getDay30MultiInvestAmountRate() * 100, 2) + "%");
+//				vo.setDay30MultiInvestAmountRate(en.getDay30MultiInvestAmountRate());
+//				vo.setDay30MultiInvestAmountRateText(
+//						NumberUtil.keepPrecision((double) en.getDay30MultiInvestAmountRate() * 100, 2) + "%");
 				vo.setDay30PerFirstInvestYearAmount(NumberUtil.keepPrecision(en.getDay30PerFirstInvestYearAmount(), 2));
 			}
 			// 60日首投复投人数，首投复投金额，首投年化金额，
@@ -333,9 +333,9 @@ public class ChannelRenewDataServiceImpl implements ChannelRenewDataService {
 				vo.setDay60FirstInvestYearAmount(NumberUtil.keepPrecision(en.getDay60FirstInvestYearAmount(), 2));
 //				vo.setDay60MultiRate(en.getDay60MultiRate());
 //				vo.setDay60MultiRateText(NumberUtil.keepPrecision((double) en.getDay60MultiRate() * 100, 2) + "%");
-				vo.setDay60MultiInvestAmountRate(en.getDay60MultiInvestAmountRate());
-				vo.setDay60MultiInvestAmountRateText(
-						NumberUtil.keepPrecision((double) en.getDay60MultiInvestAmountRate() * 100, 2) + "%");
+//				vo.setDay60MultiInvestAmountRate(en.getDay60MultiInvestAmountRate());
+//				vo.setDay60MultiInvestAmountRateText(
+//						NumberUtil.keepPrecision((double) en.getDay60MultiInvestAmountRate() * 100, 2) + "%");
 				vo.setDay60PerFirstInvestYearAmount(NumberUtil.keepPrecision(en.getDay60PerFirstInvestYearAmount(), 2));
 			}
 			// 90日首投复投人数，首投复投金额，首投年化金额，
@@ -350,9 +350,9 @@ public class ChannelRenewDataServiceImpl implements ChannelRenewDataService {
 				vo.setDay90FirstInvestYearAmount(NumberUtil.keepPrecision(en.getDay90FirstInvestYearAmount(), 2));
 //				vo.setDay90MultiRate(en.getDay90MultiRate());
 //				vo.setDay90MultiRateText(NumberUtil.keepPrecision((double) en.getDay90MultiRate() * 100, 2) + "%");
-				vo.setDay90MultiInvestAmountRate(en.getDay90MultiInvestAmountRate());
-				vo.setDay90MultiInvestAmountRateText(
-						NumberUtil.keepPrecision((double) en.getDay90MultiInvestAmountRate() * 100, 2) + "%");
+//				vo.setDay90MultiInvestAmountRate(en.getDay90MultiInvestAmountRate());
+//				vo.setDay90MultiInvestAmountRateText(
+//						NumberUtil.keepPrecision((double) en.getDay90MultiInvestAmountRate() * 100, 2) + "%");
 				vo.setDay90PerFirstInvestYearAmount(NumberUtil.keepPrecision(en.getDay90PerFirstInvestYearAmount(), 2));
 			}
 			//30天，60天，90天复投率，全部除以30天首投人数
@@ -372,6 +372,24 @@ public class ChannelRenewDataServiceImpl implements ChannelRenewDataService {
 				
 				vo.setDay90MultiRate(vo.getDay90MultiInvestUserNum() / vo.getDay30FirstInvestUserNum());
 				vo.setDay90MultiRateText(NumberUtil.keepPrecision((double) vo.getDay90MultiRate() * 100, 2) + "%");
+			}
+			//30天，60天，90天复投金额比，全部除以30天首投金额
+			if(vo.getDay30FirstInvestAmount() == 0){
+				vo.setDay30MultiInvestAmountRate(0);
+				vo.setDay30MultiInvestAmountRateText("0.00%");
+				vo.setDay60MultiInvestAmountRate(0);
+				vo.setDay60MultiInvestAmountRateText("0.00%");
+				vo.setDay90MultiInvestAmountRate(0);
+				vo.setDay90MultiInvestAmountRateText("0.00%");
+			}else{
+				vo.setDay30MultiInvestAmountRate(vo.getDay30MultiInvestAmount()/vo.getDay30FirstInvestAmount());
+				vo.setDay30MultiInvestAmountRateText(NumberUtil.keepPrecision((double) vo.getDay30MultiInvestAmountRate() * 100, 2) + "%");
+				
+				vo.setDay60MultiInvestAmountRate(vo.getDay60MultiInvestAmount()/vo.getDay30FirstInvestAmount());
+				vo.setDay60MultiInvestAmountRateText(NumberUtil.keepPrecision((double) vo.getDay60MultiInvestAmountRate() * 100, 2) + "%");
+				
+				vo.setDay90MultiInvestAmountRate(vo.getDay90MultiInvestAmount()/vo.getDay30FirstInvestAmount());
+				vo.setDay90MultiInvestAmountRateText(NumberUtil.keepPrecision((double) vo.getDay90MultiInvestAmountRate() * 100, 2) + "%");
 			}
 			
 
