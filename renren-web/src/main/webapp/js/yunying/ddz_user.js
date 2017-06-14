@@ -29,7 +29,7 @@ function initTableGrid(){
 	        url: '../yunying/dmreportddzremain/list',
 	        datatype: "json",
 	        colModel: [			
-				{ label: '时间', name: 'statPeriod', index: '$STAT_PERIOD', width: 70, key: true ,align:'right'},
+				{ label: '时间', name: 'statPeriod', index: '$STAT_PERIOD', width: 70 ,align:'right'},
 				{ label: '用户名', name: 'username', index: '$USERNAME', width: 80 ,align:'right'}, 			
 				{ label: '用户姓名', name: 'realname', index: '$REALNAME', width: 80,align:'right' },		
 				{ label: '电话', name: 'phone', index: '$PHONE', width: 80,align:'right' }, 			
@@ -44,11 +44,11 @@ function initTableGrid(){
 			viewrecords: true,
 	        height: 390,
 	        rowNum: 10,
-			rowList : [10,30,50],
+//			rowList : [10,30,50],
 	        rownumbers: true, 
 	        rownumWidth: 25, 
 	        autowidth:true,
-	        multiselect: true,
+//	        multiselect: true,
 	        pager: "#jqGridPager",
 	        jsonReader : {
 	            root: "page.list",
