@@ -2,11 +2,9 @@ package io.renren.entity.schedule;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import io.renren.service.schedule.job.*;
 import org.springframework.util.StringUtils;
 
 import io.renren.service.schedule.Constants;
@@ -16,6 +14,8 @@ import io.renren.service.schedule.job.ChannelInvestTimesReportJob;
 import io.renren.service.schedule.job.ChannelLossReportJob;
 import io.renren.service.schedule.job.ChannelRenewReportJob;
 import io.renren.service.schedule.job.ChannelStFtReportJob;
+import io.renren.service.schedule.job.DdzUserDataReportJob;
+import io.renren.service.schedule.job.DepositoryTotalJob;
 import io.renren.service.schedule.job.EveryDayAccTransferReportJob;
 import io.renren.service.schedule.job.EveryDayAwaitDataReportJob;
 import io.renren.service.schedule.job.EveryDayBasicDataReportJob;
@@ -23,6 +23,10 @@ import io.renren.service.schedule.job.EveryDayGetCashReportJob;
 import io.renren.service.schedule.job.EveryDayRecoverDataReportJob;
 import io.renren.service.schedule.job.LicaiPlanReportJob;
 import io.renren.service.schedule.job.MarketChannelReportJob;
+import io.renren.service.schedule.job.PerformanceHisJob;
+import io.renren.service.schedule.job.PerformanceParameterJob;
+import io.renren.service.schedule.job.ProjectParameterJob;
+import io.renren.service.schedule.job.ProjectSumJob;
 import io.renren.service.schedule.job.UserActiveReportJob;
 import io.renren.service.schedule.job.UserBehaviorReportJob;
 import io.renren.service.schedule.job.UserInvestReportJob;
@@ -117,6 +121,8 @@ public class ScheduleReportTaskEntity implements Serializable {
 			jobVo.setJobClass(EveryDayGetCashReportJob.class);
 		}else if (Constants.TaskType.EVERY_DAY_RECOVER_DATA.equals(jobVo.getJobType())) {
 			jobVo.setJobClass(EveryDayRecoverDataReportJob.class);
+		}else if (Constants.TaskType.DDZ_USER.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(DdzUserDataReportJob.class);
 		}
 		jobVo.setTaskEntity(this);
 		return jobVo;

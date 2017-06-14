@@ -18,7 +18,8 @@ var jobType = {
     17:'项目总台帐',//Project_parameter_sum
     18:'存管报备',//Depository_total
     19:'历史绩效发放记录',//performance_his
-    20:'绩效台帐'//performance_parameter
+    20:'绩效台帐',//performance_parameter
+    21:'持有点点赚用户数据'//ddz_user
 };
 
 $(function () {

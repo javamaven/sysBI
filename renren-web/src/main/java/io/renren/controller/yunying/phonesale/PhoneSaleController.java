@@ -460,9 +460,7 @@ public class PhoneSaleController {
 		public void run() {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql = null;
-			String a= "";
-			try {s
-				String sxx = "sdfjsldfjsl";
+			try {
 				if ("day".equals(reportType)) {
 					detail_sql = FileUtil
 							.readAsString(new File(path + File.separator + "phone_sale_day_detail_sql.txt"));

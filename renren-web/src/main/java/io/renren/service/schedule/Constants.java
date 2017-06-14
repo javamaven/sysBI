@@ -107,5 +107,10 @@ public class Constants {
 		 * 绩效台帐-分配表
 		 */
 		public static final String PERFORMANCE_PARAMETER = "20";
+		
+		/**
+		 * 持有点点赚用户数据
+		 */
+		public static final String DDZ_USER = "21";
 	}
 }

@@ -19,6 +19,7 @@
 //  18:Depository_total
 //  19:performance_his
 //  20:performance_parameter
+//  21:ddz_user
 //};
 function addTask(taskType) {
 	var task_name = $("#task_name").val();
