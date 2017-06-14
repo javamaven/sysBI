@@ -508,6 +508,9 @@ public class ExcelUtil {
                 // 遍历每一列
                 for (int c = 0; c < cellCount; c++) {
                     Cell cell = row.getCell(c);
+                    if(cell == null){
+                    	continue;
+                    }
                     int cellType = cell.getCellType();
                     String cellStringValue = null;
                     switch (cellType) {
