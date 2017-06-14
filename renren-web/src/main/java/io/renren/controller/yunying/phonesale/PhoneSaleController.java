@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.lang.StringUtils;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.aspectj.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -47,6 +48,7 @@ public class PhoneSaleController {
 	@SuppressWarnings("unchecked")
 	@ResponseBody
 	@RequestMapping("/upload")
+	@RequiresPermissions("phonesale:upload")
 	public R upload(@RequestParam("file") MultipartFile file) {
 		try {
 			if (file.isEmpty()) {
@@ -77,13 +79,13 @@ public class PhoneSaleController {
 	 */
 	@ResponseBody
 	@RequestMapping("/daylist")
-	// @RequiresPermissions("phonesale:monthlist")
+	@RequiresPermissions("phonesale:list")
 	public R daylist(Integer page, Integer limit, String investEndTime) {
 		long l1 = System.currentTimeMillis();
 		int start = (page - 1) * limit;
 		int end = start + limit;
-		
-		if(StringUtils.isNotEmpty(investEndTime)){
+
+		if (StringUtils.isNotEmpty(investEndTime)) {
 			investEndTime = investEndTime.replace("-", "");
 		}
 
@@ -92,7 +94,8 @@ public class PhoneSaleController {
 		try {
 			Thread queryThread = new Thread(
 					new QueryListThread(dataSourceFactory, resultList, start, end, "day", investEndTime));
-			Thread totalThread = new Thread(new QueryListTotalThread(dataSourceFactory, totalList, "day", investEndTime));
+			Thread totalThread = new Thread(
+					new QueryListTotalThread(dataSourceFactory, totalList, "day", investEndTime));
 			queryThread.start();
 			totalThread.start();
 			queryThread.join();
@@ -113,7 +116,7 @@ public class PhoneSaleController {
 	 */
 	@ResponseBody
 	@RequestMapping("/monthlist")
-	// @RequiresPermissions("phonesale:monthlist")
+	@RequiresPermissions("phonesale:list")
 	public R list(Integer page, Integer limit, String statPeriod) {
 		long l1 = System.currentTimeMillis();
 		int start = (page - 1) * limit;
@@ -153,7 +156,7 @@ public class PhoneSaleController {
 		String selectType = map.get("selectType") + "";
 		String reportType = map.get("reportType") + "";
 		if (StringUtils.isNotEmpty(investEndTime)) {
-			investEndTime =  investEndTime.replace("-", "");
+			investEndTime = investEndTime.replace("-", "");
 		}
 
 		List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
@@ -182,10 +185,10 @@ public class PhoneSaleController {
 		}
 		Map<String, String> headMap = null;
 		String title = "";
-		if("day".equals(reportType)){
+		if ("day".equals(reportType)) {
 			headMap = getDayListExcelFields();
 			title = "电销数据-外包-" + investEndTime;
-		}else{
+		} else {
 			if ("list".equals(selectType)) {
 				headMap = getMonthListExcelFields();
 				title = "电销数据-月度-外包-明细";
@@ -201,9 +204,9 @@ public class PhoneSaleController {
 	private Map<String, String> getDayListExcelFields() {
 
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
-		
+
 		headMap.put("统计日期", "统计日期");
-		
+
 		headMap.put("用户名", "用户名");
 		headMap.put("用户姓名", "用户姓名");
 		headMap.put("是否双系统", "是否双系统");
@@ -228,12 +231,12 @@ public class PhoneSaleController {
 		headMap.put("接通前-投资次数", "接通前-投资次数");
 		headMap.put("接通前-首次投资时间", "接通前-首次投资时间");
 		headMap.put("接通前-末次投资时间", "接通前-末次投资时间");
-		
+
 		headMap.put("当月是否投资", "当月是否投资");
 		headMap.put("当月投资次数", "当月投资次数");
 		headMap.put("当月实际投资金额", "当月实际投资金额");
 		headMap.put("当月销售奖励金额", "当月销售奖励金额");
-		
+
 		headMap.put("当月年化投资金额", "当月年化投资金额");
 		headMap.put("当月首次投资时间", "当月首次投资时间");
 		headMap.put("当月末次投资时间", "当月末次投资时间");
@@ -241,12 +244,12 @@ public class PhoneSaleController {
 		headMap.put("当天是否投资", "当天是否投资");
 		headMap.put("当天实际投资金额", "当天实际投资金额");
 		headMap.put("当天销售奖励金额", "当天销售奖励金额");
-		
+
 		headMap.put("当天年化投资金额", "当天年化投资金额");
 		headMap.put("当天投资次数", "当天投资次数");
-		
+
 		return headMap;
-	
+
 	}
 
 	private Map<String, String> getMonthTotalExcelFields() {
@@ -303,7 +306,7 @@ public class PhoneSaleController {
 	 */
 	@ResponseBody
 	@RequestMapping("/monthTotalList")
-	// @RequiresPermissions("phonesale:monthlist")
+	@RequiresPermissions("phonesale:list")
 	public R monthTotalList(Integer page, Integer limit, String statPeriod) {
 		long l1 = System.currentTimeMillis();
 		int start = (page - 1) * limit;
@@ -336,6 +339,7 @@ public class PhoneSaleController {
 	}
 
 	private static SimpleDateFormat dateSdf = new SimpleDateFormat("yyyy-MM-dd");
+
 	private List<List<Object>> getInsertDataList(List<Map<String, Object>> excelList) {
 		List<List<Object>> dataList = new ArrayList<List<Object>>();
 		List<Object> list = null;
@@ -380,7 +384,7 @@ public class PhoneSaleController {
 		}
 		return file;
 	}
-	
+
 	/**
 	 * 电销日报月报：列表分页列表
 	 * 
@@ -405,7 +409,6 @@ public class PhoneSaleController {
 			this.investEndTime = investEndTime == null ? "" : investEndTime;
 		}
 
-		
 		@Override
 		public void run() {
 			String path = this.getClass().getResource("/").getPath();
@@ -445,11 +448,12 @@ public class PhoneSaleController {
 		private String reportType;
 		private String investEndTime;
 
-		public QueryListTotalThread(DataSourceFactory dataSourceFactory, List<Map<String, Object>> totalList, String reportType, String investEndTime) {
+		public QueryListTotalThread(DataSourceFactory dataSourceFactory, List<Map<String, Object>> totalList,
+				String reportType, String investEndTime) {
 			this.dataSourceFactory = dataSourceFactory;
 			this.totalList = totalList;
 			this.reportType = reportType;
-			this.investEndTime = investEndTime == null? "":investEndTime;
+			this.investEndTime = investEndTime == null ? "" : investEndTime;
 		}
 
 		@Override
@@ -457,10 +461,12 @@ public class PhoneSaleController {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql = null;
 			try {
-				if("day".equals(reportType)){
-					detail_sql = FileUtil.readAsString(new File(path + File.separator + "phone_sale_day_detail_sql.txt"));
-				}else if("month".equals(reportType)){
-					detail_sql = FileUtil.readAsString(new File(path + File.separator + "phone_sale_month_detail_sql.txt"));
+				if ("day".equals(reportType)) {
+					detail_sql = FileUtil
+							.readAsString(new File(path + File.separator + "phone_sale_day_detail_sql.txt"));
+				} else if ("month".equals(reportType)) {
+					detail_sql = FileUtil
+							.readAsString(new File(path + File.separator + "phone_sale_month_detail_sql.txt"));
 				}
 				// 查询总行数
 				detail_sql = detail_sql.replace("${selectSql}", "count(1) total");
