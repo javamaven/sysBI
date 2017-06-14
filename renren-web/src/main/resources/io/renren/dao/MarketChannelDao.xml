@@ -72,6 +72,7 @@
             <foreach item="channelName_a" collection="channelName_a" open="(" separator="," close=")">
                 #{channelName}
             </foreach>
+
         </if>
         <if test="reg_begindate != null and reg_begindate.trim() != '' and reg_enddate != null and reg_enddate.trim() != ''">
             AND DATE_FORMAT(STR_TO_DATE(ADDTIME,'%Y-%m-%d %H:%i:%s'),'%Y%m%d') BETWEEN #{reg_begindate} AND #{reg_enddate}
@@ -110,40 +111,19 @@
         select *
         from  TMP_dm_report_channel_data_02
         ORDER BY STAT_PERIOD DESC,CHANNEL_HEAD,TYPE,CHANNEL_NAME
-
+        <if test="page != null and limit != null">
+            limit #{page}, #{limit}
+        </if>
         ;
 	</select>
-	
+
  	<select id="queryTotal" resultType="int">
 		select count(*)
         FROM
         TMP_dm_report_channel_data_01;
 	</select>
 
-    <select id="queryExport" resultType="io.renren.entity.MarketChannelEntity">
 
-        select *
-        from  TMP_dm_report_channel_data_02
-        ORDER BY STAT_PERIOD DESC,CHANNEL_HEAD,TYPE,CHANNEL_NAME
-        ;
-    </select>
-
-    <sql id="cond">
-
-        <if test="channelName!=null and channelName.size()!=0">
-            AND CHANNEL_NAME IN
-            <foreach item="channelName" collection="channelName" open="(" separator="," close=")">
-                #{channelName}
-            </foreach>
-        </if>
-        <if test="channelHead != null and channelHead.trim() != ''">
-            AND CHANNEL_HEAD = #{channelHead}
-        </if>
-        <if test="reg_begindate != null and reg_begindate.trim() != '' and reg_enddate != null and reg_enddate.trim() != ''">
-            AND STAT_PERIOD BETWEEN #{reg_begindate} AND #{reg_enddate}
-        </if>
-
-    </sql>
 
 
 </mapper>

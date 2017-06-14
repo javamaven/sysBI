@@ -1,33 +1,78 @@
 $(function(){
-    loadChannell();
-    loadChannel();
-//    loadTableAjax();
     initExportFunction();
-    $(".spinners li").removeClass("active");
-	initEvent();
+      loadChannell();
+        loadChannel();
+    initEvent();
+//    initTableGrid();
 });
+function queryParams(params) {  //配置参数
+    var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+      limit: params.pageSize,   //页面大小
+      page: params.pageNumber,  //页码
+      minSize: $("#leftLabel").val(),
+      maxSize: $("#rightLabel").val(),
+      minPrice: $("#priceleftLabel").val(),
+      maxPrice: $("#pricerightLabel").val(),
+      actionPlatform : JSON.stringify(getAction("id_selects")),
+      action : JSON.stringify(getAction("id_select")),
+      userID :document.getElementById("user_Id").value,
+      userName :document.getElementById("user_name").value,
+      start_action_time: document.getElementById("start_action_time").value,
+      end_action_time:document.getElementById("end_action_time").value
+    };
+    return temp;
+  }
+function initTableGrid(){
+	//初始化Table
 
-function getAction(select_id){
-    var reslist=$("#"+select_id).select2("data"); //多选
-    var arrStr = new Array();
-    for(i=0;i<reslist.length;i++){
+    $('#reportTable').bootstrapTable({
+        url: "../logUserBehavior/list", //请求后台的URL（*）
+        data: JSON.stringify(getQueryParams()),
+        dataType: "json",
+        method: 'get',                      //请求方式（*）
+        //toolbar: '#toolbar',                //工具按钮用哪个容器
+        striped: true,                      //是否显示行间隔色
+        cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+        pagination: true,                   //是否显示分页（*）
+        sortable: false,                     //是否启用排序
+        sortOrder: "asc",                   //排序方式
+        queryParams: queryParams, //参数
+        queryParamsType: "page", //参数格式,发送标准的RESTFul类型的参数请求
+        sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+        pageNumber: 1,                       //初始化加载第一页，默认第一页
+        pageSize: 20,                       //每页的记录行数（*）并控制分页
+        pageList: [20, 50, 100, 200],        //可供选择的每页的行数（*）
+//        search: true,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+        strictSearch: true,
+        showColumns: true,                  //是否显示所有的列
+        showRefresh: true,                  //是否显示刷新按钮
+        minimumCountColumns: 2,             //最少允许的列数
+        clickToSelect: true,                //是否启用点击选中行
+        height: tableHeight(),                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+        uniqueId: "ID",                     //每一行的唯一标识，一般为主键列
+//        showToggle: true,                    //是否显示详细视图和列表视图的切换按钮
+//        cardView: false,                    //是否显示详细视图
+        detailView: false ,                  //是否显示父子表
+        formatNoMatches: function () {  //没有匹配的结果
+            return '无符合条件的记录';
+          },
 
-        arrStr.push(reslist[i].id)
-    }
-    return  arrStr;
-};
+        columns:  [
+            {field:"userID",title:"用户ID",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"userName",title:"用户名",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"channlName",title:"渠道名称",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"channlMark",title:"渠道标记",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"actionTime",title:"操作时间",align:"center",valign:"middle",sortable:"true"},
+            {field:"actionPlatform",title:"操作平台",align:"center",valign:"middle",sortable:"true"},
+            {field:"action",title:"行为",align:"center",valign:"middle",sortable:"true"},
+            {field:"projectType",title:"涉及项目类型",align:"center",valign:"middle",sortable:"true"},
+            {field:"projectAmount",title:"涉及项目本金",align:"center",valign:"middle",sortable:"true"}
+        ]
+    });
+}
 
 
 
-
-//// 获取渠道信息（查找）
-//function getChannelName(){
-//    var arrStr = new Array();
-//    $(".select2-selection__choice").each(function(){
-//        arrStr.push($(this).attr("title"))
-//        });
-//    return  arrStr;
-//}
 //默认时间
 function getDate(datatype){
     var today = new Date(new Date()-24*60*60*1000*1);
@@ -64,45 +109,21 @@ function tableHeight() {
 	return $(window).height();
 }
 
-// 查询条件
-var pageInfo = getParams() ;
 
-function getParams() {
-	var params = {
-		page : 1,
-		limit : 1000* 10000,
-		userID : document.getElementById("user_Id").value,
-		userName : document.getElementById("user_name").value,
-		start_action_time : document.getElementById("start_action_time").value,
-		end_action_time : document.getElementById("end_action_time").value
-	};
-	return params;
+function getQueryParams(){
+
+	return {
+	        page  :1,
+	        limit :20,
+	         actionPlatform : getAction("id_selects"),
+           action : getAction("id_select"),
+           userID :document.getElementById("user_Id").value,
+            userName :document.getElementById("user_name").value,
+            start_action_time: document.getElementById("start_action_time").value,
+            end_action_time:document.getElementById("end_action_time").value
+	    };
 }
 
-
-// 表格加载
-function loadTable(columnsData,tableData){
-    $('#reportTable').bootstrapTable({
-        method: 'get',
-        cache: false,
-        height: tableHeight(),
-        pagination: true,
-        pageSize: 20,
-        pageNumber:1,
-        pageList: [10, 20, 50, 100, 200, 500],
-        // search: true,
-        // showColumns: true,
-        // showExport: true,
-        clickToSelect: true,
-        columns: eval("("+columnsData+")"),
-        data :eval("("+tableData+")") ,
-        formatNoMatches: function(){
-            return '无符合条件的记录';
-        }
-    });
-    // 移除loading样式
-            $(".spinners li").removeClass("active");
-}
 //加载渠道数据
 function loadChannel(){
     var str = '';
@@ -155,86 +176,45 @@ function loadChannell(){
      });
 };
 
+function getAction(select_id){
+    var reslist=$("#"+select_id).select2("data"); //多选
+    var arrStr = new Array();
+    for(i=0;i<reslist.length;i++){
 
-function getParams2(){
+        arrStr.push(reslist[i].id)
+    }
+    return  arrStr;
+};
+
+
+function getParams(){
 	var params = {
-        	'userID': $("#user_Id").val(),
-
+          actionPlatform : getAction("id_selects"),
+          action : getAction("id_select"),
+          userID :document.getElementById("user_Id").value,
+          userName :document.getElementById("user_name").value,
+          start_action_time: document.getElementById("start_action_time").value,
+          end_action_time:document.getElementById("end_action_time").value
 
 	};
 	return params;
 }
 
-function loadTableAjax(){
- $.ajax({
-  //请求方式
-    type: "POST",
-    //发送请求的地址
-    url: "../logUserBehavior/list",
-    data: JSON.stringify(pageInfo),
-    contentType: "application/json;charset=utf-8",
-    success : function(msg) {
-        console.log(msg);
-        var a = '';
-        for(var list in msg.page){
-            var d = '{'
-            for(var key in msg.page[list]){
-                d += '"' + key + '":"' + msg.page[list][key] + '",';
-            }
-            d = d.substring(0,d.length-1) + '},';
-            a += d;
-        };
-        a = '['+a.substring(0,a.length-1)+']';
-        //alert(a);
-        var b = '['+
-        '{field:"userID",title:"用户ID",align:"center",valign:"middle",class:""},'+
-        '{field:"userName",title:"用户名",align:"center",valign:"middle"},'+
-        '{field:"channlName",title:"渠道名称",align:"center",valign:"middle"},'+
-        '{field:"channlMark",title:"渠道标记",align:"center",valign:"middle"},'+
-        '{field:"actionTime",title:"操作时间",align:"center",valign:"middle"},'+
-        '{field:"actionPlatform",title:"操作平台",align:"center",valign:"middle"},'+
-        '{field:"action",title:"行为",align:"center",valign:"middle"},'+
-        '{field:"projectType",title:"涉及项目类型",align:"center",valign:"middle",class:""},'+
-        '{field:"projectAmount",title:"涉及项目本金",align:"center",valign:"middle"},'+
-        ']';
-
-        //加载数据
-        loadTable(b,a);
-
-        $(window).resize(function () {
-            $('#reportTable').bootstrapTable('resetView');
-        });
-
-
-        }
-    });
-}
-
 $("#searchButton").click(function(){
+	getQueryParams();
     // 显示之前，先把当前表格销毁
       $('#reportTable').bootstrapTable('destroy');
-        //添加样式
-        $(".spinners li").addClass("active");
-    // 查询条件
 
-        pageInfo = {
-              page  : 1,
-              limit : 10,
-            actionPlatform : getAction("id_selects"),
-             action : getAction("id_select"),
-             userID :document.getElementById("user_Id").value,
-              userName :document.getElementById("user_name").value,
-              start_action_time: document.getElementById("start_action_time").value,
-              end_action_time:document.getElementById("end_action_time").value
-          };
+
     //加载数据
+    initTableGrid();
 
-    loadTableAjax();
+
 });
 
 function initExportFunction(){
 	$('#btn_exports').click(function(){
-		var params = getParams2();
+		var params = getParams();
 		executePost('../logUserBehavior/partExport', {'params' : JSON.stringify(params)});
 	});
 

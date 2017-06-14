@@ -14,7 +14,7 @@ import java.util.Map;
  */
 public interface InsideLxService {
 
-	
+	Map<String, String> getExcelFields();
 	List<InsideLxEntity> queryList(Map<String, Object> map);
 	
 	int queryTotal(Map<String, Object> map);

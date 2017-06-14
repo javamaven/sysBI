@@ -36,25 +36,26 @@
         IFNULL(JFPW,0) AS JFPW
         from dm_report_inside_lx
         where 1=1
-        <if test="STAT_PERIOD != null and STAT_PERIOD.trim() != ''">
-            AND STAT_PERIOD = #{STAT_PERIOD}
+        <if test="statPeriod != null and statPeriod.trim() != ''">
+            AND STAT_PERIOD = #{statPeriod}
         </if>
         ;
         select *
         from dm_report_inside_lx_01
         ORDER BY LAX_DEP
+        <if test="page != null and limit != null">
+            limit #{page}, #{limit}
+        </if>
 	</select>
 
 	
  	<select id="queryTotal" resultType="int">
-		select count(*) from dm_report_inside_lx 
+		select count(*) from dm_report_inside_lx
+        where 1=1
+        <if test="statPeriod != null and statPeriod.trim() != ''">
+            AND STAT_PERIOD = #{statPeriod}
+        </if>
 	</select>
 
-    <select id="queryExport" resultType="io.renren.entity.InsideLxEntity">
-        select *
-        from dm_report_inside_lx_01
-        ORDER BY LAX_DEP
-
-    </select>
 
 </mapper>

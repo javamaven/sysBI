@@ -1,5 +1,6 @@
 package io.renren.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import io.renren.entity.LogUserBehaviorEntity;
 import io.renren.service.LogUserBehaviorService;
@@ -8,10 +9,8 @@ import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.Query;
 import io.renren.utils.R;
-import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,7 +19,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,48 +40,79 @@ public class LogUserBehaviorController {
 	@Autowired
 	private UserBehaviorService userBehaviorService;
 	private  String reportType="用户行为日志";
-	
+
+	static class Page{
+		private int total;
+		private List<?> rows;
+		public int getTotal() {
+			return total;
+		}
+		public void setTotal(int total) {
+			this.total = total;
+		}
+		public List<?> getRows() {
+			return rows;
+		}
+		public void setRows(List<?> rows) {
+			this.rows = rows;
+		}
+		public Page(int total, List<?> rows) {
+			super();
+			this.total = total;
+			this.rows = rows;
+		}
+
+	}
 	/**
 	 * 列表
 	 */
 	@ResponseBody
 	@RequestMapping("/list")
 	@RequiresPermissions("logUserBehavior:list")
-	public R list(@RequestBody Map<String, Object> params){
+	public Page list(Map<String, Object> params, Integer page, Integer limit, String userID,String userName,
+					 String start_action_time,String end_action_time,String actionPlatform,String action) {
+		System.err.println("+++++++++++++++++++++++params+++++++++++++++++++++++++++++++++++" + params);
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 
+		// List jsonarray = JSON.parseObject(actionPlatform.class);
+
+//		List<String> actionPlatformList = JSON.parseArray(actionPlatform + "", String.class);
+//		System.out.println("==========================="+actionPlatformList.size());
+		params.put("page", (page - 1) * limit);
+		params.put("limit", limit);
+		params.put("userID", userID);
+		params.put("userName", userName);
+		params.put("start_action_time", start_action_time);
+		params.put("end_action_time", end_action_time);
+		params.put("action", JSON.parseArray(action + "", String.class));
+		params.put("actionPlatform", JSON.parseArray(actionPlatform + "", String.class));
 
 		//查询列表数据
 		Query query = new Query(params);
+
 		//查询列表数据
-		List<LogUserBehaviorEntity> logUserBehaviorList = logUserBehaviorService.queryList(query);
-		int total = logUserBehaviorService.queryTotal(query);
-		return R.ok().put("page", logUserBehaviorList);
+		List<LogUserBehaviorEntity> dmReportDailyDataList = logUserBehaviorService.queryList(query);
+		int total = logUserBehaviorService.queryTotal(params);
+		Page page1 = new Page(total, dmReportDailyDataList);
+		return page1;
+
+
 	}
 	@ResponseBody
 	@RequestMapping("/partExport")
-	public void partExport(HttpServletResponse response, HttpServletRequest request) throws IOException {
+	public void partExport(String params,HttpServletResponse response, HttpServletRequest request) throws IOException {
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 
-		List<LogUserBehaviorEntity> MarketChannelList = logUserBehaviorService.queryExport();
+		Map<String,Object> map = JSON.parseObject(params, Map.class);
+//
+		List<LogUserBehaviorEntity> ProjectSumList = logUserBehaviorService.queryList(map);
 		JSONArray va = new JSONArray();
 
-		for(int i = 0 ; i < MarketChannelList.size() ; i++) {
-			LogUserBehaviorEntity logUserBehaviorEntity = new LogUserBehaviorEntity();
-			logUserBehaviorEntity.setUserID(MarketChannelList.get(i).getUserID());
-			logUserBehaviorEntity.setUserName(MarketChannelList.get(i).getUserName());
-			logUserBehaviorEntity.setChannlName(MarketChannelList.get(i).getChannlName());
-			logUserBehaviorEntity.setChannlMark(MarketChannelList.get(i).getChannlMark());
-			logUserBehaviorEntity.setActionTime(MarketChannelList.get(i).getActionTime());
-			logUserBehaviorEntity.setActionPlatform(MarketChannelList.get(i).getActionPlatform());
-			logUserBehaviorEntity.setAction(MarketChannelList.get(i).getAction());
-			logUserBehaviorEntity.setProjectType(MarketChannelList.get(i).getProjectType());
-			logUserBehaviorEntity.setProjectAmount(MarketChannelList.get(i).getProjectAmount());
-
-
-			va.add(logUserBehaviorEntity);
+		for (int i = 0; i < ProjectSumList.size(); i++) {
+			LogUserBehaviorEntity entity = ProjectSumList.get(i);
+			va.add(entity);
 		}
 		Map<String, String> headMap = logUserBehaviorService.getExcelFields();
 

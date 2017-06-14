@@ -109,10 +109,6 @@ public class ProjectSumController {
 
 
 		Map<String,Object> map = JSON.parseObject(params, Map.class);
-//		String statPeriod = map.get("statPeriod") + "";
-//		if (StringUtils.isNotEmpty(statPeriod)) {
-//			map.put("statPeriod", statPeriod);
-//		}
 		List<ProjectSumEntity> ProjectSumList = dmReportFinRepaymentsumService.queryList(map);
 		JSONArray va = new JSONArray();
 

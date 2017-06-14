@@ -1,5 +1,6 @@
 package io.renren.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import io.renren.entity.DailyEntity;
 import io.renren.entity.UserBehaviorEntity;
@@ -49,7 +50,28 @@ public class DailyController {
 	private  String reportType="日报";
 	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-	//SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	static class Page{
+		private int total;
+		private List<?> rows;
+		public int getTotal() {
+			return total;
+		}
+		public void setTotal(int total) {
+			this.total = total;
+		}
+		public List<?> getRows() {
+			return rows;
+		}
+		public void setRows(List<?> rows) {
+			this.rows = rows;
+		}
+		public Page(int total, List<?> rows) {
+			super();
+			this.total = total;
+			this.rows = rows;
+		}
+
+	}
 
 
 	/**
@@ -57,56 +79,47 @@ public class DailyController {
 	 */
 	@RequestMapping("/black")
 	@RequiresPermissions("curly:list")
-	public R list(@RequestBody Map<String, Object> params) {
 
-
-
-
+	public Page list(Map<String, Object> params, Integer page, Integer limit, String reg_begindate,String reg_enddate) {
+		System.err.println("+++++++++++++++++++++++params+++++++++++++++++++++++++++++++++++" + params);
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
-
-
+		params.put("page", (page - 1) * limit);
+		params.put("limit", limit);
+		params.put("reg_begindate", reg_begindate);
+		params.put("reg_enddate", reg_enddate);
 
 		//查询列表数据
 		Query query = new Query(params);
-		//查询列表数据
-		List<DailyEntity> dmReportDailyDataList = dailyDataService.queryList(query);
 
-		return R.ok().put("page", dmReportDailyDataList);
+		//查询列表数据
+		List< DailyEntity> dmReportDailyDataList = dailyDataService.queryList(query);
+		int total = dailyDataService.queryTotal(params);
+		Page page1 = new Page(total, dmReportDailyDataList);
+		return page1;
+
+
 	}
 
 	@ResponseBody
 	@RequestMapping("/partExport")
 	@RequiresPermissions("curly:list")
-	public void partExport(HttpServletResponse response, HttpServletRequest request) throws IOException {
+	public void partExport(String params,HttpServletResponse response, HttpServletRequest request) throws IOException {
 
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 
-//		userBehaviorUtil.insert(logUserBehavior);
-
-		List<DailyEntity> DailyList = dailyDataService.queryExports();
+		Map<String,Object> map = JSON.parseObject(params, Map.class);
+//
+		List<DailyEntity> ProjectSumList = dailyDataService.queryList(map);
 		JSONArray va = new JSONArray();
 
-		for(int i = 0 ; i < DailyList.size() ; i++) {
-			DailyEntity DailyUser = new DailyEntity();
-			DailyUser.setStatPeriod(DailyList.get(i).getStatPeriod());
-			DailyUser.setIndicatorsName(DailyList.get(i).getIndicatorsName());
-			DailyUser.setIndicatorsValue(DailyList.get(i).getIndicatorsValue());
-			DailyUser.setSequential(DailyList.get(i).getSequential());
-			DailyUser.setCompared(DailyList.get(i).getCompared());
-			DailyUser.setMonthMeanValue(DailyList.get(i).getMonthMeanValue());
-			DailyUser.setMonthMeanValueThan(DailyList.get(i).getMonthMeanValueThan());
-			va.add(DailyUser);
+		for (int i = 0; i < ProjectSumList.size(); i++) {
+			DailyEntity entity = ProjectSumList.get(i);
+			va.add(entity);
 		}
-		Map<String,String> headMap = new LinkedHashMap<String,String>();
-		headMap.put("statPeriod","日期");
-		headMap.put("indicatorsName","指标名字");
-		headMap.put("indicatorsValue","指标值");
-		headMap.put("sequential","环比");
-		headMap.put("compared","同比");
-		headMap.put("monthMeanValue","30天均值");
-		headMap.put("monthMeanValueThan","30天均值比");
+
+		Map<String, String> headMap = dailyDataService.getExcelFields();
 
 		String title = "日报指标汇总";
 

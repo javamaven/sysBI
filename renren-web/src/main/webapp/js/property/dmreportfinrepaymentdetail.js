@@ -1,7 +1,7 @@
 
 $(function(){
     initExportFunction();
-
+    initEvent();
 //    initTableGrid();
 });
 function queryParams(params) {  //配置参数

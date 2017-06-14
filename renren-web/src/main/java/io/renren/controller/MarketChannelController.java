@@ -29,7 +29,7 @@ import static io.renren.utils.ShiroUtils.getUserId;
 
 /**
  * 市场部每日渠道数据
- * 
+ *
  * @author chenshun
  * @email sunlightcs@gmail.com
  * @date 2017-04-05 15:30:24
@@ -73,30 +73,33 @@ public class MarketChannelController {
 	@ResponseBody
 	@RequestMapping("/list")
 	@RequiresPermissions("marketChannel:list")
-		public Page list(Map<String, Object> params, Integer page, Integer limit, String statPeriod,String sourcecaseno,
-						 String customername,String giveoutmoneytime,String willgetmoneydate) {
-			System.err.println("+++++++++++++++++++++++params+++++++++++++++++++++++++++++++++++" + params);
-			UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
-			userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
-			params.put("page", (page - 1) * limit);
-			params.put("limit", limit);
-			params.put("statPeriod", statPeriod);
-			params.put("sourcecaseno", sourcecaseno);
-			params.put("customername", customername);
-			params.put("giveoutmoneytime", giveoutmoneytime);
-			params.put("willgetmoneydate", willgetmoneydate);
+	public Page list(Map<String, Object> params, Integer page, Integer limit, String reg_begindate,String reg_enddate,
+					 String channelHead,String channelName,String channelName_a) {
+		System.err.println("+++++++++++++++++++++++params+++++++++++++++++++++++++++++++++++" + params);
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 
-			//查询列表数据
-			Query query = new Query(params);
-			int total = marketChannelDataService.queryTotal(params);
-			//查询列表数据
-			List< MarketChannelEntity> dmReportDailyDataList = marketChannelDataService.queryList(query);
-
-			Page page1 = new Page(total, dmReportDailyDataList);
-			return page1;
+		params.put("page", (page - 1) * limit);
+		params.put("limit", limit);
+		params.put("reg_begindate", reg_begindate);
+		params.put("reg_enddate", reg_enddate);
+		params.put("channelHead", channelHead);
+		params.put("channelName", JSON.parseArray(channelName + "", String.class));
+		params.put("channelName_a", JSON.parseArray(channelName_a + "", String.class));
 
 
-		}
+		//查询列表数据
+		Query query = new Query(params);
+		//查询列表数据
+		List< MarketChannelEntity> dmReportDailyDataList = marketChannelDataService.queryList(query);
+		int total = marketChannelDataService.queryTotal(params);
+
+
+		Page page1 = new Page(total, dmReportDailyDataList);
+		return page1;
+
+
+	}
 
 	@ResponseBody
 	@RequestMapping("/partExport")
@@ -106,10 +109,7 @@ public class MarketChannelController {
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 
 		Map<String,Object> map = JSON.parseObject(params, Map.class);
-//		String statPeriod = map.get("statPeriod") + "";
-//		if (StringUtils.isNotEmpty(statPeriod)) {
-//			map.put("statPeriod", statPeriod);
-//		}
+//
 		List<MarketChannelEntity> ProjectSumList = marketChannelDataService.queryList(map);
 		JSONArray va = new JSONArray();
 
@@ -127,5 +127,5 @@ public class MarketChannelController {
 
 
 	}
-	
+
 }

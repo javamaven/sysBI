@@ -1,16 +1,73 @@
+$(function(){
+    initExportFunction();
+//    initTableGrid();
+});
+function queryParams(params) {  //配置参数
+    var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+      limit: params.pageSize,   //页面大小
+      page: params.pageNumber,  //页码
+      minSize: $("#leftLabel").val(),
+      maxSize: $("#rightLabel").val(),
+      minPrice: $("#priceleftLabel").val(),
+      maxPrice: $("#pricerightLabel").val(),
+      reg_begindate  : document.getElementById("reg_begindate").value.replace(/-/g,""),
+      reg_enddate : document.getElementById("reg_enddate").value.replace(/-/g,"")
+    };
+    return temp;
+  }
+function initTableGrid(){
+	//初始化Table
+    $('#reportTable').bootstrapTable({
+        url: "../channel/daily/black", //请求后台的URL（*）
+        data: JSON.stringify(getQueryParams()),
+        dataType: "json",
+        method: 'get',                      //请求方式（*）
+        //toolbar: '#toolbar',                //工具按钮用哪个容器
+        striped: true,                      //是否显示行间隔色
+        cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+        pagination: true,                   //是否显示分页（*）
+        sortable: false,                     //是否启用排序
+        sortOrder: "asc",                   //排序方式
+        queryParams: queryParams, //参数
+        queryParamsType: "page", //参数格式,发送标准的RESTFul类型的参数请求
+        sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+        pageNumber: 1,                       //初始化加载第一页，默认第一页
+        pageSize: 20,                       //每页的记录行数（*）并控制分页
+        pageList: [20, 50, 100, 200],        //可供选择的每页的行数（*）
+//        search: true,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+        strictSearch: true,
+        showColumns: true,                  //是否显示所有的列
+        showRefresh: true,                  //是否显示刷新按钮
+        minimumCountColumns: 2,             //最少允许的列数
+        clickToSelect: true,                //是否启用点击选中行
+        height: tableHeight(),                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+        uniqueId: "ID",                     //每一行的唯一标识，一般为主键列
+//        showToggle: true,                    //是否显示详细视图和列表视图的切换按钮
+//        cardView: false,                    //是否显示详细视图
+        detailView: false ,                  //是否显示父子表
+        formatNoMatches: function () {  //没有匹配的结果
+            return '无符合条件的记录';
+          },
 
-//// 获取渠道信息（查找）
-//function getChannelName(){
-//    var arrStr = new Array();
-//    $(".select2-selection__choice").each(function(){
-//        arrStr.push($(this).attr("title"))
-//        });
-//    return  arrStr;
-//}
+        columns:  [
+            {field:"statPeriod",title:"日期",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"indicatorsName",title:"指标名字",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"indicatorsValue",title:"指标值",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"sequential",title:"环比",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"compared",title:"同比",align:"center",valign:"middle",sortable:"true"},
+            {field:"monthMeanValue",title:"30天均值",align:"center",valign:"middle",sortable:"true"},
+            {field:"monthMeanValueThan",title:"30天均值比",align:"center",valign:"middle",sortable:"true"}
+        ]
+
+    });
+}
+
+
+
 //默认时间
 function getDate(datatype){
     var today = new Date(new Date()-24*60*60*1000*1);
-    var halfYearAgo = new Date(new Date()-24*60*60*1000*2);
+    var halfYearAgo = new Date(new Date()-24*60*60*1000*182);
     var startdate;
     var enddate;
     startdate = (today.getFullYear()) +"-" +
@@ -43,149 +100,50 @@ function tableHeight() {
 	return $(window).height();
 }
 
-// 查询条件
-var pageInfo = {
-        page  : 1,
-        limit : 10,
-        reg_begindate  : document.getElementById("reg_begindate").value.replace(/-/g,""),
-        reg_enddate : document.getElementById("reg_enddate").value.replace(/-/g,"")
-    };
 
-// 表格加载
-function loadTable(columnsData,tableData){
-    $('#reportTable').bootstrapTable({
-        method: 'get',
-        cache: false,
-        height: tableHeight(),
-        pagination: true,
-        pageSize: 20,
-        pageNumber:1,
-        pageList: [10, 20, 50, 100, 200, 500],
-        // search: true,
-        // showColumns: true,
-        // showExport: true,
-        clickToSelect: true,
-        columns: eval("("+columnsData+")"),
-        data :eval("("+tableData+")") ,
-        formatNoMatches: function(){
-            return '无符合条件的记录';
-        }
-    });
-    // 移除loading样式
-            $(".spinners li").removeClass("active");
+function getQueryParams(){
+
+	return {
+	        page  :1,
+	        limit :20,
+	        reg_begindate  : document.getElementById("reg_begindate").value.replace(/-/g,""),
+            reg_enddate : document.getElementById("reg_enddate").value.replace(/-/g,"")
+	    };
 }
-//加载渠道数据
-//function loadChannel(){
-//    var str = '';
-//    var i = 0;
-//    $.ajax({
-//      //请求方式
-//        type: "POST",
-//          //发送请求的地址
-//        url: "../channel/channelAll/getChannel",
-//        //stringifya
-//        data: JSON.stringify(),
-//        contentType: "application/json;charset=utf-8",
-//        success : function(msg) {
-//            console.log(msg);
-//            for(var list in msg.Channel){
-//                for(var key in msg.Channel[list]){
-//                    if(key == "channelName")
-//                        str += '<option value="'+(i++)+'">' + msg.Channel[list][key] + "</option>";
-//                }
-//            }
-//
-//            $("#id_select").select2({
-//                maximumSelectionLength: 1
-//            });
-//            $("#id_select").append(str);
-//        }
-//     });
-//}
+
+
 
 function getParams(){
 	var params = {
-        	'reg_begindate': $("#reg_begindate").val(),
-        	'reg_enddate': $("#reg_enddate").val(),
+        	reg_begindate  : document.getElementById("reg_begindate").value.replace(/-/g,""),
+            reg_enddate : document.getElementById("reg_enddate").value.replace(/-/g,"")
 
 	};
 	return params;
 }
 
 
-function loadTableAjax(){
- $.ajax({
-  //请求方式
-    type: "POST",
-    //发送请求的地址
-    url: "../channel/daily/black",
-    data: JSON.stringify(pageInfo),
-    contentType: "application/json;charset=utf-8",
-    success : function(msg) {
-        console.log(msg);
-        var a = '';
-        for(var list in msg.page){
-            var d = '{'
-            for(var key in msg.page[list]){
-                d += '"' + key + '":"' + msg.page[list][key] + '",';
-            }
-            d = d.substring(0,d.length-1) + '},';
-            a += d;
-        };
 
-        a = '['+a.substring(0,a.length-1)+']';
-        //alert(a);
-
-        var b = '['+
-        '{field:"statPeriod",title:"日期",align:"center",valign:"middle",class:""},'+
-        '{field:"indicatorsName",title:"指标名字",align:"left",valign:"middle"},'+
-        '{field:"indicatorsValue",title:"指标值",align:"center",valign:"middle"},'+
-        '{field:"sequential",title:"环比",align:"center",valign:"middle"},'+
-        '{field:"compared",title:"同比",align:"center",valign:"middle"},'+
-        '{field:"monthMeanValue",title:"30天均值",align:"center",valign:"middle"},'+
-        '{field:"monthMeanValueThan",title:"30天均值比",align:"center",valign:"middle"},'+
-        ']';
-
-        //加载数据
-        loadTable(b,a);
-
-        $(window).resize(function () {
-            $('#reportTable').bootstrapTable('resetView');
-        });
-
-
-        }
-    });
+function print(obj){
+	for(var key in obj){
+		alert(key + " = " + obj[key])
+	}
 }
 
+
+
 $("#searchButton").click(function(){
+	getQueryParams();
     // 显示之前，先把当前表格销毁
       $('#reportTable').bootstrapTable('destroy');
-        //添加样式
-        $(".spinners li").addClass("active");
-    // 查询条件
 
-     pageInfo = {
-            page  : 1,
-            limit : 10,
-//            channelName : getChannelName().toString().length == "0" ? null : getChannelName(),
-//             indicatorsName :document.getElementById("indicatorsName").value,
-            reg_begindate: document.getElementById("reg_begindate").value.replace(/-/g,""),
-            reg_enddate:document.getElementById("reg_enddate").value.replace(/-/g,"")
-        };
+
     //加载数据
+    initTableGrid();
 
-    loadTableAjax();
-});
-
-$(function(){
-
-//    loadChannel();
-//    loadTableAjax();
-    initExportFunction();
-$(".spinners li").removeClass("active");
 
 });
+
 function initExportFunction(){
 	$('#btn_exports').click(function(){
 		var params = getParams();
@@ -193,3 +151,4 @@ function initExportFunction(){
 	});
 
 }
+

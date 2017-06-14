@@ -66,7 +66,7 @@ public class ProjectParameterJob implements Job {
 			Map<String, Object> params = JSON.parseObject(queryObject.getCondition(), Map.class);
 
 			String date_offset_num = params.get("date_offset_num") + "";
-			String STAT_PERIOD = params.get("STAT_PERIOD") + "";
+			String statPeriod = params.get("statPeriod") + "";
 			String PLANREPAYDATE = params.get("PLANREPAYDATE") + "";
 			String REALREDATE = params.get("REALREDATE") + "";
 
@@ -74,15 +74,15 @@ public class ProjectParameterJob implements Job {
 			if (!"0".equals(splitArr[0])) {
 				int days = Integer.valueOf(splitArr[0]);
 				if ("day".equals(splitArr[1])) {
-					STAT_PERIOD = DateUtil.getCurrDayBefore(STAT_PERIOD, -days, "yyyy-MM-dd");
+					statPeriod = DateUtil.getCurrDayBefore(statPeriod, -days, "yyyy-MM-dd");
 					PLANREPAYDATE = DateUtil.getCurrDayBefore(PLANREPAYDATE, -days, "yyyy-MM-dd");
 					REALREDATE = DateUtil.getCurrDayBefore(REALREDATE, -days, "yyyy-MM-dd");
 				} else if ("hour".equals(splitArr[1])) {
-					STAT_PERIOD = DateUtil.getHourBefore(STAT_PERIOD, -days, "yyyy-MM-dd");
+					statPeriod = DateUtil.getHourBefore(statPeriod, -days, "yyyy-MM-dd");
 					PLANREPAYDATE = DateUtil.getHourBefore(PLANREPAYDATE, -days, "yyyy-MM-dd");
 					REALREDATE = DateUtil.getHourBefore(REALREDATE, -days, "yyyy-MM-dd");
 				}
-				params.put("STAT_PERIOD", STAT_PERIOD);
+				params.put("statPeriod", statPeriod);
 				params.put("PLANREPAYDATE", PLANREPAYDATE);
 				params.put("REALREDATE", REALREDATE);
 			}

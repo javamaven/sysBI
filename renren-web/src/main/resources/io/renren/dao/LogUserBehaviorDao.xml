@@ -82,13 +82,17 @@
         SELECT *
         FROM TMP_01
         ORDER BY USERNAME,ACTION_TIME
+        <if test="page != null and limit != null">
+            limit #{page}, #{limit}
+        </if>
         ;
 
 
 	</select>
 
     <select id="queryTotal" resultType="int">
-        select count(*) from dm_report_user_action_log;
+        SELECT count(*)
+        FROM TMP_01
     </select>
 
 
@@ -129,12 +133,6 @@
 
     </select>
 
-    <select id="queryExport" resultType="io.renren.entity.LogUserBehaviorEntity">
-        select *
-        from TMP_01
-        ORDER BY USERNAME,ACTION_TIME
-        ;
-    </select>
 
 
 </mapper>

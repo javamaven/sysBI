@@ -1,6 +1,6 @@
 $(function(){
     initExportFunction();
-
+    initEvent();
 //    initTableGrid();
 });
 function queryParams(params) {  //配置参数
@@ -141,17 +141,6 @@ function getParams(){
 }
 
 
-
-function print(obj){
-	for(var key in obj){
-		alert(key + " = " + obj[key])
-	}
-}
-
-//function reload(){
-//
-//	$("#reportTable").bootstrapTable('refreshOptions',getQueryParams());
-//}
 
 $("#searchButton").click(function(){
 //reload();

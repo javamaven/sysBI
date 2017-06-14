@@ -1,5 +1,6 @@
 package io.renren.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import io.renren.entity.DailyEntity;
 import io.renren.entity.InsideLxEntity;
@@ -42,65 +43,72 @@ public class InsideLxController {
 	@Autowired
 	private UserBehaviorService userBehaviorService;
 	private  String reportType="拉新绩效表";
+
+	static class Page{
+		private int total;
+		private List<?> rows;
+		public int getTotal() {
+			return total;
+		}
+		public void setTotal(int total) {
+			this.total = total;
+		}
+		public List<?> getRows() {
+			return rows;
+		}
+		public void setRows(List<?> rows) {
+			this.rows = rows;
+		}
+		public Page(int total, List<?> rows) {
+			super();
+			this.total = total;
+			this.rows = rows;
+		}
+
+	}
 	/**
 	 * 列表
 	 */
 	@ResponseBody
 	@RequestMapping("/list")
 	@RequiresPermissions("dmreportinsidelx:list")
-	public R list(@RequestBody Map<String, Object> params) {
-
-
+	public Page list(Map<String, Object> params, Integer page, Integer limit, String statPeriod) {
+		System.err.println("+++++++++++++++++++++++params+++++++++++++++++++++++++++++++++++" + params);
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
-
-
+		params.put("page", (page - 1) * limit);
+		params.put("limit", limit);
+		params.put("statPeriod", statPeriod);
 
 		//查询列表数据
 		Query query = new Query(params);
+		int total = insideLxService.queryTotal(params);
 		//查询列表数据
-		List<InsideLxEntity> dmReportDailyDataList = insideLxService.queryList(query);
+		List< InsideLxEntity> dmReportDailyDataList = insideLxService.queryList(query);
 
-		return R.ok().put("page", dmReportDailyDataList);
+		Page page1 = new Page(total, dmReportDailyDataList);
+		return page1;
+
+
 	}
 
 	@ResponseBody
 	@RequestMapping("/partExport")
-	public void partExport(HttpServletResponse response, HttpServletRequest request) throws IOException {
+	public void partExport(String params,HttpServletResponse response, HttpServletRequest request) throws IOException {
 
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 
-		List<InsideLxEntity> InsideList = insideLxService.queryExport();
+		Map<String,Object> map = JSON.parseObject(params, Map.class);
+//
+		List<InsideLxEntity> ProjectSumList = insideLxService.queryList(map);
 		JSONArray va = new JSONArray();
 
-		for(int i = 0 ; i < InsideList.size() ; i++) {
-			InsideLxEntity InsideLxUser = new InsideLxEntity();
-			InsideLxUser.setStatPeriod(InsideList.get(i).getStatPeriod());
-			InsideLxUser.setLxName(InsideList.get(i).getLxName());
-			InsideLxUser.setLaxDep(InsideList.get(i).getLaxDep());
-
-			InsideLxUser.setLxUserCou(InsideList.get(i).getLxUserCou());
-			InsideLxUser.setLxUserTg(InsideList.get(i).getLxUserTg());
-
-			InsideLxUser.setReach(InsideList.get(i).getReach());
-			InsideLxUser.setLxDs(InsideList.get(i).getLxDs());
-			InsideLxUser.setLxUserPw(InsideList.get(i).getLxUserPw());
-			InsideLxUser.setJf(InsideList.get(i).getJf());
-			InsideLxUser.setJfpw(InsideList.get(i).getJfpw());
-			va.add(InsideLxUser);
+		for (int i = 0; i < ProjectSumList.size(); i++) {
+			InsideLxEntity entity = ProjectSumList.get(i);
+			va.add(entity);
 		}
-		Map<String,String> headMap = new LinkedHashMap<String,String>();
-		headMap.put("statPeriod","日期");
-		headMap.put("lxName","员工姓名");
-		headMap.put("laxDep","部门");
-		headMap.put("lxUserCou","当季度有效拉新人数");
-		headMap.put("lxUserTg","当季度拉新目标人数");
-		headMap.put("reach","当季度有效拉新人数指标达成率");
-		headMap.put("lxDs","满足日均待收金额的人数");
-		headMap.put("lxUserPw","当季度累计有效拉新人数排名");
-		headMap.put("jf","季度度新增积分值");
-		headMap.put("jfpw","季度度新增积分值排名");
+		Map<String, String> headMap = insideLxService.getExcelFields();
 
 		String title = "员工拉新绩效统计";
 

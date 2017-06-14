@@ -52,7 +52,7 @@ public class LogUserBehaviorServiceImpl implements LogUserBehaviorService {
 	}
 
 	@Override
-	public Map<String, String> getExcelFields() {
+	public Map<String, String> 	getExcelFields() {
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
 		headMap.put("userID", "用户ID");
 		headMap.put("userName", "用户名");

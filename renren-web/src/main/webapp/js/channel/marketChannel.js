@@ -4,6 +4,22 @@ $(function(){
     $(".spinners li").removeClass("active");
 	initEvent();
 });
+function queryParams(params) {  //配置参数
+    var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
+      limit: params.pageSize,   //页面大小
+      page: params.pageNumber,  //页码
+      minSize: $("#leftLabel").val(),
+      maxSize: $("#rightLabel").val(),
+      minPrice: $("#priceleftLabel").val(),
+      maxPrice: $("#pricerightLabel").val(),
+      channelName : JSON.stringify(getChannelName("id_select")),
+      channelName_a : JSON.stringify(getChannelName("id_select")),
+      channelHead :document.getElementById("channelHead").value,
+      reg_begindate: document.getElementById("reg_begindate").value.replace(/-/g,""),
+      reg_enddate:document.getElementById("reg_enddate").value.replace(/-/g,"")
+    };
+    return temp;
+  }
 
 // 获取渠道信息
 function getChannelName(){
@@ -49,48 +65,16 @@ function tableHeight() {
 
 function getParams(){
 	var params = {
-        	'statPeriod': $("#statPeriod").val(),
-        	'reg_begindate': document.getElementById("reg_begindate").value.replace(/-/g,""),
-        	'reg_enddate' : document.getElementById("reg_enddate").value.replace(/-/g,""),
-        	'channelName' : getChannelName().toString().length == "0" ? null : getChannelName(),
-        	'channelHead' :document.getElementById("channelHead").value
+        	      channelName :getChannelName("id_select"),
+                  channelName_a : getChannelName("id_select"),
+                  channelHead :document.getElementById("channelHead").value,
+                  reg_begindate: document.getElementById("reg_begindate").value.replace(/-/g,""),
+                  reg_enddate:document.getElementById("reg_enddate").value.replace(/-/g,"")
 	};
 	return params;
 }
 
 
-
-// 查询条件
-var pageInfo = {
-        page  : 1,
-        limit : 10,
-        reg_begindate  : document.getElementById("reg_begindate").value.replace(/-/g,""),
-        reg_enddate : document.getElementById("reg_enddate").value.replace(/-/g,"")
-    };
-
-// 表格加载
-function loadTable(columnsData,tableData){
-    $('#reportTable').bootstrapTable({
-        method: 'get',
-        cache: false,
-        height: tableHeight(),
-        pagination: true,
-        pageSize: 20,
-        pageNumber:1,
-        pageList: [10, 20, 50, 100, 200, 500],
-        // search: true,
-        // showColumns: true,
-        // showExport: true,
-        clickToSelect: true,
-        columns: eval("("+columnsData+")"),
-        data :eval("("+tableData+")") ,
-        formatNoMatches: function(){
-            return '无符合条件的记录';
-        }
-    });
-        // 移除loading样式
-        $(".spinners li").removeClass("active");
-}
 //加载渠道数据
 function loadChannel(){
     var str = '';
@@ -116,76 +100,93 @@ function loadChannel(){
         }
      });
 };
+function initTableGrid(){
+	//初始化Table
+    $('#reportTable').bootstrapTable({
+        url: "../market/list", //请求后台的URL（*）
+        data: JSON.stringify(getQueryParams()),
+        dataType: "json",
+        method: 'get',                      //请求方式（*）
+        //toolbar: '#toolbar',                //工具按钮用哪个容器
+        striped: true,                      //是否显示行间隔色
+        cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+        pagination: true,                   //是否显示分页（*）
+        sortable: false,                     //是否启用排序
+        sortOrder: "asc",                   //排序方式
+        queryParams: queryParams, //参数
+        queryParamsType: "page", //参数格式,发送标准的RESTFul类型的参数请求
+        sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
+        pageNumber: 1,                       //初始化加载第一页，默认第一页
+        pageSize: 20,                       //每页的记录行数（*）并控制分页
+        pageList: [20, 50, 100, 200],        //可供选择的每页的行数（*）
+//        search: true,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
+        strictSearch: true,
+        showColumns: true,                  //是否显示所有的列
+        showRefresh: true,                  //是否显示刷新按钮
+        minimumCountColumns: 2,             //最少允许的列数
+        clickToSelect: true,                //是否启用点击选中行
+        height: tableHeight(),                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+        uniqueId: "ID",                     //每一行的唯一标识，一般为主键列
+//        showToggle: true,                    //是否显示详细视图和列表视图的切换按钮
+//        cardView: false,                    //是否显示详细视图
+        detailView: false ,                  //是否显示父子表
+        formatNoMatches: function () {  //没有匹配的结果
+            return '无符合条件的记录';
+          },
 
-function loadTableAjax(){
- $.ajax({
-    type: "POST",
-    url: "../market/list",
-    data: JSON.stringify(pageInfo),
-    contentType: "application/json;charset=utf-8",
-    success : function(msg) {
-        console.log(msg);
-         var a = '';
-        for(var list in msg.page.list){
-            var d = '{'
-            for(var key in msg.page.list[list]){
-                d += '"' + key + '":"' + msg.page.list[list][key] + '",';
-            }
-            d = d.substring(0,d.length-1) + '},';
-            a += d;
-        };
-        a = '['+a.substring(0,a.length-1)+']';
-        var b = '['+
-        '{field:"statPeriod",title:"日期",align:"center",valign:"middle",sortable:"true"},'+//居中对齐
-        '{field:"channelHead",title:"主负责人",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"type",title:"渠道类型",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"channelName",title:"渠道名称",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"actualCost",title:"实际消费",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"regCou",title:"新增注册人",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"firstinvestCou",title:"新增首投人数",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"firstinvestMoney",title:"首投金额",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"firstinvestYMoney",title:"首投年化金额",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"invCou",title:"投资总人数",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"invMoney",title:"投资总金额",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"invYMoney",title:"年化投资总金额",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"ddzMoney",title:"点点赚购买金额",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"regCost",title:"注册成本",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"firstinvestCost",title:"首投成本",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"avgFirstinvestMoney",title:"人均首投",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"regInvConversion",title:"注册人投资转化率",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"firstinvestRot",title:"首投ROI",align:"center",valign:"middle",sortable:"true"},'+
-        '{field:"cumulativeRot",title:"累计ROI",align:"center",valign:"middle",sortable:"true"}'+
-        ']';
+        columns:  [
+             {field:"statPeriod",title:"日期",align:"center",valign:"middle",sortable:"true"},//居中对齐
+                       {field:"channelHead",title:"主负责人",align:"center",valign:"middle",sortable:"true"},//居中对齐
+                       {field:"type",title:"渠道类型",align:"center",valign:"middle",sortable:"true"},//居中对齐
+                       {field:"channelName",title:"渠道名称",align:"center",valign:"middle",sortable:"true"},//居中对齐
+                       {field:"actualCost",title:"实际消费",align:"center",valign:"middle",sortable:"true"},
+                       {field:"regCou",title:"新增注册人",align:"center",valign:"middle",sortable:"true"},
+                       {field:"firstinvestCou",title:"新增首投人数",align:"center",valign:"middle",sortable:"true"},
+                       {field:"firstinvestMoney",title:"首投金额",align:"center",valign:"middle",sortable:"true"},
+                       {field:"firstinvestYMoney",title:"首投年化金额",align:"center",valign:"middle",sortable:"true"},
+                       {field:"invCou",title:"投资总人数",align:"center",valign:"middle",sortable:"true"},
+                       {field:"invMoney",title:"投资总金额",align:"center",valign:"middle",sortable:"true"},
+                       {field:"invYMoney",title:"年化投资总金额",align:"center",valign:"middle",sortable:"true"},
+                       {field:"ddzMoney",title:"点点赚购买金额",align:"center",valign:"middle",sortable:"true"},
+                       {field:"regCost",title:"注册成本",align:"center",valign:"middle",sortable:"true"},
+                       {field:"firstinvestCost",title:"首投成本",align:"center",valign:"middle",sortable:"true"},
+                       {field:"avgFirstinvestMoney",title:"人均首投",align:"center",valign:"middle",sortable:"true"},
+                       {field:"regInvConversion",title:"注册人投资转化率",align:"center",valign:"middle",sortable:"true"},
+                       {field:"firstinvestRot",title:"首投ROI",align:"center",valign:"middle",sortable:"true"},
+                       {field:"cumulativeRot",title:"累计ROI",align:"center",valign:"middle",sortable:"true"}
+        ]
 
-        //加载数据
-        loadTable(b,a);
-
-        $(window).resize(function () {
-            $('#reportTable').bootstrapTable('resetView');
-        });
-        }
     });
 }
 
-$("#searchButton").click(function(){
-    // 显示之前，先把当前表格销毁
-    $('#reportTable').bootstrapTable('destroy');
-    //添加样式
-    $(".spinners li").addClass("active");
-    // 查询条件
-    pageInfo = {
-            page  : 1,
-            limit : 10,
-            channelName : getChannelName().toString().length == "0" ? null : getChannelName(),
-            channelName_a : getChannelName().toString().length == "0" ? null : getChannelName(),
-            channelHead :document.getElementById("channelHead").value,
-            reg_begindate: document.getElementById("reg_begindate").value.replace(/-/g,""),
-            reg_enddate:document.getElementById("reg_enddate").value.replace(/-/g,"")
-        };
-    //加载数据
-    loadTableAjax();
-});
+function getQueryParams(){
 
+	return {
+	        page  :1,
+	        limit :20,
+	         channelName :getChannelName("id_select"),
+             channelName_a : getChannelName("id_select"),
+             channelHead :document.getElementById("channelHead").value,
+             reg_begindate: document.getElementById("reg_begindate").value.replace(/-/g,""),
+             reg_enddate:document.getElementById("reg_enddate").value.replace(/-/g,"")
+	    };
+}
+
+function print(obj){
+	for(var key in obj){
+		alert(key + " = " + obj[key])
+	}
+}
+
+
+
+$("#searchButton").click(function(){
+
+    // 显示之前，先把当前表格销毁
+      $('#reportTable').bootstrapTable('destroy');
+    //加载数据
+    initTableGrid();
+});
 
 function initExportFunction(){
 	$('#btn_exports').click(function(){
