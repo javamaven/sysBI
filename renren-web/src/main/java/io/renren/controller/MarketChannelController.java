@@ -109,7 +109,7 @@ public class MarketChannelController {
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 
 		Map<String,Object> map = JSON.parseObject(params, Map.class);
-//
+		
 		List<MarketChannelEntity> ProjectSumList = marketChannelDataService.queryList(map);
 		JSONArray va = new JSONArray();
 
