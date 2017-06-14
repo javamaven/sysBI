@@ -81,6 +81,21 @@
 		<property name="oracleMaxSize">
 			<value>${oracle.jdbc.maxSize}</value>
 		</property>
+		
+		
+		<!-- oracle 26 -->
+		<property name="oracleUrl26">
+			<value>${oracle26.jdbc.url}</value>
+		</property>
+		<property name="oracleUserName26">
+			<value>${oracle26.jdbc.username}</value>
+		</property>
+		<property name="oraclePassword26">
+			<value>${oracle26.jdbc.password}</value>
+		</property>
+		<property name="oracleDriver26">
+			<value>${oracle26.jdbc.driver}</value>
+		</property>
 	</bean>
 	
 	<bean id="stat-filter" class="com.alibaba.druid.filter.stat.StatFilter">

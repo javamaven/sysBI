@@ -45,8 +45,8 @@ public class JobUtil {
 		}
 		
 		File dir = new File(path + "/attach-temp");
-		String time = sdf.format(new Date());
-		String filePath = path + "/attach-temp" + File.separator + time + ".xlsx";
+//		String time = sdf.format(new Date());
+		String filePath = path + "/attach-temp" + File.separator + excelTitile + ".xlsx";
 		File file = new File(filePath);
 		FileOutputStream outputStream = null;
 		try {
