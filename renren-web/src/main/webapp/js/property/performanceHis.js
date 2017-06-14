@@ -18,6 +18,8 @@ function queryParams(params) {  //配置参数
 function initTableGrid(){
 	//初始化Table
     $('#reportTable').bootstrapTable({
+    	
+    }
         url: "../dmreportperformledgerhis/list", //请求后台的URL（*）
         data: JSON.stringify(getQueryParams()),
         dataType: "json",
