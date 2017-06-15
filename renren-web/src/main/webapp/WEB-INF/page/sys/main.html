@@ -530,8 +530,10 @@
         }else{
             //console.log("add:"+(parseInt(after_invest)-parseInt(before_invest)));
             var after_value = (parseInt(after_invest)-parseInt(before_invest))/30;
-            document.getElementById("typesomething").value=parseInt(before_invest)+parseInt(after_value)*mod_times;
-            $("#showme").click();
+            var add_value = parseInt(before_invest)+parseInt(after_value)*mod_times
+            document.getElementById("typesomething").value=parseInt(add_value);
+            if(parseInt(add_value)<=parseInt(after_invest))
+            	$("#showme").click();
             mod_times++;
         }
     }
@@ -554,8 +556,8 @@
 	                    first_load++;
 	                }else{
                         before_invest =after_invest;
-                        //after_invest = parseInt(msg.total_amount)+parseInt(200000);
                         after_invest = parseInt(msg.total_amount);
+                        //console.log(after_invest);
 	                    document.getElementById("typesomething").value=before_invest;
 	                }
 	                $("#showme").click();
