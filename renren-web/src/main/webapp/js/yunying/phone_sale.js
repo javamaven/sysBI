@@ -86,7 +86,7 @@ function initTimeCond(){
 
 function initDayListTableGrid(){
     $("#jqGrid_day_list").jqGrid({
-        url: '../yunying/phonesale/daylist',
+//        url: '../yunying/phonesale/daylist',
         datatype: "json",
         postData: getParams(),
         colModel: [			

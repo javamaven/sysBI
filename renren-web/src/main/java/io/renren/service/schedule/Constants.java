@@ -112,5 +112,10 @@ public class Constants {
 		 * 持有点点赚用户数据
 		 */
 		public static final String DDZ_USER = "21";
+		
+		/**
+		 * 活动渠道成本数据报告
+		 */
+		public static final String CHANNEL_COST = "22";
 	}
 }

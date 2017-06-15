@@ -10,6 +10,7 @@ import org.springframework.util.StringUtils;
 import io.renren.service.schedule.Constants;
 import io.renren.service.schedule.entity.JobVo;
 import io.renren.service.schedule.job.ChannelAllReportJob;
+import io.renren.service.schedule.job.ChannelCostDataReportJob;
 import io.renren.service.schedule.job.ChannelInvestTimesReportJob;
 import io.renren.service.schedule.job.ChannelLossReportJob;
 import io.renren.service.schedule.job.ChannelRenewReportJob;
@@ -123,6 +124,8 @@ public class ScheduleReportTaskEntity implements Serializable {
 			jobVo.setJobClass(EveryDayRecoverDataReportJob.class);
 		}else if (Constants.TaskType.DDZ_USER.equals(jobVo.getJobType())) {
 			jobVo.setJobClass(DdzUserDataReportJob.class);
+		}else if (Constants.TaskType.CHANNEL_COST.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(ChannelCostDataReportJob.class);
 		}
 		jobVo.setTaskEntity(this);
 		return jobVo;

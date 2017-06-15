@@ -25,7 +25,7 @@ function initTimeCond(){
 
 function initTableGrid(){
 	  $("#jqGrid").jqGrid({
-	        url: '../dmreportfcialplandaily/list',
+//	        url: '../dmreportfcialplandaily/list',
 	        datatype: "json",
 	        colModel: [			
 				{ label: '日期', name: 'statPeriod', index: '$STAT_PERIOD', width: 90, key: true ,align:'right'},
@@ -151,6 +151,7 @@ var vm = new Vue({
 			$("#jqGrid").jqGrid("clearGridData");
 			$("#jqGrid").jqGrid('setGridParam',{ 
 				datatype:'json', 
+				url: '../dmreportfcialplandaily/list',
 	            postData: getParams()
             }).trigger("reloadGrid");
 		}

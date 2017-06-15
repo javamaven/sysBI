@@ -26,7 +26,7 @@ function initExportFunction(){
 
 function initTableGrid(){
 	   $("#jqGrid").jqGrid({
-	        url: '../yunying/dmreportddzremain/list',
+//	        url: '../yunying/dmreportddzremain/list',
 	        datatype: "json",
 	        colModel: [			
 				{ label: '时间', name: 'statPeriod', index: '$STAT_PERIOD', width: 70 ,align:'right'},
@@ -81,6 +81,7 @@ var vm = new Vue({
 			$("#jqGrid").jqGrid("clearGridData");
 			$("#jqGrid").jqGrid('setGridParam',{ 
 				datatype:'json', 
+				url: '../yunying/dmreportddzremain/list',
 	            postData: getParams()
             }).trigger("reloadGrid");
 		}
