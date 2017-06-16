@@ -10,19 +10,11 @@ import org.springframework.util.StringUtils;
 import io.renren.service.schedule.Constants;
 import io.renren.service.schedule.entity.JobVo;
 import io.renren.service.schedule.job.ChannelAllReportJob;
-import io.renren.service.schedule.job.ChannelCostDataReportJob;
 import io.renren.service.schedule.job.ChannelInvestTimesReportJob;
 import io.renren.service.schedule.job.ChannelLossReportJob;
 import io.renren.service.schedule.job.ChannelRenewReportJob;
 import io.renren.service.schedule.job.ChannelStFtReportJob;
-import io.renren.service.schedule.job.DdzUserDataReportJob;
 import io.renren.service.schedule.job.DepositoryTotalJob;
-import io.renren.service.schedule.job.EveryDayAccTransferReportJob;
-import io.renren.service.schedule.job.EveryDayAwaitDataReportJob;
-import io.renren.service.schedule.job.EveryDayBasicDataReportJob;
-import io.renren.service.schedule.job.EveryDayGetCashReportJob;
-import io.renren.service.schedule.job.EveryDayRecoverDataReportJob;
-import io.renren.service.schedule.job.LicaiPlanReportJob;
 import io.renren.service.schedule.job.MarketChannelReportJob;
 import io.renren.service.schedule.job.PerformanceHisJob;
 import io.renren.service.schedule.job.PerformanceParameterJob;
@@ -31,7 +23,15 @@ import io.renren.service.schedule.job.ProjectSumJob;
 import io.renren.service.schedule.job.UserActiveReportJob;
 import io.renren.service.schedule.job.UserBehaviorReportJob;
 import io.renren.service.schedule.job.UserInvestReportJob;
-import io.renren.service.schedule.job.VipUserDataReportJob;
+import io.renren.service.schedule.job.yunying.ChannelCostDataReportJob;
+import io.renren.service.schedule.job.yunying.DdzUserDataReportJob;
+import io.renren.service.schedule.job.yunying.EveryDayAccTransferReportJob;
+import io.renren.service.schedule.job.yunying.EveryDayAwaitDataReportJob;
+import io.renren.service.schedule.job.yunying.EveryDayBasicDataReportJob;
+import io.renren.service.schedule.job.yunying.EveryDayGetCashReportJob;
+import io.renren.service.schedule.job.yunying.EveryDayRecoverDataReportJob;
+import io.renren.service.schedule.job.yunying.LicaiPlanReportJob;
+import io.renren.service.schedule.job.yunying.VipUserDataReportJob;
 
 /**
  * 报表推送任务配置表

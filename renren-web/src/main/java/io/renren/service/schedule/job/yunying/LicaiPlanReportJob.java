@@ -1,4 +1,4 @@
-package io.renren.service.schedule.job;
+package io.renren.service.schedule.job.yunying;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -19,35 +19,32 @@ import com.alibaba.fastjson.JSONArray;
 
 import io.renren.entity.schedule.ScheduleReportTaskEntity;
 import io.renren.entity.schedule.ScheduleReportTaskLogEntity;
-import io.renren.entity.yunying.dayreport.DmReportVipSituationEntity;
-import io.renren.entity.yunying.dayreport.DmReportVipUserEntity;
+import io.renren.entity.yunying.dayreport.DmReportFcialPlanDailyEntity;
 import io.renren.service.schedule.ScheduleReportTaskLogService;
 import io.renren.service.schedule.ScheduleReportTaskService;
 import io.renren.service.schedule.entity.JobVo;
-import io.renren.service.yunying.dayreport.DmReportVipSituationService;
-import io.renren.service.yunying.dayreport.DmReportVipUserService;
+import io.renren.service.schedule.job.JobUtil;
+import io.renren.service.yunying.dayreport.DmReportFcialPlanDailyService;
 import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
 
 /**
- * 每日VIP用户数据报告
+ * 每日理财计划基本数据推送任务
  * 
  * @author Administrator
  *
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
-public class VipUserDataReportJob implements Job {
+public class LicaiPlanReportJob implements Job {
 	public final Logger log = Logger.getLogger(this.getClass());
 	private ScheduleReportTaskService taskService = SpringBeanFactory.getBean(ScheduleReportTaskService.class);
-	DmReportVipUserService service = SpringBeanFactory.getBean(DmReportVipUserService.class);
-	DmReportVipSituationService serviceTotal = SpringBeanFactory.getBean(DmReportVipSituationService.class);
+	DmReportFcialPlanDailyService service = SpringBeanFactory.getBean(DmReportFcialPlanDailyService.class);
 	private ScheduleReportTaskLogService logService = SpringBeanFactory.getBean(ScheduleReportTaskLogService.class);
 
 	private ScheduleReportTaskLogEntity logVo;
-	String title = "每日VIP用户数据报告";
-	String title2 = "VIP所属人汇总情况";
+	String title = "每日理财计划基本数据";
 
 	@Override
 	public void execute(JobExecutionContext ctx) throws JobExecutionException {
@@ -69,7 +66,7 @@ public class VipUserDataReportJob implements Job {
 		JobDataMap jobDataMap = ctx.getJobDetail().getJobDataMap();
 		JobVo jobVo = (JobVo) jobDataMap.get("jobVo");
 		ScheduleReportTaskEntity taskEntity = jobVo.getTaskEntity();
-		log.info("+++++++++VipUserDataReportJob+++++++++++++" + taskEntity);
+		log.info("+++++++++LicaiPlanReportJob+++++++++++++" + taskEntity);
 		MailUtil mailUtil = new MailUtil();
 		JobUtil jobUtil = new JobUtil();
 		try {
@@ -79,8 +76,8 @@ public class VipUserDataReportJob implements Job {
 			queryParams.putAll(params);
 			String date_offset_num = params.get("date_offset_num") + "";
 			String[] splitArr = date_offset_num.split("-");
+			String statPeriod = params.get("statPeriod") + "";
 			if (!"0".equals(splitArr[0])) {
-				String statPeriod = params.get("statPeriod") + "";
 				if (StringUtils.isNotEmpty(statPeriod)) {
 					int days = Integer.valueOf(splitArr[0]);
 					if ("day".equals(splitArr[1])) {
@@ -88,29 +85,19 @@ public class VipUserDataReportJob implements Job {
 					} else if ("hour".equals(splitArr[1])) {
 						statPeriod = DateUtil.getHourBefore(statPeriod, -days, "yyyy-MM-dd");
 					}
-					params.put("statPeriod", statPeriod);
-					queryParams.put("statPeriod", statPeriod.replace("-", ""));
 				}
+				params.put("statPeriod", statPeriod);
 			}
+			queryParams.put("statPeriod", statPeriod.replace("-", ""));
 			logVo.setParams(JSON.toJSONString(params));
-
-			List<DmReportVipUserEntity> queryList = service.queryList(queryParams);
-			//vip所属人汇总信息
-			List<DmReportVipSituationEntity> totalList = serviceTotal.queryList(queryParams);
+			List<DmReportFcialPlanDailyEntity> queryList = service.queryList(queryParams);
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < queryList.size(); i++) {
-				DmReportVipUserEntity entity = queryList.get(i);
-				dataArray.add(entity);
-			}
-			JSONArray dataArray2 = new JSONArray();
-			for (int i = 0; i < totalList.size(); i++) {
-				DmReportVipSituationEntity entity = totalList.get(i);
+				DmReportFcialPlanDailyEntity entity = queryList.get(i);
 				dataArray.add(entity);
 			}
 			if (queryList.size() > 0) {
 				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
-				String attachFilePath2 = jobUtil.buildAttachFile(dataArray, title2, title2, serviceTotal.getExcelFields());
-				
 				mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
 						taskEntity.getChaosongEmailList(), attachFilePath);
 				logVo.setEmailValue(attachFilePath);
@@ -144,9 +131,9 @@ public class VipUserDataReportJob implements Job {
 		ScheduleReportTaskEntity entity = new ScheduleReportTaskEntity();
 		entity.setId(logVo.getTaskId());
 		entity.setLastSendTime(new Date());
+		System.err.println("+++++++++timeCost+++++++++++++" + logVo.getTimeCost());
 		entity.setTimeCost(logVo.getTimeCost());
 		entity.setCondition(logVo.getParams());
-		System.err.println("+++++++++timeCost+++++++++++++" + logVo.getTimeCost() + " ;entity=" + entity);
 		taskService.update(entity);
 
 	}
