@@ -20,7 +20,8 @@ var jobType = {
     19:'历史绩效发放记录',//performance_his
     20:'绩效台帐',//performance_parameter
     21:'持有点点赚用户数据',//ddz_user
-    22:'活动渠道成本数据报告'//channel_cost
+    22:'活动渠道成本数据报告',//channel_cost
+    23:'每日VIP用户数据报告'//vip_user
 };
 
 $(function () {

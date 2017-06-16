@@ -53,7 +53,7 @@ function initTableGrid(){
 		viewrecords: true,
         height: 390,
         rowNum: 10,
-		rowList : [10,30,50],
+//		rowList : [10,30,50],
         rownumbers: true, 
         autowidth:true,
         shrinkToFit: false,

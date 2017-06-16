@@ -21,6 +21,7 @@
 //  20:performance_parameter
 //  21:ddz_user
 //  22:channel_cost
+//  23:vip_user
 //};
 function addTask(taskType) {
 	var task_name = $("#task_name").val();

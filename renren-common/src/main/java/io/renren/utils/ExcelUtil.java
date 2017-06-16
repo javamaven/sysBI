@@ -52,7 +52,7 @@ import com.alibaba.fastjson.JSONObject;
 
 public class ExcelUtil {
 	public static String NO_DEFINE = "no_define";// 未定义的字段
-	public static String DEFAULT_DATE_PATTERN = "yyyy年MM月dd日";// 默认日期格式
+	public static String DEFAULT_DATE_PATTERN = "yyyy/MM/dd";// 默认日期格式
 	public static int DEFAULT_COLOUMN_WIDTH = 17;
 
 	/**
@@ -177,8 +177,8 @@ public class ExcelUtil {
 				String cellValue = "";
 				if (o == null)
 					cellValue = "";
-				else if (o instanceof Date)
-					cellValue = new SimpleDateFormat(datePattern).format(o);
+//				else if (o instanceof Date)
+//					cellValue = new SimpleDateFormat(datePattern).format(o);
 				else
 					cellValue = o.toString();
 
@@ -301,8 +301,8 @@ public class ExcelUtil {
 				Object o = jo.get(properties[i]);
 				if (o == null){
 					newCell.setCellValue("");
-				}else if (o instanceof Date){
-					newCell.setCellValue(new SimpleDateFormat(datePattern).format(o));
+//				}else if (o instanceof Date){
+//					newCell.setCellValue(new SimpleDateFormat(datePattern).format(o));
 				}else if (o instanceof Float){
 					BigDecimal setScale = new BigDecimal(o.toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
 					newCell.setCellValue(setScale.floatValue());

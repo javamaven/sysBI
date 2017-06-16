@@ -19,10 +19,15 @@ function initSelectEvent(){
 			$("#month_div").hide();
 			$("#day_list_div").show();
 			$("#report_type_select_tr").hide();
+			$("#is_day_report_count_tr").hide();
+			$("#is_day_report_count_tr_height").hide();
 		}else if(select == 'month'){
 			$("#report_type_select_tr").show();
 			$("#month_div").show();
 			$("#day_list_div").hide();
+			$('#invest_end_time').attr("disabled",true); 
+			$("#is_day_report_count_tr").show();
+			$("#is_day_report_count_tr_height").show();
 			var se = $("#report_type_select").children('option:selected').val();
 			monthSelect(se);
 		}
@@ -32,15 +37,24 @@ function initSelectEvent(){
 		var select = $(this).children('option:selected').val();
 		monthSelect(select);
 	});
+	
 }
 
 function monthSelect(select){
 	if(select == 'total'){//汇总信息
 		$("#month_list_div").hide();
 		$("#month_total_div").show();
+		$("#invest_end_time").val("");
+		$('#invest_end_time').attr("disabled",true); 
 	}else if(select == 'list'){//明细信息
 		$("#month_list_div").show();
 		$("#month_total_div").hide();
+		$("#invest_end_time").val("");
+		$('#invest_end_time').attr("disabled",true); 
+	}else if(select == 'day_report_total'){
+		$("#month_list_div").hide();
+		$("#month_total_div").show();
+		$('#invest_end_time').attr("disabled", false); 
 	}
 }
 
@@ -48,6 +62,12 @@ function initExportFunction(){
 	$('#btn_exports').click(function(){
 		var reportType = $("#day_or_month_report").children('option:selected').val();
 		var selectType = $("#report_type_select").children('option:selected').val();
+		if(selectType == 'day_report_total'){
+			if(!$("#invest_end_time").val()){
+				alert('请选择投资结束时间');
+				return;
+			}
+		}
 		var params = getParams();
 		params.selectType = selectType;
 		params.reportType = reportType;
@@ -305,10 +325,19 @@ var vm = new Vue({
 						url: '../yunying/phonesale/monthTotalList',
 			            postData: getParams()
 		            }).trigger("reloadGrid");
+				}else if(selectType == 'day_report_total'){
+					if(!$("#invest_end_time").val()){
+						alert('请选择投资结束时间');
+						return;
+					}
+					$("#jqGrid_month_total").jqGrid("clearGridData");
+					$("#jqGrid_month_total").jqGrid('setGridParam',{ 
+						datatype:'json',
+						url: '../yunying/phonesale/monthTotalList',
+			            postData: getParams()
+		            }).trigger("reloadGrid");
 				}
 			}
-			
-			
 		}
 	}
 });

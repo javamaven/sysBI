@@ -117,5 +117,11 @@ public class Constants {
 		 * 活动渠道成本数据报告
 		 */
 		public static final String CHANNEL_COST = "22";
+		
+		/**
+		 * 每日VIP用户数据报告
+		 */
+		public static final String VIP_USER = "23";
+		
 	}
 }

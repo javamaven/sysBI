@@ -31,6 +31,7 @@ import io.renren.service.schedule.job.ProjectSumJob;
 import io.renren.service.schedule.job.UserActiveReportJob;
 import io.renren.service.schedule.job.UserBehaviorReportJob;
 import io.renren.service.schedule.job.UserInvestReportJob;
+import io.renren.service.schedule.job.VipUserDataReportJob;
 
 /**
  * 报表推送任务配置表
@@ -126,6 +127,8 @@ public class ScheduleReportTaskEntity implements Serializable {
 			jobVo.setJobClass(DdzUserDataReportJob.class);
 		}else if (Constants.TaskType.CHANNEL_COST.equals(jobVo.getJobType())) {
 			jobVo.setJobClass(ChannelCostDataReportJob.class);
+		}else if (Constants.TaskType.VIP_USER.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(VipUserDataReportJob.class);
 		}
 		jobVo.setTaskEntity(this);
 		return jobVo;
