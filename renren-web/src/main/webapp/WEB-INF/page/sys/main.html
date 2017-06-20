@@ -171,28 +171,41 @@
       
 	 }
 	 
-	function show(){ 
-		alert("每隔一秒我就会显示一次"); 
-		} 
 
 	$(function () {
 		
-        setInterval('mod_invest()', 1000);
-        //SetAndClearInt('mod_invest()', 1000);
-
+        var mod_int;
+        clearInterval(mod_int);
+        mod_int = setInterval('mod_invest()', 1000);
+                
 	    queryDituData();
-
 	    queryInvestInfo();
 		getTotalInvest();
 	    getTotalUserNum();
 	    
+	    var invest_int;
+	    clearInterval(invest_int);
+	    invest_int=setInterval('queryInvestInfo()', 5*60*1000);
 	    
-	    setInterval('queryInvestInfo()', 5*60*1000);
-	    setInterval('queryDituData()', 1*60*1000);
-	    setInterval('delStr()', 10000);
-	    setInterval('getTotalInvest()', 30*1000);
-	    setInterval('getTotalUserNum()', 30*1000);
-	    setInterval('randon_style()', 10*1000);
+	    var ditu_int;
+	    clearInterval(ditu_int);	    
+	    ditu_int=setInterval('queryDituData()', 1*60*1000);
+	    
+	    var del_int;
+	    clearInterval(del_int);	    
+	    del_int=setInterval('delStr()', 10000);
+	    
+	    var tolInv_intl;
+	    clearInterval(tolInv_intl);	    
+	    tolInv_intl=setInterval('getTotalInvest()', 30*1000);
+	    
+	    var tolUser_int;
+	    clearInterval(tolUser_int);
+	    tolUser_int=setInterval('getTotalUserNum()', 30*1000);
+	    
+	    var ranSty_int;
+	    clearInterval(ranSty_int);	    
+	    ranSty_int=setInterval('randon_style()', 10*1000);
 	    
 	    /*
 	    SetAndClearInt('queryInvestInfo()', 5*60*1000);
