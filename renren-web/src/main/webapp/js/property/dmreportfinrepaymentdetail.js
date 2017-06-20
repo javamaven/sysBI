@@ -77,8 +77,6 @@ function initTableGrid(){
     });
 }
 
-
-
 //默认时间
 function getDate(datatype){
     var today = new Date(new Date()-24*60*60*1000*1);
