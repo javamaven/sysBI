@@ -152,6 +152,9 @@ public class basicReportServiceImpl implements BasicReportService {
 	@Override
 	public void getAmontByUserId(List<Map<String, Object>> retList) {
 		List<String> inList = new ArrayList<String>();
+		if(retList.size() == 0){
+			return;
+		}
 		for (int i = 0; i < retList.size(); i++) {
 			Map<String, Object> map = retList.get(i);
 			inList.add(map.get("用户ID") + "");
