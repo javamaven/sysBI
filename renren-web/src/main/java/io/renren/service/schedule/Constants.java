@@ -123,5 +123,10 @@ public class Constants {
 		 */
 		public static final String VIP_USER = "23";
 		
+		/**
+		 * 注册未投资用户
+		 */
+		public static final String REGISTER_NOT_INVEST = "24";
+		
 	}
 }

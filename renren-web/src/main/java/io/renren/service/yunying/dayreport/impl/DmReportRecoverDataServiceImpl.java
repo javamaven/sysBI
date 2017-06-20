@@ -71,30 +71,31 @@ public class DmReportRecoverDataServiceImpl implements DmReportRecoverDataServic
 		headMap.put("statPeriod", "日期");
 		
 		headMap.put("userId", "用户ID");
-		headMap.put("cgUserId", "存管用户ID");
-		headMap.put("username", "用户名称");
+		headMap.put("cgUserId", "存管ID");
+		headMap.put("username", "用户名");
 		
-		headMap.put("phone", "手机号");
-		headMap.put("projectId", "项目ID");
+		headMap.put("phone", "电话");
+		headMap.put("projectId", "回款项目号");
 		headMap.put("money", "回款金额");
 		
 		headMap.put("borrowPeriod", "项目期限");
 		headMap.put("regTime", "注册日期");
-		headMap.put("xmInvOneTime", "首投时间");
+		headMap.put("xmStJg", "注册后首投间隔(分)(数据覆盖历史项目)");
 		
-		headMap.put("xmStJg", "注册后首投间隔(分)");
-		headMap.put("xmInvLastTime", "最近一次投资时间");
-		headMap.put("xmTzJg", "首投到最后一次投资时间间隔(分)");
+		headMap.put("avgXmTzJg", "平均投资时间间隔(分)(数据覆盖历史项目)");
+		headMap.put("avgXmInvMoney", "平均投资金额(数据覆盖历史项目)");
+		headMap.put("xmInvCou", "投资次数(数据覆盖历史项目)");
 		
-		headMap.put("xmInvMoney", "投资总金额");
-		headMap.put("xmInvCou", "投资次数");
-		headMap.put("useInvPackCou", "投资次数中使用奖励次数");
+		headMap.put("invPackBl", "投资次数中使用奖励比列(数据覆盖历史项目)");
+		headMap.put("zzBl", "发起转让比例(数据覆盖历史项目)");
+		headMap.put("periodJq", "投资期限偏好(数据覆盖历史项目)");
 		
-		headMap.put("zzFqCou", "债转次数");
-		headMap.put("periodJq", "投资期限偏好");
+		headMap.put("rewardStatus", "账户是否有红包");
+		headMap.put("rewardMoney", "红包金额");
 		headMap.put("czMoney", "累计充值金额");
 		
 		headMap.put("txCgMoney", "累计提现金额");
+		headMap.put("txCgMoneyBl", "提现金额占比充值金额");
 		headMap.put("dateCou", "本次推送记录数");
 		
 		return headMap;

@@ -52,6 +52,14 @@ function addDate(date,days){
 	return a.Format("yyyy-MM-dd");
 }
 
+function addHours(hours){
+	var a = new Date();
+	a = a.valueOf();
+	a = a + hours * 60 * 60 * 1000;
+	a = new Date(a);
+	return a.Format("yyyy-MM-dd hh");
+}
+
 //当天
 function getCurrDate(){
 	var time1 = new Date().Format("yyyy-MM-dd");

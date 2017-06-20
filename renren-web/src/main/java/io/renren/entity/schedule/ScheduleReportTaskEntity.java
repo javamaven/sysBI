@@ -32,6 +32,7 @@ import io.renren.service.schedule.job.yunying.EveryDayGetCashReportJob;
 import io.renren.service.schedule.job.yunying.EveryDayRecoverDataReportJob;
 import io.renren.service.schedule.job.yunying.LicaiPlanReportJob;
 import io.renren.service.schedule.job.yunying.VipUserDataReportJob;
+import io.renren.service.schedule.job.yunying.basicreport.RegisterNotInvestReportJob;
 
 /**
  * 报表推送任务配置表
@@ -129,7 +130,11 @@ public class ScheduleReportTaskEntity implements Serializable {
 			jobVo.setJobClass(ChannelCostDataReportJob.class);
 		}else if (Constants.TaskType.VIP_USER.equals(jobVo.getJobType())) {
 			jobVo.setJobClass(VipUserDataReportJob.class);
+		}else if (Constants.TaskType.REGISTER_NOT_INVEST.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(RegisterNotInvestReportJob.class);
 		}
+		
+		
 		jobVo.setTaskEntity(this);
 		return jobVo;
 	}

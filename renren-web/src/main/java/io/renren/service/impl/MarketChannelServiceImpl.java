@@ -38,6 +38,7 @@ public class MarketChannelServiceImpl implements MarketChannelService {
 		headMap.put("channelHead", "主负责人");
 		headMap.put("type", "渠道类型");
 		headMap.put("channelName", "渠道名称");
+		headMap.put("channelLabel", "渠道标签");
 		headMap.put("actualCost", "实际消费");
 		headMap.put("regCou", "新增注册人");
 		headMap.put("firstinvestCou", "新增首投人数");
