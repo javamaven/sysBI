@@ -38,8 +38,8 @@ function initTableGrid(){
 			{ label: '回款人数', name: 'recoverCou', index: '$RECOVER_COU', width: 120,align:'right'  }			
         ],
         viewrecords: true,
-		height: 390,
-        rowNum: 10,
+		height: $(window).height()-130,
+        rowNum: 20,
 		rowList : [10,30,50],
         rownumbers: true, 
         autowidth:true,

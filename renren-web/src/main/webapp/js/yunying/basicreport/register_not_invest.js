@@ -63,8 +63,8 @@ function initTableGrid(){
 			{ label: '账户余额', name: '账户余额', index: '$COST_SOURCE', width: 80 ,align:'right'}
         ],
 		viewrecords: true,
-        height: 385,
-        rowNum: 10,
+        height:  $(window).height()-130,
+        rowNum: 20,
 //		rowList : [10,30,50],
         rownumbers: true, 
         rownumWidth: 25, 

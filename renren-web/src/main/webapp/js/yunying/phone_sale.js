@@ -153,8 +153,8 @@ function initDayListTableGrid(){
 			
         ],
 		viewrecords: true,
-        height: 390,
-        rowNum: 10,
+        height: $(window).height()-200,
+        rowNum: 20,
 		rowList : [10,30,50],
         rownumbers: true, 
         autowidth:true,
@@ -211,8 +211,8 @@ function initMonthListTableGrid(){
 			
         ],
 		viewrecords: true,
-        height: 390,
-        rowNum: 10,
+        height:  $(window).height()-200,
+        rowNum: 20,
 		rowList : [10,30,50],
         rownumbers: true, 
         autowidth:true,

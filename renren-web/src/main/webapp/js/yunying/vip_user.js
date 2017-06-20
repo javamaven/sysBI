@@ -88,8 +88,8 @@ function initDetailTableGrid(){
 	
         ],
 		viewrecords: true,
-        height: 390,
-        rowNum: 10,
+        height: $(window).height()-180,
+        rowNum: 20,
         rownumbers: true, 
         autowidth:true,
         shrinkToFit: false,
@@ -125,8 +125,8 @@ function initCountTableGrid(){
 			{ label: '当天新增投资金额', name: 'dayTender', index: '$MONTH_TENDER_COU', width: 100 ,align:'right'} 			
         ],
 		viewrecords: true,
-        height: 390,
-        rowNum: 10,
+        height: $(window).height()-180,
+        rowNum: 20,
         rownumbers: true, 
         autowidth:true,
         pager: "#jqGridPager_count",

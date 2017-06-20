@@ -113,8 +113,8 @@ function initTableGrid(){
 //			{ label: 'CIA', name: 'cia', index: '$CIA', width: 80 ,align:'right'}			
         ],
 		viewrecords: true,
-        height: 390,
-        rowNum: 10,
+        height:  $(window).height()-250,
+        rowNum: 20,
 //		rowList : [10,30,50],
         rownumbers: true, 
         autowidth:true,

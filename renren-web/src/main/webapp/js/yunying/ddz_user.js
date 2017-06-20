@@ -42,8 +42,8 @@ function initTableGrid(){
 	        ],				
 
 			viewrecords: true,
-	        height: 390,
-	        rowNum: 10,
+	        height: $(window).height()-130,
+	        rowNum: 20,
 //			rowList : [10,30,50],
 	        rownumbers: true, 
 	        rownumWidth: 25, 

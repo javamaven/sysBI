@@ -69,8 +69,8 @@ function initTableGrid(){
 				{ label: '提现金额占比充值金额', name: 'txCgMoneyBl', index: '$TX_CG_MONEY', width: 90 ,align:'right'}
 	        ],
 			viewrecords: true,
-	        height: 390,
-	        rowNum: 10,
+	        height: $(window).height()-130,
+	        rowNum: 20,
 			rowList : [10,30,50],
 	        rownumbers: true, 
 	        autowidth:true,

@@ -48,8 +48,8 @@ function initTableGrid(){
 				{ label: '理财计划成功退出人数', name: 'quitSP', index: '$QUIT_S_P', width: 90,align:'right' }			
 	        ],
 	        viewrecords: true,
-	        height: 390,
-	        rowNum: 10,
+	        height: $(window).height()-150,
+	        rowNum: 20,
 			rowList : [10,30,50],
 	        rownumbers: true, 
 	        autowidth:true,
