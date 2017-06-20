@@ -52,6 +52,16 @@ public class DmReportUserActivateDailyEntity implements Serializable {
 	//
 	private BigDecimal totalCapital;
 
+	private String registerFrom;
+
+	public void setRegisterFrom(String registerFrom) {
+		this.registerFrom = registerFrom;
+	}
+
+	public String getRegisterFrom() {
+		return registerFrom;
+	}
+
 	/**
 	 * 设置：
 	 */

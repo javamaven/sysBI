@@ -55,7 +55,7 @@ function initTableGrid(){
 
         columns:  [
             {field:"statPeriod",title:"统计日期",align:"center",valign:"middle",sortable:"true"},//居中对齐
-            {field:"sourcecaseno",title:"平台项目编号",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"sourcecaseno",title:"　　平台项目编号　　",align:"center",valign:"middle",sortable:"true"},//居中对齐
             {field:"department",title:"　部门　",align:"center",valign:"middle",sortable:"true"},//居中对齐
             {field:"projectBelong",title:"项目归属",align:"center",valign:"middle",sortable:"true"},//居中对齐
             {field:"projectType",title:"项目类型",align:"center",valign:"middle",sortable:"true"},
@@ -74,8 +74,6 @@ function initTableGrid(){
     });
 }
 
-
-
 //默认时间
 function getDate(datatype){
     var today = new Date(new Date()-24*60*60*1000*1);
@@ -88,8 +86,6 @@ function getDate(datatype){
     enddate = (halfYearAgo.getFullYear()) +"-" +
         (halfYearAgo.getMonth() + 1 >9  ? (halfYearAgo.getMonth() + 1 ) : "0"+(halfYearAgo.getMonth() + 1 ))+"-01";
     return datatype==1 ? startdate : enddate;
-
-
 
 };
 //时间格式
@@ -106,15 +102,12 @@ $(".form_datetime_2").
 //document.getElementById("STAT_PERIOD").value=getDate(2);
 document.getElementById("STAT_PERIOD").value=getDate(1);
 
-
 // 自适应高度
 function tableHeight() {
 	return $(window).height();
 }
 
-
 function getQueryParams(){
-
 	return {
 	        page  :1,
 	        limit :20,
@@ -126,8 +119,6 @@ function getQueryParams(){
 	    };
 }
 
-
-
 function getParams(){
 	var params = {
         	 statPeriod: document.getElementById("STAT_PERIOD").value.replace(/-/g,""),
@@ -135,26 +126,17 @@ function getParams(){
              customername: $("#CUSTOMERNAME").val(),
              iscompleted: $("#ISCOMPLETED").val(),
              isstamp: $("#ISSTAMP").val()
-
 	};
 	return params;
 }
-
-
 
 $("#searchButton").click(function(){
 //reload();
 	getQueryParams();
     // 显示之前，先把当前表格销毁
       $('#reportTable').bootstrapTable('destroy');
-
-
-
-
     //加载数据
     initTableGrid();
-
-
 });
 
 function initExportFunction(){

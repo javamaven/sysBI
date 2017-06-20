@@ -50,8 +50,8 @@ function initTableGrid(){
 			{ label: '总待收', name: 'allAwait', index: '$ALL_AWAIT', width: 80,align:'right' }			
         ],
 		viewrecords: true,
-		height: 390,
-        rowNum: 10,
+		height: $(window).height()-150,
+        rowNum: 20,
 		rowList : [10,30,50],
         rownumbers: true, 
         autowidth:true,

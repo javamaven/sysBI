@@ -33,13 +33,13 @@
 			XM_INV_MONEY, 
 			IS_INTERNAL, 
 			IS_INTERNAL_TUIJIAN, 
-			REALNAME
-		
+			REALNAME	
 		from dm_report_ddz_remain
         where 1=1
 		<if test="statPeriod != null and statPeriod.trim() !='' ">
 			and STAT_PERIOD = #{statPeriod}
 		</if>
+		ORDER BY STAT_PERIOD desc
 		<if test="offset != null and limit != null">
 			limit #{offset}, #{limit}
 		</if>

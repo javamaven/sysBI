@@ -125,7 +125,7 @@ function initTableGrid(){
 //        showRefresh: true,                  //是否显示刷新按钮
         minimumCountColumns: 2,             //最少允许的列数
 //        clickToSelect: true,                //是否启用点击选中行
-        height: tableHeight(),                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+        height: tableHeight()+10,                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
         uniqueId: "ID",                     //每一行的唯一标识，一般为主键列
 //        showToggle: true,                    //是否显示详细视图和列表视图的切换按钮
 //        cardView: false,                    //是否显示详细视图
@@ -135,25 +135,26 @@ function initTableGrid(){
           },
 
         columns:  [
-             {field:"statPeriod",title:"日期",align:"center",valign:"middle",sortable:"true"},//居中对齐
-                       {field:"channelHead",title:"主负责人",align:"center",valign:"middle",sortable:"true"},//居中对齐
-                       {field:"type",title:"渠道类型",align:"center",valign:"middle",sortable:"true"},//居中对齐
-                       {field:"channelName",title:"渠道名称",align:"center",valign:"middle",sortable:"true"},//居中对齐
-                       {field:"actualCost",title:"实际消费",align:"center",valign:"middle",sortable:"true"},
-                       {field:"regCou",title:"新增注册人",align:"center",valign:"middle",sortable:"true"},
-                       {field:"firstinvestCou",title:"新增首投人数",align:"center",valign:"middle",sortable:"true"},
-                       {field:"firstinvestMoney",title:"首投金额",align:"center",valign:"middle",sortable:"true"},
-                       {field:"firstinvestYMoney",title:"首投年化金额",align:"center",valign:"middle",sortable:"true"},
-                       {field:"invCou",title:"投资总人数",align:"center",valign:"middle",sortable:"true"},
-                       {field:"invMoney",title:"投资总金额",align:"center",valign:"middle",sortable:"true"},
-                       {field:"invYMoney",title:"年化投资总金额",align:"center",valign:"middle",sortable:"true"},
-                       {field:"ddzMoney",title:"点点赚购买金额",align:"center",valign:"middle",sortable:"true"},
-                       {field:"regCost",title:"注册成本",align:"center",valign:"middle",sortable:"true"},
-                       {field:"firstinvestCost",title:"首投成本",align:"center",valign:"middle",sortable:"true"},
-                       {field:"avgFirstinvestMoney",title:"人均首投",align:"center",valign:"middle",sortable:"true"},
-                       {field:"regInvConversion",title:"注册人投资转化率",align:"center",valign:"middle",sortable:"true"},
-                       {field:"firstinvestRot",title:"首投ROI",align:"center",valign:"middle",sortable:"true"},
-                       {field:"cumulativeRot",title:"累计ROI",align:"center",valign:"middle",sortable:"true"}
+               {field:"statPeriod",title:"日期",align:"center",valign:"middle",sortable:"true"},//居中对齐
+		       {field:"channelHead",title:"主负责人",align:"center",valign:"middle",sortable:"true"},//居中对齐
+		       {field:"type",title:"渠道类型",align:"center",valign:"middle",sortable:"true"},//居中对齐
+		       {field:"channelName",title:"　　渠道名称　　",align:"center",valign:"middle",sortable:"true"},//居中对齐
+		       {field:"channelLabel",title:"渠道标签",align:"center",valign:"middle",sortable:"true"},//居中对齐
+		       {field:"actualCost",title:"实际消费",align:"center",valign:"middle",sortable:"true"},
+		       {field:"regCou",title:"新增注册人",align:"center",valign:"middle",sortable:"true"},
+		       {field:"firstinvestCou",title:"新增首投人数",align:"center",valign:"middle",sortable:"true"},
+		       {field:"firstinvestMoney",title:"首投金额",align:"center",valign:"middle",sortable:"true"},
+		       {field:"firstinvestYMoney",title:"首投年化金额",align:"center",valign:"middle",sortable:"true"},
+		       {field:"invCou",title:"投资总人数",align:"center",valign:"middle",sortable:"true"},
+		       {field:"invMoney",title:"投资总金额",align:"center",valign:"middle",sortable:"true"},
+		       {field:"invYMoney",title:"年化投资总金额",align:"center",valign:"middle",sortable:"true"},
+		       {field:"ddzMoney",title:"点点赚购买金额",align:"center",valign:"middle",sortable:"true"},
+		       {field:"regCost",title:"注册成本",align:"center",valign:"middle",sortable:"true"},
+		       {field:"firstinvestCost",title:"首投成本",align:"center",valign:"middle",sortable:"true"},
+		       {field:"avgFirstinvestMoney",title:"人均首投",align:"center",valign:"middle",sortable:"true"},
+		       {field:"regInvConversion",title:"注册人投资转化率",align:"center",valign:"middle",sortable:"true"},
+		       {field:"firstinvestRot",title:"首投ROI",align:"center",valign:"middle",sortable:"true"},
+		       {field:"cumulativeRot",title:"累计ROI",align:"center",valign:"middle",sortable:"true"}
         ]
 
     });

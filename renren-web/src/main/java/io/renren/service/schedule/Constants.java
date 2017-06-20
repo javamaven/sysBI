@@ -117,5 +117,21 @@ public class Constants {
 		 * 活动渠道成本数据报告
 		 */
 		public static final String CHANNEL_COST = "22";
+		
+		/**
+		 * 每日VIP用户数据报告
+		 */
+		public static final String VIP_USER = "23";
+		
+		/**
+		 * 注册1未投资用户
+		 */
+		public static final String REGISTER_ONE_HOUR_NOT_INVEST = "24";
+		
+		/**
+		 * 注册3天未投资用户
+		 */
+		public static final String REGISTER_THREE_DAY_NOT_INVEST = "25";
+		
 	}
 }

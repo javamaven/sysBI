@@ -18,15 +18,17 @@ select
   tud.STAT_MONTH,
   NVL(DU.ACTIVITY_TAG,DU2.ACTIVITY_TAG) AS ACTIVITY_TAG,
   mark,
-  CASE WHEN TO_CHAR(SYSDATE,'yyyyMMdd') BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE,-1),'yyyyMM')||'01' AND TO_CHAR(SYSDATE,'yyyyMM')||'04'
-       THEN TO_CHAR(SYSDATE,'yyyyMM')||'03'
-       ELSE TO_CHAR(ADD_MONTHS(SYSDATE,1),'yyyyMM')||'03' END  
-  AS TIME_END,
-  CASE WHEN mark=1 THEN TO_CHAR(tud.call_date,'yyyyMMdd') ELSE  
-       CASE WHEN TO_CHAR(SYSDATE,'yyyyMMdd') BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE,-1),'yyyyMM')||'01' AND TO_CHAR(SYSDATE,'yyyyMM')||'04'  
-         THEN TO_CHAR(ADD_MONTHS(SYSDATE,-1),'yyyyMM')||'01'
-           ELSE TO_CHAR(SYSDATE,'yyyyMM')||'01' END 
-   END AS TIME_START
+--   CASE WHEN TO_CHAR(SYSDATE,'yyyyMMdd') BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE,-1),'yyyyMM')||'01' AND TO_CHAR(SYSDATE,'yyyyMM')||'04'
+--        THEN TO_CHAR(SYSDATE,'yyyyMM')||'03'
+--        ELSE TO_CHAR(ADD_MONTHS(SYSDATE,1),'yyyyMM')||'03' END  
+--   AS TIME_END,
+	${investEndTime} as TIME_END,
+--   CASE WHEN mark=1 THEN TO_CHAR(tud.call_date,'yyyyMMdd') ELSE  
+--        CASE WHEN TO_CHAR(SYSDATE,'yyyyMMdd') BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE,-1),'yyyyMM')||'01' AND TO_CHAR(SYSDATE,'yyyyMM')||'04'  
+--          THEN TO_CHAR(ADD_MONTHS(SYSDATE,-1),'yyyyMM')||'01'
+--            ELSE TO_CHAR(SYSDATE,'yyyyMM')||'01' END 
+--    END AS TIME_START
+	${investStartTime} as TIME_START
 from 
  PHONE_SALE_EXCEL_DATA tud      
  left join dm_report_merge_user DU ON (tud.USER_NAME = DU.USERNAME)
@@ -71,8 +73,8 @@ SELECT
   "投资人数(人)",
   "投资总额(元)",
   ROUND("年化投资总额(元)",2) AS "年化投资总额(元)",
-  ROUND(("年化投资总额(元)"/"投资人数(人)"),2) AS "人均年化投资额(元)",
-  ROUND(("有效客户外呼数(人)"/"客户总量(人)"),4) * 100||'%' AS "接通率",
+  case when "投资人数(人)" = 0 then 0 else ROUND(("年化投资总额(元)"/"投资人数(人)"),2) end AS "人均年化投资额(元)",
+  case when "客户总量(人)" = 0 then '0.00%' else ROUND(("有效客户外呼数(人)"/"客户总量(人)"),4) * 100||'%' end AS "接通率",
 case when "投资人数(人)"/"有效客户外呼数(人)" < 0.01
 	then '0' || ROUND(("投资人数(人)"/"有效客户外呼数(人)"),4) * 100||'%'
 	else  ROUND(("投资人数(人)"/"有效客户外呼数(人)"),4) * 100||'%' end AS "有效外呼转化率",
@@ -132,8 +134,8 @@ SELECT
   SUM("投资人数(人)") AS "投资人数(人)",
   SUM("投资总额(元)") AS "投资总额(元)",
   ROUND(SUM("年化投资总额(元)"),2) AS "年化投资总额(元)",
-  ROUND((SUM("年化投资总额(元)")/SUM("投资人数(人)")),2) AS "人均年化投资额(元)",
-  ROUND((SUM("有效客户外呼数(人)")/SUM("客户总量(人)")),4) * 100||'%' AS "接通率",
+  case when SUM("投资人数(人)") = 0 then 0 else ROUND((SUM("年化投资总额(元)")/SUM("投资人数(人)")),2) end AS "人均年化投资额(元)",
+  case when SUM("客户总量(人)") = 0 then '0.00%' else ROUND((SUM("有效客户外呼数(人)")/SUM("客户总量(人)")),4) * 100||'%' end AS "接通率",
 	case when SUM("投资人数(人)")/SUM("有效客户外呼数(人)") < 0.01
 	then '0' || ROUND((SUM("投资人数(人)")/SUM("有效客户外呼数(人)")),4) * 100||'%'
 	else  ROUND((SUM("投资人数(人)")/SUM("有效客户外呼数(人)")),4) * 100||'%' end AS "有效外呼转化率",

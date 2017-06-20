@@ -1,11 +1,11 @@
-package io.renren.service.schedule.job;
+package io.renren.service.schedule.job.yunying.basicreport;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -19,31 +19,35 @@ import com.alibaba.fastjson.JSONArray;
 
 import io.renren.entity.schedule.ScheduleReportTaskEntity;
 import io.renren.entity.schedule.ScheduleReportTaskLogEntity;
-import io.renren.entity.yunying.dayreport.DmReportFcialPlanDailyEntity;
 import io.renren.service.schedule.ScheduleReportTaskLogService;
 import io.renren.service.schedule.ScheduleReportTaskService;
 import io.renren.service.schedule.entity.JobVo;
-import io.renren.service.yunying.dayreport.DmReportFcialPlanDailyService;
+import io.renren.service.schedule.job.JobUtil;
+import io.renren.service.yunying.basicreport.BasicReportService;
+import io.renren.service.yunying.dayreport.DmReportVipSituationService;
 import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
 
 /**
- * 每日理财计划基本数据推送任务
+ * 注册3天未投资用户
  * 
  * @author Administrator
  *
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
-public class LicaiPlanReportJob implements Job {
+public class RegisterThreeDayNotInvestReportJob implements Job {
 	public final Logger log = Logger.getLogger(this.getClass());
 	private ScheduleReportTaskService taskService = SpringBeanFactory.getBean(ScheduleReportTaskService.class);
-	DmReportFcialPlanDailyService service = SpringBeanFactory.getBean(DmReportFcialPlanDailyService.class);
+	BasicReportService service = SpringBeanFactory.getBean(BasicReportService.class);
+	DmReportVipSituationService serviceTotal = SpringBeanFactory.getBean(DmReportVipSituationService.class);
 	private ScheduleReportTaskLogService logService = SpringBeanFactory.getBean(ScheduleReportTaskLogService.class);
 
 	private ScheduleReportTaskLogEntity logVo;
-	String title = "每日理财计划基本数据";
+	String title = "";
+	SimpleDateFormat dateFm = new SimpleDateFormat("EEEE");
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Override
 	public void execute(JobExecutionContext ctx) throws JobExecutionException {
@@ -57,7 +61,12 @@ public class LicaiPlanReportJob implements Job {
 		updateRunningTime();
 	}
 
-	@SuppressWarnings("unchecked")
+	/**
+	 * 每天9点到16点，每个小时推送一遍 周六周日不推送
+	 * 
+	 * @param ctx
+	 * @return
+	 */
 	private boolean run(JobExecutionContext ctx) {
 		boolean flag = true;
 		logVo = new ScheduleReportTaskLogEntity();
@@ -65,37 +74,30 @@ public class LicaiPlanReportJob implements Job {
 		JobDataMap jobDataMap = ctx.getJobDetail().getJobDataMap();
 		JobVo jobVo = (JobVo) jobDataMap.get("jobVo");
 		ScheduleReportTaskEntity taskEntity = jobVo.getTaskEntity();
-		log.info("+++++++++LicaiPlanReportJob+++++++++++++" + taskEntity);
+		log.info("+++++++++RegisterThreeDayNotInvestReportJob+++++++++++++" + taskEntity);
 		MailUtil mailUtil = new MailUtil();
 		JobUtil jobUtil = new JobUtil();
 		try {
-			ScheduleReportTaskEntity queryObject = taskService.queryObject(taskEntity.getId());
-			Map<String, Object> params = JSON.parseObject(queryObject.getCondition(), Map.class);
 			Map<String, Object> queryParams = new HashMap<String, Object>();
-			queryParams.putAll(params);
-			String date_offset_num = params.get("date_offset_num") + "";
-			String[] splitArr = date_offset_num.split("-");
-			if (!"0".equals(splitArr[0])) {
-				String statPeriod = params.get("statPeriod") + "";
-				if (StringUtils.isNotEmpty(statPeriod)) {
-					int days = Integer.valueOf(splitArr[0]);
-					if ("day".equals(splitArr[1])) {
-						statPeriod = DateUtil.getCurrDayBefore(statPeriod, -days, "yyyy-MM-dd");
-					} else if ("hour".equals(splitArr[1])) {
-						statPeriod = DateUtil.getHourBefore(statPeriod, -days, "yyyy-MM-dd");
-					}
-				}
-				params.put("statPeriod", statPeriod);
-				queryParams.put("statPeriod", statPeriod.replace("-", ""));
-			}
-			logVo.setParams(JSON.toJSONString(params));
-			List<DmReportFcialPlanDailyEntity> queryList = service.queryList(queryParams);
+			String registerStartTime = "";
+			String registerEndTime = "";
+
+			registerStartTime = DateUtil.getCurrDayBefore(3, "yyyy-MM-dd") + " 00:00:00";
+			registerEndTime = DateUtil.getCurrDayBefore(1, "yyyy-MM-dd") + " 23:59:59";
+			queryParams.put("registerStartTime", registerStartTime);
+			queryParams.put("registerEndTime", registerEndTime);
+			logVo.setParams(JSON.toJSONString(queryParams));
+			List<Map<String, Object>> dataList = service.queryRegisterThreeDaysNotInvestList(queryParams);
 			JSONArray dataArray = new JSONArray();
-			for (int i = 0; i < queryList.size(); i++) {
-				DmReportFcialPlanDailyEntity entity = queryList.get(i);
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, Object> entity = dataList.get(i);
 				dataArray.add(entity);
 			}
-			if (queryList.size() > 0) {
+			if (dataList.size() > 0) {
+				String month = registerEndTime.substring(5 , 7);
+				String day = registerEndTime.substring(8 , 10);
+				title = "注册3天未投资用户-W-" + month + day + "-" + dataList.size();
+				
 				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
 				mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
 						taskEntity.getChaosongEmailList(), attachFilePath);
@@ -130,9 +132,9 @@ public class LicaiPlanReportJob implements Job {
 		ScheduleReportTaskEntity entity = new ScheduleReportTaskEntity();
 		entity.setId(logVo.getTaskId());
 		entity.setLastSendTime(new Date());
-		System.err.println("+++++++++timeCost+++++++++++++" + logVo.getTimeCost());
 		entity.setTimeCost(logVo.getTimeCost());
 		entity.setCondition(logVo.getParams());
+		System.err.println("+++++++++timeCost+++++++++++++" + logVo.getTimeCost() + " ;entity=" + entity);
 		taskService.update(entity);
 
 	}

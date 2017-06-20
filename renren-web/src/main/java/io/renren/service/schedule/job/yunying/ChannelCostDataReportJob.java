@@ -1,4 +1,4 @@
-package io.renren.service.schedule.job;
+package io.renren.service.schedule.job.yunying;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -23,6 +23,7 @@ import io.renren.entity.yunying.dayreport.DmReportActiveChannelCostEntity;
 import io.renren.service.schedule.ScheduleReportTaskLogService;
 import io.renren.service.schedule.ScheduleReportTaskService;
 import io.renren.service.schedule.entity.JobVo;
+import io.renren.service.schedule.job.JobUtil;
 import io.renren.service.yunying.dayreport.DmReportActiveChannelCostService;
 import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
@@ -75,8 +76,8 @@ public class ChannelCostDataReportJob implements Job {
 			queryParams.putAll(params);
 			String date_offset_num = params.get("date_offset_num") + "";
 			String[] splitArr = date_offset_num.split("-");
+			String statPeriod = params.get("statPeriod") + "";
 			if (!"0".equals(splitArr[0])) {
-				String statPeriod = params.get("statPeriod") + "";
 				if (StringUtils.isNotEmpty(statPeriod)) {
 					int days = Integer.valueOf(splitArr[0]);
 					if ("day".equals(splitArr[1])) {
@@ -85,9 +86,9 @@ public class ChannelCostDataReportJob implements Job {
 						statPeriod = DateUtil.getHourBefore(statPeriod, -days, "yyyy-MM-dd");
 					}
 					params.put("statPeriod", statPeriod);
-					queryParams.put("statPeriod", statPeriod.replace("-", ""));
 				}
 			}
+			queryParams.put("statPeriod", statPeriod.replace("-", ""));
 			logVo.setParams(JSON.toJSONString(params));
 
 			List<DmReportActiveChannelCostEntity> queryList = service.queryList(queryParams);

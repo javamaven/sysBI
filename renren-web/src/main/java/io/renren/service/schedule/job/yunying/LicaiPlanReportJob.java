@@ -1,4 +1,4 @@
-package io.renren.service.schedule.job;
+package io.renren.service.schedule.job.yunying;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -19,31 +19,32 @@ import com.alibaba.fastjson.JSONArray;
 
 import io.renren.entity.schedule.ScheduleReportTaskEntity;
 import io.renren.entity.schedule.ScheduleReportTaskLogEntity;
-import io.renren.entity.yunying.dayreport.DmReportAccTransferEntity;
+import io.renren.entity.yunying.dayreport.DmReportFcialPlanDailyEntity;
 import io.renren.service.schedule.ScheduleReportTaskLogService;
 import io.renren.service.schedule.ScheduleReportTaskService;
 import io.renren.service.schedule.entity.JobVo;
-import io.renren.service.yunying.dayreport.DmReportAccTransferService;
+import io.renren.service.schedule.job.JobUtil;
+import io.renren.service.yunying.dayreport.DmReportFcialPlanDailyService;
 import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
 
 /**
- * 每日资金迁移数据报告
+ * 每日理财计划基本数据推送任务
  * 
  * @author Administrator
  *
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
-public class EveryDayAccTransferReportJob implements Job {
+public class LicaiPlanReportJob implements Job {
 	public final Logger log = Logger.getLogger(this.getClass());
 	private ScheduleReportTaskService taskService = SpringBeanFactory.getBean(ScheduleReportTaskService.class);
-	DmReportAccTransferService service = SpringBeanFactory.getBean(DmReportAccTransferService.class);
+	DmReportFcialPlanDailyService service = SpringBeanFactory.getBean(DmReportFcialPlanDailyService.class);
 	private ScheduleReportTaskLogService logService = SpringBeanFactory.getBean(ScheduleReportTaskLogService.class);
 
 	private ScheduleReportTaskLogEntity logVo;
-	String title = "每日资金迁移数据报告";
+	String title = "每日理财计划基本数据";
 
 	@Override
 	public void execute(JobExecutionContext ctx) throws JobExecutionException {
@@ -61,14 +62,11 @@ public class EveryDayAccTransferReportJob implements Job {
 	private boolean run(JobExecutionContext ctx) {
 		boolean flag = true;
 		logVo = new ScheduleReportTaskLogEntity();
-		if(true){
-//			return flag;
-		}
 		long l1 = System.currentTimeMillis();
 		JobDataMap jobDataMap = ctx.getJobDetail().getJobDataMap();
 		JobVo jobVo = (JobVo) jobDataMap.get("jobVo");
 		ScheduleReportTaskEntity taskEntity = jobVo.getTaskEntity();
-		log.info("+++++++++EveryDayAccTransferReportJob+++++++++++++" + taskEntity);
+		log.info("+++++++++LicaiPlanReportJob+++++++++++++" + taskEntity);
 		MailUtil mailUtil = new MailUtil();
 		JobUtil jobUtil = new JobUtil();
 		try {
@@ -78,8 +76,8 @@ public class EveryDayAccTransferReportJob implements Job {
 			queryParams.putAll(params);
 			String date_offset_num = params.get("date_offset_num") + "";
 			String[] splitArr = date_offset_num.split("-");
+			String statPeriod = params.get("statPeriod") + "";
 			if (!"0".equals(splitArr[0])) {
-				String statPeriod = params.get("statPeriod") + "";
 				if (StringUtils.isNotEmpty(statPeriod)) {
 					int days = Integer.valueOf(splitArr[0]);
 					if ("day".equals(splitArr[1])) {
@@ -87,16 +85,15 @@ public class EveryDayAccTransferReportJob implements Job {
 					} else if ("hour".equals(splitArr[1])) {
 						statPeriod = DateUtil.getHourBefore(statPeriod, -days, "yyyy-MM-dd");
 					}
-					params.put("statPeriod", statPeriod);
-					queryParams.put("statPeriod", statPeriod.replace("-", ""));
 				}
+				params.put("statPeriod", statPeriod);
 			}
+			queryParams.put("statPeriod", statPeriod.replace("-", ""));
 			logVo.setParams(JSON.toJSONString(params));
-
-			List<DmReportAccTransferEntity> queryList = service.queryList(queryParams);
+			List<DmReportFcialPlanDailyEntity> queryList = service.queryList(queryParams);
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < queryList.size(); i++) {
-				DmReportAccTransferEntity entity = queryList.get(i);
+				DmReportFcialPlanDailyEntity entity = queryList.get(i);
 				dataArray.add(entity);
 			}
 			if (queryList.size() > 0) {

@@ -30,14 +30,14 @@
 
 	<select id="queryList" resultType="io.renren.entity.MarketChannelEntity">
         DROP TABLE IF EXISTS TMP_dm_report_channel_data_01;
-        DROP TABLE IF EXISTS TMP_dm_report_channel_data_02;
-
+        
         CREATE TEMPORARY TABLE TMP_dm_report_channel_data_01
         SELECT
         IFNULL(CO.STAT_PERIOD,'') AS STAT_PERIOD,
         IFNULL(CO.CHANNEL_HEAD,'') AS CHANNEL_HEAD,
         IFNULL(CO.TYPE,'') AS TYPE,
         IFNULL(CO.CHANNEL_NAME,'') AS CHANNEL_NAME,
+        IFNULL(CO.CHANNEL_LABEL,'') AS CHANNEL_LABEL,
         IFNULL((SUM(ACTUAL_COST)),0) AS ACTUAL_COST,
         IFNULL((SUM(REG_COU)),0) AS REG_COU,
         IFNULL((SUM(FIRSTINVEST_COU)),0) AS FIRSTINVEST_COU,
@@ -63,7 +63,6 @@
         COUNT(DISTINCT UAD.USER_ID) AS INV_COU
         FROM
         edw_trading_project_detail UAD
-
         left JOIN edw_user_basic EUB ON (UAD.USER_ID = EUB.USER_ID)
         LEFT JOIN	dim_channel DC ON (EUB.CHANNEL_ID=DC.CHANNEL_ID)
         WHERE 1=1
@@ -102,14 +101,8 @@
         IFNULL(CO.TYPE,''),
         IFNULL(CO.CHANNEL_NAME,'')
         ;
-
-
-        CREATE TEMPORARY TABLE TMP_dm_report_channel_data_02
-        SELECT *
-        FROM TMP_dm_report_channel_data_01
-        ;
         select *
-        from  TMP_dm_report_channel_data_02
+        from  TMP_dm_report_channel_data_01
         ORDER BY STAT_PERIOD DESC,CHANNEL_HEAD,TYPE,CHANNEL_NAME
         <if test="page != null and limit != null">
             limit #{page}, #{limit}

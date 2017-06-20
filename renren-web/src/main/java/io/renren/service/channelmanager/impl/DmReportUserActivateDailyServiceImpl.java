@@ -68,12 +68,13 @@ public class DmReportUserActivateDailyServiceImpl implements DmReportUserActivat
 			String afterInvestBalance_end, String startFirstInvestTime, String endFirstInvestTime,
 			String startTotalMoney, String endTotalMoney, String startTotalInvestAmount, String endTotalInvestAmount,
 			String startFirstInvestAmount, String endFirstInvestAmount, String startRegisterTime,
-			String endRegisterTime, String bangCard, String realName, String channelName) {
+			String endRegisterTime, String bangCard, String realName, String channelName, String registerFrom) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("offset", (page - 1) * limit);
 		map.put("limit", limit);
 		map.put("afterInvestBalance_start", afterInvestBalance_start);
 		map.put("afterInvestBalance_end", afterInvestBalance_end);
+		map.put("registerFrom", registerFrom);
 		if (StringUtils.isNotEmpty(statPeriod)) {
 			map.put("statPeriod", statPeriod.replace("-", ""));
 		}
@@ -127,6 +128,7 @@ public class DmReportUserActivateDailyServiceImpl implements DmReportUserActivat
 		headMap.put("channelName", "渠道名称");
 		headMap.put("channelMark", "渠道标记");
 		headMap.put("registerTime", "注册时间");
+		headMap.put("registerFrom", "操作平台");
 		headMap.put("isRealname", "实名");
 		headMap.put("isBinding", "绑卡");
 		headMap.put("activateInvestTime", "激活投资时间");
