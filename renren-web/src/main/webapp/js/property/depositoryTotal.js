@@ -55,7 +55,7 @@ function initTableGrid(){
 
         columns:  [
             {field:"statPeriod",title:"统计日期",align:"center",valign:"middle",sortable:"true"},//居中对齐
-            {field:"sourcecaseno",title:"平台项目编号",align:"center",valign:"middle",sortable:"true"},//居中对齐
+            {field:"sourcecaseno",title:"　　平台项目编号　　",align:"center",valign:"middle",sortable:"true"},//居中对齐
             {field:"department",title:"　部门　",align:"center",valign:"middle",sortable:"true"},//居中对齐
             {field:"projectBelong",title:"项目归属",align:"center",valign:"middle",sortable:"true"},//居中对齐
             {field:"projectType",title:"项目类型",align:"center",valign:"middle",sortable:"true"},
