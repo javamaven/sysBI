@@ -21,7 +21,7 @@ function initTableGrid(){
 //				{ label: 'id', name: 'id', index: '$ID', width: 50, key: true },
 				{ label: '任务ID', name: 'taskId', index: '$TASK_ID', width: 40, align: 'right' }, 			
 				{ label: '耗时(毫秒)', name: 'timeCost', index: '$TIME_COST', width: 45, align: 'right' }, 			
-				{ label: '发送结果', name: 'sendResult', index: '$SEND_RESULT', width: 40, align: 'right' 
+				{ label: '发送结果', name: 'sendResult', index: '$SEND_RESULT', width: 50, align: 'right' 
 					,formatter:function(value, options, row){
 						return value == 'success' ? 
 								'<span class="label label-success">SUCCESS</span>' :
