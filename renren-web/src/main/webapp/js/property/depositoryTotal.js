@@ -87,8 +87,6 @@ function getDate(datatype){
         (halfYearAgo.getMonth() + 1 >9  ? (halfYearAgo.getMonth() + 1 ) : "0"+(halfYearAgo.getMonth() + 1 ))+"-01";
     return datatype==1 ? startdate : enddate;
 
-
-
 };
 //时间格式
 $(".form_datetime_2").
@@ -104,15 +102,12 @@ $(".form_datetime_2").
 //document.getElementById("STAT_PERIOD").value=getDate(2);
 document.getElementById("STAT_PERIOD").value=getDate(1);
 
-
 // 自适应高度
 function tableHeight() {
 	return $(window).height();
 }
 
-
 function getQueryParams(){
-
 	return {
 	        page  :1,
 	        limit :20,
@@ -124,8 +119,6 @@ function getQueryParams(){
 	    };
 }
 
-
-
 function getParams(){
 	var params = {
         	 statPeriod: document.getElementById("STAT_PERIOD").value.replace(/-/g,""),
@@ -133,26 +126,17 @@ function getParams(){
              customername: $("#CUSTOMERNAME").val(),
              iscompleted: $("#ISCOMPLETED").val(),
              isstamp: $("#ISSTAMP").val()
-
 	};
 	return params;
 }
-
-
 
 $("#searchButton").click(function(){
 //reload();
 	getQueryParams();
     // 显示之前，先把当前表格销毁
       $('#reportTable').bootstrapTable('destroy');
-
-
-
-
     //加载数据
     initTableGrid();
-
-
 });
 
 function initExportFunction(){
