@@ -170,12 +170,15 @@
     	 }
       
 	 }
-
+	 
+	function show(){ 
+		alert("每隔一秒我就会显示一次"); 
+		} 
 
 	$(function () {
-
-        //setInterval('mod_invest()', 1000);
-        SetAndClearInt('mod_invest()', 1000);
+		
+        setInterval('mod_invest()', 1000);
+        //SetAndClearInt('mod_invest()', 1000);
 
 	    queryDituData();
 
@@ -183,26 +186,30 @@
 		getTotalInvest();
 	    getTotalUserNum();
 	    
-	    /*
+	    
 	    setInterval('queryInvestInfo()', 5*60*1000);
 	    setInterval('queryDituData()', 1*60*1000);
 	    setInterval('delStr()', 10000);
 	    setInterval('getTotalInvest()', 30*1000);
 	    setInterval('getTotalUserNum()', 30*1000);
 	    setInterval('randon_style()', 10*1000);
-	    */
+	    
+	    /*
 	    SetAndClearInt('queryInvestInfo()', 5*60*1000);
 	    SetAndClearInt('queryDituData()', 1*60*1000);
 	    SetAndClearInt('delStr()', 10000);
 	    SetAndClearInt('getTotalInvest()', 30*1000);
 	    SetAndClearInt('getTotalUserNum()', 30*1000);
 	    SetAndClearInt('randon_style()', 10*1000);
+	    */
+
+
 	});
 	
 	//执行后清除缓存
-	function SetAndClearInt(strFunc,strTime){
-		this.timer = window.setInterval(strFunc, strTime);		
-		window.clearInterval(this.timer);
+	function ClearInt(strInt){
+		clearInterval(strInt); 
+		strInt = null;
 	}
 	 
 	var seriesData = [];
