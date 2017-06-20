@@ -1,11 +1,9 @@
-package io.renren.service.schedule.job;
+package io.renren.service.schedule.job.yunying;
 
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.sound.midi.SysexMessage;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -21,31 +19,32 @@ import com.alibaba.fastjson.JSONArray;
 
 import io.renren.entity.schedule.ScheduleReportTaskEntity;
 import io.renren.entity.schedule.ScheduleReportTaskLogEntity;
-import io.renren.entity.yunying.dayreport.DmReportBasicDailyEntity;
+import io.renren.entity.yunying.dayreport.DmReportAwaitDailyEntity;
 import io.renren.service.schedule.ScheduleReportTaskLogService;
 import io.renren.service.schedule.ScheduleReportTaskService;
 import io.renren.service.schedule.entity.JobVo;
-import io.renren.service.yunying.dayreport.DmReportBasicDailyService;
+import io.renren.service.schedule.job.JobUtil;
+import io.renren.service.yunying.dayreport.DmReportAwaitDailyService;
 import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
 
 /**
- * 每日基本数据推送任务
+ * 每日待收数据报告
  * 
  * @author Administrator
  *
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
-public class EveryDayBasicDataReportJob implements Job {
+public class EveryDayAwaitDataReportJob implements Job {
 	public final Logger log = Logger.getLogger(this.getClass());
 	private ScheduleReportTaskService taskService = SpringBeanFactory.getBean(ScheduleReportTaskService.class);
-	DmReportBasicDailyService service = SpringBeanFactory.getBean(DmReportBasicDailyService.class);
+	DmReportAwaitDailyService service = SpringBeanFactory.getBean(DmReportAwaitDailyService.class);
 	private ScheduleReportTaskLogService logService = SpringBeanFactory.getBean(ScheduleReportTaskLogService.class);
 
 	private ScheduleReportTaskLogEntity logVo;
-	String title = "每日基本数据";
+	String title = "每日待收数据报告";
 
 	@Override
 	public void execute(JobExecutionContext ctx) throws JobExecutionException {
@@ -67,7 +66,7 @@ public class EveryDayBasicDataReportJob implements Job {
 		JobDataMap jobDataMap = ctx.getJobDetail().getJobDataMap();
 		JobVo jobVo = (JobVo) jobDataMap.get("jobVo");
 		ScheduleReportTaskEntity taskEntity = jobVo.getTaskEntity();
-		log.info("+++++++++EveryDayBasicDataReportJob+++++++++++++" + taskEntity);
+		log.info("+++++++++EveryDayAwaitDataReportJob+++++++++++++" + taskEntity);
 		MailUtil mailUtil = new MailUtil();
 		JobUtil jobUtil = new JobUtil();
 		try {
@@ -77,8 +76,8 @@ public class EveryDayBasicDataReportJob implements Job {
 			queryParams.putAll(params);
 			String date_offset_num = params.get("date_offset_num") + "";
 			String[] splitArr = date_offset_num.split("-");
+			String statPeriod = params.get("statPeriod") + "";
 			if (!"0".equals(splitArr[0])) {
-				String statPeriod = params.get("statPeriod") + "";
 				if (StringUtils.isNotEmpty(statPeriod)) {
 					int days = Integer.valueOf(splitArr[0]);
 					if ("day".equals(splitArr[1])) {
@@ -87,15 +86,15 @@ public class EveryDayBasicDataReportJob implements Job {
 						statPeriod = DateUtil.getHourBefore(statPeriod, -days, "yyyy-MM-dd");
 					}
 					params.put("statPeriod", statPeriod);
-					queryParams.put("statPeriod", statPeriod.replace("-", ""));
 				}
 			}
+			queryParams.put("statPeriod", statPeriod.replace("-", ""));
 			logVo.setParams(JSON.toJSONString(params));
 
-			List<DmReportBasicDailyEntity> queryList = service.queryList(queryParams);
+			List<DmReportAwaitDailyEntity> queryList = service.queryList(queryParams);
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < queryList.size(); i++) {
-				DmReportBasicDailyEntity entity = queryList.get(i);
+				DmReportAwaitDailyEntity entity = queryList.get(i);
 				dataArray.add(entity);
 			}
 			if (queryList.size() > 0) {
@@ -133,9 +132,9 @@ public class EveryDayBasicDataReportJob implements Job {
 		ScheduleReportTaskEntity entity = new ScheduleReportTaskEntity();
 		entity.setId(logVo.getTaskId());
 		entity.setLastSendTime(new Date());
+		System.err.println("+++++++++timeCost+++++++++++++" + logVo.getTimeCost());
 		entity.setTimeCost(logVo.getTimeCost());
 		entity.setCondition(logVo.getParams());
-		System.err.println("+++++++++timeCost+++++++++++++" + logVo.getTimeCost() + "  ;entity=" + entity);
 		taskService.update(entity);
 
 	}

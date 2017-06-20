@@ -20,7 +20,7 @@ select
   mark,
   -- TO_CHAR(last_day(sysdate),'yyyyMMdd') AS TIME_END,
   ${investEndTime} AS TIME_END,
-  TO_CHAR(ROUND(sysdate,'MM'),'yyyyMMdd') AS TIME_START
+  TO_CHAR(trunc(sysdate,'MM'),'yyyyMMdd') AS TIME_START
 from
  PHONE_SALE_EXCEL_DATA tud      
  left join dm_report_merge_user DU ON (tud.USER_NAME = DU.USERNAME)

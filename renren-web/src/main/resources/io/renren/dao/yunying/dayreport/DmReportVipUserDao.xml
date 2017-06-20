@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.yunying.dayreport.DmReportVipUserDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.yunying.dayreport.DmReportVipUserEntity" id="dmReportVipUserMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="oldUserId" column="OLD_USER_ID"/>
+        <result property="cgUserId" column="CG_USER_ID"/>
+        <result property="oldUsername" column="OLD_USERNAME"/>
+        <result property="username" column="USERNAME"/>
+        <result property="realname" column="REALNAME"/>
+        <result property="oldPhone" column="OLD_PHONE"/>
+        <result property="phone" column="PHONE"/>
+        <result property="await" column="AWAIT"/>
+        <result property="balance" column="BALANCE"/>
+        <result property="regTime" column="REG_TIME"/>
+        <result property="loginTime" column="LOGIN_TIME"/>
+        <result property="lastRecoverTime" column="LAST_RECOVER_TIME"/>
+        <result property="lastRecoverMoney" column="LAST_RECOVER_MONEY"/>
+        <result property="lastRechargeTime" column="LAST_RECHARGE_TIME"/>
+        <result property="lastRechargeMoney" column="LAST_RECHARGE_MONEY"/>
+        <result property="rechargeMoneyC" column="RECHARGE_MONEY_C"/>
+        <result property="voucherMoney" column="VOUCHER_MONEY"/>
+        <result property="lastCashTime" column="LAST_CASH_TIME"/>
+        <result property="lastCashMoney" column="LAST_CASH_MONEY"/>
+        <result property="cashMoneyC" column="CASH_MONEY_C"/>
+        <result property="invCou" column="INV_COU"/>
+        <result property="avgPeriod" column="AVG_PERIOD"/>
+        <result property="monthTender" column="MONTH_TENDER"/>
+        <result property="monthTenderY" column="MONTH_TENDER_Y"/>
+        <result property="monthTenderCou" column="MONTH_TENDER_COU"/>
+        <result property="dayTender" column="DAY_TENDER"/>
+        <result property="dayTenderY" column="DAY_TENDER_Y"/>
+        <result property="dayTenderCou" column="DAY_TENDER_COU"/>
+        <result property="lv" column="LV"/>
+        <result property="owner" column="OWNER"/>
+        <result property="totalReceipt" column="TOTAL_RECEIPT"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.yunying.dayreport.DmReportVipUserEntity">
+		select * from dm_report_vip_user where STAT_PERIOD = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.yunying.dayreport.DmReportVipUserEntity">
+		select 
+		
+			STAT_PERIOD, 
+			OLD_USER_ID, 
+			CG_USER_ID, 
+			OLD_USERNAME, 
+			USERNAME, 
+			REALNAME, 
+			OLD_PHONE, 
+			PHONE, 
+			AWAIT, 
+			BALANCE, 
+			date_format(REG_TIME,'%Y-%m-%d %H:%i:%s') REG_TIME,
+			date_format(LOGIN_TIME,'%Y-%m-%d %H:%i:%s') LOGIN_TIME,
+			date_format(LAST_RECOVER_TIME,'%Y-%m-%d %H:%i:%s') LAST_RECOVER_TIME,
+			 
+			LAST_RECOVER_MONEY, 
+			date_format(LAST_RECHARGE_TIME,'%Y-%m-%d %H:%i:%s') LAST_RECHARGE_TIME,
+			LAST_RECHARGE_MONEY, 
+			RECHARGE_MONEY_C, 
+			VOUCHER_MONEY, 
+			date_format(LAST_CASH_TIME,'%Y-%m-%d %H:%i:%s') LAST_CASH_TIME,
+			LAST_CASH_MONEY, 
+			CASH_MONEY_C, 
+			INV_COU, 
+			AVG_PERIOD, 
+			MONTH_TENDER, 
+			MONTH_TENDER_Y, 
+			MONTH_TENDER_COU, 
+			DAY_TENDER, 
+			DAY_TENDER_Y, 
+			DAY_TENDER_COU, 
+			LV, 
+			OWNER, 
+			TOTAL_RECEIPT
+		
+		from dm_report_vip_user
+        where 1=1
+		<if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+		</if>
+		order by STAT_PERIOD desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dm_report_vip_user 
+		where 1=1
+		<if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+		</if>
+	</select>
+	 
+
+
+</mapper>

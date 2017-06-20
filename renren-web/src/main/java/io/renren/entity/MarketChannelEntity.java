@@ -1,10 +1,6 @@
 package io.renren.entity;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.Date;
-
-
 
 /**
  * 市场部每日渠道数据
@@ -15,48 +11,58 @@ import java.util.Date;
  */
 public class MarketChannelEntity implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	//
 	private String statPeriod;
-	//主负责人
+	// 主负责人
 	private String channelHead;
-	//渠道类型
+	// 渠道类型
 	private String type;
-	//渠道名称
+	// 渠道名称
 	private String channelName;
-	//日期
+	// 渠道标签
+	private String channelLabel;
+
+	// 日期
 	private String ctime;
-	//实际消费
+	// 实际消费
 	private String actualCost;
-	//新增注册人
+	// 新增注册人
 	private String regCou;
-	//新增首投人数
+	// 新增首投人数
 	private String firstinvestCou;
-	//首投金额
+	// 首投金额
 	private String firstinvestMoney;
-	//首投年化金额
+	// 首投年化金额
 	private String firstinvestYMoney;
-	//投资总人数
+	// 投资总人数
 	private String invCou;
-	//投资总金额
+	// 投资总金额
 	private String invMoney;
-	//年化投资总金额
+	// 年化投资总金额
 	private String invYMoney;
-	//点点赚购买金额
+	// 点点赚购买金额
 	private String ddzMoney;
-	//注册成本
+	// 注册成本
 	private String regCost;
-	//首投成本
+	// 首投成本
 	private String firstinvestCost;
-	//人均首投
+	// 人均首投
 	private String avgFirstinvestMoney;
-	//注册人投资转化率
+	// 注册人投资转化率
 	private String regInvConversion;
-	//首投ROI
+	// 首投ROI
 	private String firstinvestRot;
-	//累计ROI
+	// 累计ROI
 	private String cumulativeRot;
 
+	public void setChannelLabel(String channelLabel) {
+		this.channelLabel = channelLabel;
+	}
+
+	public String getChannelLabel() {
+		return channelLabel;
+	}
 
 	public static long getSerialVersionUID() {
 		return serialVersionUID;

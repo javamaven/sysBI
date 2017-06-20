@@ -21,6 +21,13 @@
 			<artifactId>javax.mail-api</artifactId>
 			<version>1.5.4</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/ant/ant -->
+		<dependency>
+		    <groupId>ant</groupId>
+		    <artifactId>ant</artifactId>
+		    <version>1.7.0</version>
+		</dependency>
+		
 			<!-- 邮件服务器使用的jar包        end -->
 		<dependency>
 			<groupId>org.quartz-scheduler</groupId>

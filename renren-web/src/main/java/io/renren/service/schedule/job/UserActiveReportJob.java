@@ -81,6 +81,7 @@ public class UserActiveReportJob implements Job {
 			String endFirstInvestTime = params.get("endFirstInvestTime") + "";
 			String startTotalMoney = params.get("startTotalMoney") + "";
 			String endTotalMoney = params.get("endTotalMoney") + "";
+			String registerFrom = params.get("registerFrom") + "";
 			String startTotalInvestAmount = params.get("startTotalInvestAmount") + "";
 			String endTotalInvestAmount = params.get("endTotalInvestAmount") + "";
 			String startFirstInvestAmount = params.get("startFirstInvestAmount") + "";
@@ -106,7 +107,7 @@ public class UserActiveReportJob implements Job {
 			PageUtils pages = service.query(1, 1000 * 10000, statPeriod, afterInvestBalance_start,
 					afterInvestBalance_end, startFirstInvestTime, endFirstInvestTime, startTotalMoney, endTotalMoney,
 					startTotalInvestAmount, endTotalInvestAmount, startFirstInvestAmount, endFirstInvestAmount,
-					startRegisterTime, endRegisterTime, bangCard, realName, channelName);
+					startRegisterTime, endRegisterTime, bangCard, realName, channelName, registerFrom);
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < pages.getList().size(); i++) {
 				ChannelStftInfoEntity entity = (ChannelStftInfoEntity) pages.getList().get(i);

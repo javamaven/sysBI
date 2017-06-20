@@ -169,7 +169,20 @@ public class PhoneSaleController {
 			} else if ("total".equals(selectType)) {
 				String path = this.getClass().getResource("/").getPath();
 				String detail_sql;
+				String startTime = "  CASE WHEN mark=1 THEN TO_CHAR(tud.call_date,'yyyyMMdd') ELSE CASE WHEN TO_CHAR(SYSDATE,'yyyyMMdd') BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE,-1),'yyyyMM')||'01' AND TO_CHAR(SYSDATE,'yyyyMM')||'04' THEN TO_CHAR(ADD_MONTHS(SYSDATE,-1),'yyyyMM')||'01' ELSE TO_CHAR(SYSDATE,'yyyyMM')||'01' END END ";
+				String endTime = " CASE WHEN TO_CHAR(SYSDATE, 'yyyyMMdd') BETWEEN TO_CHAR ( ADD_MONTHS (SYSDATE ,- 1), 'yyyyMM') || '01' AND TO_CHAR (SYSDATE, 'yyyyMM') || '04' THEN TO_CHAR (SYSDATE, 'yyyyMM') || '03' ELSE TO_CHAR ( ADD_MONTHS (SYSDATE, 1), 'yyyyMM' ) || '03' END ";
 				detail_sql = FileUtil.readAsString(new File(path + File.separator + "phone_sale_month_total_sql.txt"));
+				detail_sql = detail_sql.replace("${investStartTime}", startTime);
+				detail_sql = detail_sql.replace("${investEndTime}", endTime);
+				dataList.addAll(new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql));
+			}else if ("day_report_total".equals(selectType)) {
+				String path = this.getClass().getResource("/").getPath();
+				String detail_sql;
+				detail_sql = FileUtil.readAsString(new File(path + File.separator + "phone_sale_month_total_sql.txt"));
+				String endTime = investEndTime;
+				String startTime = endTime.substring(0 , 6) + "01";
+				detail_sql = detail_sql.replace("${investStartTime}", startTime);
+				detail_sql = detail_sql.replace("${investEndTime}", endTime);
 				dataList.addAll(new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql));
 			}
 
@@ -187,14 +200,17 @@ public class PhoneSaleController {
 		String title = "";
 		if ("day".equals(reportType)) {
 			headMap = getDayListExcelFields();
-			title = "电销数据-外包-" + investEndTime;
+			title = "电销数据-日报-明细-" + investEndTime;
 		} else {
 			if ("list".equals(selectType)) {
 				headMap = getMonthListExcelFields();
-				title = "电销数据-月度-外包-明细";
+				title = "电销数据-月度-明细";
 			} else if ("total".equals(selectType)) {
 				headMap = getMonthTotalExcelFields();
-				title = "电销数据-月度-外包-汇总";
+				title = "电销数据-月度-汇总";
+			}else if ("day_report_total".equals(selectType)) {
+				headMap = getMonthTotalExcelFields();
+				title = "电销数据-日报-汇总-" + investEndTime;
 			}
 		}
 
@@ -307,7 +323,7 @@ public class PhoneSaleController {
 	@ResponseBody
 	@RequestMapping("/monthTotalList")
 	@RequiresPermissions("phonesale:list")
-	public R monthTotalList(Integer page, Integer limit, String statPeriod) {
+	public R monthTotalList(Integer page, Integer limit, String investEndTime) {
 		long l1 = System.currentTimeMillis();
 		int start = (page - 1) * limit;
 		int end = start + limit;
@@ -316,8 +332,19 @@ public class PhoneSaleController {
 
 		String path = this.getClass().getResource("/").getPath();
 		String detail_sql;
+		String startTime = "  CASE WHEN mark=1 THEN TO_CHAR(tud.call_date,'yyyyMMdd') ELSE CASE WHEN TO_CHAR(SYSDATE,'yyyyMMdd') BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE,-1),'yyyyMM')||'01' AND TO_CHAR(SYSDATE,'yyyyMM')||'04' THEN TO_CHAR(ADD_MONTHS(SYSDATE,-1),'yyyyMM')||'01' ELSE TO_CHAR(SYSDATE,'yyyyMM')||'01' END END ";
+		String endTime = " CASE WHEN TO_CHAR(SYSDATE, 'yyyyMMdd') BETWEEN TO_CHAR ( ADD_MONTHS (SYSDATE ,- 1), 'yyyyMM') || '01' AND TO_CHAR (SYSDATE, 'yyyyMM') || '04' THEN TO_CHAR (SYSDATE, 'yyyyMM') || '03' ELSE TO_CHAR ( ADD_MONTHS (SYSDATE, 1), 'yyyyMM' ) || '03' END ";
 		try {
 			detail_sql = FileUtil.readAsString(new File(path + File.separator + "phone_sale_month_total_sql.txt"));
+			if (StringUtils.isEmpty(investEndTime)) {
+				detail_sql = detail_sql.replace("${investStartTime}", startTime);
+				detail_sql = detail_sql.replace("${investEndTime}", endTime);
+			}else{
+				endTime = investEndTime.replace("-", "");
+				startTime = endTime.substring(0 , 6) + "01";
+				detail_sql = detail_sql.replace("${investStartTime}", startTime);
+				detail_sql = detail_sql.replace("${investEndTime}", endTime);
+			}
 			resultList = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -460,17 +487,14 @@ public class PhoneSaleController {
 		public void run() {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql = null;
-			String a= "";
-			try {s
-				String sxx = "sdfjsldfjsl";
+			try {
 				if ("day".equals(reportType)) {
 					detail_sql = FileUtil
 							.readAsString(new File(path + File.separator + "phone_sale_day_detail_sql.txt"));
 				} else if ("month".equals(reportType)) {
 					detail_sql = FileUtil
 							.readAsString(new File(path + File.separator + "phone_sale_month_detail_sql.txt"));
-				}
-				// 查询总行数
+				} 			
 				detail_sql = detail_sql.replace("${selectSql}", "count(1) total");
 				detail_sql = detail_sql.replace("${pageStartSql}", "");
 				detail_sql = detail_sql.replace("${pageEndSql}", "");

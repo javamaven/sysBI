@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.yunying.dayreport.DmReportActiveChannelCostDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.yunying.dayreport.DmReportActiveChannelCostEntity" id="dmReportActiveChannelCostMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="code" column="CODE"/>
+        <result property="name" column="NAME"/>
+        <result property="cost" column="COST"/>
+        <result property="costSource" column="COST_SOURCE"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.yunying.dayreport.DmReportActiveChannelCostEntity">
+		select * from dm_report_active_channel_cost where STAT_PERIOD = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.yunying.dayreport.DmReportActiveChannelCostEntity">
+		select * from dm_report_active_channel_cost
+        
+        where 1=1
+       	<if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+		</if>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+		
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dm_report_active_channel_cost 
+		where 1=1
+       	<if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+		</if>
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.yunying.dayreport.DmReportActiveChannelCostEntity">
+		insert into dm_report_active_channel_cost
+		(
+			`STAT_PERIOD`, 
+			`CODE`, 
+			`NAME`, 
+			`COST`, 
+			`COST_SOURCE`
+		)
+		values
+		(
+			#{statPeriod}, 
+			#{code}, 
+			#{name}, 
+			#{cost}, 
+			#{costSource}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.yunying.dayreport.DmReportActiveChannelCostEntity">
+		update dm_report_active_channel_cost 
+		<set>
+			<if test="code != null">`CODE` = #{code}, </if>
+			<if test="name != null">`NAME` = #{name}, </if>
+			<if test="cost != null">`COST` = #{cost}, </if>
+			<if test="costSource != null">`COST_SOURCE` = #{costSource}</if>
+		</set>
+		where STAT_PERIOD = #{statPeriod}
+	</update>
+	
+	<delete id="delete">
+		delete from dm_report_active_channel_cost where STAT_PERIOD = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from dm_report_active_channel_cost where STAT_PERIOD in 
+		<foreach item="statPeriod" collection="array" open="(" separator="," close=")">
+			#{statPeriod}
+		</foreach>
+	</delete>
+
+</mapper>

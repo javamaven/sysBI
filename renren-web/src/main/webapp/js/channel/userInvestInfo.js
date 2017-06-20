@@ -3,7 +3,7 @@ $(function () {
 	initTimeCond();
 	initExportFunction();
     initTableGrid();
-    queryTotalInfo();
+//    queryTotalInfo();
     initEvent();
 });
 function initExportFunction(){
@@ -48,7 +48,7 @@ function queryTotalInfo(){
 }
 function initTableGrid(){
 	$("#jqGrid").jqGrid({
-        url: '../dmreportinvestmentdaily/list',
+//        url: '../dmreportinvestmentdaily/list',
         datatype: "json",
         mtype: 'GET',
         postData: {'statPeriod': getYesterday()},
@@ -115,7 +115,7 @@ function initTableGrid(){
 		viewrecords: true,
         height: 390,
         rowNum: 10,
-		rowList : [10,30,50],
+//		rowList : [10,30,50],
         rownumbers: true, 
         autowidth:true,
         shrinkToFit: false,
@@ -220,6 +220,7 @@ var vm = new Vue({
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			$("#jqGrid").jqGrid('setGridParam',{ 
 				datatype:'json', 
+				url: '../dmreportinvestmentdaily/list',
 	            postData: getParams(), //发送数据  
 	            page:page 
             }).trigger("reloadGrid");

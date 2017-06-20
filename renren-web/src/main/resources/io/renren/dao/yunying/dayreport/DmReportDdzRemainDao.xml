@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.yunying.dayreport.DmReportDdzRemainDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.yunying.dayreport.DmReportDdzRemainEntity" id="dmReportDdzRemainMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="username" column="USERNAME"/>
+        <result property="phone" column="PHONE"/>
+        <result property="regTime" column="REG_TIME"/>
+        <result property="availableAmount" column="AVAILABLE_AMOUNT_"/>
+        <result property="cou" column="COU"/>
+        <result property="xmInvMoney" column="XM_INV_MONEY"/>
+        <result property="isInternal" column="IS_INTERNAL"/>
+        <result property="isInternalTuijian" column="IS_INTERNAL_TUIJIAN"/>
+        <result property="realname" column="REALNAME"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.yunying.dayreport.DmReportDdzRemainEntity">
+		select * from dm_report_ddz_remain where STAT_PERIOD = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.yunying.dayreport.DmReportDdzRemainEntity">
+		select 
+		
+		 	STAT_PERIOD, 
+			USERNAME, 
+			PHONE, 
+			date_format(REG_TIME,'%Y-%m-%d') REG_TIME, 
+			AVAILABLE_AMOUNT_, 
+			COU, 
+			XM_INV_MONEY, 
+			IS_INTERNAL, 
+			IS_INTERNAL_TUIJIAN, 
+			REALNAME
+		
+		from dm_report_ddz_remain
+        where 1=1
+		<if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+		</if>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dm_report_ddz_remain
+		where 1=1
+		<if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+		</if> 
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.yunying.dayreport.DmReportDdzRemainEntity">
+		insert into dm_report_ddz_remain
+		(
+			`STAT_PERIOD`, 
+			`USERNAME`, 
+			`PHONE`, 
+			`REG_TIME`, 
+			`AVAILABLE_AMOUNT_`, 
+			`COU`, 
+			`XM_INV_MONEY`, 
+			`IS_INTERNAL`, 
+			`IS_INTERNAL_TUIJIAN`, 
+			`REALNAME`
+		)
+		values
+		(
+			#{statPeriod}, 
+			#{username}, 
+			#{phone}, 
+			#{regTime}, 
+			#{availableAmount}, 
+			#{cou}, 
+			#{xmInvMoney}, 
+			#{isInternal}, 
+			#{isInternalTuijian}, 
+			#{realname}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.yunying.dayreport.DmReportDdzRemainEntity">
+		update dm_report_ddz_remain 
+		<set>
+			<if test="username != null">`USERNAME` = #{username}, </if>
+			<if test="phone != null">`PHONE` = #{phone}, </if>
+			<if test="regTime != null">`REG_TIME` = #{regTime}, </if>
+			<if test="availableAmount != null">`AVAILABLE_AMOUNT_` = #{availableAmount}, </if>
+			<if test="cou != null">`COU` = #{cou}, </if>
+			<if test="xmInvMoney != null">`XM_INV_MONEY` = #{xmInvMoney}, </if>
+			<if test="isInternal != null">`IS_INTERNAL` = #{isInternal}, </if>
+			<if test="isInternalTuijian != null">`IS_INTERNAL_TUIJIAN` = #{isInternalTuijian}, </if>
+			<if test="realname != null">`REALNAME` = #{realname}</if>
+		</set>
+		where STAT_PERIOD = #{statPeriod}
+	</update>
+	
+	<delete id="delete">
+		delete from dm_report_ddz_remain where STAT_PERIOD = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from dm_report_ddz_remain where STAT_PERIOD in 
+		<foreach item="statPeriod" collection="array" open="(" separator="," close=")">
+			#{statPeriod}
+		</foreach>
+	</delete>
+
+</mapper>

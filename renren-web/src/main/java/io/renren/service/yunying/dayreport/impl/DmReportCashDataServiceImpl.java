@@ -72,33 +72,35 @@ public class DmReportCashDataServiceImpl implements DmReportCashDataService {
 		headMap.put("statPeriod", "日期");
 		
 		headMap.put("userId", "用户ID");
-		headMap.put("cgUserId", "存管用户ID");
-		headMap.put("username", "用户名称");
+		headMap.put("cgUserId", "存管ID");
+		headMap.put("username", "用户名");
 		
-		headMap.put("phone", "手机号");
-		headMap.put("cashMoney", "提现成功金额");
-		headMap.put("frost", "账户资产权益额");
+		headMap.put("phone", "电话");
+		headMap.put("realname", "姓名");
+		headMap.put("money", "提现成功金额");
 		
+		headMap.put("total", "账户资产权益额");
 		headMap.put("balance", "账户余额");
 		headMap.put("await", "待收金额");
-		headMap.put("regTime", "注册时间");
 		
-		headMap.put("xmInvOneTime", "首投时间");
-		headMap.put("xmStJg", "注册后首投间隔(分)");
-		headMap.put("xmInvLastTime", "最近一次投资时间");
+		headMap.put("regTime", "注册日期");
+		headMap.put("xmStJg", "注册后首投间隔(分)(数据覆盖历史项目)");
+		headMap.put("avgXmTzJg", "平均投资时间间隔(分)(数据覆盖历史项目)");
+
+		headMap.put("avgXmInvMoney", "平均投资金额(数据覆盖历史项目)");
+		headMap.put("xmInvCou", "投资次数(数据覆盖历史项目)");
+		headMap.put("invPackBl", "投资次数中使用奖励次数(数据覆盖历史项目)");
 		
-		headMap.put("xmTzJg", "首投到最后一次投资时间间隔(分)");
-		headMap.put("xmInvMoney", "投资总金额");
-		headMap.put("xmInvCou", "投资次数");
+		headMap.put("zzBl", "发起转让比例(数据覆盖历史项目)");
+		headMap.put("periodJq", "投资期限偏好(数据覆盖历史项目)");
+		headMap.put("rewardStatus", "当前是否持有红包");
 		
-		headMap.put("useInvPackCou", "投资次数中使用奖励次数");
-		headMap.put("zzFqCou", "债转次数");
-		headMap.put("periodJq", "投资期限偏好");
-		
+		headMap.put("rewardMoney", "当前持有红包金额");
 		headMap.put("czMoney", "累计充值金额");
 		headMap.put("txCgMoney", "累计提现金额");
-		headMap.put("realname", "真实姓名");
-	
+		
+		headMap.put("txCgMoneyBl", "提现金额占比充值金额");
+		
 		return headMap;
 	}
 }

@@ -19,6 +19,10 @@
 //  18:Depository_total
 //  19:performance_his
 //  20:performance_parameter
+//  21:ddz_user
+//  22:channel_cost
+//  23:vip_user
+//  24:register_not_invest
 //};
 function addTask(taskType) {
 	var task_name = $("#task_name").val();
@@ -95,7 +99,8 @@ function addTask(taskType) {
 		'chaosong_email' : $("#chaosong_email").val()
 	};
 	var url = "../schedule/schedulereporttask/addTask"; 
-	if(taskType == 10 || taskType == 11 || taskType == 12 || taskType == 13 || taskType == 14 || taskType == 15){
+	if(taskType == 10 || taskType == 11 || taskType == 12 || taskType == 13 || taskType == 14 || taskType == 15
+			|| taskType == 24){
 		url = "../../schedule/schedulereporttask/addTask"; 
 	}
 	$.ajax({

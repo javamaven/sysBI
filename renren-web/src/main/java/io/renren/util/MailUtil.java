@@ -292,6 +292,75 @@ public class MailUtil {
 		}
 
 	}
+	/**
+	 * 发送带多个附件邮件
+	 * @param title
+	 * @param content
+	 * @param receiverList
+	 * @param chaosongList
+	 * @param attachFilePath
+	 * @throws EmailException
+	 */
+	public void sendWithAttachs(String title, String content, List<String> receiverList, List<String> chaosongList,
+			List<String> attachFilePathList) throws EmailException {
+		HtmlEmail email = new HtmlEmail();
+		// 发送email
+		// 这里是SMTP发送服务器的名字：163的如下："smtp.163.com"
+		email.setHostName(ConfigProp.getEmailHost());
+		// 字符编码集的设置
+		email.setCharset(Mail.ENCODEING);
+		
+		for (int i = 0; i < attachFilePathList.size(); i++) {
+			EmailAttachment attach = new EmailAttachment();
+			attach.setPath(attachFilePathList.get(i));
+			if (attach != null) {
+				email.attach(attach);
+			}
+		}
+		// 收件人的邮箱
+		// email.addTo(mail.getReceiver());
+		List<InternetAddress> inter = new ArrayList<InternetAddress>();
+		for (int i = 0; i < receiverList.size(); i++) {
+			try {
+				String addr = receiverList.get(i);
+				if (addr == null || "".equals(addr.trim())) {
+					continue;
+				}
+				InternetAddress internetAddress = new InternetAddress(addr);
+				inter.add(internetAddress);
+			} catch (AddressException e) {
+				e.printStackTrace();
+			}
+
+		}
+		email.setTo(inter);
+		for (int i = 0; i < chaosongList.size(); i++) {
+			String ccMail = chaosongList.get(i);
+			if (StringUtils.isNotEmpty(ccMail)) {
+				email.addCc(ccMail);
+			}
+		}
+		// 发送人的邮箱
+		email.setFrom(ConfigProp.getEmailUserName(), ConfigProp.getEmailName());
+		// 如果需要认证信息的话，设置认证：用户名-密码。分别为发件人在邮件服务器上的注册名称和密码
+		email.setAuthentication(ConfigProp.getEmailUserName(), ConfigProp.getEmailPassword());
+		// 要发送的邮件主题
+		email.setSubject(title);
+		// 要发送的信息，由于使用了HtmlEmail，可以在邮件内容中使用HTML标签
+		// email.setMsg(mail.getMessage());
+		// 是否开启SSL 在端口非25是 需要改为true 默认为false
+		email.setSSL(ConfigProp.getEmailSsl());
+		// 设置发送端口 默认为 25
+		email.setSmtpPort(Integer.valueOf(ConfigProp.getEmailPort()));
+		Mail mailInfo = new Mail();
+		mailInfo.setMessage(content);
+		email.setHtmlMsg(genMsg(mailInfo));
+		// 是否开启debug
+		email.setDebug(false);
+		// 发送
+		email.send();
+
+	}
 
 	/**
 	 * 发送带附件邮件
