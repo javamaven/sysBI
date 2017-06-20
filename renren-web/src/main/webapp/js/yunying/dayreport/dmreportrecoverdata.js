@@ -65,8 +65,8 @@ function initTableGrid(){
 			{ label: '本次推送记录数', name: 'dateCou', index: '$DATE_COU', width: 100 ,align:'right'}			
         ],
 		viewrecords: true,
-        height: 390,
-        rowNum: 10,
+        height: $(window).height()-130,
+        rowNum: 20,
 //		rowList : [10,30,50],
         rownumbers: true, 
         autowidth:true,

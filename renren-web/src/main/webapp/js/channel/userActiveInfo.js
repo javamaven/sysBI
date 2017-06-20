@@ -266,8 +266,8 @@ function initTable(){
 				
 	        ],
 			viewrecords: true,
-	        height: 385,
-	        rowNum: 10,
+	        height:  $(window).height()-310,
+	        rowNum: 20,
 //			rowList : [10,30,50],
 	        rownumbers: true, 
 	        rownumWidth: 25, 

@@ -23,6 +23,7 @@
        	<if test="statPeriod != null and statPeriod.trim() !='' ">
 			and STAT_PERIOD = #{statPeriod}
 		</if>
+		ORDER BY STAT_PERIOD desc
 		<if test="offset != null and limit != null">
 			limit #{offset}, #{limit}
 		</if>
