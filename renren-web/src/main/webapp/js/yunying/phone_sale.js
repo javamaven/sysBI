@@ -211,7 +211,7 @@ function initMonthListTableGrid(){
 			
         ],
 		viewrecords: true,
-        height:  $(window).height()-200,
+        height:  $(window).height()-230,
         rowNum: 20,
 		rowList : [10,30,50],
         rownumbers: true, 
@@ -263,8 +263,8 @@ function initMonthTotalTableGrid(){
 
 		],
         viewrecords: true,
-		height: 390,
-        rowNum: 10,
+		height:  $(window).height()-230,
+        rowNum: 20,
 		rowList : [10,30,50],
         rownumbers: true, 
         autowidth:true,
