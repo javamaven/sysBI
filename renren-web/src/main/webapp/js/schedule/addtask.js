@@ -101,7 +101,7 @@ function addTask(taskType) {
 	};
 	var url = "../schedule/schedulereporttask/addTask"; 
 	if(taskType == 10 || taskType == 11 || taskType == 12 || taskType == 13 || taskType == 14 || taskType == 15
-			|| taskType == 24){
+			|| taskType == 24 || taskType == 25){
 		url = "../../schedule/schedulereporttask/addTask"; 
 	}
 	$.ajax({

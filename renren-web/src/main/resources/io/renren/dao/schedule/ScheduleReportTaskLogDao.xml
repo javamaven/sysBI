@@ -28,8 +28,7 @@
 		<if test="taskId != null and taskId.trim() != '' ">
 			and TASK_ID = #{taskId}
 		</if>
-		
-		
+		ORDER BY TIME DESC		
 		<if test="offset != null and limit != null">
 			limit #{offset}, #{limit}
 		</if>

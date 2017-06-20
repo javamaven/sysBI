@@ -20,8 +20,8 @@ function initTableGrid(){
 	        colModel: [			
 //				{ label: 'id', name: 'id', index: '$ID', width: 50, key: true },
 				{ label: '任务ID', name: 'taskId', index: '$TASK_ID', width: 40, align: 'right' }, 			
-				{ label: '耗时(毫秒)', name: 'timeCost', index: '$TIME_COST', width: 45, align: 'right' }, 			
-				{ label: '发送结果', name: 'sendResult', index: '$SEND_RESULT', width: 40, align: 'right' 
+				{ label: '耗时(毫秒)', name: 'timeCost', index: '$TIME_COST', width: 50, align: 'right' }, 			
+				{ label: '发送结果', name: 'sendResult', index: '$SEND_RESULT', width: 50, align: 'right' 
 					,formatter:function(value, options, row){
 						return value == 'success' ? 
 								'<span class="label label-success">SUCCESS</span>' :
@@ -67,13 +67,13 @@ function initTableGrid(){
 				{ label: '备注', name: 'desc', index: '$DESC', width: 80, align: 'right' }			
 	        ],
 			viewrecords: true,
-	        height: 385,
-	        rowNum: 10,
+	        height: $(window).height()-130,
+	        rowNum: 20,
 			rowList : [10,30,50],
 	        rownumbers: true, 
 	        rownumWidth: 25, 
 	        autowidth:true,
-	        multiselect: true,
+//	        multiselect: true,
 	        pager: "#jqGridPager",
 	        jsonReader : {
 	            root: "page.list",
