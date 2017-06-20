@@ -169,13 +169,13 @@ function initTableGrid(){
 				}
 	        ],
 			viewrecords: true,
-	        height: 400,
-	        rowNum: 10,
+	        height:  $(window).height()-140,
+	        rowNum: 20,
 			rowList : [10,30,50],
 	        rownumbers: true, 
 	        rownumWidth: 25, 
 	        autowidth:true,
-	        multiselect: true,
+//	        multiselect: true,
 	        pager: "#jqGridPager",
 	        jsonReader : {
 	            root: "page.list",

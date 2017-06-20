@@ -67,8 +67,8 @@ function initTableGrid(){
 				{ label: '备注', name: 'desc', index: '$DESC', width: 80, align: 'right' }			
 	        ],
 			viewrecords: true,
-	        height: 385,
-	        rowNum: 10,
+	        height: $(window).height()-130,
+	        rowNum: 20,
 			rowList : [10,30,50],
 	        rownumbers: true, 
 	        rownumWidth: 25, 
