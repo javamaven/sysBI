@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.yunying.basicreport.BasicReportDao">
+
+
+	<select id="queryRegisterThreeDaysNotInvestList" resultType="java.util.HashMap">
+	
+		SELECT
+			u.user_id 用户ID,
+			u.USERNAME 用户名,
+			u.PHONE 手机号,
+			u.REGISTER_TIME 注册时间,
+			d.CHANNEL_NAME 用户来源,
+			case when u.REALNAME is null then '否' else '是' end 实名认证,
+			u.REALNAME 真实姓名,
+			'否' 是否投资,
+			0 投资次数,
+			'' 最近一次投资时间,
+			'' 最近一次投资期限,
+			0 账户余额
+		FROM
+			edw_user_basic u
+		left join dim_channel d  on (u.ACTIVITY_TAG=d.CHANNEL_LABEL)
+		WHERE
+			1 = 1
+		<if test="registerStartTime != null and registerStartTime.trim() != '' ">
+		     <![CDATA[ and u.REGISTER_TIME >= #{registerStartTime}  ]]>
+		</if>
+		<if test="registerEndTime != null and registerEndTime.trim() != '' ">
+		     <![CDATA[ and u.REGISTER_TIME <= #{registerEndTime}  ]]>
+		</if>
+		
+		and u.DEPOSITORY_FIRSTINVEST_TIME is NULL
+		and u.NORMAL_FIRSTINVEST_TIME is null
+		and d.PAYMENT_WAY not like '%免费%'
+		and d.PAYMENT_WAY not like '%测试%'
+		and d.PAYMENT_WAY not like '%置换%'
+		and d.PAYMENT_WAY not like '%CPS%'
+		AND d.CHANNEL_NAME not LIKE '%触宝%'
+		AND d.CHANNEL_NAME not LIKE '%北瓜%'
+		AND d.CHANNEL_NAME not LIKE '%360摇一摇%'
+		
+	</select>
+
+</mapper>

@@ -5,7 +5,14 @@
 #parse("sys/header.html")
 
 <style type="text/css">
-
+.inputClass2 {
+	height: 30px;
+	width: 200px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
 </style>
 </head>
 <body>
@@ -15,16 +22,28 @@
 			<table border="0">
 				<tr>
 					<td>
+						<label>报表类型：</label>
+					</td>
+					<td>
+						<select id="list_select" class="inputClass2" >
+							<option value ="hour" selected="selected">按小时</option>
+							<option value ="day">按天</option>
+						</select>
+					</td>
+				</tr>
+				<tr height="10px;"></tr>
+				<tr>
+					<td>
 						<label>注册开始时间：</label>
 					</td>
 					<td>
-						<input type="text" class="form-control form_datetime_2" id="registerStartTime"  placeholder="请选择开始时间"/>
+						<input type="text" class="inputClass2 form_datetime_2" id="registerStartTime"  placeholder="请选择开始时间"/>
 					</td>
 					<td>
 						<label>注册结束时间：</label>
 					</td>
 					<td>
-						<input type="text" class="form-control form_datetime_2" id="registerEndTime"  placeholder="请选择结束时间"/>
+						<input type="text" class="inputClass2 form_datetime_2" id="registerEndTime"  placeholder="请选择结束时间"/>
 					</td>
 					<td>
 						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
@@ -118,7 +137,10 @@
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭
 					</button>
-					<button type="button" class="btn btn-primary" onclick="addTask(24)">
+					<button id="hour_task" type="button" class="btn btn-primary" onclick="addTask(24)">
+						确定
+					</button>
+					<button id="day_task" style="display: none;" type="button" class="btn btn-primary" onclick="addTask(25)">
 						确定
 					</button>
 				</div>

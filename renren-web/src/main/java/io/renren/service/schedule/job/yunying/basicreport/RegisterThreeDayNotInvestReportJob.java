@@ -28,17 +28,16 @@ import io.renren.service.yunying.dayreport.DmReportVipSituationService;
 import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
-import io.renren.utils.PageUtils;
 
 /**
- * 注册未投资用户
+ * 注册3天未投资用户
  * 
  * @author Administrator
  *
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
-public class RegisterNotInvestReportJob implements Job {
+public class RegisterThreeDayNotInvestReportJob implements Job {
 	public final Logger log = Logger.getLogger(this.getClass());
 	private ScheduleReportTaskService taskService = SpringBeanFactory.getBean(ScheduleReportTaskService.class);
 	BasicReportService service = SpringBeanFactory.getBean(BasicReportService.class);
@@ -46,9 +45,9 @@ public class RegisterNotInvestReportJob implements Job {
 	private ScheduleReportTaskLogService logService = SpringBeanFactory.getBean(ScheduleReportTaskLogService.class);
 
 	private ScheduleReportTaskLogEntity logVo;
-	String title = "注册未投资用户";
+	String title = "";
 	SimpleDateFormat dateFm = new SimpleDateFormat("EEEE");
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH");
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Override
 	public void execute(JobExecutionContext ctx) throws JobExecutionException {
@@ -68,7 +67,6 @@ public class RegisterNotInvestReportJob implements Job {
 	 * @param ctx
 	 * @return
 	 */
-	@SuppressWarnings("unchecked")
 	private boolean run(JobExecutionContext ctx) {
 		boolean flag = true;
 		logVo = new ScheduleReportTaskLogEntity();
@@ -76,7 +74,7 @@ public class RegisterNotInvestReportJob implements Job {
 		JobDataMap jobDataMap = ctx.getJobDetail().getJobDataMap();
 		JobVo jobVo = (JobVo) jobDataMap.get("jobVo");
 		ScheduleReportTaskEntity taskEntity = jobVo.getTaskEntity();
-		log.info("+++++++++VipUserDataReportJob+++++++++++++" + taskEntity);
+		log.info("+++++++++RegisterThreeDayNotInvestReportJob+++++++++++++" + taskEntity);
 		MailUtil mailUtil = new MailUtil();
 		JobUtil jobUtil = new JobUtil();
 		try {
@@ -84,31 +82,23 @@ public class RegisterNotInvestReportJob implements Job {
 			String registerStartTime = "";
 			String registerEndTime = "";
 
-			Date fireTime = ctx.getFireTime();
-			String week = dateFm.format(fireTime);
-			String executeTime = sdf.format(fireTime);
-			if ("星期一".equals(week) && fireTime.getHours() == 9) {
-				String currDayBefore = DateUtil.getCurrDayBefore(3, "yyyy-MM-dd");
-				registerStartTime = currDayBefore + " 17:00:00";
-				registerEndTime = DateUtil.getHourBefore(executeTime, 1, "yyyy-MM-dd") + " 08:59:59";
-			} else {
-				registerStartTime = DateUtil.getHourBefore(executeTime, 2, "yyyy-MM-dd HH") + ":00:00";
-				registerEndTime = DateUtil.getHourBefore(executeTime, 2, "yyyy-MM-dd HH") + ":59:59";
-			}
+			registerStartTime = DateUtil.getCurrDayBefore(3, "yyyy-MM-dd") + " 00:00:00";
+			registerEndTime = DateUtil.getCurrDayBefore(1, "yyyy-MM-dd") + " 23:59:59";
 			queryParams.put("registerStartTime", registerStartTime);
 			queryParams.put("registerEndTime", registerEndTime);
 			logVo.setParams(JSON.toJSONString(queryParams));
-			PageUtils page = service.queryList(1, 10000, registerStartTime, registerEndTime, 1, 10000);
-			List<Map<String, Object>> dataList = (List<Map<String, Object>>) page.getList();
+			List<Map<String, Object>> dataList = service.queryRegisterThreeDaysNotInvestList(queryParams);
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < dataList.size(); i++) {
 				Map<String, Object> entity = dataList.get(i);
 				dataArray.add(entity);
 			}
 			if (dataList.size() > 0) {
-				String attachFilePath = jobUtil.buildAttachFile(dataArray,
-						title + "-" + registerEndTime.substring(0, 13), title + "-" + registerEndTime.substring(0, 13),
-						service.getExcelFields());
+				String month = registerEndTime.substring(5 , 7);
+				String day = registerEndTime.substring(8 , 10);
+				title = "注册3天未投资用户-W-" + month + day + "-" + dataList.size();
+				
+				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
 				mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
 						taskEntity.getChaosongEmailList(), attachFilePath);
 				logVo.setEmailValue(attachFilePath);

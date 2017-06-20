@@ -124,9 +124,14 @@ public class Constants {
 		public static final String VIP_USER = "23";
 		
 		/**
-		 * 注册未投资用户
+		 * 注册1未投资用户
 		 */
-		public static final String REGISTER_NOT_INVEST = "24";
+		public static final String REGISTER_ONE_HOUR_NOT_INVEST = "24";
+		
+		/**
+		 * 注册3天未投资用户
+		 */
+		public static final String REGISTER_THREE_DAY_NOT_INVEST = "25";
 		
 	}
 }

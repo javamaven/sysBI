@@ -22,7 +22,8 @@ var jobType = {
     21:'持有点点赚用户数据',//ddz_user
     22:'活动渠道成本数据报告',//channel_cost
     23:'每日VIP用户数据报告',//vip_user
-    24:'注册未投资用户'//register_not_invest
+    24:'注册1小时未投资用户',//register_not_invest
+    25:'注册3天未投资用户'//register_not_invest_day
 };
 
 $(function () {

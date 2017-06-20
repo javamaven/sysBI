@@ -23,6 +23,7 @@
 //  22:channel_cost
 //  23:vip_user
 //  24:register_not_invest
+//  25:register_not_invest_day
 //};
 function addTask(taskType) {
 	var task_name = $("#task_name").val();

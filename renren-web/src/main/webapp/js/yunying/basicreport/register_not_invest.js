@@ -3,26 +3,57 @@ $(function () {
 	initTimeCond();
 	initExportFunction();
 	initEvent();
+	initSelectEvent();
 });
 
-function initTimeCond(){
+
+
+function initSelectEvent(){
+	//日报，月报切换
+	$("#list_select").change(function(){
+		var select = $(this).children('option:selected').val();
+		initTimeCond(select);
+	});
+}
+
+function initTimeCond(type){
+	
+	var format = 'yyyy-mm-dd hh';
+	var view = 'day';
+	if(type && type == 'day'){
+		 format = 'yyyy-mm-dd';
+		 view = 'month';
+	}
+	$('#registerStartTime').datetimepicker('remove');
+	$('#registerEndTime').datetimepicker('remove');
     $("#registerStartTime").datetimepicker({
-        format: 'yyyy-mm-dd hh',
-        minView:'day',
+        format: format,
+        minView: view,
         language: 'zh-CN',
         autoclose:true
     }).on("click",function(){
     });
-    $("#registerStartTime").val(addHours(-2));
     $("#registerEndTime").datetimepicker({
-        format: 'yyyy-mm-dd hh',
-        minView:'day',
+        format: format,
+        minView: view,
         language: 'zh-CN',
         autoclose:true
     }).on("click",function(){
     });
-    $("#registerEndTime").val(addHours(-2));
     
+    if(type && type == 'day'){
+    	$("#registerStartTime").val(addDate(getCurrDate(), -3));
+		$("#registerEndTime").val(addDate(getCurrDate(), -1));
+		
+		$("#hour_task").hide();
+		$("#day_task").show();
+	}else{
+		$("#registerStartTime").val(addHours(-2));
+		$("#registerEndTime").val(addHours(-2));
+		
+		$("#hour_task").show();
+		$("#day_task").hide();
+	}
 }
 
 
@@ -37,7 +68,12 @@ function initExportFunction(){
 			return;
 		}
 		var params = getParams();
-		executePost('../basicreport/exportExcel', {'params' : JSON.stringify(params)});  
+		var select = $(this).children('option:selected').val();
+		if(select == 'hour'){
+			executePost('../basicreport/exportExcel', {'params' : JSON.stringify(params)});  
+		}else{
+			executePost('../basicreport/exportRegisterThreeDaysExcel', {'params' : JSON.stringify(params)});  
+		}
 	});
 
 }
@@ -63,8 +99,8 @@ function initTableGrid(){
 			{ label: '账户余额', name: '账户余额', index: '$COST_SOURCE', width: 80 ,align:'right'}
         ],
 		viewrecords: true,
-        height: 385,
-        rowNum: 10,
+        height:  $(window).height()-170,
+        rowNum: 20,
 //		rowList : [10,30,50],
         rownumbers: true, 
         rownumWidth: 25, 
@@ -83,7 +119,7 @@ function initTableGrid(){
         },
         gridComplete:function(){
         	//隐藏grid底部滚动条
-        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
+//        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
         }
     });
 }
@@ -106,10 +142,17 @@ var vm = new Vue({
 				alert('请先选择注册结束时间')
 				return;
 			}
+			var url = '';
+			var select = $("#list_select").children('option:selected').val();
+			if(select == 'hour'){
+				url = '../basicreport/registNotInvest';
+			}else if(select == 'day'){
+				url = '../basicreport/registThreeDaysNotInvest';
+			}
 			$("#jqGrid").jqGrid("clearGridData");
 			$("#jqGrid").jqGrid('setGridParam',{ 
 				datatype:'json', 
-				url: '../basicreport/registNotInvest',
+				url: url,
 	            postData: getParams()
             }).trigger("reloadGrid");
 		}
@@ -117,9 +160,14 @@ var vm = new Vue({
 });
 
 function getParams(){
-	var params = {
-        	'registerStartTime': $("#registerStartTime").val() + ':00:00',
-        	'registerEndTime': $("#registerEndTime").val() + ':59:59'
-	};
+	var params = {};
+	var select = $("#list_select").children('option:selected').val();
+	if(select == 'hour'){
+		params.registerStartTime = $("#registerStartTime").val() + ':00:00';
+		params.registerEndTime = $("#registerEndTime").val() + ':59:59';
+	}else if(select == 'day'){
+		params.registerStartTime = $("#registerStartTime").val() + ' 00:00:00';
+		params.registerEndTime = $("#registerEndTime").val() + ' 23:59:59';
+	}
 	return params;
 }

@@ -10,6 +10,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import io.renren.dao.yunying.basicreport.BasicReportDao;
 import io.renren.service.yunying.basicreport.BasicReportService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
@@ -20,6 +21,9 @@ public class basicReportServiceImpl implements BasicReportService {
 
 	@Autowired
 	private DataSourceFactory dataSourceFactory;
+	
+	@Autowired
+	private BasicReportDao basicReportDao;
 	
 	String query_sql = 
 			"SELECT " +
@@ -123,21 +127,21 @@ public class basicReportServiceImpl implements BasicReportService {
 	 */
 	String fanli_sql = 
 			 "select d.spreads_userid USER_ID,sum(d.account) FANLI from diyou_spreads_log d " +
-			 "where d.spreads_userid in ${userIdString} " +
+			 "where 1=1 ${userIdString} " +
 			 "group by d.spreads_userid ";
 	/**
 	 * 普通版充值
 	 */
 	String pt_recharge_sql = 
 			"select user_id USER_ID,sum(money) MONEY from  mjkf_p2p.diyou_account_recharge " +
-			"where user_id in ${userIdString} " +
+			"where 1=1 ${userIdString} " +
 			"group by user_id ";
 	/**
 	 * 存管版充值
 	 */
 	String cg_recharge_sql = 		
 			"SELECT user_id USER_ID,sum(amount)/100 MONEY from account_recharge " +
-			"where user_id in ${userIdString} " +
+			"where 1=1 ${userIdString} " +
 			"and deduct_status=20 group by user_id ";
 	
 			 
@@ -145,17 +149,16 @@ public class basicReportServiceImpl implements BasicReportService {
 	 * 统计用户的账户余额
 	 * @param retList
 	 */
-	private void getAmontByUserId(List<Map<String, Object>> retList) {
-		String userIdString = "(";
+	@Override
+	public void getAmontByUserId(List<Map<String, Object>> retList) {
+		List<String> inList = new ArrayList<String>();
 		for (int i = 0; i < retList.size(); i++) {
 			Map<String, Object> map = retList.get(i);
-			if(i == retList.size() - 1){
-				userIdString += map.get("用户ID");
-			}else{
-				userIdString += map.get("用户ID") + ",";
-			}
+			inList.add(map.get("用户ID") + "");
 		}
-		userIdString += ")";
+		String inString1 = getInString("d.spreads_userid", inList);
+		String inString2 = getInString("user_id", inList);
+		String inString3 = getInString("user_id", inList);
 		//返利
 		JdbcUtil util = new JdbcUtil(dataSourceFactory, "oracle");
 		//存管版充值
@@ -164,9 +167,9 @@ public class basicReportServiceImpl implements BasicReportService {
 		JdbcUtil util3 = new JdbcUtil(dataSourceFactory, "oracle");
 		Map<String, Double> dataMap = new HashMap<String, Double>();
 		try {
-			List<Map<String, Object>> list = util.query(fanli_sql.replace("${userIdString}", userIdString));
-			List<Map<String, Object>> list2 = util2.query(cg_recharge_sql.replace("${userIdString}", userIdString));
-			List<Map<String, Object>> list3 = util3.query(pt_recharge_sql.replace("${userIdString}", userIdString));
+			List<Map<String, Object>> list = util.query(fanli_sql.replace("${userIdString}", inString1));
+			List<Map<String, Object>> list2 = util2.query(cg_recharge_sql.replace("${userIdString}", inString2));
+			List<Map<String, Object>> list3 = util3.query(pt_recharge_sql.replace("${userIdString}", inString3));
 			
 			for (int i = 0; i < list.size(); i++) {
 				Map<String, Object> map = list.get(i);
@@ -210,6 +213,42 @@ public class basicReportServiceImpl implements BasicReportService {
 			}
 		}
 	}
+	
+	private static String getInString(String id, List<String> list) {
+		StringBuffer sb = new StringBuffer();
+		String returnString = "";
+		if (list.size() == 0 || null == list) {
+			returnString = sb.append(id).append("=''").toString();
+		}
+		for (int i = 0; i < list.size(); i++) {
+			if (i == 0) {
+				sb.append(" and (" + id);
+				sb.append(" in (");
+			}
+			sb.append("'");
+			sb.append(list.get(i).toString());
+			sb.append("'");
+			if (i >= 900 && i < list.size() - 1) {
+				if (i % 900 == 0) {
+					sb.append(") or ");
+					sb.append(id);
+					sb.append(" in (");
+				} else {
+					sb.append(",");
+				}
+			} else {
+				if (i < list.size() - 1) {
+					sb.append(",");
+				}
+			}
+			if (i == list.size() - 1) {
+				sb.append("))");
+			}
+		}
+		returnString = sb.toString();
+		return returnString;
+	}
+	
 	@Override
 	public Map<String, String> getExcelFields() {
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
@@ -231,5 +270,14 @@ public class basicReportServiceImpl implements BasicReportService {
 		
 		return headMap;
 	}
-
+	
+	/**
+	 * 查询注册3天未投资用户数据
+	 */
+	@Override
+	public List<Map<String, Object>> queryRegisterThreeDaysNotInvestList(Map<String, Object> params) {
+		List<Map<String, Object>> list = basicReportDao.queryRegisterThreeDaysNotInvestList(params);
+		return list;
+	}
+	
 }
