@@ -38,21 +38,21 @@ function initTableGrid(){
 			{ label: '项目期限', name: 'borrowPeriod', index: '$BORROW_PERIOD', width: 80 ,align:'right'}, 			
 			{ label: '注册日期', name: 'regTime', index: '$REG_TIME', width: 150,align:'right' }, 			
 //			{ label: '首投时间', name: 'xmInvOneTime', index: '$XM_INV_ONE_TIME', width: 150,align:'right' }, 			
-			{ label: '注册后首投间隔(分)(数据覆盖历史项目)', name: 'xmStJg', index: '$XM_ST_JG', width: 110,align:'right' }, 
+			{ label: '注册后首投间隔(分)(数据覆盖历史项目)', name: 'xmStJg', index: '$XM_ST_JG', width: 150,align:'right' }, 
 			
-			{ label: '平均投资时间间隔(分)(数据覆盖历史项目)', name: 'avgXmTzJg', index: '$AVG_XM_TZ_JG', width: 110,align:'right' }, 	
-			{ label: '平均投资金额(数据覆盖历史项目)', name: 'avgXmInvMoney', index: '$AVG_XM_TZ_JG', width: 110,align:'right' }, 	
+			{ label: '平均投资时间间隔(分)(数据覆盖历史项目)', name: 'avgXmTzJg', index: '$AVG_XM_TZ_JG', width: 150,align:'right' }, 	
+			{ label: '平均投资金额(数据覆盖历史项目)', name: 'avgXmInvMoney', index: '$AVG_XM_TZ_JG', width: 150,align:'right' }, 	
 			
 //			{ label: '最近一次投资时间', name: 'xmInvLastTime', index: '$XM_INV_LAST_TIME', width: 150 ,align:'right'}, 			
 //			{ label: '首投到最后一次投资时间间隔(分)', name: 'xmTzJg', index: '$XM_TZ_JG', width: 150 ,align:'right'}, 			
 //			{ label: '投资总金额', name: 'xmInvMoney', index: '$XM_INV_MONEY', width: 80 ,align:'right'}, 			
-			{ label: '投资次数(数据覆盖历史项目)', name: 'xmInvCou', index: '$XM_INV_COU', width: 80 ,align:'right'}, 			
-			{ label: '投资次数中使用奖励比列(数据覆盖历史项目)', name: 'invPackBl', index: '$INV_PACK_BL', width: 80,align:'right' }, 			
+			{ label: '投资次数(数据覆盖历史项目)', name: 'xmInvCou', index: '$XM_INV_COU', width: 150 ,align:'right'}, 			
+			{ label: '投资次数中使用奖励比列(数据覆盖历史项目)', name: 'invPackBl', index: '$INV_PACK_BL', width: 160,align:'right' }, 			
 			
-			{ label: '发起转让比例(数据覆盖历史项目)', name: 'zzBl', index: '$ZZ_BL', width: 80,align:'right' }, 			
+			{ label: '发起转让比例(数据覆盖历史项目)', name: 'zzBl', index: '$ZZ_BL', width: 150,align:'right' }, 			
 			
 //			{ label: '债转次数', name: 'zzFqCou', index: '$ZZ_FQ_COU', width: 80,align:'right' }, 			
-			{ label: '投资期限偏好(数据覆盖历史项目)', name: 'periodJq', index: '$PERIOD_JQ', width: 80 ,align:'right'}, 			
+			{ label: '投资期限偏好(数据覆盖历史项目)', name: 'periodJq', index: '$PERIOD_JQ', width: 150 ,align:'right'}, 			
 			
 			{ label: '账户是否有红包', name: 'rewardStatus', index: '$REWARD_STATUS', width: 80 ,align:'right'},
 			{ label: '红包金额', name: 'rewardMoney', index: '$REWARD_MONEY', width: 80 ,align:'right'},
@@ -62,10 +62,10 @@ function initTableGrid(){
 			
 			{ label: '提现金额占比充值金额', name: 'txCgMoneyBl', index: '$TX_CG_MONEY', width: 100 ,align:'right'}, 		
 			
-			{ label: '本次推送记录数', name: 'dateCou', index: '$DATE_COU', width: 100 ,align:'right'}			
+			{ label: '本次推送记录数', name: 'dateCou', index: '$DATE_COU', width: 110 ,align:'right'}			
         ],
 		viewrecords: true,
-        height: $(window).height()-130,
+        height: $(window).height()-150,
         rowNum: 20,
 //		rowList : [10,30,50],
         rownumbers: true, 
