@@ -24,7 +24,7 @@ import io.renren.utils.R;
 
 @Controller
 @RequestMapping(value = "/yunying/basicreport")
-public class BasicReportController {
+public class BasicReportController2 {
 	@Autowired
 	private BasicReportService service;
 
