@@ -53,7 +53,6 @@ public class basicReportServiceImpl implements BasicReportService {
 
 	@Override
 	public PageUtils queryList(Integer page, Integer limit, String registerStartTime, String registerEndTime, int start, int end) {
-		System.err.println("+++++++++start=" + start + " ;end=" + end);
 		JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		try {
@@ -168,10 +167,6 @@ public class basicReportServiceImpl implements BasicReportService {
 			List<Map<String, Object>> list = util.query(fanli_sql.replace("${userIdString}", userIdString));
 			List<Map<String, Object>> list2 = util2.query(cg_recharge_sql.replace("${userIdString}", userIdString));
 			List<Map<String, Object>> list3 = util3.query(pt_recharge_sql.replace("${userIdString}", userIdString));
-			System.err.println("+++++++list=" + list);
-			System.err.println("+++++++list2=" + list2);
-			System.err.println("+++++++list3=" + list3);
-			System.err.println("++++++++++++++++++++++++");
 			
 			for (int i = 0; i < list.size(); i++) {
 				Map<String, Object> map = list.get(i);

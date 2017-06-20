@@ -181,4 +181,18 @@ public class DateUtil {
 		cal.add(Calendar.DATE, -days);
 		return dateSdf.format(cal.getTime());
 	}
+	
+	/**
+	 * 返回指定日期10天前日期
+	 * 
+	 * @param days
+	 *            多少天前
+	 * @return
+	 */
+	public static String getCurrDayBefore(int days, String sdf) {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.DATE, -days);
+		return new SimpleDateFormat(sdf).format(cal.getTime());
+	}
 }

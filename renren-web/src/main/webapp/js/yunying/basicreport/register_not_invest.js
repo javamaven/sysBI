@@ -6,23 +6,34 @@ $(function () {
 });
 
 function initTimeCond(){
-    $("#registerTime").datetimepicker({
+    $("#registerStartTime").datetimepicker({
         format: 'yyyy-mm-dd hh',
         minView:'day',
         language: 'zh-CN',
         autoclose:true
     }).on("click",function(){
     });
-    $("#registerTime").val(addHours(-2));
-    
+    $("#registerStartTime").val(addHours(-2));
+    $("#registerEndTime").datetimepicker({
+        format: 'yyyy-mm-dd hh',
+        minView:'day',
+        language: 'zh-CN',
+        autoclose:true
+    }).on("click",function(){
+    });
+    $("#registerEndTime").val(addHours(-2));
     
 }
 
 
 function initExportFunction(){
 	$('#btn_exports').click(function(){
-		if(!$("#registerTime").val()){
-			alert('请先选择注册时间')
+		if(!$("#registerStartTime").val()){
+			alert('请先选择注册开始时间')
+			return;
+		}
+		if(!$("#registerEndTime").val()){
+			alert('请先选择注册结束时间')
 			return;
 		}
 		var params = getParams();
@@ -87,8 +98,12 @@ var vm = new Vue({
 	methods: {
 		reload: function (event) {
 			vm.showList = true;
-			if(!$("#registerTime").val()){
-				alert('请先选择注册时间')
+			if(!$("#registerStartTime").val()){
+				alert('请先选择注册开始时间')
+				return;
+			}
+			if(!$("#registerEndTime").val()){
+				alert('请先选择注册结束时间')
 				return;
 			}
 			$("#jqGrid").jqGrid("clearGridData");
@@ -103,8 +118,8 @@ var vm = new Vue({
 
 function getParams(){
 	var params = {
-        	'registerStartTime': $("#registerTime").val() + ':00:00',
-        	'registerEndTime': $("#registerTime").val() + ':59:59'
+        	'registerStartTime': $("#registerStartTime").val() + ':00:00',
+        	'registerEndTime': $("#registerEndTime").val() + ':59:59'
 	};
 	return params;
 }
