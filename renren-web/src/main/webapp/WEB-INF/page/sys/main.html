@@ -29,9 +29,8 @@
 	onload="startTime()">
 	<!-- 数字翻牌 触发用到 -->
 	<div style="display: none;">
-		<input id="typesomething"></input> <a class="btn btn-primary"
-			id="showme">查询</a> <input id="typesomething_2"></input> <a
-			class="btn btn-primary" id="showme_2">查询</a>
+		<input id="typesomething"></input> <a class="btn btn-primary"id="showme">查询</a>
+		<!--  <input id="typesomething_2"></input> <a class="btn btn-primary" id="showme_2">查询</a> --> 
 	</div>
 
 	<div>
@@ -220,22 +219,14 @@
 	    clearInterval(tolInv_intl);	    
 	    tolInv_intl=setInterval('getTotalInvest()', 30*1000);
 	    
-	    var tolUser_int;
-	    clearInterval(tolUser_int);
-	    tolUser_int=setInterval('getTotalUserNum()', 30*1000);
+	    //var tolUser_int;
+	    //clearInterval(tolUser_int);
+	    //tolUser_int=setInterval('getTotalUserNum()', 30*1000);
 	    
 	    var ranSty_int;
 	    clearInterval(ranSty_int);	    
 	    ranSty_int=setInterval('randon_style()', 10*1000);
 	    
-	    /*
-	    SetAndClearInt('queryInvestInfo()', 5*60*1000);
-	    SetAndClearInt('queryDituData()', 1*60*1000);
-	    SetAndClearInt('delStr()', 10000);
-	    SetAndClearInt('getTotalInvest()', 30*1000);
-	    SetAndClearInt('getTotalUserNum()', 30*1000);
-	    SetAndClearInt('randon_style()', 10*1000);
-	    */
 
 
 	});
@@ -661,7 +652,7 @@
 	        contentType: "application/json;charset=utf-8",
 	        success : function(msg) {
 	                //console.log(msg);
-	                document.getElementById("typesomething_2").value=msg.register_user+1500000-getDays("2017-06-01",getNowFormatDate())*100;
+	                // document.getElementById("typesomething_2").value=msg.register_user+1500000-getDays("2017-06-01",getNowFormatDate())*100;
 	                $("#showme_2").click();
 	        }
         });
