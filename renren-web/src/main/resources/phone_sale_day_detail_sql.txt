@@ -23,8 +23,8 @@ select
   TO_CHAR(trunc(sysdate,'MM'),'yyyyMMdd') AS TIME_START
 from
  PHONE_SALE_EXCEL_DATA tud      
- left join dm_report_merge_user DU ON (tud.USER_NAME = DU.USERNAME)
- left join dm_report_merge_user DU2 ON (tud.USER_NAME = DU2.PHONE) 
+ left join EDW_USER_BASIC DU ON (tud.USER_NAME = DU.USERNAME)
+ left join EDW_USER_BASIC DU2 ON (tud.USER_NAME = DU2.PHONE) 
 )A
 GROUP BY A.USER_NAME,A.USER_ID,A.call_person,A.call_result,
 A.call_date,A.mark,TIME_END,TIME_START
@@ -53,13 +53,13 @@ SELECT
   TO_CHAR(SYSDATE,'yyyyMM') AS TIME_THIS_MONTH
 FROM 
   tmp 
-  LEFT JOIN edw_merge_project_detail pd 
+  LEFT JOIN EDW_TRADING_PROJECT_DETAIL pd 
        ON (TMP.USER_ID=PD.USER_ID 
           and PD.TENDER_ACCOUNT_STATUS IN (0,1) 
           and tmp.MARK = 2 -- 1-内部,2-外包
           and  TO_CHAR(PD.ADDTIME,'yyyyMMDD') BETWEEN tmp.TIME_START AND tmp.TIME_END
           )
-  left join dm_report_merge_user MU on (pd.user_id=MU.USER_ID)  
+  left join EDW_USER_BASIC MU on (pd.user_id=MU.USER_ID)  
 )
 
 
