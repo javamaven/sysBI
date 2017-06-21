@@ -77,11 +77,11 @@ public class DmReportVipUserServiceImpl implements DmReportVipUserService {
 
 		headMap.put("avgPeriod", "平均投资期限");
 		headMap.put("monthTender", "当月投资金额");
-		headMap.put("monthTenderY", "当月年华金额");
+		headMap.put("monthTenderY", "当月年化金额");
 
 		headMap.put("monthTenderCou", "当月投资次数");
 		headMap.put("dayTender", "当天投资金额");
-		headMap.put("dayTenderY", "当天年华金额");
+		headMap.put("dayTenderY", "当天年化金额");
 
 		headMap.put("dayTenderCou", "当天投资次数");
 
