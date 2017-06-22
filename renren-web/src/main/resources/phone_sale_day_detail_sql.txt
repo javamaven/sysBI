@@ -107,8 +107,8 @@ SELECT
   REALNAME AS "用户姓名",
   CASE WHEN SUM(FROM_SYS)>=0.01 
     THEN CASE WHEN SUM(FROM_SYS)>=1 THEN 
-         CASE WHEN (SUM(FROM_SYS) - ROUND(SUM(FROM_SYS)))>0 THEN '是' 
-           WHEN (SUM(FROM_SYS) - ROUND(SUM(FROM_SYS)))=0 THEN '存管' END
+         CASE WHEN (SUM(FROM_SYS) - trunc(SUM(FROM_SYS)))>0 THEN '是' 
+           WHEN (SUM(FROM_SYS) - trunc(SUM(FROM_SYS)))=0 THEN '存管' END
       ELSE '普通' END ELSE '' END AS "是否双系统",  
   CALL_PERSON AS "电销人员",
   CALL_RESULT AS "电销结果",
@@ -155,8 +155,8 @@ SELECT
   REALNAME AS "用户姓名",
   CASE WHEN SUM(FROM_SYS)>=0.01 
     THEN CASE WHEN SUM(FROM_SYS)>=1 THEN 
-         CASE WHEN (SUM(FROM_SYS) - ROUND(SUM(FROM_SYS)))>0 THEN '是' 
-           WHEN (SUM(FROM_SYS) - ROUND(SUM(FROM_SYS)))=0 THEN '存管' END
+         CASE WHEN (SUM(FROM_SYS) - trunc(SUM(FROM_SYS)))>0 THEN '是' 
+           WHEN (SUM(FROM_SYS) - trunc(SUM(FROM_SYS)))=0 THEN '存管' END
       ELSE '普通' END ELSE '' END AS "是否双系统",  
   CALL_PERSON AS "电销人员",
   CALL_RESULT AS "电销结果",
