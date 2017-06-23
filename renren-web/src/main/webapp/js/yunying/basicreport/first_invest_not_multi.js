@@ -3,7 +3,26 @@ $(function () {
 	initTimeCond();
 	initExportFunction();
 	initEvent();
+	initUpload();
 });
+
+function initUpload(){
+    new AjaxUpload('#upload', {
+        action: '../phonesale/upload',
+        name: 'file',
+        autoSubmit:true,
+        responseType:"json",
+        onSubmit:function(file, extension){
+        },
+        onComplete : function(file, r){
+            if(r.code == 0){
+                alert('数据导入成功');
+            }else{
+                alert(r.msg);
+            }
+        }
+    });
+}
 
 function initTimeCond(){
     $("#stat_period").datetimepicker({

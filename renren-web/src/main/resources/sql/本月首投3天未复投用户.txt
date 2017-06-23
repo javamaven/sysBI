@@ -1,0 +1,27 @@
+select *
+  from (SELECT u.USER_ID,
+               max(u.USERNAME) USERNAME,
+               max(u.CG_USER_ID) CG_USER_ID,
+               max(u.REALNAME) REALNAME,
+               max(u.PHONE) PHONE,
+               max(u.REGISTER_TIME) REGISTER_TIME,
+               max(u.DEPOSITORY_FIRSTINVEST_TIME) DEPOSITORY_FIRSTINVEST_TIME,
+               max(u.DEPOSITORY_FIRSTINVEST_BALANCE) DEPOSITORY_FIRSTINVEST_BALANCE,
+               max(p.BORROW_PERIOD) BORROW_PERIOD
+          FROM edw_user_basic u
+          LEFT JOIN edw_trading_project_detail p ON (u.USER_ID = p.USER_ID)
+         WHERE 1 = 1
+              
+           and to_char(u.REGISTER_TIME, 'yyyy-MM') = ${month}
+           AND u.DEPOSITORY_FIRSTINVEST_TIME between
+               to_date(${start}, 'yyyy-MM-dd hh24:mi:ss') and
+               to_date(${end}, 'yyyy-MM-dd hh24:mi:ss')
+        
+         GROUP BY u.USER_ID
+        HAVING count(1) = 1
+        
+        ) s
+ where 1 = 1
+   and s.username in (select user_name from phone_sale_excel_data)
+    or s.phone in (select user_name from phone_sale_excel_data)
+ order by s.register_time desc
