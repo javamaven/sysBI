@@ -84,14 +84,15 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 			String registerStartTime = "";
 			String registerEndTime = "";
 
-			Date fireTime = ctx.getFireTime();
-			String week = dateFm.format(fireTime);
-			String executeTime = sdf.format(fireTime);
-			if ("星期一".equals(week) && fireTime.getHours() == 9) {
+//			Date fireTime = ctx.getFireTime();
+			Date currDate = new Date();
+			String week = dateFm.format(currDate);
+			String executeTime = sdf.format(currDate);
+			if ("星期一".equals(week) && currDate.getHours() == 9) {
 				String currDayBefore = DateUtil.getCurrDayBefore(3, "yyyy-MM-dd");
 				registerStartTime = currDayBefore + " 17:00:00";
 				registerEndTime = DateUtil.getHourBefore(executeTime, 1, "yyyy-MM-dd") + " 07:59:59";
-			} else if(fireTime.getHours() == 9){//其他星期的9点，推送昨天15点到现在
+			} else if(currDate.getHours() == 9){//其他星期的9点，推送昨天15点到现在
 				String currDayBefore = DateUtil.getCurrDayBefore(1, "yyyy-MM-dd");
 				registerStartTime = currDayBefore + " 17:00:00";
 				registerEndTime = DateUtil.getHourBefore(executeTime, 1, "yyyy-MM-dd") + " 07:59:59";
