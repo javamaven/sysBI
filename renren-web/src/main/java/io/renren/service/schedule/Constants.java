@@ -133,5 +133,10 @@ public class Constants {
 		 */
 		public static final String REGISTER_THREE_DAY_NOT_INVEST = "25";
 		
+		/**
+		 * 本月注册且首投后三天没有进行复投用户数据
+		 */
+		public static final String FIRST_INVEST_THREE_DAY_NOT_INVEST = "26";
+		
 	}
 }

@@ -84,8 +84,9 @@ function initDetailTableGrid(){
 			{ label: '当月投资次数', name: 'monthTenderCou', index: '$MONTH_TENDER_COU', width: 100 ,align:'right'}, 			
 			{ label: '当天投资金额', name: 'dayTender', index: '$DAY_TENDER', width: 100 ,align:'right'}, 			
 			{ label: '当天年化金额', name: 'dayTenderY', index: '$DAY_TENDER_Y', width: 100 ,align:'right'}, 			
-			{ label: '当天投资次数', name: 'dayTenderCou', index: '$DAY_TENDER_COU', width: 100 ,align:'right'} 			
-	
+			{ label: '当天投资次数', name: 'dayTenderCou', index: '$DAY_TENDER_COU', width: 100 ,align:'right'} ,	
+			{ label: '是否高净值挽留客户', name: 'isHighValue', index: '$DAY_TENDER_COU', width: 100 ,align:'right'}
+			
         ],
 		viewrecords: true,
         height: $(window).height()-170,

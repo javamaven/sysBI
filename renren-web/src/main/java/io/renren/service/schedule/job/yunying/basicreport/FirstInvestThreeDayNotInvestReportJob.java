@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -31,14 +32,14 @@ import io.renren.util.MailUtil;
 import io.renren.utils.PageUtils;
 
 /**
- * 注册未投资用户
+ * 注册3天未投资用户
  * 
  * @author Administrator
  *
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
-public class RegisterOneHourNotInvestReportJob implements Job {
+public class FirstInvestThreeDayNotInvestReportJob implements Job {
 	public final Logger log = Logger.getLogger(this.getClass());
 	private ScheduleReportTaskService taskService = SpringBeanFactory.getBean(ScheduleReportTaskService.class);
 	BasicReportService service = SpringBeanFactory.getBean(BasicReportService.class);
@@ -46,9 +47,9 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 	private ScheduleReportTaskLogService logService = SpringBeanFactory.getBean(ScheduleReportTaskLogService.class);
 
 	private ScheduleReportTaskLogEntity logVo;
-	String title = "";
+	String title = "本月注册首投后三天未复投用户";
 	SimpleDateFormat dateFm = new SimpleDateFormat("EEEE");
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH");
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Override
 	public void execute(JobExecutionContext ctx) throws JobExecutionException {
@@ -68,7 +69,7 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 	 * @param ctx
 	 * @return
 	 */
-	@SuppressWarnings({ "unchecked", "deprecation" })
+	@SuppressWarnings("unchecked")
 	private boolean run(JobExecutionContext ctx) {
 		boolean flag = true;
 		logVo = new ScheduleReportTaskLogEntity();
@@ -76,33 +77,33 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 		JobDataMap jobDataMap = ctx.getJobDetail().getJobDataMap();
 		JobVo jobVo = (JobVo) jobDataMap.get("jobVo");
 		ScheduleReportTaskEntity taskEntity = jobVo.getTaskEntity();
-		log.info("+++++++++RegisterOneHourNotInvestReportJob+++++++++++++" + taskEntity);
+		log.info("+++++++++FirstInvestThreeDayNotInvestReportJob+++++++++++++" + taskEntity);
 		MailUtil mailUtil = new MailUtil();
 		JobUtil jobUtil = new JobUtil();
 		try {
-			Map<String, Object> queryParams = new HashMap<String, Object>();
-			String registerStartTime = "";
-			String registerEndTime = "";
 
-			Date fireTime = ctx.getFireTime();
-			String week = dateFm.format(fireTime);
-			String executeTime = sdf.format(fireTime);
-			if ("星期一".equals(week) && fireTime.getHours() == 9) {
-				String currDayBefore = DateUtil.getCurrDayBefore(3, "yyyy-MM-dd");
-				registerStartTime = currDayBefore + " 17:00:00";
-				registerEndTime = DateUtil.getHourBefore(executeTime, 1, "yyyy-MM-dd") + " 07:59:59";
-			} else if(fireTime.getHours() == 9){//其他星期的9点，推送昨天15点到现在
-				String currDayBefore = DateUtil.getCurrDayBefore(1, "yyyy-MM-dd");
-				registerStartTime = currDayBefore + " 17:00:00";
-				registerEndTime = DateUtil.getHourBefore(executeTime, 1, "yyyy-MM-dd") + " 07:59:59";
-			}else {
-				registerStartTime = DateUtil.getHourBefore(executeTime, 2, "yyyy-MM-dd HH") + ":00:00";
-				registerEndTime = DateUtil.getHourBefore(executeTime, 2, "yyyy-MM-dd HH") + ":59:59";
+			ScheduleReportTaskEntity queryObject = taskService.queryObject(taskEntity.getId());
+			Map<String, Object> params = JSON.parseObject(queryObject.getCondition(), Map.class);
+			Map<String, Object> queryParams = new HashMap<String, Object>();
+			queryParams.putAll(params);
+			String date_offset_num = params.get("date_offset_num") + "";
+			String[] splitArr = date_offset_num.split("-");
+			String statPeriod = params.get("statPeriod") + "";
+			if (!"0".equals(splitArr[0])) {
+				if (StringUtils.isNotEmpty(statPeriod)) {
+					int days = Integer.valueOf(splitArr[0]);
+					if ("day".equals(splitArr[1])) {
+						statPeriod = DateUtil.getCurrDayBefore(statPeriod, -days, "yyyy-MM-dd");
+					} else if ("hour".equals(splitArr[1])) {
+						statPeriod = DateUtil.getHourBefore(statPeriod, -days, "yyyy-MM-dd");
+					}
+					params.put("statPeriod", statPeriod);
+				}
 			}
-			queryParams.put("registerStartTime", registerStartTime);
-			queryParams.put("registerEndTime", registerEndTime);
-			logVo.setParams(JSON.toJSONString(queryParams));
-			PageUtils page = service.queryList(1, 10000, registerStartTime, registerEndTime, 0, 10000);
+			queryParams.put("statPeriod", statPeriod);
+			logVo.setParams(JSON.toJSONString(params));
+			
+			PageUtils page = service.queryFirstInvestNotMultiList(queryParams);
 			List<Map<String, Object>> dataList = (List<Map<String, Object>>) page.getList();
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < dataList.size(); i++) {
@@ -110,11 +111,6 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 				dataArray.add(entity);
 			}
 			if (dataList.size() > 0) {
-				String month = registerEndTime.substring(5 , 7);
-				String day = registerEndTime.substring(8 , 10);
-				String Hour = executeTime.substring(11 , 13);
-				title = "注册一小时未投资用户-W-" + month + day + "_" + Hour + "-" + dataList.size();
-				
 				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
 				mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
 						taskEntity.getChaosongEmailList(), attachFilePath);

@@ -78,7 +78,8 @@
 			DAY_TENDER_COU, 
 			LV, 
 			OWNER, 
-			TOTAL_RECEIPT
+			TOTAL_RECEIPT,
+			IS_HIGH_VALUE
 		
 		from dm_report_vip_user
         where 1=1

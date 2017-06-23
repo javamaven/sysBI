@@ -15,6 +15,7 @@ import io.renren.service.yunying.basicreport.BasicReportService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
 import io.renren.utils.PageUtils;
+import io.renren.utils.Query;
 
 @Service("basicReportService")
 public class basicReportServiceImpl implements BasicReportService {
@@ -105,10 +106,11 @@ public class basicReportServiceImpl implements BasicReportService {
 			"	DIM_CHANNEL d " +
 			"WHERE " +
 			"	1 = 1 " +
-			"AND d.PAYMENT_WAY not LIKE '%CPS%' " +
+			"AND d.PAYMENT_WAY not LIKE '%CPS%' and d.CHANNEL_NAME not LIKE '%CPS%' " +
 			"AND d.CHANNEL_NAME not LIKE '%触宝%' " +
 			"AND d.CHANNEL_NAME not LIKE '%北瓜%' " +
-			"AND d.CHANNEL_NAME not LIKE '%360摇一摇%' ";
+			"AND d.CHANNEL_NAME not LIKE '%360摇一摇%' " + 
+			"AND ( d.PAYMENT_WAY LIKE '%免费%' OR d.PAYMENT_WAY LIKE '%测试%' OR d.PAYMENT_WAY LIKE '%置换%' OR d.CHANNEL_NAME LIKE '%免费%' OR d.CHANNEL_NAME LIKE '%测试%' OR d.CHANNEL_NAME LIKE '%置换%' )  ";
 	
 	private Map<String, String> getChannelMap() throws SQLException {
 		List<Map<String, Object>> channel_list = new JdbcUtil(dataSourceFactory, "oracle26").query(channel_sql);
@@ -274,6 +276,23 @@ public class basicReportServiceImpl implements BasicReportService {
 		return headMap;
 	}
 	
+	@Override
+	public Map<String, String> getExcelFirstInvestNotMultiFields() {
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+		headMap.put("USERNAME", "用户名");
+		headMap.put("CG_USER_ID", "存管ID");
+		headMap.put("REALNAME", "姓名");
+		
+		headMap.put("PHONE", "手机");
+		headMap.put("REGISTER_TIME", "注册时间");
+		headMap.put("DEPOSITORY_FIRSTINVEST_TIME", "首投时间");
+		
+		headMap.put("DEPOSITORY_FIRSTINVEST_BALANCE", "首投金额");
+		headMap.put("BORROW_PERIOD", "首投期限");
+		
+		return headMap;
+	}
+	
 	/**
 	 * 查询注册3天未投资用户数据
 	 */
@@ -281,6 +300,29 @@ public class basicReportServiceImpl implements BasicReportService {
 	public List<Map<String, Object>> queryRegisterThreeDaysNotInvestList(Map<String, Object> params) {
 		List<Map<String, Object>> list = basicReportDao.queryRegisterThreeDaysNotInvestList(params);
 		return list;
+	}
+
+	/**
+	 * 首投3天后未复投用户
+	 */
+	@Override
+	public PageUtils queryFirstInvestNotMultiList(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		if(map != null && !map.containsKey("page")){
+			map.put("page", 1);
+		}
+		if(map != null && !map.containsKey("limit")){
+			map.put("limit", 10000);
+		}
+		Query query = new Query(map);
+		String statPeriod = map.get("statPeriod") + "";
+		query.put("startTime", statPeriod + " 00:00:00");
+		query.put("endTime",  statPeriod + " 23:59:59");
+		query.put("month",  statPeriod.substring(0 ,7));
+		List<Map<String,Object>> dataList = basicReportDao.queryFirstInvestNotMultiList(query);
+		int totalCount = basicReportDao.queryFirstInvestNotMultiTotal(query);
+		PageUtils page = new PageUtils(dataList, totalCount, query.getLimit(), query.getPage());
+		return page;
 	}
 	
 }

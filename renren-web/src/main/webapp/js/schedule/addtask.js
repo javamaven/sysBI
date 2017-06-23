@@ -24,6 +24,7 @@
 //  23:vip_user
 //  24:register_not_invest
 //  25:register_not_invest_day
+//  26:register_not_invest_day
 //};
 function addTask(taskType) {
 	var task_name = $("#task_name").val();
@@ -101,7 +102,7 @@ function addTask(taskType) {
 	};
 	var url = "../schedule/schedulereporttask/addTask"; 
 	if(taskType == 10 || taskType == 11 || taskType == 12 || taskType == 13 || taskType == 14 || taskType == 15
-			|| taskType == 24 || taskType == 25){
+			|| taskType == 24 || taskType == 25 || taskType == 26){
 		url = "../../schedule/schedulereporttask/addTask"; 
 	}
 	$.ajax({
