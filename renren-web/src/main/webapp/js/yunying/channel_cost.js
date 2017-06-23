@@ -29,11 +29,11 @@ function initTableGrid(){
 //        url: '../yunying/dmreportactivechannelcost/list',
         datatype: "json",
         colModel: [			
-			{ label: '日期', name: 'statPeriod', index: '$STAT_PERIOD', width: 50,align:'right' },
-			{ label: '渠道标签', name: 'code', index: '$CODE', width: 80,align:'right' }, 			
-			{ label: '渠道名称', name: 'name', index: '$NAME', width: 80 ,align:'right'}, 			
-			{ label: '推广成本', name: 'cost', index: '$COST', width: 80 ,align:'right'}, 			
-			{ label: '成本归属部门', name: 'costSource', index: '$COST_SOURCE', width: 80 ,align:'right'}			
+			{ label: '日期', name: 'STATPERIOD', index: '$STAT_PERIOD', width: 50,align:'right' },
+			{ label: '渠道标签', name: 'CODE', index: '$CODE', width: 80,align:'right' }, 			
+			{ label: '渠道名称', name: 'NAME', index: '$NAME', width: 80 ,align:'right'}, 			
+			{ label: '推广成本（元）', name: 'COST', index: '$COST', width: 80 ,align:'right'}, 			
+			{ label: '成本归属部门', name: 'COSTSOURCE', index: '$COST_SOURCE', width: 80 ,align:'right'}			
         ],
 		viewrecords: true,
         height: $(window).height()-130,

@@ -88,13 +88,14 @@ public class ChannelCostDataReportJob implements Job {
 					params.put("statPeriod", statPeriod);
 				}
 			}
-			queryParams.put("statPeriod", statPeriod.replace("-", ""));
+			queryParams.put("statPeriod", statPeriod);
 			logVo.setParams(JSON.toJSONString(params));
 
-			List<DmReportActiveChannelCostEntity> queryList = service.queryList(queryParams);
+//			List<DmReportActiveChannelCostEntity> queryList = service.queryList(queryParams);
+			List<Map<String, Object>> queryList = service.queryCostList(queryParams);
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < queryList.size(); i++) {
-				DmReportActiveChannelCostEntity entity = queryList.get(i);
+				Map<String, Object> entity = queryList.get(i);
 				dataArray.add(entity);
 			}
 			if (queryList.size() > 0) {
