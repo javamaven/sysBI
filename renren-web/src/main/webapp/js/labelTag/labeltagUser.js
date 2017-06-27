@@ -157,6 +157,7 @@ function loadTableAjax(){
             '{field:"normalPeriodPreference",title:"项目期限偏好",align:"center",valign:"middle",sortable:"true"},'+
             '{field:"changePeriodPreference",title:"债转期限偏好",align:"center",valign:"middle",sortable:"true"},'+
             '{field:"cumulativeInvMoney",title:"累计投资金额",align:"center",valign:"middle",sortable:"true"},'+
+            '{field:"totalAssets",title:"当前待收金额",align:"center",valign:"middle",sortable:"true"},'+
             '{field:"cumulativeInvMoneyYear",title:"累计投资年化金额",align:"center",valign:"middle",sortable:"true"},'+
             '{field:"balance",title:"账户可用余额",align:"center",valign:"middle",sortable:"true"},'+
             '{field:"lastInvMoney",title:"最近一笔投资金额",align:"center",valign:"middle",sortable:"true"},'+

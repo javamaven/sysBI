@@ -23,6 +23,7 @@
         <result property="normalPeriodPreference" column="NORMAL_PERIOD_PREFERENCE"/>
         <result property="changePeriodPreference" column="CHANGE_PERIOD_PREFERENCE"/>
         <result property="cumulativeInvMoney" column="CUMULATIVE_INV_MONEY"/>
+        <result property="totalAssets" column="TOTAL_ASSETS"/>
         <result property="cumulativeInvMoneyYear" column="CUMULATIVE_INV_MONEY_YEAR"/>
         <result property="balance" column="BALANCE"/>
         <result property="lastInvMoney" column="LAST_INV_MONEY"/>
@@ -127,6 +128,7 @@
         IFNULL(NORMAL_PERIOD_PREFERENCE,'0') AS NORMAL_PERIOD_PREFERENCE,
         IFNULL(CHANGE_PERIOD_PREFERENCE,'0') AS CHANGE_PERIOD_PREFERENCE,
         IFNULL(CUMULATIVE_INV_MONEY,'0') AS CUMULATIVE_INV_MONEY,
+        IFNULL(TOTAL_ASSETS,'0') AS TOTAL_ASSETS,
         IFNULL(CUMULATIVE_INV_MONEY_YEAR,'0') AS CUMULATIVE_INV_MONEY_YEAR,
         IFNULL(BALANCE,'0') AS BALANCE,
         IFNULL(LAST_INV_MONEY,'0') AS LAST_INV_MONEY,

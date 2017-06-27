@@ -146,6 +146,7 @@ public class LabeltagUserController {
 			labeltagUser.setNormalPeriodPreference(LabeltagList.get(i).getNormalPeriodPreference());
 			labeltagUser.setChangePeriodPreference(LabeltagList.get(i).getChangePeriodPreference());
 			labeltagUser.setCumulativeInvMoney(LabeltagList.get(i).getCumulativeInvMoney());
+			labeltagUser.setCumulativeInvMoney(LabeltagList.get(i).getTotalAssets());
 			labeltagUser.setCumulativeInvMoneyYear(LabeltagList.get(i).getCumulativeInvMoneyYear());
 			labeltagUser.setBalance(LabeltagList.get(i).getBalance());
 			labeltagUser.setLastInvMoney(LabeltagList.get(i).getLastInvMoney());
@@ -189,6 +190,7 @@ public class LabeltagUserController {
 		headMap.put("normalPeriodPreference","项目期限偏好");
 		headMap.put("changePeriodPreference","债转期限偏好");
 		headMap.put("cumulativeInvMoney","累计投资金额");
+		headMap.put("totalAssets","当前待收金额");
 		headMap.put("cumulativeInvMoneyYear","累计投资年化金额");
 		headMap.put("balance","账户可用余额");
 		headMap.put("lastInvMoney","最近一笔投资金额");

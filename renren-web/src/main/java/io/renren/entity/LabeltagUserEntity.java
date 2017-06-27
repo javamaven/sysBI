@@ -52,8 +52,12 @@ public class LabeltagUserEntity implements Serializable {
 	private String changePeriodPreference;
 	//累计投资金额
 	private String cumulativeInvMoney;
+	//当前待收金额
+	private String totalAssets;	
 	//累计投资年化金额
 	private String cumulativeInvMoneyYear;
+
+
 	//账户可用余额
 	private String balance;
 	//最近一笔投资金额
@@ -405,5 +409,13 @@ public class LabeltagUserEntity implements Serializable {
 
 	public void setRealname(String realname) {
 		this.realname = realname;
+	}
+	
+	public String getTotalAssets() {
+		return totalAssets;
+	}
+
+	public void setTotalAssets(String totalAssets) {
+		this.totalAssets = totalAssets;
 	}
 }
