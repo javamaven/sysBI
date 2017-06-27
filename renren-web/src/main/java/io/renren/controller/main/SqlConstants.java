@@ -173,4 +173,20 @@ public class SqlConstants {
 	//普通版债转交易金额
 	public static String pt_change_30minutes_invest_amount = "SELECT SUM(tc.amount) CHANGE_TOTAL_AMOUNT FROM diyou_borrow_change c, ( SELECT t1.change_id, MIN (t1.addtime) AS minaddtime, MAX (t1.addtime) AS maxaddtime, SUM (t1.ACCOUNT_TENDER) AS amount FROM diyou_borrow_tender t1 WHERE t1.change_id IS NOT NULL GROUP BY t1.change_id) tc WHERE tc.change_id = c. ID AND (c.status = 1 OR c.status = 5) AND tc.maxaddtime <= TO_NUMBER ( TO_DATE (?, 'yyyy-mm-dd hh24:mi:ss') - TO_DATE ( '1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS' ) ) * 24 * 60 * 60 * 1000 AND tc.maxaddtime >= TO_NUMBER ( TO_DATE (?, 'yyyy-mm-dd hh24:mi:ss') - TO_DATE ( '1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS' ) ) * 24 * 60 * 60 * 1000 - 0.5 * 60 * 60 * 1000";
 
+	/******个人累计投资top10***************************************************************************************************/
+	public static String top10_invest_sql = "SELECT * FROM ( SELECT P .USER_id, SUM (P .TENDER_CAPITAL) money FROM dm_trading_project_detail P LEFT JOIN dm_user_basic U ON (P .user_id = U .user_id) WHERE 1 = 1 AND U .IS_BORROWER = 0 AND U .USER_TYPE <> 2 GROUP BY P .user_id ORDER BY SUM (P .TENDER_CAPITAL) DESC ) s WHERE 1 = 1 AND ROWNUM < 11";
+
+	/******当月投资总额，当天投资总额***************************************************************************************************/
+	//普通版债转投资（普通版只算债转）
+	public static String curr_invest_sql = 
+					"select sum(p.account) money " +
+					"  from mjkf_p2p.diyou_borrow_change p " +
+					"where 1 = 1 " +
+					"   and p.addtime >= " +
+					"       (to_date(?, 'yyyy-mm-dd hh24:mi:ss') - " +
+					"       to_date('1970-01-01', 'yyyy-mm-dd')) * 24 * 60 * 60 * 1000 " +
+					"   and p.status = 1 ";
+	//存管版投资 调用 sqlcg_invest_amount_list
+	public static String curr_cg_invest_sql = "SELECT round(sum(tender_capital), 0) MONEY FROM ( SELECT IFNULL( CASE a.tender_subject WHEN 1 THEN a.tender_capital / 100 WHEN 2 THEN b.pay_amount / 100 END, 0 ) tender_capital, a.addtime TIME FROM project_tender_detail a LEFT JOIN creditor_purchase_order b ON a.id = b.relate_tender_detail_id WHERE a.tender_account_status IN (0, 1) AND a.id NOT IN ( SELECT tender_detail_id FROM financial_plan_order_detail ) AND a.addtime >= ? UNION ALL SELECT IFNULL(tender_amount / 100, 0), tender_time TIME FROM financial_plan_order WHERE 1 = 1 AND tender_time >= ? ) S";
+		
 }
