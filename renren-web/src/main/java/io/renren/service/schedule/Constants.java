@@ -138,5 +138,10 @@ public class Constants {
 		 */
 		public static final String FIRST_INVEST_THREE_DAY_NOT_INVEST = "26";
 		
+		/**
+		 * 普通版有待收但是未开通存的账户数据
+		 */
+		public static final String OLD_DATA = "27";
+		
 	}
 }

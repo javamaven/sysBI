@@ -24,7 +24,8 @@ var jobType = {
     23:'每日VIP用户数据报告',//vip_user
     24:'注册1小时未投资用户',//register_not_invest
     25:'注册3天未投资用户',//register_not_invest_day
-    26:'首投3天未复投用户'//register_not_invest_day
+    26:'首投3天未复投用户',//register_not_invest_day
+    27:'普通版有待收但是未开通存的账户数据'//old_data
 };
 
 $(function () {

@@ -31,6 +31,7 @@ import io.renren.service.schedule.job.yunying.EveryDayBasicDataReportJob;
 import io.renren.service.schedule.job.yunying.EveryDayGetCashReportJob;
 import io.renren.service.schedule.job.yunying.EveryDayRecoverDataReportJob;
 import io.renren.service.schedule.job.yunying.LicaiPlanReportJob;
+import io.renren.service.schedule.job.yunying.OldDataJob;
 import io.renren.service.schedule.job.yunying.VipUserDataReportJob;
 import io.renren.service.schedule.job.yunying.basicreport.FirstInvestThreeDayNotInvestReportJob;
 import io.renren.service.schedule.job.yunying.basicreport.RegisterOneHourNotInvestReportJob;
@@ -138,6 +139,8 @@ public class ScheduleReportTaskEntity implements Serializable {
 			jobVo.setJobClass(RegisterThreeDayNotInvestReportJob.class);
 		}else if (Constants.TaskType.FIRST_INVEST_THREE_DAY_NOT_INVEST.equals(jobVo.getJobType())) {
 			jobVo.setJobClass(FirstInvestThreeDayNotInvestReportJob.class);
+		}else if (Constants.TaskType.OLD_DATA.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(OldDataJob.class);
 		}
 		
 		jobVo.setTaskEntity(this);

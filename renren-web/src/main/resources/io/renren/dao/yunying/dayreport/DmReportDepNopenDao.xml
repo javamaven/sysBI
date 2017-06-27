@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.yunying.dayreport.DmReportDepNopenDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.yunying.dayreport.DmReportDepNopenEntity" id="dmReportDepNopenMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="username" column="USERNAME"/>
+        <result property="realname" column="REALNAME"/>
+        <result property="phone" column="PHONE"/>
+        <result property="cgUserId" column="CG_USER_ID"/>
+        <result property="norWait" column="NOR_WAIT"/>
+        <result property="tenderTime" column="TENDER_TIME"/>
+        <result property="recoverTime" column="RECOVER_TIME"/>
+        <result property="invCou" column="INV_COU"/>
+        <result property="tenderCapital" column="TENDER_CAPITAL"/>
+        <result property="lv" column="LV"/>
+        <result property="norBalance" column="NOR_BALANCE"/>
+        <result property="reward" column="REWARD"/>
+        <result property="rewardInv" column="REWARD_INV"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.yunying.dayreport.DmReportDepNopenEntity">
+		select * from dm_report_dep_nopen where STAT_PERIOD = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.yunying.dayreport.DmReportDepNopenEntity">
+			select 
+			STAT_PERIOD, 
+			USER_ID, 
+			USERNAME, 
+			REALNAME, 
+			PHONE, 
+			CG_USER_ID, 
+			NOR_WAIT, 
+			date_format(TENDER_TIME,'%Y-%m-%d %H:%i:%s ') TENDER_TIME, 
+			date_format(RECOVER_TIME,'%Y-%m-%d %H:%i:%s ') RECOVER_TIME, 
+			INV_COU, 
+			TENDER_CAPITAL, 
+			LV, 
+			NOR_BALANCE, 
+			REWARD, 
+			REWARD_INV
+		from dm_report_dep_nopen
+		where 1=1
+       <if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+		</if>
+		order by STAT_PERIOD desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dm_report_dep_nopen 
+		where 1=1
+		<if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+		</if>
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.yunying.dayreport.DmReportDepNopenEntity">
+		insert into dm_report_dep_nopen
+		(
+			`STAT_PERIOD`, 
+			`USER_ID`, 
+			`USERNAME`, 
+			`REALNAME`, 
+			`PHONE`, 
+			`CG_USER_ID`, 
+			`NOR_WAIT`, 
+			`TENDER_TIME`, 
+			`RECOVER_TIME`, 
+			`INV_COU`, 
+			`TENDER_CAPITAL`, 
+			`LV`, 
+			`NOR_BALANCE`, 
+			`REWARD`, 
+			`REWARD_INV`
+		)
+		values
+		(
+			#{statPeriod}, 
+			#{userId}, 
+			#{username}, 
+			#{realname}, 
+			#{phone}, 
+			#{cgUserId}, 
+			#{norWait}, 
+			#{tenderTime}, 
+			#{recoverTime}, 
+			#{invCou}, 
+			#{tenderCapital}, 
+			#{lv}, 
+			#{norBalance}, 
+			#{reward}, 
+			#{rewardInv}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.yunying.dayreport.DmReportDepNopenEntity">
+		update dm_report_dep_nopen 
+		<set>
+			<if test="userId != null">`USER_ID` = #{userId}, </if>
+			<if test="username != null">`USERNAME` = #{username}, </if>
+			<if test="realname != null">`REALNAME` = #{realname}, </if>
+			<if test="phone != null">`PHONE` = #{phone}, </if>
+			<if test="cgUserId != null">`CG_USER_ID` = #{cgUserId}, </if>
+			<if test="norWait != null">`NOR_WAIT` = #{norWait}, </if>
+			<if test="tenderTime != null">`TENDER_TIME` = #{tenderTime}, </if>
+			<if test="recoverTime != null">`RECOVER_TIME` = #{recoverTime}, </if>
+			<if test="invCou != null">`INV_COU` = #{invCou}, </if>
+			<if test="tenderCapital != null">`TENDER_CAPITAL` = #{tenderCapital}, </if>
+			<if test="lv != null">`LV` = #{lv}, </if>
+			<if test="norBalance != null">`NOR_BALANCE` = #{norBalance}, </if>
+			<if test="reward != null">`REWARD` = #{reward}, </if>
+			<if test="rewardInv != null">`REWARD_INV` = #{rewardInv}</if>
+		</set>
+		where STAT_PERIOD = #{statPeriod}
+	</update>
+	
+	<delete id="delete">
+		delete from dm_report_dep_nopen where STAT_PERIOD = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from dm_report_dep_nopen where STAT_PERIOD in 
+		<foreach item="statPeriod" collection="array" open="(" separator="," close=")">
+			#{statPeriod}
+		</foreach>
+	</delete>
+
+</mapper>
