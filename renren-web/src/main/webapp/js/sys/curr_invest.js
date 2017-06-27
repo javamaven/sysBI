@@ -29,8 +29,6 @@ function queryCurrInvestInitData(){
 		data: {},
 		contentType: "application/json;charset=utf-8",
 		success : function(data) {
-			console.log("++++++++++++++++++++++++")
-			console.log(data)
 			CurrInvest_Chart.setOption(getCurrInvestOption(data));
 		}
 	});
@@ -42,6 +40,7 @@ var labelTop = {
 	            position : 'center',
 	            formatter : '{b}',
 	            textStyle: {
+	            	color: 'gray'
 //	                baseline : 'bottom'
 	            }
 	        },
@@ -54,7 +53,11 @@ var labelTop = {
 	    normal : {
 	        label : {
 	            formatter : function (params){
-	                return   formatNumber( params.value, 0) + "元"
+	            	if(params.value > 100000000){
+	            		return   formatNumber( params.value/100000000, 2) + "亿元"
+	            	}else{
+	            		return   formatNumber( params.value/10000, 2) + "万元"
+	            	}
 	            },
 	            textStyle: {  
                     fontWeight:'bold',  
@@ -94,8 +97,8 @@ function getCurrInvestOption(data){
 		            x: '0%', // for funnel
 		            itemStyle : labelFromatter,
 		            data : [
-		                {name:'other', value: data.month, itemStyle : labelBottom},
-		                {name:'当月投资总额', value: data.month,itemStyle : labelTop}
+		            	{name:'other', value: data.month, itemStyle : labelBottom},
+		            	{name:'当月投资总额', value: 2000000000-data.month,itemStyle : labelTop}
 		            ]
 		        }
 		        ,
@@ -107,7 +110,7 @@ function getCurrInvestOption(data){
 		            itemStyle : labelFromatter,
 		            data : [
 		                {name:'other', value:data.day, itemStyle : labelBottom},
-		                {name:'当天投资总额', value:data.day,itemStyle : labelTop}
+		                {name:'当天投资总额', value:45000000 - data.day,itemStyle : labelTop}
 		            ]
 		        }
 		    ]

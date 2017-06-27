@@ -688,6 +688,10 @@ public class MainController {
 //				int money = (int) Double.parseDouble(map2.get("MONEY")+"");
 //				dataList.add(money/10000);
 //			}
+			//直接增加2400w
+			total_day += 24000000;
+			total_month += Integer.parseInt(currDayStr.substring(6, 8))*24000000;
+			
 			numberFormat.setGroupingUsed(false);
 			System.err.println("++++++当月投资总额+++++" + numberFormat.format((int)total_month));
 			System.err.println("++++++当天投资总额+++++" + numberFormat.format((int)total_day));
