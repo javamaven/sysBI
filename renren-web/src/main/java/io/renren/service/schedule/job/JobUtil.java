@@ -17,7 +17,7 @@ import io.renren.utils.ExcelUtil;
 
 public class JobUtil {
 
-	private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+	private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
 
 	/**
 	 * 生成附件
@@ -45,8 +45,8 @@ public class JobUtil {
 		}
 		
 		File dir = new File(path + "/attach-temp");
-//		String time = sdf.format(new Date());
-		String filePath = path + "/attach-temp" + File.separator + excelTitile + ".xlsx";
+		String time = sdf.format(new Date());
+		String filePath = path + "/attach-temp" + File.separator + excelTitile + "-" + time + ".xlsx";
 		File file = new File(filePath);
 		FileOutputStream outputStream = null;
 		try {

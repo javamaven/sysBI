@@ -106,6 +106,7 @@ public class ChannelCostDataReportJob implements Job {
 			} else {
 				logVo.setEmailValue("查询没有返回数据");
 			}
+			
 			logVo.setSendResult("success");
 		} catch (Exception e) {
 			flag = false;

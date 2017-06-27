@@ -1,5 +1,10 @@
 package io.renren.system.jdbc;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStream;
+import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,6 +13,7 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,6 +136,74 @@ public class JdbcHelper {
 			throw new SQLException(e);
 		} finally {
 			free(prepareStatement, rs);
+		}
+	}
+	
+	/**
+	 * 将指定路径的文件(比如：图片，word文档等)存储到数据库
+	 * @param filePath  文件路径，如D:\\a.jpg
+	 * @param coloumnIndex 图片字段在表中属于第几个字段
+	 * @param insertSql
+	 * @param paramters
+	 * @throws Exception
+	 */
+	public void storeImg(String filePath, int coloumnIndex, String insertSql, Object... paramters) throws Exception {
+		File file = new File(filePath);
+		FileInputStream fis = new FileInputStream(file);
+		PreparedStatement ps = null;
+		try {
+			ps = connection.prepareStatement(insertSql);
+			for (int i = 0; i < paramters.length; i++) {
+				
+				if (i + 1 == coloumnIndex) {
+					ps.setBinaryStream(i + 1, fis, (int) file.length());
+				} else if(i + 1 == 9){
+					Date date = (Date)paramters[i];
+					ps.setDate(i+1, new java.sql.Date(date.getTime()));
+				} else {
+					System.err.println(paramters[i]);
+					ps.setString(i + 1, paramters[i]+"");
+				}
+			}
+			ps.executeUpdate();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			free(ps, null);
+		}
+	}
+	
+	/**
+	 * 将存储在数据库中的文件(比如：图片，word文档等)读取到指定路径
+	 * 
+	 * @param path
+	 *            从数据库里读取出来的文件存放路径 如D:\\a.jpg
+	 * @param id
+	 *            数据库里记录的id
+	 */
+	public void readImg(String path, String fileName,String fieldName, String querySql, FileOutputStream outputImage) throws Exception {
+		byte[] buffer = new byte[4096];
+		InputStream is = null;
+		PreparedStatement ps = null;
+		try {
+			ps = connection.prepareStatement(querySql);
+			ResultSet rs = ps.executeQuery();
+			rs.next();
+			File file = new File(path + File.separator + fileName);
+			if (!file.exists()) {
+				file.createNewFile();
+			}
+			// outputImage = new FileOutputStream(file);
+			Blob blob = rs.getBlob(fieldName); // img为数据库存放图片字段名称
+			is = blob.getBinaryStream();
+			int size = 0;
+			while ((size = is.read(buffer)) != -1) {
+				outputImage.write(buffer, 0, size);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			free(ps, null);
 		}
 	}
 
