@@ -91,11 +91,11 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 			if ("星期一".equals(week) && currDate.getHours() == 9) {
 				String currDayBefore = DateUtil.getCurrDayBefore(3, "yyyy-MM-dd");
 				registerStartTime = currDayBefore + " 17:00:00";
-				registerEndTime = DateUtil.getHourBefore(executeTime, 1, "yyyy-MM-dd") + " 07:59:59";
+				registerEndTime = DateUtil.getHourBefore(executeTime, "yyyy-MM-dd HH", 1, "yyyy-MM-dd") + " 07:59:59";
 			} else if(currDate.getHours() == 9){//其他星期的9点，推送昨天15点到现在
 				String currDayBefore = DateUtil.getCurrDayBefore(1, "yyyy-MM-dd");
 				registerStartTime = currDayBefore + " 17:00:00";
-				registerEndTime = DateUtil.getHourBefore(executeTime, 1, "yyyy-MM-dd") + " 07:59:59";
+				registerEndTime = DateUtil.getHourBefore(executeTime,"yyyy-MM-dd HH",1, "yyyy-MM-dd") + " 07:59:59";
 			}else {
 				registerStartTime = DateUtil.getHourBefore(executeTime, 2, "yyyy-MM-dd HH") + ":00:00";
 				registerEndTime = DateUtil.getHourBefore(executeTime, 2, "yyyy-MM-dd HH") + ":59:59";

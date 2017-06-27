@@ -115,6 +115,33 @@ public class DateUtil {
 		return dateSdf2.format(cal.getTime());
 
 	}
+	
+	public static String getHourBefore(String date, String dateSdf__,int hours, String retSdf) {
+		if (StringUtils.isEmpty(date)) {
+			return "";
+		}
+		Calendar cal = Calendar.getInstance();
+		SimpleDateFormat dateSdf2 = null;
+
+		try {
+			if (dateSdf__ != null && dateSdf__.length() > 0) {
+				dateSdf2 = new SimpleDateFormat(dateSdf__);
+				cal.setTime(dateSdf2.parse(date));
+			} else {
+				cal.setTime(dateSdf.parse(date));
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		cal.add(Calendar.HOUR_OF_DAY, -hours);
+		if (retSdf != null && retSdf.length() > 0) {
+			System.err.println(dateSdf2.format(cal.getTime()));
+			return new SimpleDateFormat(retSdf).format(cal.getTime());
+		} else {
+			return dateSdf.format(cal.getTime());
+		}
+
+	}
 
 	public static String getHourBefore(String date, int hours, String sdf) {
 		if (StringUtils.isEmpty(date)) {
