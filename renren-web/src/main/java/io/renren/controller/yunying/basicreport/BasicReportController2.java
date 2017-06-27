@@ -39,6 +39,38 @@ public class BasicReportController2 {
 		return R.ok().put("page", pageUtil);
 
 	}
+	
+	@ResponseBody
+	@RequestMapping("/firstInvestNotMulti")
+	public R firstInvestNotMulti(Integer page, Integer limit, String statPeriod) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("page", page);
+		map.put("limit", limit);
+		map.put("statPeriod", statPeriod);
+		PageUtils pageUtil = service.queryFirstInvestNotMultiList(map);
+		return R.ok().put("page", pageUtil);
+
+	}
+	
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping("/exportFirstInvestNotMultiExcel")
+	public void exportFirstInvestNotMultiExcel(String params, HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+		Map<String, Object> map = JSON.parseObject(params, Map.class);
+		PageUtils page = service.queryFirstInvestNotMultiList(map);
+		
+		List<Map<String, String>> dataList = (List<Map<String, String>>) page.getList();
+		// 查询列表数据
+		JSONArray va = new JSONArray();
+		for (int i = 0; i < dataList.size(); i++) {
+			va.add(dataList.get(i));
+		}
+		Map<String, String> headMap = service.getExcelFirstInvestNotMultiFields();
+		String title = "本月注册首投后三天未复投用户";
+
+		ExcelUtil.downloadExcelFile(title, headMap, va, response);
+	}
 
 	/**
 	 * 注册三天未投资用户数据
@@ -86,7 +118,7 @@ public class BasicReportController2 {
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String registerStartTime = map.get("registerStartTime") + "";
 		String registerEndTime = map.get("registerEndTime") + "";
-		PageUtils page = service.queryList(0, 10000, registerStartTime, registerEndTime, 0, 10000);
+		PageUtils page = service.queryList(1, 10000, registerStartTime, registerEndTime, 0, 10000);
 		List<Map<String, String>> dataList = (List<Map<String, String>>) page.getList();
 		// 查询列表数据
 		JSONArray va = new JSONArray();

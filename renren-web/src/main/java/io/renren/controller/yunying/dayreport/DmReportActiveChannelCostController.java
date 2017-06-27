@@ -1,6 +1,7 @@
 package io.renren.controller.yunying.dayreport;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,12 +18,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
-import io.renren.entity.yunying.dayreport.DmReportActiveChannelCostEntity;
 import io.renren.service.yunying.dayreport.DmReportActiveChannelCostService;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
-
 
 /**
  * 
@@ -36,28 +35,41 @@ import io.renren.utils.R;
 public class DmReportActiveChannelCostController {
 	@Autowired
 	private DmReportActiveChannelCostService service;
-	
+
 	/**
 	 * 列表
 	 */
 	@ResponseBody
 	@RequestMapping("/list")
-	public R list(Integer page, Integer limit, String statPeriod){
+	public R list(Integer page, Integer limit, String statPeriod) {
 		Map<String, Object> map = new HashMap<>();
 		map.put("offset", (page - 1) * limit);
 		map.put("limit", limit);
+		
+		int start = (page - 1) * limit;
+		int end = start + limit;
 		if (StringUtils.isNotEmpty(statPeriod)) {
-			map.put("statPeriod", statPeriod.replace("-", ""));
+			map.put("statPeriod", statPeriod);
 		}
-		//查询列表数据
-		List<DmReportActiveChannelCostEntity> dmReportActiveChannelCostList = service.queryList(map);
-		int total = service.queryTotal(map);
+		// 查询列表数据
+		// List<DmReportActiveChannelCostEntity> dmReportActiveChannelCostList =
+		// service.queryList(map);
+		List<Map<String, Object>> costList = service.queryCostList(map);
+//		int total = service.queryTotal(map);
+		List<Map<String, Object>> retList = new ArrayList<Map<String,Object>>();
+		if (costList.size() > 0) {
+			if (end > costList.size()) {
+				retList.addAll(costList.subList(start, costList.size()));
+			} else {
+				retList.addAll(costList.subList(start, end));
+			}
+		}
 		
-		PageUtils pageUtil = new PageUtils(dmReportActiveChannelCostList, total, limit, page);
-		
+		PageUtils pageUtil = new PageUtils(retList, costList.size(), limit, page);
+
 		return R.ok().put("page", pageUtil);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@ResponseBody
 	@RequestMapping("/exportExcel")
@@ -65,13 +77,14 @@ public class DmReportActiveChannelCostController {
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String statPeriod = map.get("statPeriod") + "";
 		if (StringUtils.isNotEmpty(statPeriod)) {
-			map.put("statPeriod", statPeriod.replace("-", ""));
+			map.put("statPeriod", statPeriod);
 		}
 		// 查询列表数据
-		List<DmReportActiveChannelCostEntity> dataList = service.queryList(map);
+//		List<DmReportActiveChannelCostEntity> dataList = service.queryList(map);
+		List<Map<String, Object>> dataList = service.queryCostList(map);
 		JSONArray va = new JSONArray();
 		for (int i = 0; i < dataList.size(); i++) {
-			DmReportActiveChannelCostEntity entity = dataList.get(i);
+			Map<String, Object> entity = dataList.get(i);
 			va.add(entity);
 		}
 		Map<String, String> headMap = service.getExcelFields();

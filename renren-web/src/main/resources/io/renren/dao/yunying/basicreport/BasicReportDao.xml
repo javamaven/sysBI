@@ -3,6 +3,79 @@
 
 <mapper namespace="io.renren.dao.yunying.basicreport.BasicReportDao">
 
+	<select id="queryFirstInvestNotMultiList" resultType="java.util.HashMap">
+		SELECT
+			u.USERNAME,
+			u.CG_USER_ID,
+			u.REALNAME,
+			u.PHONE,
+			u.REGISTER_TIME,
+			u.DEPOSITORY_FIRSTINVEST_TIME,
+			u.DEPOSITORY_FIRSTINVEST_BALANCE,
+			p.BORROW_PERIOD
+		FROM
+			edw_user_basic u
+		LEFT JOIN edw_trading_project_detail p ON (u.USER_ID = p.USER_ID)
+		WHERE
+			1 = 1
+		AND date_format(u.REGISTER_TIME, '%Y-%m') = #{month}
+		AND u.DEPOSITORY_FIRSTINVEST_TIME >= #{startTime}
+		AND u.DEPOSITORY_FIRSTINVEST_TIME &lt;= #{endTime}
+		<if test="userNameList != null and userNameList.size()!=0">
+			AND (
+				u.USERNAME IN 
+				<foreach item="userName" collection="userNameList" open="(" separator="," close=")">
+					#{userName}
+				</foreach>
+				OR u.PHONE IN 
+				<foreach item="userName" collection="userNameList" open="(" separator="," close=")">
+					#{userName}
+				</foreach>
+			)
+		</if>
+		GROUP BY
+			u.USER_ID
+		HAVING
+			count(1) = 1
+		order by u.register_time desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+	<select id="queryFirstInvestNotMultiTotal" resultType="int">
+		SELECT
+			count(*)
+		FROM
+			(
+				SELECT
+					u.user_id
+				FROM
+					edw_user_basic u
+				LEFT JOIN edw_trading_project_detail p ON (u.USER_ID = p.USER_ID)
+				WHERE
+					1 = 1
+				AND date_format(u.REGISTER_TIME, '%Y-%m') = #{month}
+				AND u.DEPOSITORY_FIRSTINVEST_TIME >= #{startTime}
+				AND u.DEPOSITORY_FIRSTINVEST_TIME &lt;= #{endTime}
+				<if test="userNameList != null and userNameList.size()!=0">
+					AND (
+						u.USERNAME IN 
+						<foreach item="userName" collection="userNameList" open="(" separator="," close=")">
+							#{userName}
+						</foreach>
+						OR u.PHONE IN 
+						<foreach item="userName" collection="userNameList" open="(" separator="," close=")">
+							#{userName}
+						</foreach>
+					)
+				</if>
+				GROUP BY
+					u.USER_ID
+				HAVING
+					count(1) = 1
+			) s
+	</select>
 
 	<select id="queryRegisterThreeDaysNotInvestList" resultType="java.util.HashMap">
 	
@@ -37,6 +110,12 @@
 		and d.PAYMENT_WAY not like '%测试%'
 		and d.PAYMENT_WAY not like '%置换%'
 		and d.PAYMENT_WAY not like '%CPS%'
+		
+		and d.CHANNEL_NAME not like '%免费%'
+		and d.CHANNEL_NAME not like '%测试%'
+		and d.CHANNEL_NAME not like '%置换%'
+		and d.CHANNEL_NAME not like '%CPS%'
+		
 		AND d.CHANNEL_NAME not LIKE '%触宝%'
 		AND d.CHANNEL_NAME not LIKE '%北瓜%'
 		AND d.CHANNEL_NAME not LIKE '%360摇一摇%'

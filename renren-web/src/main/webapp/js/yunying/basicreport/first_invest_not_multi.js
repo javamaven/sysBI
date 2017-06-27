@@ -3,7 +3,26 @@ $(function () {
 	initTimeCond();
 	initExportFunction();
 	initEvent();
+	initUpload();
 });
+
+function initUpload(){
+    new AjaxUpload('#upload', {
+        action: '../phonesale/upload',
+        name: 'file',
+        autoSubmit:true,
+        responseType:"json",
+        onSubmit:function(file, extension){
+        },
+        onComplete : function(file, r){
+            if(r.code == 0){
+                alert('数据导入成功');
+            }else{
+                alert(r.msg);
+            }
+        }
+    });
+}
 
 function initTimeCond(){
     $("#stat_period").datetimepicker({
@@ -13,27 +32,32 @@ function initTimeCond(){
         autoclose:true
     }).on("click",function(){
     });
+    
+    $("#stat_period").val(addDate(getCurrDate(), -3));
 }
 
 
 function initExportFunction(){
 	$('#btn_exports').click(function(){
 		var params = getParams();
-		executePost('../yunying/dmreportactivechannelcost/exportExcel', {'params' : JSON.stringify(params)});  
+		executePost('../basicreport/exportFirstInvestNotMultiExcel', {'params' : JSON.stringify(params)});  
 	});
 
 }
 
 function initTableGrid(){
     $("#jqGrid").jqGrid({
-//        url: '../yunying/dmreportactivechannelcost/list',
+//        url: '../basicreport/firstInvestNotMulti',
         datatype: "json",
         colModel: [			
-			{ label: '日期', name: 'STATPERIOD', index: '$STAT_PERIOD', width: 50,align:'right' },
-			{ label: '渠道标签', name: 'CODE', index: '$CODE', width: 80,align:'right' }, 			
-			{ label: '渠道名称', name: 'NAME', index: '$NAME', width: 80 ,align:'right'}, 			
-			{ label: '推广成本（元）', name: 'COST', index: '$COST', width: 80 ,align:'right'}, 			
-			{ label: '成本归属部门', name: 'COSTSOURCE', index: '$COST_SOURCE', width: 80 ,align:'right'}			
+			{ label: '用户名', name: 'USERNAME', index: '$STAT_PERIOD', width: 50,align:'right' },
+			{ label: '存管ID', name: 'CG_USER_ID', index: '$CODE', width: 80,align:'right' }, 			
+			{ label: '姓名', name: 'REALNAME', index: '$NAME', width: 80 ,align:'right'}, 			
+			{ label: '手机', name: 'PHONE', index: '$COST', width: 80 ,align:'right'}, 			
+			{ label: '注册时间', name: 'REGISTER_TIME', index: '$COST_SOURCE', width: 80 ,align:'right'}	,
+			{ label: '首投时间', name: 'DEPOSITORY_FIRSTINVEST_TIME', index: '$COST_SOURCE', width: 80 ,align:'right'}	,
+			{ label: '首投金额', name: 'DEPOSITORY_FIRSTINVEST_BALANCE', index: '$COST_SOURCE', width: 80 ,align:'right'}	,
+			{ label: '首投期限', name: 'BORROW_PERIOD', index: '$COST_SOURCE', width: 80 ,align:'right'}
         ],
 		viewrecords: true,
         height: $(window).height()-130,
@@ -74,7 +98,7 @@ var vm = new Vue({
 			$("#jqGrid").jqGrid("clearGridData");
 			$("#jqGrid").jqGrid('setGridParam',{ 
 				datatype:'json', 
-				url: '../yunying/dmreportactivechannelcost/list',
+				url: '../basicreport/firstInvestNotMulti',
 	            postData: getParams()
             }).trigger("reloadGrid");
 		}

@@ -1,0 +1,33 @@
+with use_hongbao_tmp as (
+        select
+               u.activity_tag,
+               b.name,
+               b.type,
+               to_char(a.use_time, 'yyyy-mm-dd') day,
+               a.user_id,
+               a.use_money,
+               a.use_time,
+               a.use_status
+          from edw_reward_voucher_log a
+          left join edw_reward_voucher b on (a.hongbao_id = b.id)
+          left join edw_user_basic u on (a.user_id = u.user_id)
+         where 1 = 1
+           and a.use_status = 1 -- 抵扣成功
+           and b.name like '好友首投返红包-12元'
+           ${day}
+)
+
+
+  select 
+         s.day statPeriod, 
+         case when s.activity_tag is null then '未知' else s.activity_tag end code,
+         max(case when d.channel_name is null then '未知' else d.channel_name end) name, 
+         sum(s.use_money) cost,
+         '市场部' costSource
+  from use_hongbao_tmp s
+  left join dim_channel d on (s.activity_tag = d.channel_label)
+  where 1 = 1
+  group by s.day, s.activity_tag
+  order by s.day desc
+ 
+ 

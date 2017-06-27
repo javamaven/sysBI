@@ -1,6 +1,5 @@
 $(function() {
 	initInvestQushiEcharts();
-	
 	setInterval('queryQushiData()', 30*60*1000);
 });
 
@@ -49,15 +48,13 @@ function queryInitData(){
 function getQushiOption(){
 return {
 		title:{
-//			text: '投资额'
+			text: '投资额(元)',
+			
 		},
 //		legend:{
 //			show:true,
 //			data: [{
 //			    name: '投资额(元)',
-//			    // 强制设置图形为圆。
-////			    icon: 'circle',
-//			    // 设置文本为红色
 //			    textStyle: {
 //			        color: '#3398DB'
 //			    }
@@ -81,6 +78,16 @@ return {
 	            type : 'category',
 //	            data : ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun','Fri', 'Sat', 'Sun' ],
 	            data : time_list,
+	            show:true,
+                axisLabel : {
+                    formatter: '{value}',
+                    textStyle: {
+                        color: '#fff'
+                    }
+                },
+                splitLine:{
+			            　　　　show:false  
+			            　},
 	            axisTick: {
 	                alignWithLabel: true
 	            }
@@ -88,7 +95,23 @@ return {
 	    ],
 	    yAxis : [
 	        {
-	            type : 'value'
+	            type : 'value',
+	            show:true, 
+                axisLabel : {
+                    formatter: function(value){
+                    	if(value > 10000){
+                    		return  value/10000 + '万元';
+                    	}else{
+                    		return  value + '元';
+                    	}
+                    },
+                    textStyle: {
+                        color: '#fff'
+                    }
+                },
+                splitLine:{
+			            　　　　show:false  
+			    }
 	        }
 	    ],
 	    series : [

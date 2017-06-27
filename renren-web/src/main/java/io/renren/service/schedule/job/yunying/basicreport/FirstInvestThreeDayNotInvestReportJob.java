@@ -1,5 +1,6 @@
-package io.renren.service.schedule.job.yunying;
+package io.renren.service.schedule.job.yunying.basicreport;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -19,32 +20,36 @@ import com.alibaba.fastjson.JSONArray;
 
 import io.renren.entity.schedule.ScheduleReportTaskEntity;
 import io.renren.entity.schedule.ScheduleReportTaskLogEntity;
-import io.renren.entity.yunying.dayreport.DmReportActiveChannelCostEntity;
 import io.renren.service.schedule.ScheduleReportTaskLogService;
 import io.renren.service.schedule.ScheduleReportTaskService;
 import io.renren.service.schedule.entity.JobVo;
 import io.renren.service.schedule.job.JobUtil;
-import io.renren.service.yunying.dayreport.DmReportActiveChannelCostService;
+import io.renren.service.yunying.basicreport.BasicReportService;
+import io.renren.service.yunying.dayreport.DmReportVipSituationService;
 import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
+import io.renren.utils.PageUtils;
 
 /**
- * 活动渠道成本数据报告
+ * 注册3天未投资用户
  * 
  * @author Administrator
  *
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
-public class ChannelCostDataReportJob implements Job {
+public class FirstInvestThreeDayNotInvestReportJob implements Job {
 	public final Logger log = Logger.getLogger(this.getClass());
 	private ScheduleReportTaskService taskService = SpringBeanFactory.getBean(ScheduleReportTaskService.class);
-	DmReportActiveChannelCostService service = SpringBeanFactory.getBean(DmReportActiveChannelCostService.class);
+	BasicReportService service = SpringBeanFactory.getBean(BasicReportService.class);
+	DmReportVipSituationService serviceTotal = SpringBeanFactory.getBean(DmReportVipSituationService.class);
 	private ScheduleReportTaskLogService logService = SpringBeanFactory.getBean(ScheduleReportTaskLogService.class);
 
 	private ScheduleReportTaskLogEntity logVo;
-	String title = "活动渠道成本数据报告";
+	String title = "本月注册首投后三天未复投用户";
+	SimpleDateFormat dateFm = new SimpleDateFormat("EEEE");
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 
 	@Override
 	public void execute(JobExecutionContext ctx) throws JobExecutionException {
@@ -58,6 +63,12 @@ public class ChannelCostDataReportJob implements Job {
 		updateRunningTime();
 	}
 
+	/**
+	 * 每天9点到16点，每个小时推送一遍 周六周日不推送
+	 * 
+	 * @param ctx
+	 * @return
+	 */
 	@SuppressWarnings("unchecked")
 	private boolean run(JobExecutionContext ctx) {
 		boolean flag = true;
@@ -66,10 +77,11 @@ public class ChannelCostDataReportJob implements Job {
 		JobDataMap jobDataMap = ctx.getJobDetail().getJobDataMap();
 		JobVo jobVo = (JobVo) jobDataMap.get("jobVo");
 		ScheduleReportTaskEntity taskEntity = jobVo.getTaskEntity();
-		log.info("+++++++++ChannelCostDataReportJob+++++++++++++" + taskEntity);
+		log.info("+++++++++FirstInvestThreeDayNotInvestReportJob+++++++++++++" + taskEntity);
 		MailUtil mailUtil = new MailUtil();
 		JobUtil jobUtil = new JobUtil();
 		try {
+
 			ScheduleReportTaskEntity queryObject = taskService.queryObject(taskEntity.getId());
 			Map<String, Object> params = JSON.parseObject(queryObject.getCondition(), Map.class);
 			Map<String, Object> queryParams = new HashMap<String, Object>();
@@ -90,15 +102,15 @@ public class ChannelCostDataReportJob implements Job {
 			}
 			queryParams.put("statPeriod", statPeriod);
 			logVo.setParams(JSON.toJSONString(params));
-
-//			List<DmReportActiveChannelCostEntity> queryList = service.queryList(queryParams);
-			List<Map<String, Object>> queryList = service.queryCostList(queryParams);
+			
+			PageUtils page = service.queryFirstInvestNotMultiList(queryParams);
+			List<Map<String, Object>> dataList = (List<Map<String, Object>>) page.getList();
 			JSONArray dataArray = new JSONArray();
-			for (int i = 0; i < queryList.size(); i++) {
-				Map<String, Object> entity = queryList.get(i);
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, Object> entity = dataList.get(i);
 				dataArray.add(entity);
 			}
-			if (queryList.size() > 0) {
+			if (dataList.size() > 0) {
 				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
 				mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
 						taskEntity.getChaosongEmailList(), attachFilePath);
@@ -106,7 +118,6 @@ public class ChannelCostDataReportJob implements Job {
 			} else {
 				logVo.setEmailValue("查询没有返回数据");
 			}
-			
 			logVo.setSendResult("success");
 		} catch (Exception e) {
 			flag = false;

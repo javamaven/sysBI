@@ -30,4 +30,6 @@ public interface DmReportActiveChannelCostService {
 	void deleteBatch(BigDecimal[] statPeriods);
 
 	Map<String, String> getExcelFields();
+
+	List<Map<String, Object>> queryCostList(Map<String, Object> map);
 }

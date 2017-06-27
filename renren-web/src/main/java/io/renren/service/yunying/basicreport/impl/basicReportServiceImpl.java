@@ -1,5 +1,7 @@
 package io.renren.service.yunying.basicreport.impl;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,6 +9,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.aspectj.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,7 @@ import io.renren.service.yunying.basicreport.BasicReportService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
 import io.renren.utils.PageUtils;
+import io.renren.utils.Query;
 
 @Service("basicReportService")
 public class basicReportServiceImpl implements BasicReportService {
@@ -105,10 +109,11 @@ public class basicReportServiceImpl implements BasicReportService {
 			"	DIM_CHANNEL d " +
 			"WHERE " +
 			"	1 = 1 " +
-			"AND d.PAYMENT_WAY not LIKE '%CPS%' " +
+			"AND d.PAYMENT_WAY not LIKE '%CPS%' and d.CHANNEL_NAME not LIKE '%CPS%' " +
 			"AND d.CHANNEL_NAME not LIKE '%触宝%' " +
 			"AND d.CHANNEL_NAME not LIKE '%北瓜%' " +
-			"AND d.CHANNEL_NAME not LIKE '%360摇一摇%' ";
+			"AND d.CHANNEL_NAME not LIKE '%360摇一摇%' " ;
+//			"AND ( d.PAYMENT_WAY LIKE '%免费%' OR d.PAYMENT_WAY LIKE '%测试%' OR d.PAYMENT_WAY LIKE '%置换%' OR d.CHANNEL_NAME LIKE '%免费%' OR d.CHANNEL_NAME LIKE '%测试%' OR d.CHANNEL_NAME LIKE '%置换%' )  ";
 	
 	private Map<String, String> getChannelMap() throws SQLException {
 		List<Map<String, Object>> channel_list = new JdbcUtil(dataSourceFactory, "oracle26").query(channel_sql);
@@ -274,12 +279,105 @@ public class basicReportServiceImpl implements BasicReportService {
 		return headMap;
 	}
 	
+	@Override
+	public Map<String, String> getExcelFirstInvestNotMultiFields() {
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+		headMap.put("USERNAME", "用户名");
+		headMap.put("CG_USER_ID", "存管ID");
+		headMap.put("REALNAME", "姓名");
+		
+		headMap.put("PHONE", "手机");
+		headMap.put("REGISTER_TIME", "注册时间");
+		headMap.put("DEPOSITORY_FIRSTINVEST_TIME", "首投时间");
+		
+		headMap.put("DEPOSITORY_FIRSTINVEST_BALANCE", "首投金额");
+		headMap.put("BORROW_PERIOD", "首投期限");
+		
+		return headMap;
+	}
+	
 	/**
 	 * 查询注册3天未投资用户数据
 	 */
 	@Override
 	public List<Map<String, Object>> queryRegisterThreeDaysNotInvestList(Map<String, Object> params) {
 		List<Map<String, Object>> list = basicReportDao.queryRegisterThreeDaysNotInvestList(params);
+		return list;
+	}
+
+	
+	
+	/**
+	 * 本月首投3天后未复投用户
+	 */
+	@Override
+	public PageUtils queryFirstInvestNotMultiList(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		int page = 1;
+		int limit = 0;
+		if(map != null && !map.containsKey("page")){
+			map.put("page", 1);
+		}else{
+			page = Integer.parseInt(map.get("page") + "");
+		}
+		if(map != null && !map.containsKey("limit")){
+			map.put("limit", 10000);
+			limit = 10000;
+		}else{
+			limit = Integer.parseInt(map.get("limit") + "");
+		}
+		
+		int start = (page - 1) * limit;
+		int end = start + limit;
+		
+		Query query = new Query(map);
+		String statPeriod = map.get("statPeriod") + "";
+//		query.put("startTime", statPeriod + " 00:00:00");
+//		query.put("endTime",  statPeriod + " 23:59:59");
+//		query.put("month",  statPeriod.substring(0 ,7));
+//		List<String> userNameList = getPhoneCallNameList();
+//		query.put("userNameList",  userNameList);
+//		List<Map<String,Object>> dataList = basicReportDao.queryFirstInvestNotMultiList(query);
+		List<Map<String, Object>> dataList = null;
+		try {
+			String path = this.getClass().getResource("/").getPath();
+			String sql = FileUtil.readAsString(new File(path + File.separator + "sql/本月首投3天未复投用户.txt"));
+			sql = sql.replace("${start}", "'" + statPeriod + " 00:00:00'");
+			sql = sql.replace("${end}", "'" + statPeriod + " 23:59:59'");
+			sql = sql.replace("${month}", "'" + statPeriod.substring(0 ,7) + "'");
+			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(sql);
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+//		int totalCount = basicReportDao.queryFirstInvestNotMultiTotal(query);
+		List<Map<String, Object>> retList = new ArrayList<Map<String, Object>>();
+		if (dataList.size() > 0) {
+			if (end > dataList.size()) {
+				retList.addAll(dataList.subList(start, dataList.size()));
+			} else {
+				retList.addAll(dataList.subList(start, end));
+			}
+		}
+		PageUtils pageList = new PageUtils(retList, dataList.size(), query.getLimit(), query.getPage());
+		return pageList;
+	}
+	
+	public List<String> getPhoneCallNameList(){
+		List<String> list = new ArrayList<>();
+		String sql = "select * from phone_sale_excel_data";
+		List<Map<String, Object>> channel_list = null;
+		try {
+			channel_list = new JdbcUtil(dataSourceFactory, "oracle26").query(sql);
+			for (int i = 0; i < channel_list.size(); i++) {
+				Map<String, Object> map = channel_list.get(i);
+				list.add(map.get("USER_NAME") + "");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 		return list;
 	}
 	

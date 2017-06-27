@@ -11,4 +11,8 @@ public interface BasicReportDao {
 
 	public List<Map<String, Object>> queryRegisterThreeDaysNotInvestList(Map<String, Object> params);
 
+	public List<Map<String, Object>> queryFirstInvestNotMultiList(Map<String, Object> map);
+
+	public int queryFirstInvestNotMultiTotal(Map<String, Object> map);
+
 }

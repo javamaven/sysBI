@@ -1,9 +1,9 @@
 $(function () {
-	initTableGrid();
 	initTimeCond();
 	initExportFunction();
 	initEvent();
 	initSelectEvent();
+	initTableGrid();
 });
 
 
@@ -68,7 +68,7 @@ function initExportFunction(){
 			return;
 		}
 		var params = getParams();
-		var select = $(this).children('option:selected').val();
+		var select = $("#list_select").children('option:selected').val();
 		if(select == 'hour'){
 			executePost('../basicreport/exportExcel', {'params' : JSON.stringify(params)});  
 		}else{

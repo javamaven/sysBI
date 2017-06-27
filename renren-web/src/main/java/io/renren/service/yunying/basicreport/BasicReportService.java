@@ -18,4 +18,8 @@ public interface BasicReportService {
 	List<Map<String, Object>> queryRegisterThreeDaysNotInvestList(Map<String, Object> params);
 
 	void getAmontByUserId(List<Map<String, Object>> retList);
+
+	PageUtils queryFirstInvestNotMultiList(Map<String, Object> map);
+
+	Map<String, String> getExcelFirstInvestNotMultiFields();
 }

@@ -83,7 +83,7 @@ public class RegisterThreeDayNotInvestReportJob implements Job {
 			String registerEndTime = "";
 
 			registerStartTime = DateUtil.getCurrDayBefore(3, "yyyy-MM-dd") + " 00:00:00";
-			registerEndTime = DateUtil.getCurrDayBefore(1, "yyyy-MM-dd") + " 23:59:59";
+			registerEndTime = DateUtil.getCurrDayBefore(3, "yyyy-MM-dd") + " 23:59:59";
 			queryParams.put("registerStartTime", registerStartTime);
 			queryParams.put("registerEndTime", registerEndTime);
 			logVo.setParams(JSON.toJSONString(queryParams));

@@ -84,14 +84,15 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 			String registerStartTime = "";
 			String registerEndTime = "";
 
-			Date fireTime = ctx.getFireTime();
-			String week = dateFm.format(fireTime);
-			String executeTime = sdf.format(fireTime);
-			if ("星期一".equals(week) && fireTime.getHours() == 9) {
+//			Date fireTime = ctx.getFireTime();
+			Date currDate = new Date();
+			String week = dateFm.format(currDate);
+			String executeTime = sdf.format(currDate);
+			if ("星期一".equals(week) && currDate.getHours() == 9) {
 				String currDayBefore = DateUtil.getCurrDayBefore(3, "yyyy-MM-dd");
 				registerStartTime = currDayBefore + " 17:00:00";
 				registerEndTime = DateUtil.getHourBefore(executeTime, 1, "yyyy-MM-dd") + " 07:59:59";
-			} else if(fireTime.getHours() == 9){//其他星期的9点，推送昨天15点到现在
+			} else if(currDate.getHours() == 9){//其他星期的9点，推送昨天15点到现在
 				String currDayBefore = DateUtil.getCurrDayBefore(1, "yyyy-MM-dd");
 				registerStartTime = currDayBefore + " 17:00:00";
 				registerEndTime = DateUtil.getHourBefore(executeTime, 1, "yyyy-MM-dd") + " 07:59:59";
@@ -102,7 +103,7 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 			queryParams.put("registerStartTime", registerStartTime);
 			queryParams.put("registerEndTime", registerEndTime);
 			logVo.setParams(JSON.toJSONString(queryParams));
-			PageUtils page = service.queryList(0, 10000, registerStartTime, registerEndTime, 0, 10000);
+			PageUtils page = service.queryList(1, 10000, registerStartTime, registerEndTime, 0, 10000);
 			List<Map<String, Object>> dataList = (List<Map<String, Object>>) page.getList();
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < dataList.size(); i++) {
@@ -112,7 +113,7 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 			if (dataList.size() > 0) {
 				String month = registerEndTime.substring(5 , 7);
 				String day = registerEndTime.substring(8 , 10);
-				String Hour = registerEndTime.substring(11 , 13);
+				String Hour = executeTime.substring(11 , 13);
 				title = "注册一小时未投资用户-W-" + month + day + "_" + Hour + "-" + dataList.size();
 				
 				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());

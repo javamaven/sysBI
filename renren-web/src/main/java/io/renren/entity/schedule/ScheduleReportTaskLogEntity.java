@@ -21,6 +21,7 @@ public class ScheduleReportTaskLogEntity implements Serializable {
 	private Integer taskId;
 	//发送耗时
 	private Integer timeCost;
+	
 	//发送结果
 	private String sendResult;
 	//该次任务查询参数
