@@ -55,7 +55,7 @@ var option = {
 	    tooltip: {
 	        trigger: 'axis',
 	        axisPointer: {
-	            type: 'shadow'
+//	            type: 'shadow'
 	        }
 	    },
 //	    legend: {
@@ -65,6 +65,7 @@ var option = {
 //	        left: '3%',
 //	        right: '4%',
 	        bottom: '0%'
+	        	
 //	        containLabel: true
 	    },
 	    xAxis: {
@@ -78,8 +79,9 @@ var option = {
                 textStyle: {
                     color: '#fff'
                 }
-            },
-	        boundaryGap: [0, 0.01]
+            }
+//	        ,
+//	        boundaryGap: [0, 0.05]
 	    },
 	    yAxis: {
 	        type: 'category',
@@ -113,15 +115,20 @@ var option = {
                         },
                         label: {  
                             show: true,//是否展示  
+                            offset: [0,1],
+//                            position: 'right',
+                            // position: 默认自适应，水平布局为'top'，垂直布局为'right'，可选为
+                            //           'inside'|'left'|'right'|'top'|'bottom'
+                            // textStyle: null      // 默认使用全局文本样式，详见TEXTSTYLE
                             textStyle: {  
                                 fontWeight:'bold',  
                                 fontSize : '14',  
-                                fontFamily : '微软雅黑',  
+                                fontFamily : '微软雅黑'
                             }  
                         }  
 	            	}
 	            },
-	            barWidth:20,
+	            barWidth:22,
 	            data: data_list
 //	            data: [18203, 23489, 29034, 104970, 131744, 630230]
 	        }

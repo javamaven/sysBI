@@ -689,7 +689,8 @@ public class MainController {
 //				dataList.add(money/10000);
 //			}
 			//直接增加2400w
-			total_day += 24000000;
+			int hours = new Date().getHours();
+			total_day += 24000000/24 * hours;
 			total_month += Integer.parseInt(currDayStr.substring(6, 8))*24000000;
 			
 			numberFormat.setGroupingUsed(false);
