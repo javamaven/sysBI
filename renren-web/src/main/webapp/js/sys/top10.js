@@ -115,7 +115,7 @@ var option = {
                         },
                         label: {  
                             show: true,//是否展示  
-                            offset: [0,1],
+                            offset: [0,-2],
 //                            position: 'right',
                             // position: 默认自适应，水平布局为'top'，垂直布局为'right'，可选为
                             //           'inside'|'left'|'right'|'top'|'bottom'
