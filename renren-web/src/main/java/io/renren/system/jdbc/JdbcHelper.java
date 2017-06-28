@@ -2,8 +2,8 @@ package io.renren.system.jdbc;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -181,7 +181,7 @@ public class JdbcHelper {
 	 * @param id
 	 *            数据库里记录的id
 	 */
-	public void readImg(String path, String fileName,String fieldName, String querySql, FileOutputStream outputImage) throws Exception {
+	public void readImg(String path, String fileName,String fieldName, String querySql, OutputStream out) throws Exception {
 		byte[] buffer = new byte[4096];
 		InputStream is = null;
 		PreparedStatement ps = null;
@@ -189,16 +189,11 @@ public class JdbcHelper {
 			ps = connection.prepareStatement(querySql);
 			ResultSet rs = ps.executeQuery();
 			rs.next();
-			File file = new File(path + File.separator + fileName);
-			if (!file.exists()) {
-				file.createNewFile();
-			}
-			// outputImage = new FileOutputStream(file);
 			Blob blob = rs.getBlob(fieldName); // img为数据库存放图片字段名称
 			is = blob.getBinaryStream();
 			int size = 0;
 			while ((size = is.read(buffer)) != -1) {
-				outputImage.write(buffer, 0, size);
+				out.write(buffer, 0, size);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();

@@ -4,7 +4,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -73,22 +72,15 @@ public class ScheduleReportTaskLogController {
 	public void exportExcelX(String id, OutputStream out) {
 		String path = "";
 		String fileName = null;
-		String fieldName = null;
+		String fieldName = "file";
 		String querySql = "select file from schedule_report_task_log where id=" + id;
-		FileOutputStream outputImage = null;
+//		FileOutputStream outputImage = null;
 		JdbcHelper jdbcHelper = new JdbcHelper(dataSource);
 		try {
-			jdbcHelper.readImg(path, fileName, fieldName, querySql, outputImage);
+			jdbcHelper.readImg(path, fileName, fieldName, querySql, out);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	/*
-	 * Web导出后台方法 Controller调用
-	 */
-	public void downloadExcelFile(String id, String title, HttpServletResponse response) {
-
 	}
 
 	@ResponseBody

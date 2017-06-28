@@ -12,6 +12,15 @@ function getUrlParams(key) {
 	return null;
 }
 
+
+function exportExcel(id, title){
+	var params ={};
+	params.id = id;
+	params.title = title;
+	console.info(params)
+	executePost('../schedule/schedulereporttasklog/exportExcel', params);  
+}
+
 function initTableGrid(){
 	 $("#jqGrid").jqGrid({
 	        url: '../schedule/schedulereporttasklog/list',
@@ -47,7 +56,11 @@ function initTableGrid(){
 							var endIndex2 = value.indexOf('xlsx');
 							if(endIndex2 > 0){
 								var fileName2 = value.substring(index2+12, endIndex2+4);
-								var excelHtml = '<a href="../attach-temp/'+fileName2+'" download="'+fileName2+'" style="text-decoration:underline;color: black"><font color="black" style="font-size: 12px;font-weight: normal">'+fileName2+'</font></a>';
+//								console.info(row)
+								var id = row.id;
+								var title = fileName2;
+//								var excelHtml = '<a href="../attach-temp/'+fileName2+'" download="'+fileName2+'" style="text-decoration:underline;color: black"><font color="black" style="font-size: 12px;font-weight: normal">'+fileName2+'</font></a>';
+								var excelHtml = '<a onclick="exportExcel('+id+',\''+title+'\')" style="text-decoration:underline;color: black"><font color="black" style="font-size: 12px;font-weight: normal">'+fileName2+'</font></a>';
 								
 								if(html.length > 0){
 									html += '<br/>' + excelHtml;
