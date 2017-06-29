@@ -52,6 +52,7 @@
 			OLD_USERNAME, 
 			USERNAME, 
 			REALNAME, 
+			SEX,
 			OLD_PHONE, 
 			PHONE, 
 			AWAIT, 
