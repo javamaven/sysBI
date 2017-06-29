@@ -20,6 +20,7 @@ import java.util.Map;
 
 import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.pool.DruidPooledConnection;
+import com.alibaba.druid.util.StringUtils;
 
 /**
  * 获取系统连接池的连接，直接操作jdbc
@@ -148,20 +149,32 @@ public class JdbcHelper {
 	 * @throws Exception
 	 */
 	public void storeImg(String filePath, int coloumnIndex, String insertSql, Object... paramters) throws Exception {
-		File file = new File(filePath);
-		FileInputStream fis = new FileInputStream(file);
+		File file = null;
 		PreparedStatement ps = null;
+		FileInputStream fis = null;
+		if(!StringUtils.isEmpty(filePath)){
+			try {
+				file = new File(filePath);
+				fis = new FileInputStream(file);
+			} catch (Exception e) {
+				filePath = null;
+			}
+		}
 		try {
 			ps = connection.prepareStatement(insertSql);
 			for (int i = 0; i < paramters.length; i++) {
 				
 				if (i + 1 == coloumnIndex) {
-					ps.setBinaryStream(i + 1, fis, (int) file.length());
+					if(StringUtils.isEmpty(filePath)){
+						ps.setBinaryStream(i + 1, null);
+					}else{
+						ps.setBinaryStream(i + 1, fis, (int) file.length());
+					}
 				} else if(i + 1 == 9){
 					Date date = (Date)paramters[i];
 					ps.setDate(i+1, new java.sql.Date(date.getTime()));
 				} else {
-					System.err.println(paramters[i]);
+//					System.err.println(paramters[i]);
 					ps.setString(i + 1, paramters[i]+"");
 				}
 			}
