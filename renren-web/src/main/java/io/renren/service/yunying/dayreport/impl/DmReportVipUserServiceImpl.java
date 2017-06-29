@@ -49,6 +49,7 @@ public class DmReportVipUserServiceImpl implements DmReportVipUserService {
 
 		headMap.put("username", "用户名");
 		headMap.put("realname", "姓名");
+		headMap.put("sex", "性别");
 		headMap.put("oldPhone", "名单电话号码");
 
 		headMap.put("phone", "电话号码");
