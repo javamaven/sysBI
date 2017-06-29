@@ -117,7 +117,7 @@ public class VipUserDataReportJob implements Job {
 				attachList.add(attachFilePath2);
 				mailUtil.sendWithAttachs(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
 						taskEntity.getChaosongEmailList(), attachList);
-				logVo.setEmailValue(attachFilePath + "," + attachFilePath2);
+				logVo.setEmailValue(attachFilePath);
 			} else {
 				logVo.setEmailValue("查询没有返回数据");
 			}

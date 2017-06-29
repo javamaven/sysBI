@@ -170,9 +170,6 @@ public class JdbcHelper {
 					}else{
 						ps.setBinaryStream(i + 1, fis, (int) file.length());
 					}
-				} else if(i + 1 == 9){
-					Date date = (Date)paramters[i];
-					ps.setDate(i+1, new java.sql.Date(date.getTime()));
 				} else {
 //					System.err.println(paramters[i]);
 					ps.setString(i + 1, paramters[i]+"");

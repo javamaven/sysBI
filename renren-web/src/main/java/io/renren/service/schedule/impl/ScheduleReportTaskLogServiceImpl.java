@@ -45,11 +45,10 @@ public class ScheduleReportTaskLogServiceImpl implements ScheduleReportTaskLogSe
 		JdbcHelper jdbcHelper = new JdbcHelper(dataSource);
 		String filePath = vo.getEmailValue();
 		int coloumnIndex = 1;// 文件字段在表中，属于第二个字段
-		String insertSql = "INSERT INTO `schedule_report_task_log` ( `FILE`, `TASK_ID`, `TIME_COST`, `SEND_RESULT`, `PARAMS`, `RECEIVE_EMAL`, `CHAOSONG_EMAIL`, `EMAIL_VALUE`, `TIME`, `DESC`) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
+		String insertSql = "INSERT INTO `schedule_report_task_log` ( `FILE`, `TASK_ID`, `TIME_COST`, `SEND_RESULT`, `PARAMS`, `RECEIVE_EMAL`, `CHAOSONG_EMAIL`, `EMAIL_VALUE`, `TIME`, `DESC`) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, now(), ?);";
 		try {
 			jdbcHelper.storeImg(filePath, coloumnIndex, insertSql, null, vo.getTaskId(), vo.getTimeCost(),
-					vo.getSendResult(), vo.getParams(), vo.getReceiveEmal(), vo.getChaosongEmail(), vo.getEmailValue(),
-					vo.getTime(), vo.getDesc());
+					vo.getSendResult(), vo.getParams(), vo.getReceiveEmal(), vo.getChaosongEmail(), vo.getEmailValue(), vo.getDesc());
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
