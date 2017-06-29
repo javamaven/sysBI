@@ -3,21 +3,58 @@
 <head>
 <title>菜单管理</title>
 #parse("sys/header.html")
+
+<style type="text/css">
+.inputClass {
+	height: 30px;
+	width: 130px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+
+</style>
 </head>
 <body>
 <div id="rrapp" v-cloak>
 	<div v-show="showList">
-		<div class="grid-btn">
-			#if($shiro.hasPermission("sys:menu:save"))
-			<a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
-			#end
-			#if($shiro.hasPermission("sys:menu:update"))
-			<a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
-			#end
-			#if($shiro.hasPermission("sys:menu:delete"))
-			<a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
-			#end
-		</div>
+
+		<table>
+			<tr>
+				<td>
+					<label>菜单名称：</label>
+				</td>
+				<td>
+					<input type="text" id="menu_name" class="inputClass" style="width: 200px;" placeholder="">
+				</td>
+				<td>
+					<label>菜单类型：</label>
+				</td>
+				<td>
+					<select id="menu_type" class="inputClass" >
+					    <option value ="" selected="selected"></option>
+						<option value ="1">菜单</option>
+						<option value ="0">目录</option>
+						<option value ="2">按钮</option>
+					</select>
+				</td>
+				<td>
+						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
+						#if($shiro.hasPermission("sys:menu:save"))
+						<a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+						#end
+						#if($shiro.hasPermission("sys:menu:update"))
+						<a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+						#end
+						#if($shiro.hasPermission("sys:menu:delete"))
+						<a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+						#end
+				</td>
+			</tr>
+			<tr height="10px;"></tr>
+		</table>
+
 	    <table id="jqGrid"></table>
 	    <div id="jqGridPager"></div>
 	</div>

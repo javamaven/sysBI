@@ -1,12 +1,5 @@
 package io.renren.service.impl;
 
-import io.renren.dao.SysMenuDao;
-import io.renren.entity.SysMenuEntity;
-import io.renren.service.SysMenuService;
-import io.renren.service.SysRoleMenuService;
-import io.renren.service.SysUserService;
-import io.renren.utils.Constant.MenuType;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -14,6 +7,13 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import io.renren.dao.SysMenuDao;
+import io.renren.entity.SysMenuEntity;
+import io.renren.service.SysMenuService;
+import io.renren.service.SysRoleMenuService;
+import io.renren.service.SysUserService;
+import io.renren.utils.Constant.MenuType;
 
 
 @Service("sysMenuService")

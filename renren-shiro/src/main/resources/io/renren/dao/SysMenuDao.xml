@@ -43,6 +43,14 @@
 	<select id="queryList" resultType="io.renren.entity.SysMenuEntity">
 		select m.*,(select p.name from sys_menu p where p.menu_id = m.parent_id) as parentName 
 			from sys_menu m
+			
+			where 1=1 
+		<if test="menuName != null and menuName != '' ">
+			AND  m.name like CONCAT('%',#{menuName},'%' )  
+		</if>
+		<if test="menuType != null and menuType != '' ">
+			AND  m.type = #{menuType}
+		</if>
 		<choose>
 			<when test="sidx != null and sidx.trim() != ''">
 				order by m.${sidx} ${order}
