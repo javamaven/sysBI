@@ -22,6 +22,7 @@
         <result property="lastRechargeTime" column="LAST_RECHARGE_TIME"/>
         <result property="lastRechargeMoney" column="LAST_RECHARGE_MONEY"/>
         <result property="rechargeMoneyC" column="RECHARGE_MONEY_C"/>
+        <result property="sex" column="SEX"/>
         <result property="voucherMoney" column="VOUCHER_MONEY"/>
         <result property="lastCashTime" column="LAST_CASH_TIME"/>
         <result property="lastCashMoney" column="LAST_CASH_MONEY"/>

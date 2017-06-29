@@ -16,6 +16,7 @@
         <result property="isBinding" column="IS_BINDING"/>
         <result property="activateInvestTime" column="ACTIVATE_INVEST_TIME"/>
         <result property="firstInvestTime" column="FIRST_INVEST_TIME"/>
+        <result property="secAddtime" column="SEC_ADDTIME"/>
         <result property="firstInvestBalance" column="FIRST_INVEST_BALANCE"/>
         <result property="firstInvestPeriod" column="FIRST_INVEST_PERIOD"/>
         <result property="afterInvestBalance" column="AFTER_INVEST_BALANCE"/>
@@ -141,7 +142,8 @@
 			ACTIVATE_INVEST_TIME, 
 			FIRST_INVEST_TIME, 
 			FIRST_INVEST_BALANCE, 
-			FIRST_INVEST_PERIOD, 
+			FIRST_INVEST_PERIOD,
+			SEC_ADDTIME, 
 			AFTER_INVEST_BALANCE, 
 			AFTER_INVEST_NUMBER, 
 			TOTAL_INVEST_BALANCE, 

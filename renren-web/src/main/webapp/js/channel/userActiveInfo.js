@@ -224,7 +224,8 @@ function initTable(){
 							}
 						}
 				}, 			
-				{ label: '首投期限', name: 'firstInvestPeriod', index: '$FIRST_INVEST_PERIOD', width: 100 ,align:'right'}, 			
+				{ label: '首投期限', name: 'firstInvestPeriod', index: '$FIRST_INVEST_PERIOD', width: 100 ,align:'right'}, 	
+				{ label: '首次复投时间', name: 'secAddtime', index: '$SEC_ADDTIME', width: 100 ,align:'right'}, 	
 				{ label: '复投金额', name: 'afterInvestBalance', index: '$AFTER_INVEST_BALANCE', width: 100,align:'right' 
 					,formatter:function(cellvalue, options, rowObject){
 						if(cellvalue){

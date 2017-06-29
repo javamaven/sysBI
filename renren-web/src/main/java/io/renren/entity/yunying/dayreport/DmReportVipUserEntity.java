@@ -80,6 +80,16 @@ public class DmReportVipUserEntity implements Serializable {
 
 	private String isHighValue;
 
+	private String sex;
+
+	public void setSex(String sex) {
+		this.sex = sex;
+	}
+
+	public String getSex() {
+		return sex;
+	}
+
 	public void setIsHighValue(String isHighValue) {
 		this.isHighValue = isHighValue;
 	}

@@ -135,7 +135,7 @@ public class DmReportUserActivateDailyServiceImpl implements DmReportUserActivat
 		headMap.put("firstInvestTime", "首投时间");
 		headMap.put("firstInvestBalance", "首投金额");
 		headMap.put("firstInvestPeriod", "首投期限");
-
+		headMap.put("secAddtime", "首次复投时间");
 		headMap.put("afterInvestBalance", "复投金额");
 		headMap.put("afterInvestNumber", "复投次数");
 		headMap.put("totalInvestBalance", "累计投资金额");

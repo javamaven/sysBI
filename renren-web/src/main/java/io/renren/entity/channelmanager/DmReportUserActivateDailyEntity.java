@@ -53,6 +53,17 @@ public class DmReportUserActivateDailyEntity implements Serializable {
 	private BigDecimal totalCapital;
 
 	private String registerFrom;
+	
+	private String secAddtime;
+	
+
+	public String getSecAddtime() {
+		return secAddtime;
+	}
+
+	public void setSecAddtime(String secAddtime) {
+		this.secAddtime = secAddtime;
+	}
 
 	public void setRegisterFrom(String registerFrom) {
 		this.registerFrom = registerFrom;
