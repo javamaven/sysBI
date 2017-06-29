@@ -15,4 +15,6 @@ public interface BasicReportDao {
 
 	public int queryFirstInvestNotMultiTotal(Map<String, Object> map);
 
+	public void batchInsertPhoneSaleData(List<Map<String, String>> dataList);
+
 }

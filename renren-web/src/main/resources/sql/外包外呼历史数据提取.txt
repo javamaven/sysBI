@@ -1,0 +1,39 @@
+select ${selectSql} from (
+
+select
+	 ROWnum RN,
+     u.cg_user_id 存管版用户ID,
+     u.username 用户名,
+     u.phone 电话,
+     u.register_time 注册时间,
+     d.channel_name 用户来源,
+     case when u.realname is null then '否' else '是' end 实名认证,
+     '' 红包类型,
+     '' 有效期,
+     u.realname 真实姓名,
+     e.NOR_BALANCE 普通版账户余额,
+     e.dep_balance 存管版账户余额,
+     u.old_user_id 普通版用户ID,
+     case when u.cg_user_id is null then '否' else '是' end 存管版是否开户,
+     u.user_id 用户ID
+from 
+     edw_user_basic  u
+    left join dim_channel d on (u.activity_tag=d.channel_label)
+    left join edw_user_acc_current e on (u.user_id=e.user_id)
+where 1=1
+and u.normal_firstinvest_time is null
+and u.depository_firstinvest_time is null
+and u.is_borrower=0
+and u.register_time >= to_date(?, 'yyyy-mm-dd hh24:mi:ss')
+and u.register_time <= to_date(?, 'yyyy-mm-dd hh24:mi:ss')
+
+and not exists ( select user_id from dm_report_phone_history_export where user_id=u.user_id )
+
+${pageEndSql}
+
+
+) a
+WHERE 
+1=1
+${pageStartSql}
+

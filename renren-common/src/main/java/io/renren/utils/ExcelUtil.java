@@ -366,6 +366,45 @@ public class ExcelUtil {
 			e.printStackTrace();
 		}
 	}
+	/**
+	 * 如果失败，则抛出异常
+	 * @param title
+	 * @param headMap
+	 * @param ja
+	 * @param response
+	 * @throws Exception
+	 */
+	public static void exportExcel(String title, Map<String, String> headMap, JSONArray ja,
+			HttpServletResponse response) throws Exception {
+		try {
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			ExcelUtil.exportExcelX(title, headMap, ja, null, 0, os);
+			byte[] content = os.toByteArray();
+			InputStream is = new ByteArrayInputStream(content);
+			// 设置response参数，可以打开下载页面
+			response.reset();
+
+			response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+			response.setHeader("Content-Disposition",
+					"attachment;filename=" + new String((title + ".xlsx").getBytes(), "iso-8859-1"));
+			response.setContentLength(content.length);
+			ServletOutputStream outputStream = response.getOutputStream();
+			BufferedInputStream bis = new BufferedInputStream(is);
+			BufferedOutputStream bos = new BufferedOutputStream(outputStream);
+			byte[] buff = new byte[8192];
+			int bytesRead;
+			while (-1 != (bytesRead = bis.read(buff, 0, buff.length))) {
+				bos.write(buff, 0, bytesRead);
+
+			}
+			bis.close();
+			bos.close();
+			outputStream.flush();
+			outputStream.close();
+		} catch (Exception e) {
+			throw e;
+		}
+	}
 
 	/*
 	 * Web导出后台方法 Controller调用

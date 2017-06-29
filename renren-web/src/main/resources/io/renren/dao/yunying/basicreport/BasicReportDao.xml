@@ -3,6 +3,18 @@
 
 <mapper namespace="io.renren.dao.yunying.basicreport.BasicReportDao">
 
+<!-- 	 电销外呼申请历史数据（注册未投资用户） -->
+	<insert id="batchInsertPhoneSaleData" useGeneratedKeys="true" parameterType="java.util.List">  
+	    insert into phone_sale_history_export (user_id, phone)   
+	    values  
+	    <foreach collection="list" item="item" index="index" separator="," >  
+	         ( 
+	         	#{item.用户ID}, 
+	         	#{item.电话} 
+	         )  
+	    </foreach>  
+	</insert> 
+
 	<select id="queryFirstInvestNotMultiList" resultType="java.util.HashMap">
 		SELECT
 			u.USERNAME,

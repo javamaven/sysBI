@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+#parse("sys/header.html")
+
+<style type="text/css">
+.inputClassMin {
+	height: 32px;
+	width: 130px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+</style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<table border="0">
+				<tr>
+					<td>
+						<label>注册开始时间：</label>
+					</td>
+					<td>
+						<input type="text" class="inputClassMin form_datetime_2" id="register_start_time"  placeholder="请选择日期"/>
+					</td>
+					
+					<td>
+						<label>注册结束时间：</label>
+					</td>
+					<td>
+						<input type="text" class="inputClassMin form_datetime_2" id="register_end_time"  placeholder="请选择日期"/>
+					</td>
+					<td>
+						<label>提取条数：</label>
+					</td>
+					<td>
+						<input type="text" class="inputClassMin" id="limit_num" value="1000"/>
+					</td>
+					
+					<td>
+						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
+						<a class="btn btn-primary" id="upload"><i class="fa fa-plus"></i>&nbsp;Excel导入</a>
+						<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+					</td>
+				</tr>
+				<tr>
+					
+					<td></td>
+					<td></td>
+					
+				
+				</tr>
+			</table>
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+	
+</div>
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/yunying/basicreport/phone_sale_history.js?_${date.systemTime}"></script>
+</body>
+</html>
