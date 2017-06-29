@@ -26,6 +26,7 @@
 //  25:register_not_invest_day
 //  26:register_not_invest_day
 //  27.old_data
+//  28.Monthly_Report
 //};
 function addTask(taskType) {
 	var task_name = $("#task_name").val();

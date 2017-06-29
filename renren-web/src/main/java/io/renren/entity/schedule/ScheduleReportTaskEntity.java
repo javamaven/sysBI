@@ -1,3 +1,4 @@
+
 package io.renren.entity.schedule;
 
 import java.io.Serializable;
@@ -31,6 +32,7 @@ import io.renren.service.schedule.job.yunying.EveryDayBasicDataReportJob;
 import io.renren.service.schedule.job.yunying.EveryDayGetCashReportJob;
 import io.renren.service.schedule.job.yunying.EveryDayRecoverDataReportJob;
 import io.renren.service.schedule.job.yunying.LicaiPlanReportJob;
+import io.renren.service.schedule.job.yunying.MonthlyReportJob;
 import io.renren.service.schedule.job.yunying.OldDataJob;
 import io.renren.service.schedule.job.yunying.VipUserDataReportJob;
 import io.renren.service.schedule.job.yunying.basicreport.FirstInvestThreeDayNotInvestReportJob;
@@ -141,6 +143,8 @@ public class ScheduleReportTaskEntity implements Serializable {
 			jobVo.setJobClass(FirstInvestThreeDayNotInvestReportJob.class);
 		}else if (Constants.TaskType.OLD_DATA.equals(jobVo.getJobType())) {
 			jobVo.setJobClass(OldDataJob.class);
+		}else if (Constants.TaskType.MONTHLY_REPORT.equals(jobVo.getJobType())) {
+			jobVo.setJobClass(MonthlyReportJob.class);
 		}
 		
 		jobVo.setTaskEntity(this);

@@ -1,0 +1,38 @@
+-- 前5大出借人及金额（万元）
+select 
+  user_id,
+  realname,
+  tender_capital 
+  from (
+with du as
+(
+select
+distinct(user_id) as user_id,
+username,
+realname,
+user_type
+from mdtxbi.edw_user_basic
+),
+detail as (
+select
+pd.user_id,
+du.realname,
+round(sum(pd.tender_capital)/10000,2) AS tender_capital
+from mdtxbi.edw_trading_project_detail pd
+left join du on du.user_id=pd.user_id
+where pd.tender_account_status=1
+and to_char(pd.addtime,'yyyymmdd') between '${investStatTime}' and '${investEndTime}'
+and du.user_type=1 -- 自然人
+and du.username<>'13248572405' -- 剔除做市商
+and du.username<>'梁桑桑' -- 剔除做市商
+group by pd.user_id,du.realname
+)
+SELECT 
+  user_id,
+  realname,
+  tender_capital 
+FROM (
+SELECT D.*,ROW_NUMBER()OVER(ORDER BY tender_capital DESC) AS RANK
+FROM detail D)
+WHERE RANK<=5
+ORDER BY RANK)

@@ -1,0 +1,226 @@
+select 
+bs.TYPE,
+sum(bs.NUM)as NUM,
+sum(bs.SUM) AS SUM,
+sum(bs.BORROW_USER) AS BORROW_USER,
+sum(bs.BORROW_CAPITAL)AS BORROW_CAPITAL ,
+sum(bs.NUMM) AS NUMM ,
+sum(bs.SUMM) AS SUMM,
+sum(bs.AVGG) AS AVGG,
+sum(bs.nums) AS nums,
+sum(bs.avgs) AS avgs,
+sum(bs.avgli) as avgli,
+0 as yuqi
+FROM 
+(select 
+z.TYPE AS TYPE,
+z.num AS NUM,
+z.sum AS SUM,
+z.BORROW_USER AS BORROW_USER,
+z.BORROW_CAPITAL AS BORROW_CAPITAL,
+z.num+z.BORROW_USER as NUMM,
+round((z.sum+z.BORROW_CAPITAL)/10000,2) as SUMM,
+round((z.sum+z.BORROW_CAPITAL)/10000/(z.num+z.BORROW_USER),2) as AVGG,
+0 as nums,
+0 as avgs,
+0 as avgli
+from 
+(
+select
+d.TYPE,
+d.num,
+d.sum,
+f.BORROW_USER,
+f.BORROW_CAPITAL
+FROM
+(
+-------------------------------------------------------------------2
+select 
+s.TYPE AS TYPE,
+sum(s.num) as num,
+sum(s.sum4) as sum
+from 
+-------------------------------------------------------------------1
+(select 
+a.type,
+a.USERNAME,
+a.SUM as SUM1,
+a.num as NUM,
+b.sum as SUM2,
+c.sum as SUM3,
+round(c.sum*(a.sum/b.sum),2) as SUM4
+from (select 
+	type,
+	USERNAME,
+	SUM(borrow_money_sum) AS SUM,
+	SUM(borrow_money_num) AS NUM
+	FROM mdtxbi.dm_through_data
+	GROUP BY USERNAME,TYPE
+	ORDER BY type) a
+left join (	
+select 
+	USERNAME,
+	SUM(borrow_money_sum) AS SUM,
+	SUM(borrow_money_num) AS NUM
+	FROM mdtxbi.dm_through_data
+	GROUP BY USERNAME)b
+on a.username=b.username
+left join
+----------------
+(with tmp_repay_list as
+(
+select
+rpp.user_id,
+nvl(dmu.user_type,1) as user_type, -- 1 为自然人，2为法人 
+rpp.repay_capital, -- 待还本金
+rpp.repay_interest -- 待还利息
+FROM
+mdtxbi.edw_trading_repay_plan rpp
+left join mdtxbi.dm_trading_repay_detail rpd
+ on (rpp.project_id=rpd.project_id and rpp.period=rpd.period)
+left join mdtxbi.edw_user_basic dmu
+ on (rpp.user_id=dmu.user_id) 
+where
+  to_char(rpp.create_time,'yyyy-mm-dd') <= '${investEndTime}'
+  and 
+  to_char(rpp.REPAY_DATE,'yyyy-mm-dd') > '${investEndTime}'
+  AND ( to_char(rpd.settle_end_time,'yyyy-mm-dd') > '${investEndTime}' OR rpd.settle_end_time IS NULL)
+  and rpp.repay_status<>3
+  ),
+dm_username as 
+(
+select 
+distinct(dmu.user_id),
+dmu.username 
+from mdtxbi.edw_user_basic dmu
+where dmu.username in
+(
+'gfzc20160202',
+'hjsy20160427',
+'jswy20160801',
+'mdb20150813001',
+'mrz20151020001',
+'yckj',
+'mbl1216001',
+'xiangjia0122'
+)
+)  
+select 
+un.username ,
+sum(tl.repay_capital)as sum
+from tmp_repay_list tl
+left join dm_username un on un.user_id=tl.user_id
+where tl.user_id in
+(
+2844050,
+2701500,
+2577261,
+3849100,
+4457558,
+2601250,
+3205910,
+4369400
+)
+group by un.username
+------------
+)c
+on a.username=c.username
+ORDER BY a.type,a.username
+---------------------------------------------------------------------------1
+) s
+
+group by TYPE
+)d
+---------------------------------------------------------------------------2
+LEFT JOIN (
+with tmp_repay_list as 
+(
+select
+rpp.user_id,
+nvl(dmu.user_type,1) as user_type, -- 1 为自然人，2为法人 
+rpp.repay_capital, -- 待还本金
+rpp.repay_interest -- 待还利息
+FROM
+mdtxbi.edw_trading_repay_plan rpp
+left join mdtxbi.dm_trading_repay_detail rpd
+ on (rpp.project_id=rpd.project_id and rpp.period=rpd.period)
+left join mdtxbi.edw_user_basic dmu
+ on (rpp.user_id=dmu.user_id)  
+where
+  to_char(rpp.create_time,'yyyy-mm-dd') <= '${investEndTime}'
+  and 
+  to_char(rpp.REPAY_DATE,'yyyy-mm-dd') > '${investEndTime}'
+  AND ( to_char(rpd.settle_end_time,'yyyy-mm-dd') > '${investEndTime}' OR rpd.settle_end_time IS NULL)
+  and rpp.repay_status<>3
+  )
+
+select 
+--tl.user_id,
+tl.user_type ,-- 1 为自然人，2为法人
+count(distinct(tl.user_id)) as borrow_user, -- 不穿透的借款人数
+sum(tl.repay_capital)  as borrow_capital-- 不穿透的借款本金余额
+-- round(sum(tl.repay_capital)/count(distinct(tl.user_id)),2) -- 跟邓总确认按照借款本金
+from tmp_repay_list tl
+where tl.user_id not in
+(
+2844050,
+2701500,
+2577261,
+3849100,
+4457558,
+2601250,
+3205910,
+4369400
+)
+group by tl.user_type
+)f
+on d.type=f.user_type
+)z
+union all
+select 
+'1' as TYPE,
+0 AS NUM,
+0 AS SUM,
+0 AS BORROW_USER,
+0 AS BORROW_CAPITAL,
+0 AS NUMM,
+0 AS SUMM,
+0 AS AVGG,
+sum(num) as num,
+sum(avg) as avg,
+sum(avgli) as avgli
+from
+-- 人数
+(select
+ count(distinct(user_id)) as num,
+ 0 as avg,
+ 0 as avgli
+from mdtxbi.dm_trading_project_detail 
+where to_char(addtime,'yyyy-mm-dd')<='${investEndTime}'
+union all
+-- 平均借款期限
+select 
+0 as num,
+round(
+sum(case when pj.borrow_term_unit=1 then pj.borrow_account*pj.borrow_period
+         when pj.borrow_term_unit=2 then pj.borrow_account*pj.borrow_period*30
+    else 0 end)
+/sum(pj.borrow_account),2) as avg,
+0 as avgli
+from mdtxbi.dm_trading_project pj
+where to_char(pj.project_complete_date,'yyyy-mm-dd')<='${investEndTime}'
+and pj.project_id not in (select project_id from mdtxbi.dm_trading_project where project_id like '%ZT%')
+union all
+-- 平均借款利率
+select 
+0 as num,
+0 as avg,
+round(
+sum(pj.borrow_account*pj.borrow_apr+nvl(pj.borrow_apr_extra,0))
+/sum(pj.borrow_account),2)
+from mdtxbi.dm_trading_project pj
+where to_char(pj.project_complete_date,'yyyy-mm-dd')<='${investEndTime}'
+and pj.project_id not in (select project_id from mdtxbi.dm_trading_project where project_id like '%ZT%')
+)s
+)bs
+group by type

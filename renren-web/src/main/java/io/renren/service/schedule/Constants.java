@@ -142,6 +142,10 @@ public class Constants {
 		 * 普通版有待收但是未开通存的账户数据
 		 */
 		public static final String OLD_DATA = "27";
+		/**
+		 * 广州P2P月报数据
+		 */
+		public static final String MONTHLY_REPORT = "28";
 		
 	}
 }

@@ -1,5 +1,6 @@
 package io.renren.service.schedule.job.yunying;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -13,39 +14,46 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.PersistJobDataAfterExecution;
+import org.quartz.utils.DirtyFlagMap;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
 import io.renren.entity.schedule.ScheduleReportTaskEntity;
 import io.renren.entity.schedule.ScheduleReportTaskLogEntity;
-import io.renren.entity.yunying.dayreport.DmReportBasicDailyEntity;
-import io.renren.entity.yunying.dayreport.DmReportDepNopenEntity;
+import io.renren.entity.yunying.dayreport.DmReportVipSituationEntity;
+import io.renren.entity.yunying.dayreport.DmReportVipUserEntity;
+import io.renren.entity.yunying.dayreport.MonthlyReportEntity;
 import io.renren.service.schedule.ScheduleReportTaskLogService;
 import io.renren.service.schedule.ScheduleReportTaskService;
 import io.renren.service.schedule.entity.JobVo;
 import io.renren.service.schedule.job.JobUtil;
-import io.renren.service.yunying.dayreport.DmReportDepNopenService;
+import io.renren.service.yunying.dayreport.DmReportVipSituationService;
+import io.renren.service.yunying.dayreport.DmReportVipUserService;
+import io.renren.service.yunying.dayreport.MonthlyReportService;
 import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
+import io.renren.utils.PageUtils;
 
 /**
- * 普通版有待收但是未开通存的账户数据推送任务
+ * 每日VIP用户数据报告
  * 
  * @author Administrator
  *
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
-public class OldDataJob implements Job {
+public class MonthlyReportJob implements Job {
 	public final Logger log = Logger.getLogger(this.getClass());
 	private ScheduleReportTaskService taskService = SpringBeanFactory.getBean(ScheduleReportTaskService.class);
-	DmReportDepNopenService service = SpringBeanFactory.getBean(DmReportDepNopenService.class);
+	MonthlyReportService service = SpringBeanFactory.getBean(MonthlyReportService.class);
+//	DmReportVipSituationService serviceTotal = SpringBeanFactory.getBean(DmReportVipSituationService.class);
 	private ScheduleReportTaskLogService logService = SpringBeanFactory.getBean(ScheduleReportTaskLogService.class);
 
 	private ScheduleReportTaskLogEntity logVo;
-	String title = "普通版有待收但是未开通存的账户数据";
+	String title = "广州P2P数据网络借贷信息数据";
+	String title2 = "本月前五大投资人";
 
 	@Override
 	public void execute(JobExecutionContext ctx) throws JobExecutionException {
@@ -67,7 +75,7 @@ public class OldDataJob implements Job {
 		JobDataMap jobDataMap = ctx.getJobDetail().getJobDataMap();
 		JobVo jobVo = (JobVo) jobDataMap.get("jobVo");
 		ScheduleReportTaskEntity taskEntity = jobVo.getTaskEntity();
-		log.info("+++++++++EveryDayBasicDataReportJob+++++++++++++" + taskEntity);
+		log.info("+++++++++VipUserDataReportJob+++++++++++++" + taskEntity);
 		MailUtil mailUtil = new MailUtil();
 		JobUtil jobUtil = new JobUtil();
 		try {
@@ -75,35 +83,55 @@ public class OldDataJob implements Job {
 			Map<String, Object> params = JSON.parseObject(queryObject.getCondition(), Map.class);
 			Map<String, Object> queryParams = new HashMap<String, Object>();
 			queryParams.putAll(params);
+			
 			String date_offset_num = params.get("date_offset_num") + "";
 			String[] splitArr = date_offset_num.split("-");
-			String statPeriod = params.get("statPeriod") + "";
+			String invest_end_time = params.get("invest_end_time") + "";
+			String invest_stat_time = params.get("invest_stat_time") + "";
 			if (!"0".equals(splitArr[0])) {
-				if (StringUtils.isNotEmpty(statPeriod)) {
+				if (StringUtils.isNotEmpty(invest_end_time)) {
 					int days = Integer.valueOf(splitArr[0]);
 					if ("day".equals(splitArr[1])) {
-						statPeriod = DateUtil.getCurrDayBefore(statPeriod, -days, "yyyyMMdd");
+						invest_end_time = DateUtil.getCurrDayBefore(invest_end_time, -days, "yyyyMMdd");
 					} else if ("hour".equals(splitArr[1])) {
-						statPeriod = DateUtil.getHourBefore(statPeriod, -days, "yyyyMMdd");
+						invest_end_time = DateUtil.getHourBefore(invest_end_time, -days, "yyyyMMdd");
 					}
-					params.put("statPeriod", statPeriod);
+					if ("day".equals(splitArr[1])) {
+						invest_stat_time = DateUtil.getCurrDayBefore(invest_stat_time, -days, "yyyyMMdd");
+					} else if ("hour".equals(splitArr[1])) {
+						invest_stat_time = DateUtil.getHourBefore(invest_stat_time, -days, "yyyyMMdd");
+					}
+					params.put("statPeriod", invest_end_time);
+					params.put("statPeriod", invest_stat_time);
 				}
-			
 			}
-			queryParams.put("statPeriod", statPeriod);
+			queryParams.put("statPeriod", invest_end_time);
+			queryParams.put("statPeriod", invest_stat_time);
 			logVo.setParams(JSON.toJSONString(params));
-
-			List<DmReportDepNopenEntity> queryList = service.queryList(queryParams);
+			 PageUtils page = service.queryList(1, 100000, invest_end_time,invest_stat_time);
+			 PageUtils page1 = service.queryList1(1, 100000,invest_end_time,invest_stat_time);
+			// vip所属人汇总信息
+//			List<MonthlyReportEntity> totalList = serviceTotal.queryList(queryParams);
 			JSONArray dataArray = new JSONArray();
-			for (int i = 0; i < queryList.size(); i++) {
-				DmReportDepNopenEntity entity = queryList.get(i);
+			for (int i = 0; i < page.getList().size(); i++) {
+				Map<String, Object> entity =(Map<String, Object>) page.getList().get(i);
 				dataArray.add(entity);
 			}
-			if (queryList.size() > 0) {
+			JSONArray dataArray2 = new JSONArray();
+			for (int i = 0; i < page1.getList().size(); i++) {
+				Map<String, Object> entity2 =(Map<String, Object>) page1.getList().get(i);
+				dataArray2.add(entity2);
+			}
+			if (page.getList().size() > 0) {
 				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
-				mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
-						taskEntity.getChaosongEmailList(), attachFilePath);
-				logVo.setEmailValue(attachFilePath);
+				String attachFilePath2 = jobUtil.buildAttachFile(dataArray2, title2, title2,
+						service.getExcelFields2());
+				List<String> attachList = new ArrayList<String>();
+				attachList.add(attachFilePath);
+				attachList.add(attachFilePath2);
+				mailUtil.sendWithAttachs(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
+						taskEntity.getChaosongEmailList(), attachList);
+				logVo.setEmailValue(attachFilePath+ "," +attachFilePath2);
 			} else {
 				logVo.setEmailValue("查询没有返回数据");
 			}
@@ -136,7 +164,7 @@ public class OldDataJob implements Job {
 		entity.setLastSendTime(new Date());
 		entity.setTimeCost(logVo.getTimeCost());
 		entity.setCondition(logVo.getParams());
-		System.err.println("+++++++++timeCost+++++++++++++" + logVo.getTimeCost() + "  ;entity=" + entity);
+		System.err.println("+++++++++timeCost+++++++++++++" + logVo.getTimeCost() + " ;entity=" + entity);
 		taskService.update(entity);
 
 	}
