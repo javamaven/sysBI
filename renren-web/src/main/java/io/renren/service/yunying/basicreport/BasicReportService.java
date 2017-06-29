@@ -22,4 +22,6 @@ public interface BasicReportService {
 	PageUtils queryFirstInvestNotMultiList(Map<String, Object> map);
 
 	Map<String, String> getExcelFirstInvestNotMultiFields();
+
+	void batchInsertPhoneSaleData(List<Map<String, String>> dataList);
 }

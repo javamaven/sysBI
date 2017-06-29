@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.aspectj.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.Query;
+
+import static io.renren.utils.ShiroUtils.getUserId;
 
 @Service("basicReportService")
 public class basicReportServiceImpl implements BasicReportService {
@@ -346,7 +349,6 @@ public class basicReportServiceImpl implements BasicReportService {
 			sql = sql.replace("${end}", "'" + statPeriod + " 23:59:59'");
 			sql = sql.replace("${month}", "'" + statPeriod.substring(0 ,7) + "'");
 			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(sql);
-			
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -379,6 +381,45 @@ public class basicReportServiceImpl implements BasicReportService {
 			e.printStackTrace();
 		}
 		return list;
+	}
+
+	/**
+	 * 电销外呼申请历史数据（注册未投资用户）
+	 */
+	@Override
+	public void batchInsertPhoneSaleData(List<Map<String, String>> dataList) {
+//		basicReportDao.batchInsertPhoneSaleData(dataList);
+		JdbcUtil jdbcUtil = new JdbcUtil(dataSourceFactory, "oracle26");
+		
+		String sql = "  insert into dm_report_phone_history_export (BATCH_ID, user_id, phone,INSERT_DATE, EXPORT_USER_ID ) values (?,?,?,sysdate,?)";
+		
+//		  BATCH_ID VARCHAR2(200),
+//	         USER_ID VARCHAR2(200), 
+//	         PHONE VARCHAR2(200),
+//        INSERT_DATE DATE,
+//        EXPORT_USER_ID VARCHAR2(200)
+		List<List<Object>> insertList = new ArrayList<List<Object>>();
+		
+		try {
+			long userId = getUserId();
+			UUID randomUUID = UUID.randomUUID();
+			List<Object> list = null;
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, String> map = dataList.get(i);
+				list = new ArrayList<Object>();
+				list.add(randomUUID);
+				list.add(map.get("用户ID"));
+				list.add(map.get("电话"));
+				list.add(userId);
+				insertList.add(list);
+			}
+			
+			jdbcUtil.batchInsert(sql , insertList);
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }
