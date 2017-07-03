@@ -20,7 +20,9 @@ select
   mark,
   -- TO_CHAR(last_day(sysdate),'yyyyMMdd') AS TIME_END,
   ${investEndTime} AS TIME_END,
-  TO_CHAR(trunc(sysdate,'MM'),'yyyyMMdd') AS TIME_START
+  -- TO_CHAR(trunc(sysdate,'MM'),'yyyyMMdd') AS TIME_START -- 20170703
+  ${investStartTime} AS TIME_START
+  
 from
  PHONE_SALE_EXCEL_DATA tud      
  left join EDW_USER_BASIC DU ON (tud.USER_NAME = DU.USERNAME)
@@ -50,7 +52,8 @@ SELECT
   -- TO_CHAR(SYSDATE-1,'yyyyMMDD') AS TIME_TODAY,
   ${investEndTime} AS TIME_TODAY ,
   TO_CHAR(PD.ADDTIME,'yyyyMM') AS TIME_INVEST_MONTH,
-  TO_CHAR(SYSDATE,'yyyyMM') AS TIME_THIS_MONTH
+  -- TO_CHAR(SYSDATE,'yyyyMM') AS TIME_THIS_MONTH -- 201707
+  ${month} AS TIME_THIS_MONTH 
 FROM 
   tmp 
   LEFT JOIN EDW_TRADING_PROJECT_DETAIL pd 

@@ -444,6 +444,8 @@ public class PhoneSaleController {
 				if ("day".equals(reportType)) {
 					detail_sql = FileUtil
 							.readAsString(new File(path + File.separator + "phone_sale_day_detail_sql.txt"));
+					detail_sql = detail_sql.replace("${investStartTime}", investEndTime.substring(0, 6) + "01");
+					detail_sql = detail_sql.replace("${month}", investEndTime.substring(0, 6));
 				} else if ("month".equals(reportType)) {
 					detail_sql = FileUtil
 							.readAsString(new File(path + File.separator + "phone_sale_month_detail_sql.txt"));
@@ -491,6 +493,8 @@ public class PhoneSaleController {
 				if ("day".equals(reportType)) {
 					detail_sql = FileUtil
 							.readAsString(new File(path + File.separator + "phone_sale_day_detail_sql.txt"));
+					detail_sql = detail_sql.replace("${investStartTime}", investEndTime.substring(0, 6) + "01");
+					detail_sql = detail_sql.replace("${month}", investEndTime.substring(0, 6));
 				} else if ("month".equals(reportType)) {
 					detail_sql = FileUtil
 							.readAsString(new File(path + File.separator + "phone_sale_month_detail_sql.txt"));

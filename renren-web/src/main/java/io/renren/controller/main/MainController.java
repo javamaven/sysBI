@@ -768,6 +768,34 @@ public class MainController {
 	}
 	
 	/**
+	 * 累计投资笔数
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	@RequestMapping(value = "/queryTotalInvestTimes")
+	public R queryTotalInvestTimes() {
+		List<Map<String, Object>> list_month_cg = null;
+		List<Map<String, Object>> list_month_pt = null;
+		int total_invest = 0;
+		try {
+			JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
+			list_month_cg = util.query(SqlConstants.curr_cg_invest_total_times_sql);
+			total_invest += Integer.parseInt(list_month_cg.get(0).get("invest_times") + "");
+			
+			JdbcUtil util2 = new JdbcUtil(dataSourceFactory, "oracle");
+			list_month_pt = util2.query(SqlConstants.curr_invest_total_times_sql);
+			total_invest += Integer.parseInt(list_month_pt.get(0).get("INVEST_TIMES") + "");
+			
+			
+		} catch (Exception e) {
+			dataSourceFactory.reInitConnectionPoll();
+			e.printStackTrace();
+		}
+		return R.ok().put("total_invest", total_invest);
+	}
+	
+	/**
 	 * 省份交易额统计
 	 * 
 	 * @return

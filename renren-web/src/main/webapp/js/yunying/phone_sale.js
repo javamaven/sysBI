@@ -21,6 +21,7 @@ function initSelectEvent(){
 			$("#report_type_select_tr").hide();
 			$("#is_day_report_count_tr").hide();
 			$("#is_day_report_count_tr_height").hide();
+			$('#invest_end_time').attr("disabled", false); 
 		}else if(select == 'month'){
 			$("#report_type_select_tr").show();
 			$("#month_div").show();
@@ -303,6 +304,10 @@ var vm = new Vue({
 		reload: function (event) {
 			var reportType = $("#day_or_month_report").children('option:selected').val();
 			if("day" == reportType){
+				if(!$("#invest_end_time").val()){
+					alert('请选择投资结束时间');
+					return;
+				}
 				$("#jqGrid_day_list").jqGrid("clearGridData");
 				$("#jqGrid_day_list").jqGrid('setGridParam',{ 
 					datatype:'json', 
