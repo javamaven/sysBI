@@ -135,7 +135,6 @@ public class DateUtil {
 		}
 		cal.add(Calendar.HOUR_OF_DAY, -hours);
 		if (retSdf != null && retSdf.length() > 0) {
-			System.err.println(dateSdf2.format(cal.getTime()));
 			return new SimpleDateFormat(retSdf).format(cal.getTime());
 		} else {
 			return dateSdf.format(cal.getTime());

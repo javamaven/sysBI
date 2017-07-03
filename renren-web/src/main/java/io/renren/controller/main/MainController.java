@@ -54,7 +54,16 @@ public class MainController {
 			while (true) {
 				String startTime = getStartTime(days);
 				String endTime = getEndTime(days);
+				int hours = 1;
 				dataList = jdbcHelper.query(SqlConstants.invest_info_sql, startTime, endTime);
+				while(dataList.size() < 30){
+					endTime = DateUtil.getHourBefore(endTime, "yyyy-MM-dd HH:mm:ss", -hours, "yyyy-MM-dd HH:mm:ss");
+					dataList = jdbcHelper.query(SqlConstants.invest_info_sql, startTime, endTime);
+					hours++;
+					if(hours == 5){
+						break;
+					}
+				}
 				if (dataList.size() > 0) {
 					break;
 				}
