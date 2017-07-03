@@ -140,6 +140,21 @@ public class JdbcHelper {
 		}
 	}
 	
+	public void execute(String sql, Object... paramters) throws SQLException {
+		PreparedStatement prepareStatement = null;
+		try {
+			prepareStatement = connection.prepareStatement(sql);
+			for (int i = 0; i < paramters.length; i++) {
+				prepareStatement.setObject(i + 1, paramters[i]);
+			}
+			prepareStatement.execute();
+		} catch (SQLException e) {
+			throw new SQLException(e);
+		} finally {
+			free(prepareStatement, null);
+		}
+	}
+	
 	/**
 	 * 将指定路径的文件(比如：图片，word文档等)存储到数据库
 	 * @param filePath  文件路径，如D:\\a.jpg
@@ -273,6 +288,44 @@ public class JdbcHelper {
 			list.add(map);
 		}
 		return list;
+	}
+	
+	public void batchInsert(String sql, List<List<Object>> dataList) throws ClassNotFoundException, SQLException {
+		long start = System.currentTimeMillis();
+		PreparedStatement cmd = null;
+		try {
+			// Class.forName("com.mysql.jdbc.Driver");
+			connection.setAutoCommit(false);
+			cmd = connection.prepareStatement(sql);
+			for (int i = 0; i < dataList.size(); i++) {// 100万条数据
+				List<Object> data = dataList.get(i);
+				for (int j = 0; j < data.size(); j++) {
+					Object obj = data.get(j);
+					if (obj == null) {
+						cmd.setString(j + 1, null);
+					} else {
+						if (obj instanceof Date) {
+							cmd.setDate(j + 1, new java.sql.Date(((Date) obj).getTime()));
+						} else {
+							cmd.setString(j + 1, obj + "");
+						}
+
+					}
+				}
+				cmd.addBatch();
+				if (i != 0 && i % 5000 == 0) {
+					cmd.executeBatch();
+				}
+			}
+			cmd.executeBatch();
+			connection.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			free(cmd, null);
+		}
+		long end = System.currentTimeMillis();
+		System.out.println("批量插入需要时间:" + (end - start)); // 批量插入需要时间:24675
 	}
 
 }

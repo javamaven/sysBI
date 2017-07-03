@@ -2,6 +2,88 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="io.renren.dao.yunying.basicreport.BasicReportDao">
+	<!-- 	 电销筛选开通存管版本用户,记录导入信息 -->
+	<insert id="batchInsertPhoneSaleCgUser" useGeneratedKeys="true" parameterType="java.util.List">  
+	    insert into phone_sale_cg_user_import (user_id,phone, user_name, real_name, CALL_DATE, GIVE_DATE,uuid, type)   
+	    values  
+	    <foreach collection="list" item="item" index="index" separator="," >  
+	         ( 
+	         #{item.user_id}, 
+	         	#{item.phone}, 
+	         	#{item.user_name},
+	         	#{item.real_name},
+	         	#{item.call_date},
+	         	#{item.give_date},
+	         	#{item.uuid},
+	         	#{item.type}
+	         )  
+	    </foreach>  
+	</insert> 
+	
+	<select id="queryPhoneSaleCgUserTotal" resultType="int">
+		SELECT
+			count(1)
+		FROM
+			phone_sale_cg_user_import p
+		LEFT JOIN edw_user_basic u ON (p.phone = u.PHONE)
+		WHERE
+			1 = 1
+		AND u.CG_USER_ID IS NOT NULL
+		<if test="date != null and date.trim() != '' ">
+			and p.call_date > #{date}
+		</if>
+		<if test="isKaitongCg == 1 ">
+			AND u.DEPOSITORY_OPEN_TIME IS NOT NULL
+		</if>
+		<if test="isKaitongCg == 2 ">
+			AND u.DEPOSITORY_OPEN_TIME IS NULL
+		</if>
+		and p.is_export = 1 
+		and p.type=#{type}
+	</select>
+	
+	<update id="updatePhoneSaleCgUserList" parameterType="Map">    
+        update phone_sale_cg_user_import   
+        	set is_export='1'
+        where 1=1 
+        and type=#{type}
+        and user_id in     
+        <foreach item="item" collection="idList" open="(" separator="," close=")">
+				#{item}
+		</foreach>
+	</update> 
+	
+	<select id="queryPhoneSaleCgUserList" resultType="java.util.HashMap">
+		SELECT
+			p.user_id,
+			p.phone,
+			p.user_name,
+			p.real_name,
+			p.call_date,
+			p.give_date,
+			u.cg_user_id,
+			u.depository_open_time
+		FROM
+			phone_sale_cg_user_import p
+		LEFT JOIN edw_user_basic u ON (u.user_id=p.user_id)
+		WHERE
+			1 = 1
+		AND u.CG_USER_ID IS NOT NULL
+		and p.type=#{type}
+		<if test="date != null and date.trim() != '' ">
+			and p.call_date > #{date}
+		</if>
+		<if test="isKaitongCg == 1 ">
+			AND u.DEPOSITORY_OPEN_TIME IS NOT NULL
+		</if>
+		<if test="isKaitongCg == 2 ">
+			AND u.DEPOSITORY_OPEN_TIME IS NULL
+		</if>
+		and p.is_export != 1
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
 
 <!-- 	 电销外呼申请历史数据（注册未投资用户） -->
 	<insert id="batchInsertPhoneSaleData" useGeneratedKeys="true" parameterType="java.util.List">  

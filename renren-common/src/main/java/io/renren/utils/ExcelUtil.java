@@ -543,10 +543,10 @@ public class ExcelUtil {
             for (int r = 1; r < rowCount; r++) {
                 map = new HashMap<String ,Object>();
                 Row row = sheet.getRow(r);
-//                int cellCount = row.getPhysicalNumberOfCells(); // 获取总列数
+                int cellCount = row.getPhysicalNumberOfCells(); // 获取总列数
 //                int cellCount = row.getLastCellNum();
-//                System.err.println("第"+ r + "行，列数为：" + cellCount);
-//                System.err.println("第"+ r + "行，列数为：" + cellCount);
+                System.err.println("第"+ r + "行，列数为：" + cellCount);
+                System.err.println("第"+ r + "行，列数为：" + cellCount);
                 // 遍历每一列
                 for (int c = 0; c < fields.length; c++) {
                 	Cell cell = null;
@@ -599,7 +599,7 @@ public class ExcelUtil {
                     cellStringValue = cellStringValue.trim();
                     map.put(fields[c], cellStringValue);
                 }
-               
+                System.err.println("map++++" + map);
                 stones.add(map);
             }
         }

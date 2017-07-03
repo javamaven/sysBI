@@ -1,5 +1,7 @@
 package io.renren.service.yunying.basicreport.impl;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -20,8 +22,6 @@ import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.Query;
-
-import static io.renren.utils.ShiroUtils.getUserId;
 
 @Service("basicReportService")
 public class basicReportServiceImpl implements BasicReportService {
@@ -421,5 +421,30 @@ public class basicReportServiceImpl implements BasicReportService {
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public void batchInsertPhoneSaleCgUser(List<Map<String, Object>> list) {
+		// TODO Auto-generated method stub
+		basicReportDao.batchInsertPhoneSaleCgUser(list);
+	}
+
+	@Override
+	public List<Map<String, Object>> queryPhoneSaleCgUserList(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		return basicReportDao.queryPhoneSaleCgUserList(map);
+	}
+
+	@Override
+	public int queryPhoneSaleCgUserTotal(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		return basicReportDao.queryPhoneSaleCgUserTotal(map);
+	}
+
+	@Override
+	public void updatePhoneSaleCgUserList(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		basicReportDao.updatePhoneSaleCgUserList(map);
+	}
+
 	
 }

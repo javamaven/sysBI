@@ -12,9 +12,17 @@ public interface BasicReportDao {
 	public List<Map<String, Object>> queryRegisterThreeDaysNotInvestList(Map<String, Object> params);
 
 	public List<Map<String, Object>> queryFirstInvestNotMultiList(Map<String, Object> map);
-
+	
+	public List<Map<String, Object>> queryPhoneSaleCgUserList(Map<String, Object> map);
+	
 	public int queryFirstInvestNotMultiTotal(Map<String, Object> map);
 
 	public void batchInsertPhoneSaleData(List<Map<String, String>> dataList);
+
+	public void batchInsertPhoneSaleCgUser(List<Map<String, Object>> dataList);
+
+	public int queryPhoneSaleCgUserTotal(Map<String, Object> map);
+
+	public void updatePhoneSaleCgUserList(Map<String, Object> map);
 
 }

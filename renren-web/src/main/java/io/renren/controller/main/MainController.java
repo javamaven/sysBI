@@ -703,5 +703,90 @@ public class MainController {
 		}
 		return R.ok().put("day", numberFormat.format((int)total_day)).put("month", numberFormat.format((int)total_month));
 	}
+	
+	/**
+	 * 当天，当月投资笔数
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	@RequestMapping(value = "/queryCurrInvestTimes")
+	public R queryCurrInvestTimes() {
+		List<Map<String, Object>> list_month_cg = null;
+		List<Map<String, Object>> list_month_pt = null;
+		List<Map<String, Object>> list_day_cg = null;
+		List<Map<String, Object>> list_day_pt = null;
+		double total_month = 0;
+		double total_day = 0;
+		try {
+			JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
+			String currDayStr = DateUtil.getCurrDayStr();//'2017-06-27 00:00:00'
+			String month = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6)  + "-" +  "01 00:00:00";
+			list_month_cg = util.query(SqlConstants.curr_cg_invest_times_sql, month, month);
+			total_month += Double.parseDouble(list_month_cg.get(0).get("invest_times") + "");
+			
+			JdbcUtil util2 = new JdbcUtil(dataSourceFactory, "oracle");
+			list_month_pt = util2.query(SqlConstants.curr_invest_times_sql, month);
+			total_month += Double.parseDouble(list_month_pt.get(0).get("INVEST_TIMES") + "");
+			
+			JdbcUtil util_day = new JdbcUtil(dataSourceFactory, "mysql");
+			String addTime_day = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6)  + "-" + currDayStr.substring(6, 8) + " 00:00:00";
+			list_day_cg = util_day.query(SqlConstants.curr_cg_invest_times_sql, addTime_day, addTime_day);
+			
+			
+			JdbcUtil util2_day = new JdbcUtil(dataSourceFactory, "oracle");
+			list_day_pt = util2_day.query(SqlConstants.curr_invest_times_sql, addTime_day);
+			
+			
+			total_day += Double.parseDouble(list_day_cg.get(0).get("invest_times") + "");
+			total_day += Double.parseDouble(list_day_pt.get(0).get("INVEST_TIMES") + "");
+//			JdbcUtil util = new JdbcUtil(dataSourceFactory, "oracle26");
+//			list = util.query(SqlConstants.curr_invest_sql);
+//			for (int i = 0; i < list2.size(); i++) {
+//				Map<String, Object> map2 = list2.get(i);
+//				int money = (int) Double.parseDouble(map2.get("MONEY")+"");
+//				dataList.add(money/10000);
+//			}
+			//直接增加2400w
+			System.err.println("++++++当月投资总额+++++" + total_month);
+			System.err.println("++++++当天投资总额+++++" + total_day);
+			
+		} catch (Exception e) {
+			dataSourceFactory.reInitConnectionPoll();
+			e.printStackTrace();
+		}
+		return R.ok().put("day", total_day).put("month", total_month);
+	}
+	
+	/**
+	 * 省份交易额统计
+	 * 
+	 * @return
+	 * @throws SQLException
+	 */
+	@RequestMapping(value = "/queryProvinceInvestInvestAmount")
+	public R queryProvinceInvestInvestAmount() {
+		List<Integer> dataList = new ArrayList<Integer>();
+		List<String> province_list = new ArrayList<String>();
+		try {
+			JdbcUtil util = new JdbcUtil(dataSourceFactory, "oracle26");
+			String addTime = "2017-06-29 00:00:00";
+			List<Map<String, Object>> list = util.query(SqlConstants.province_invest_sql, addTime);
+			for (int i = 0; i < list.size(); i++) {
+				Map<String, Object> map = list.get(i);
+				int money = (int) Double.parseDouble(map.get("MONEY")+"");
+				dataList.add(money/10000);
+				province_list.add(map.get("PROVINCE")+"");
+			}
+		} catch (Exception e) {
+			dataSourceFactory.reInitConnectionPoll();
+			e.printStackTrace();
+		}
+		dataList = dataList.subList(0, 10);
+		province_list = province_list.subList(0, 10);
+		Collections.reverse(dataList);
+		Collections.reverse(province_list);
+		return R.ok().put("data_list",dataList).put("province_list", province_list);
+	}
 
 }

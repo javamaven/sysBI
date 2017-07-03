@@ -24,4 +24,12 @@ public interface BasicReportService {
 	Map<String, String> getExcelFirstInvestNotMultiFields();
 
 	void batchInsertPhoneSaleData(List<Map<String, String>> dataList);
+	//筛选开通存管版用户
+	void batchInsertPhoneSaleCgUser(List<Map<String, Object>> list);
+	
+	public List<Map<String, Object>> queryPhoneSaleCgUserList(Map<String, Object> map);
+
+	int queryPhoneSaleCgUserTotal(Map<String, Object> map);
+
+	void updatePhoneSaleCgUserList(Map<String, Object> map);
 }

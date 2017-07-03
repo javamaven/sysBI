@@ -8,16 +8,21 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.lang.StringUtils;
 import org.aspectj.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -25,9 +30,11 @@ import com.alibaba.fastjson.JSONArray;
 import io.renren.service.yunying.basicreport.BasicReportService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
+import io.renren.util.DateUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
+import io.renren.utils.RRException;
 
 @Controller
 @RequestMapping(value = "/yunying/basicreport")
@@ -35,8 +42,148 @@ public class BasicReportController2 {
 	@Autowired
 	private BasicReportService service;
 	
+	
 	@Autowired
-	private DataSourceFactory dataSourceFactory;
+	DataSourceFactory dataSourceFactory;
+	
+	@ResponseBody
+	@RequestMapping("/queryPhoneSaleCgUserList")
+	public R queryPhoneSaleCgUserList(Integer page, Integer limit, String date, String type,String isKaitongCg) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("offset", (page - 1) * limit);
+		map.put("limit", limit);
+		map.put("type", type);
+		map.put("isKaitongCg", isKaitongCg);
+		if (StringUtils.isNotEmpty(date)) {
+			map.put("date", date);
+		}
+		// 查询列表数据
+		List<Map<String, Object>> retList = service.queryPhoneSaleCgUserList(map);
+		
+		int total = service.queryPhoneSaleCgUserTotal(map);
+		
+		PageUtils pageUtil = new PageUtils(retList, total, limit, page);
+
+		return R.ok().put("page", pageUtil);
+	}
+	
+	
+	/**
+	 * 电销筛选存管版用户数据 导出
+	 * @param params
+	 * @param request
+	 * @param response
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping("/phoneSaleCgUserListExport")
+	public void phoneSaleCgUserListExport(String params, HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+		Map<String, Object> map = JSON.parseObject(params, Map.class);
+		
+		String type = map.get("type") + "";
+		map.put("offset", 0);
+		map.put("limit", 100000);
+		
+		// 查询列表数据
+		List<Map<String, Object>> dataList = service.queryPhoneSaleCgUserList(map);
+		List<String> userIdList = new ArrayList<String>();
+//		 查询列表数据
+		JSONArray va = new JSONArray();
+		for (int i = 0; i < dataList.size(); i++) {
+			Map<String, Object> map2 = dataList.get(i);
+			userIdList.add((int)Double.parseDouble(map2.get("user_id") + "") + "");
+			va.add(map2);
+		}
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+		headMap.put("phone","电话");
+		headMap.put( "user_name","用户名");
+		headMap.put("real_name","用户姓名");
+		
+		headMap.put("call_date","电销日期");
+		headMap.put("give_date","数据提供日期");
+		headMap.put( "cg_user_id","存管ID");
+		headMap.put("depository_open_time","存管开户时间");
+		String date = DateUtil.getCurrDayStr();
+
+		String title = "";
+		if("1".equals(type)){
+			title = "外包电销(首投后3天未复投)已筛选数据-" + date;
+		}else if("2".equals(type)){
+			title = "外包电销(外呼3天后未投资)已筛选数据-" + date;
+		}else if("3".equals(type)){
+			title = "沉默客户已筛存管ID用户-" + date;
+		}
+		try {
+			ExcelUtil.exportExcel(title, headMap, va, response);
+			map.put("idList", userIdList);
+			service.updatePhoneSaleCgUserList(map);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 上传文件(筛选开通存管版用户)
+	 */
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping("/importPhoneSaleUser")
+	public R upload(@RequestParam("file") MultipartFile file, String type) {
+		try {
+			if (file.isEmpty()) {
+				throw new RRException("上传文件不能为空");
+			}
+			String originalFilename = file.getOriginalFilename();
+			if("1".equals(type) && originalFilename.contains("首投后3天未复投")){
+			}else if("2".equals(type) && originalFilename.contains("外呼3天后未投资")){
+			}else if("3".equals(type) && originalFilename.contains("沉默客户")){
+			}else{
+				return R.error("导入文件不正确");
+			}
+			String[] fields = { "user_id", "phone", "user_name", "real_name", "call_date", "give_date"};
+			Map<String, Object> retMap = ExcelUtil.parseExcel(multipartToFile(file), null, fields);
+			List<Map<String, Object>> list = (List<Map<String, Object>>) retMap.get("list");
+			UUID randomUUID = UUID.randomUUID();
+			for (int i = 0; i < list.size(); i++) {
+				Map<String, Object> map = list.get(i);
+				map.put("user_id", (int)Double.parseDouble(map.get("user_id") + "") + "");
+				map.put("uuid", randomUUID.toString());
+				map.put("type", type);
+			}
+			service.batchInsertPhoneSaleCgUser(list);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return R.error(e.getMessage());
+		}
+		return R.ok();
+	}
+	
+	/**
+	 * MultipartFile 转换成File
+	 * 
+	 * @param multfile
+	 *            原文件类型
+	 * @return File
+	 * @throws IOException
+	 */
+	private File multipartToFile(MultipartFile multfile) throws IOException {
+		CommonsMultipartFile cf = (CommonsMultipartFile) multfile;
+		// 这个myfile是MultipartFile的
+		DiskFileItem fi = (DiskFileItem) cf.getFileItem();
+		File file = fi.getStoreLocation();
+		// 手动创建临时文件
+		if (file.length() < 2048) {
+			File tmpFile = new File(
+					System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + file.getName());
+			multfile.transferTo(tmpFile);
+			return tmpFile;
+		}
+		return file;
+	}
+
+
 	
 	/**
 	 * 电销外呼申请历史数据（注册未投资用户） 导出

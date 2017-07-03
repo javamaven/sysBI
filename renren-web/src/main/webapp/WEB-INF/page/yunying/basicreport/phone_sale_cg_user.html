@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+#parse("sys/header.html")
+
+<style type="text/css">
+.inputClass1 {
+	height: 30px;
+	width: 150px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+.inputClass2 {
+	height: 30px;
+	width: 100px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+</style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<table border="0">
+				<tr>
+					<td>
+						<label>类别：</label>
+					</td>
+					<td>
+						<select id="list_select" class="inputClass1" >
+							<option value ="1" selected="selected">首投后3天未复投</option>
+							<option value ="2">外呼3天后未投资</option>
+							<option value ="3">沉默客户</option>
+						</select>
+					</td>
+					<td>
+						<label>是否开通存管：</label>
+					</td>
+					<td>
+						<select id="cg_select" class="inputClass2" >
+						<option value ="0" ></option>
+							<option value ="1" selected="selected">是</option>
+							<option value ="2">否</option>
+						</select>
+					</td>
+					<td>
+						<label>电销开始日期：</label>
+					</td>
+					<td>
+						<input type="text" class="form-control form_datetime_2" id="stat_period"  placeholder="请选择日期"/>
+					</td>
+					<td>
+						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
+						<a class="btn btn-primary" id="upload"><i class="fa fa-plus"></i>&nbsp;Excel导入</a>
+						<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+					</td>
+					
+				</tr>
+			</table>
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+</div>
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/yunying/basicreport/phone_sale_cg_user.js?_${date.systemTime}"></script>
+</body>
+</html>
