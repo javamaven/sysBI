@@ -55,6 +55,7 @@ from (select
 	SUM(borrow_money_sum) AS SUM,
 	SUM(borrow_money_num) AS NUM
 	FROM mdtxbi.dm_through_data
+	where  STAT_MONTH='${investMonthTime}'
 	GROUP BY USERNAME,TYPE
 	ORDER BY type) a
 left join (	
@@ -63,6 +64,7 @@ select
 	SUM(borrow_money_sum) AS SUM,
 	SUM(borrow_money_num) AS NUM
 	FROM mdtxbi.dm_through_data
+	where STAT_MONTH='${investMonthTime}'
 	GROUP BY USERNAME)b
 on a.username=b.username
 left join

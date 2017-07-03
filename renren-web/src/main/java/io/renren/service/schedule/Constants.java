@@ -147,5 +147,10 @@ public class Constants {
 		 */
 		public static final String MONTHLY_REPORT = "28";
 		
+		/**
+		 * 每日报表数据
+		 */
+		public static final String DAILY_REPORT_DATA = "29";
+		
 	}
 }

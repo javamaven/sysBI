@@ -25,6 +25,7 @@ import io.renren.service.schedule.job.UserActiveReportJob;
 import io.renren.service.schedule.job.UserBehaviorReportJob;
 import io.renren.service.schedule.job.UserInvestReportJob;
 import io.renren.service.schedule.job.yunying.ChannelCostDataReportJob;
+import io.renren.service.schedule.job.yunying.DailyReportDataJob;
 import io.renren.service.schedule.job.yunying.DdzUserDataReportJob;
 import io.renren.service.schedule.job.yunying.EveryDayAccTransferReportJob;
 import io.renren.service.schedule.job.yunying.EveryDayAwaitDataReportJob;
@@ -143,9 +144,13 @@ public class ScheduleReportTaskEntity implements Serializable {
 			jobVo.setJobClass(FirstInvestThreeDayNotInvestReportJob.class);
 		}else if (Constants.TaskType.OLD_DATA.equals(jobVo.getJobType())) {
 			jobVo.setJobClass(OldDataJob.class);
-		}else if (Constants.TaskType.MONTHLY_REPORT.equals(jobVo.getJobType())) {
+		}else if (Constants.TaskType.MONTHLY_REPORT.equals(jobVo.getJobType())) { 
 			jobVo.setJobClass(MonthlyReportJob.class);
+		}else if (Constants.TaskType.DAILY_REPORT_DATA.equals(jobVo.getJobType())) { 
+			jobVo.setJobClass(DailyReportDataJob.class);
 		}
+		
+		
 		
 		jobVo.setTaskEntity(this);
 		return jobVo;

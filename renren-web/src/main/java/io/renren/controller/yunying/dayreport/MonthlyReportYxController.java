@@ -81,8 +81,10 @@ public class MonthlyReportYxController {
 	@ResponseBody
 	@RequestMapping("/list")
 	@RequiresPermissions("phonesale:list")
-	public R daylist(Integer page, Integer limit, String invest_end_time) {
-	
+	public R daylist(Integer page, Integer limit, String invest_end_time,String invest_month_time) {
+		if (StringUtils.isNotEmpty(invest_month_time)) {
+			invest_month_time = invest_month_time.replace("-", "");
+		}
 		long l1 = System.currentTimeMillis();
 
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
@@ -92,6 +94,7 @@ public class MonthlyReportYxController {
 			String detail_sql;
 			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/yxP2P.txt"));
 			detail_sql = detail_sql.replace("${investEndTime}", invest_end_time);
+			detail_sql = detail_sql.replace("${investMonthTime}", invest_month_time);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
 		} catch (SQLException e) {
@@ -146,8 +149,13 @@ public class MonthlyReportYxController {
 	@RequestMapping("/exportExcel")
 	public void exportMonthListExcel(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String invest_end_time = map.get("invest_end_time") + "";
+		String invest_month_time = map.get("invest_month_time") + "";
+		if (StringUtils.isNotEmpty(invest_month_time)) {
+			invest_month_time = invest_month_time.replace("-", "");
+		}
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 		
 		try {
@@ -155,6 +163,7 @@ public class MonthlyReportYxController {
 			String detail_sql;
 			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/yxP2P.txt"));
 			detail_sql = detail_sql.replace("${investEndTime}", invest_end_time);
+			detail_sql = detail_sql.replace("${investMonthTime}", invest_month_time);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
 		} catch (SQLException e) {

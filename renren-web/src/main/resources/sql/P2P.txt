@@ -13,7 +13,7 @@ SELECT  -- 点点赚
 WHERE to_char(ddzb.ISSUE_DATE, 'yyyymmdd')< '${investEndTime}' -- 官网点点赚没有在凌晨直接加当天再投，故取时点值取小于
 union all
 select -- 截止某一天的交易额（项目和债转，按照实际成交时间)
- sum(pd.tender_capital)/10000 as jiaoyie
+ sum(case when pd.tender_subject=2 then pd.tend_cash else pd.tender_capital end)/10000 as jiaoyie
  from mdtxbi.edw_trading_project_detail pd
  where
  pd.tender_account_status=1
@@ -35,7 +35,7 @@ SELECT  -- 点点赚
 WHERE to_char(ddzb.ISSUE_DATE, 'yyyymmdd') between '${investStatTime}' and '${investEndTime}'
 union all
 select -- 截止某一天的交易额（项目和债转，按照实际成交时间)
- sum(pd.tender_capital)/10000 as jiaoyie
+ sum(case when pd.tender_subject=2 then pd.tend_cash else pd.tender_capital end)/10000 as jiaoyie
  from mdtxbi.edw_trading_project_detail pd
  where
  pd.tender_account_status=1

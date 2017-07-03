@@ -26,7 +26,9 @@
 					</td>
 					<td>
 						<select id="list_select" class="inputClass2" >
-							<option value ="vip_detail" selected="selected">越秀P2P</option>
+							<option value ="vip_detail" selected="selected">各类产品的实际销售情况</option>
+							<option value ="vip_count">底层资产供应情况</option>
+							<option value ="licai">理财计划留存情况</option>
 						</select>
 					</td>
 				</tr>
@@ -36,17 +38,14 @@
 						<label>时间：</label>
 					</td>
 					<td>
-					
-						<input type="text" class="inputClass2 form_datetime_2" id="invest_month_time"  placeholder="请选择月份"/>
-					</td>
-					<td>
-					
-						<input type="text" class="inputClass2 form_datetime_2" id="invest_end_time"  placeholder="请选择日期"/>
+						<input type="text" class="inputClass2 form_datetime_2" id="stat_period"  placeholder="请选择日期"/>
 					</td>
 					<td>
 						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
 						<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
-						
+						#if($shiro.hasPermission("schedulereporttask:addtask"))
+						<button class="btn btn-primary" data-toggle="modal" onclick="openTaskWin();" data-target="#schedule_add_task">添加定时任务</button>
+						#end
 					</td>
 					
 				</tr>
@@ -59,6 +58,10 @@
 		<div id="vip_count_div">
 		    <table id="jqGrid_count"></table>
 		    <div id="jqGridPager_count"></div>
+		</div>
+		<div id="licai_div">
+		    <table id="jqGrid_licai"></table>
+		    <div id="jqGridPager_licai"></div>
 		</div>
     </div>
     
@@ -139,7 +142,7 @@
 				<div class="modal-footer">
 					<button type="button" class="btn btn-default" data-dismiss="modal">关闭
 					</button>
-					<button type="button" class="btn btn-primary" onclick="addTask(28)">
+					<button type="button" class="btn btn-primary" onclick="addTask(29)">
 						确定
 					</button>
 				</div>
@@ -207,6 +210,6 @@
 <link rel="stylesheet" href="${rc.contextPath}/js/schedule/taskwin.css"></link>
 <script src="${rc.contextPath}/js/schedule/addtask.js?_${date.systemTime}"></script>
 <script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
-<script src="${rc.contextPath}/js/yunying/monthly_report_yx.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/yunying/dayreport/dmreportdepsales.js?_${date.systemTime}"></script>
 </body>
 </html>

@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.yunying.dayreport.DmReportDepSalesDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.yunying.dayreport.DmReportDepSalesEntity" id="dmReportDepSalesMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="shiwutian" column="shiwutian"/>
+        <result property="salesType" column="sales_type"/>
+        <result property="yiyue" column="yiyue"/>
+        <result property="eryue" column="eryue"/>
+        <result property="sanyue" column="sanyue"/>
+        <result property="liuyue" column="liuyue"/>
+        <result property="bayue" column="bayue"/>
+        <result property="jiuyue" column="jiuyue"/>
+        <result property="shiyue" column="shiyue"/>
+        <result property="shieryue" column="shieryue"/>
+        <result property="shiwuyue" column="shiwuyue"/>
+        <result property="shibayue" column="shibayue"/>
+        <result property="ershisiyue" column="ershisiyue"/>
+        <result property="sanshiwuyue" column="sanshiwuyue"/>
+        <result property="sanshiliuyue" column="sanshiliuyue"/>
+        <result property="sishibayue" column="sishibayue"/>
+        <result property="liushiyue" column="liushiyue"/>
+        <result property="jiushiliuyue" column="jiushiliuyue"/>
+        <result property="zongji" column="zongji"/>
+        <result property="zhanbi" column="zhanbi"/>
+        <result property="zichan" column="zichan"/>
+        <result property="sumddd" column="sumddd"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.yunying.dayreport.DmReportDepSalesEntity">
+		select * from dm_report_dep_sales where STAT_PERIOD = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.yunying.dayreport.DmReportDepSalesEntity">
+			DROP TABLE IF EXISTS TMPaaa;
+			CREATE TEMPORARY TABLE TMPaaa AS
+			select
+			STAT_PERIOD,
+			sales_type,
+			period,
+			sum(sales_money) as sum
+			from dm_report_dep_sales
+			WHERE 1=1
+			AND sales_type in ('项目','智投乐','月悦升')
+			<if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+			</if>		
+
+			GROUP  BY sales_type desc,PERIOD
+			;
+
+			DROP TABLE IF EXISTS TMPbbb;
+			CREATE TEMPORARY TABLE TMPbbb AS
+			select 
+			STAT_PERIOD,
+			sales_type,
+			shiwutian,
+			yiyue,
+			eryue,
+			sanyue,
+			liuyue,
+			bayue,
+			jiuyue,
+			shiyue,
+			shieryue,
+			shiwuyue,
+			shibayue,	
+			ershisiyue,
+			sanshiwuyue,
+			sanshiliuyue,
+			sishibayue,
+			liushiyue,
+			jiushiliuyue,
+			shiwutian+yiyue+eryue+sanyue+liuyue+bayue+jiuyue+shiyue+shieryue+shiwuyue+
+			shibayue+ershisiyue+sanshiwuyue+sanshiliuyue+sishibayue+liushiyue+jiushiliuyue as zongji
+			from
+(
+		SELECT STAT_PERIOD,
+			sales_type,
+			MAX(CASE period WHEN '15天' THEN sum ELSE 0 END ) shiwutian,
+			MAX(CASE period WHEN '1月' THEN sum ELSE 0 END ) yiyue,
+			MAX(CASE period WHEN '2月' THEN sum ELSE 0 END ) eryue,
+			MAX(CASE period WHEN '3月' THEN sum ELSE 0 END ) sanyue, 
+			MAX(CASE period WHEN '6月' THEN sum ELSE 0 END ) liuyue,
+			MAX(CASE period WHEN '8月' THEN sum ELSE 0 END ) bayue,
+			MAX(CASE period WHEN '9月' THEN sum ELSE 0 END ) jiuyue,
+			MAX(CASE period WHEN '10月' THEN sum ELSE 0 END ) shiyue,
+			MAX(CASE period WHEN '12月' THEN sum ELSE 0 END ) shieryue,
+			MAX(CASE period WHEN '15月' THEN sum ELSE 0 END ) shiwuyue,
+			MAX(CASE period WHEN '18月' THEN sum ELSE 0 END ) shibayue,
+			MAX(CASE period WHEN '24月' THEN sum ELSE 0 END ) ershisiyue,
+			MAX(CASE period WHEN '35月' THEN sum ELSE 0 END ) sanshiwuyue,
+			MAX(CASE period WHEN '36月' THEN sum ELSE 0 END ) sanshiliuyue,
+			MAX(CASE period WHEN '48月' THEN sum ELSE 0 END ) sishibayue,
+			MAX(CASE period WHEN '60月' THEN sum ELSE 0 END ) liushiyue,
+			MAX(CASE period WHEN '96月' THEN sum ELSE 0 END ) jiushiliuyue,
+			MAX(sum)
+			from TMPaaa
+			GROUP BY STAT_PERIOD,sales_type
+			) s
+			;
+
+			DROP TABLE IF EXISTS TMPccc;
+			CREATE TEMPORARY TABLE TMPccc AS
+			SELECT SUM(ZONGJI) AS SUM_ALL
+			FROM TMPbbb;
+
+			DROP TABLE IF EXISTS TMPddd;
+			CREATE TEMPORARY TABLE TMPddd AS
+			SELECT *
+			FROM TMPbbb , TMPccc
+			;
+			DROP TABLE IF EXISTS TMPeee;
+			CREATE TEMPORARY TABLE TMPeee AS
+			select 
+			STAT_PERIOD,
+			sales_type,
+			shiwutian,
+			yiyue,
+			eryue,
+			sanyue,
+			liuyue,
+			bayue,
+			jiuyue,
+			shiyue,
+			shieryue,
+			shiwuyue,
+			shibayue,	
+			ershisiyue,
+			sanshiwuyue,
+			sanshiliuyue,
+			sishibayue,
+			liushiyue,
+			jiushiliuyue,
+			zongji,
+			CONCAT(round(zongji*100/sum_all,2),'%') as zhanbi
+			from TMPddd 
+			;
+
+			DROP TABLE IF EXISTS TMPyyy;
+			CREATE TEMPORARY TABLE TMPyyy AS
+			select 
+			STAT_PERIOD,
+			'总计',
+			sum(shiwutian) as shiwutian,
+			sum(yiyue) as yiyue,
+			sum(eryue) as eryue ,
+			sum(sanyue) as sanyue,
+			sum(liuyue) as liuyue,
+			sum(bayue) as bayue,
+			sum(jiuyue) as jiuyue,
+			sum(shiyue) as shiyue,
+			sum(shieryue) as shieryue,
+			sum(shiwuyue) as shiwuyue,
+			sum(shibayue) as shibayue,	
+			sum(ershisiyue) as ershisiyue,
+			sum(sanshiwuyue) as sanshiwuyue,
+			sum(sanshiliuyue) as sanshiliuyue,
+			sum(sishibayue) as sishibayue,
+			sum(liushiyue) as liushiyue,
+			sum(jiushiliuyue) as jiushiliuyue,
+			sum(zongji) as zongji,
+			concat(sum(zhanbi)*100,'%') as zhanbi
+			FROM (select 
+			STAT_PERIOD,
+			sales_type,
+			shiwutian,
+			yiyue,
+			eryue,
+			sanyue,
+			liuyue,
+			bayue,
+			jiuyue,
+			shiyue,
+			shieryue,
+			shiwuyue,
+			shibayue,	
+			ershisiyue,
+			sanshiwuyue,
+			sanshiliuyue,
+			sishibayue,
+			liushiyue,
+			jiushiliuyue,
+			zongji,
+			round(zongji/sum_all,2) as zhanbi
+			from TMPddd  ) dd
+;
+
+
+
+DROP TABLE IF EXISTS TMPzzz;
+			CREATE TEMPORARY TABLE TMPzzz AS
+select 
+			STAT_PERIOD,
+			'期限占比总销量',
+			concat(round(shiwutian*100/zongji,2),'%'),
+			concat(round(yiyue*100/zongji,2),'%'),
+			concat(round(eryue*100/zongji,2),'%'),
+			concat(round(sanyue*100/zongji,2),'%'),
+			concat(round(liuyue*100/zongji,2),'%'),
+			concat(round(bayue*100/zongji,2),'%'),
+			concat(round(jiuyue*100/zongji,2),'%'),
+			concat(round(shiyue*100/zongji,2),'%'),
+			concat(round(shieryue*100/zongji,2),'%'),
+			concat(round(shiwuyue*100/zongji,2),'%'),
+			concat(round(shibayue*100/zongji,2),'%'),
+			concat(round(ershisiyue*100/zongji,2),'%'),
+			concat(round(sanshiwuyue*100/zongji,2),'%'),
+			concat(round(sanshiliuyue*100/zongji,2),'%'),
+			concat(round(sishibayue*100/zongji,2),'%'),
+			concat(round(liushiyue*100/zongji,2),'%'),
+			concat(round(jiushiliuyue*100/zongji,2),'%'),
+			concat(round(zongji*100/zongji,2),'%'),
+			'100%'
+			from TMPyyy
+				;
+			DROP TABLE IF EXISTS TMPkeai;
+			CREATE TEMPORARY TABLE TMPkeai AS
+			select * FROM TMPeee
+			union all
+			select * from tmpyyy
+			union all
+			select * from tmpzzz
+			;
+			select 
+			STAT_PERIOD,
+			SALES_TYPE,
+			case when shiwutian='0.00' then '' 
+			when shiwutian='0.00%' then ''
+			else shiwutian end as shiwutian,
+			
+			case when yiyue='0.00' then '' 
+			when yiyue='0.00%' then ''
+			else yiyue end as yiyue,
+			
+			case when eryue='0.00' then ''
+			when eryue='0.00%' then ''
+			else eryue end as eryue,
+			
+			
+			case when sanyue='0.00' then '' 
+			when sanyue='0.00%' then ''
+			else sanyue end as sanyue,
+			
+			case when liuyue='0.00' then ''
+			when liuyue='0.00%' then ''
+			else liuyue end as liuyue,
+			
+			case when bayue='0.00' then '' 
+			when bayue='0.00%' then ''
+			else bayue end as bayue,
+			
+			case when jiuyue='0.00' then ''
+			when jiuyue='0.00%' then ''
+			 else jiuyue end as jiuyue,
+			
+			case when shiyue='0.00' then '' 
+			when shiyue='0.00%' then '' 
+			else shiyue end as shiyue,
+			
+			case when shieryue='0.00' then '' 
+			when shieryue='0.00%' then ''
+			else shieryue end as shieryue,
+			
+			case when shiwuyue='0.00' then ''
+			when shiwuyue='0.00%' then ''
+			 else shiwuyue end as shiwuyue,
+			
+			
+			case when shibayue='0.00' then ''
+			when shibayue='0.00%' then ''
+			 else shibayue end as shibayue,
+			
+			case when ershisiyue='0.00' then '' 
+			when ershisiyue='0.00%' then '' 
+			else ershisiyue end as ershisiyue,
+			
+			case when sanshiwuyue='0.00' then '' 
+			when sanshiwuyue='0.00%' then '' 
+			else sanshiwuyue end as sanshiwuyue,
+			
+			case when sanshiliuyue='0.00' then '' 
+			 when sanshiliuyue='0.00%' then '' 
+			else sanshiliuyue end as sanshiliuyue,
+			
+			case when sishibayue='0.00' then '' 
+			when sishibayue='0.00%' then '' 
+			else sishibayue end as sishibayue,
+			
+			case when shibayue='0.00' then '' 
+			when shibayue='0.00%' then ''
+			else shibayue end as shibayue,
+			case when liushiyue='0.00' then ''
+			when liushiyue='0.00%' then ''
+			 else liushiyue end as liushiyue,
+			
+			case when jiushiliuyue='0.00' then '' 
+			when jiushiliuyue='0.00%' then '' 
+			else jiushiliuyue end as jiushiliuyue,
+			ZONGJI,
+			ZHANBI
+			from TMPkeai
+		
+	</select>
+	
+	<select id="queryLists" resultType="io.renren.entity.yunying.dayreport.DmReportDepSalesEntity">
+	
+	
+				DROP TABLE IF EXISTS TMP11;
+				CREATE TEMPORARY TABLE TMP11 AS
+				select
+				STAT_PERIOD,
+				sales_type,
+				period,
+				sum(sales_money) as sum
+				from dm_report_dep_sales
+				WHERE 1=1
+				<if test="statPeriod != null and statPeriod.trim() !='' ">
+				and STAT_PERIOD = #{statPeriod}
+				</if>	
+				 AND sales_type='供应'
+				GROUP  BY sales_type desc,PERIOD
+				;
+				
+				DROP TABLE IF EXISTS TMP112;
+				CREATE TEMPORARY TABLE TMP112 AS
+							select
+							STAT_PERIOD,
+							zichan,
+							shiwutian,
+							yiyue,
+							eryue,
+							sanyue,
+							liuyue,
+							bayue,
+							jiuyue,
+							shiyue,
+							shieryue,
+							shiwuyue,
+							shibayue,	
+							ershisiyue,
+							sanshiwuyue,
+							sanshiliuyue,
+							sishibayue,
+							liushiyue,
+							jiushiliuyue,
+							shiwutian+yiyue+eryue+sanyue+liuyue+bayue+jiuyue+shiyue+shieryue+shiwuyue+
+							shibayue+ershisiyue+sanshiwuyue+sanshiliuyue+sishibayue+liushiyue+jiushiliuyue as zongji
+				from 
+				(
+				SELECT 
+				STAT_PERIOD,
+				'资产' as zichan,
+				MAX(CASE period WHEN '15天' THEN sum ELSE 0 END ) shiwutian,
+							MAX(CASE period WHEN '1月' THEN sum ELSE 0 END ) yiyue,
+							MAX(CASE period WHEN '2月' THEN sum ELSE 0 END ) eryue,
+							MAX(CASE period WHEN '3月' THEN sum ELSE 0 END ) sanyue, 
+							MAX(CASE period WHEN '6月' THEN sum ELSE 0 END ) liuyue,
+							MAX(CASE period WHEN '8月' THEN sum ELSE 0 END ) bayue,
+							MAX(CASE period WHEN '9月' THEN sum ELSE 0 END ) jiuyue,
+							MAX(CASE period WHEN '10月' THEN sum ELSE 0 END ) shiyue,
+							MAX(CASE period WHEN '12月' THEN sum ELSE 0 END ) shieryue,
+							MAX(CASE period WHEN '15月' THEN sum ELSE 0 END ) shiwuyue,
+							MAX(CASE period WHEN '18月' THEN sum ELSE 0 END ) shibayue,
+							MAX(CASE period WHEN '24月' THEN sum ELSE 0 END ) ershisiyue,
+							MAX(CASE period WHEN '35月' THEN sum ELSE 0 END ) sanshiwuyue,
+							MAX(CASE period WHEN '36月' THEN sum ELSE 0 END ) sanshiliuyue,
+							MAX(CASE period WHEN '48月' THEN sum ELSE 0 END ) sishibayue,
+							MAX(CASE period WHEN '60月' THEN sum ELSE 0 END ) liushiyue,
+							MAX(CASE period WHEN '96月' THEN sum ELSE 0 END ) jiushiliuyue
+				from TMP11
+				GROUP BY STAT_PERIOD,sales_type
+				) dd
+				;
+				
+				
+					DROP TABLE IF EXISTS TMP113;
+					CREATE TEMPORARY TABLE TMP113 AS
+						 select * 
+						from tmp112;
+				
+						DROP TABLE IF EXISTS TMPhehe;
+						CREATE TEMPORARY TABLE TMPhehe AS				
+						select * from tmp113
+						union all
+						select 
+							STAT_PERIOD,
+							'占比',
+							concat(round(shiwutian*100/zongji,2),'%'),
+							concat(round(yiyue*100/zongji,2),'%'),
+							concat(round(eryue*100/zongji,2),'%'),
+							concat(round(sanyue*100/zongji,2),'%'),
+							concat(round(liuyue*100/zongji,2),'%'),
+							concat(round(bayue*100/zongji,2),'%'),
+							concat(round(jiuyue*100/zongji,2),'%'),
+							concat(round(shiyue*100/zongji,2),'%'),
+							concat(round(shieryue*100/zongji,2),'%'),
+							concat(round(shiwuyue*100/zongji,2),'%'),
+							concat(round(shibayue*100/zongji,2),'%'),
+							concat(round(ershisiyue*100/zongji,2),'%'),
+							concat(round(sanshiwuyue*100/zongji,2),'%'),
+							concat(round(sanshiliuyue*100/zongji,2),'%'),
+							concat(round(sishibayue*100/zongji,2),'%'),
+							concat(round(liushiyue*100/zongji,2),'%'),
+							concat(round(jiushiliuyue*100/zongji,2),'%'),
+							concat(round(zongji*100/zongji,2),'%')
+							from tmp112
+							;
+							select 
+							STAT_PERIOD,
+							ZICHAN,
+							case when shiwutian='0.00' then '' 
+							when shiwutian='0.00%' then ''
+							else shiwutian end as shiwutian,
+							
+							case when yiyue='0.00' then '' 
+							when yiyue='0.00%' then ''
+							else yiyue end as yiyue,
+							
+							case when eryue='0.00' then ''
+							when eryue='0.00%' then ''
+							else eryue end as eryue,
+							
+							
+							case when sanyue='0.00' then '' 
+							when sanyue='0.00%' then ''
+							else sanyue end as sanyue,
+							
+							case when liuyue='0.00' then ''
+							when liuyue='0.00%' then ''
+							else liuyue end as liuyue,
+							
+							case when bayue='0.00' then '' 
+							when bayue='0.00%' then ''
+							else bayue end as bayue,
+							
+							case when jiuyue='0.00' then ''
+							when jiuyue='0.00%' then ''
+							 else jiuyue end as jiuyue,
+							
+							case when shiyue='0.00' then '' 
+							when shiyue='0.00%' then '' 
+							else shiyue end as shiyue,
+							
+							case when shieryue='0.00' then '' 
+							when shieryue='0.00%' then ''
+							else shieryue end as shieryue,
+							
+							case when shiwuyue='0.00' then ''
+							when shiwuyue='0.00%' then ''
+							 else shiwuyue end as shiwuyue,
+							
+							
+							case when shibayue='0.00' then ''
+							when shibayue='0.00%' then ''
+							 else shibayue end as shibayue,
+							
+							case when ershisiyue='0.00' then '' 
+							when ershisiyue='0.00%' then '' 
+							else ershisiyue end as ershisiyue,
+							
+							case when sanshiwuyue='0.00' then '' 
+							when sanshiwuyue='0.00%' then '' 
+							else sanshiwuyue end as sanshiwuyue,
+							
+							case when sanshiliuyue='0.00' then '' 
+							 when sanshiliuyue='0.00%' then '' 
+							else sanshiliuyue end as sanshiliuyue,
+							
+							case when sishibayue='0.00' then '' 
+							when sishibayue='0.00%' then '' 
+							else sishibayue end as sishibayue,
+							
+							
+							case when liushiyue='0.00' then ''
+							when liushiyue='0.00%' then ''
+							 else liushiyue end as liushiyue,
+							
+							case when jiushiliuyue='0.00' then '' 
+							when jiushiliuyue='0.00%' then '' 
+							else jiushiliuyue end as jiushiliuyue,
+							ZONGJI
+							FROM TMPHEHE
+														
+	
+	</select>
+	<select id="queryListss" resultType="io.renren.entity.yunying.dayreport.DmReportDepSalesEntity">
+			select
+			STAT_PERIOD,
+		sales_type,
+		sum(sales_money) as zhanbi
+		from dm_report_dep_sales
+		WHERE 1=1
+		<if test="statPeriod != null and statPeriod.trim() !='' ">
+		and STAT_PERIOD = #{statPeriod}
+		</if>	 
+		AND name='留存情况'
+		GROUP  BY sales_type desc,PERIOD
+	
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dm_report_dep_sales 
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.yunying.dayreport.DmReportDepSalesEntity">
+		insert into dm_report_dep_sales
+		(
+			`STAT_PERIOD`, 
+			`name`, 
+			`sales_type`, 
+			`period`, 
+			`sales_money`
+		)
+		values
+		(
+			#{statPeriod}, 
+			#{name}, 
+			#{salesType}, 
+			#{period}, 
+			#{salesMoney}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.yunying.dayreport.DmReportDepSalesEntity">
+		update dm_report_dep_sales 
+		<set>
+			<if test="name != null">`name` = #{name}, </if>
+			<if test="salesType != null">`sales_type` = #{salesType}, </if>
+			<if test="period != null">`period` = #{period}, </if>
+			<if test="salesMoney != null">`sales_money` = #{salesMoney}</if>
+		</set>
+		where STAT_PERIOD = #{statPeriod}
+	</update>
+	
+	<delete id="delete">
+		delete from dm_report_dep_sales where STAT_PERIOD = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from dm_report_dep_sales where STAT_PERIOD in 
+		<foreach item="statPeriod" collection="array" open="(" separator="," close=")">
+			#{statPeriod}
+		</foreach>
+	</delete>
+
+</mapper>
