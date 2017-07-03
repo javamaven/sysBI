@@ -97,7 +97,7 @@ public class ScheduleReportTaskLogController {
 
 			response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
 			response.setHeader("Content-Disposition",
-					"attachment;filename=" + new String((title + ".xlsx").getBytes(), "iso-8859-1"));
+					"attachment;filename=" + new String((title).getBytes(), "iso-8859-1"));
 			response.setContentLength(content.length);
 			ServletOutputStream outputStream = response.getOutputStream();
 			BufferedInputStream bis = new BufferedInputStream(is);
