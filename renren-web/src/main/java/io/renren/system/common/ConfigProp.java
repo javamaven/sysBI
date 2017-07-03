@@ -103,4 +103,12 @@ public class ConfigProp {
 		// return p.getProperty("printscreen.dir");
 		return PrintscreenServiceListener.IMAGE_FILE_STORE_DIR;
 	}
+	
+	public static boolean getIsSendEmail() {
+		String property = p.getProperty("email.is_send_email");
+		if(org.apache.commons.lang.StringUtils.isEmpty(property) || "false".equals(property)){
+			return false;
+		}
+		return true;
+	}
 }

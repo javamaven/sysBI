@@ -21,6 +21,7 @@ import io.renren.service.DmReportInvestmentDailyService;
 import io.renren.service.schedule.ScheduleReportTaskLogService;
 import io.renren.service.schedule.ScheduleReportTaskService;
 import io.renren.service.schedule.entity.JobVo;
+import io.renren.system.common.ConfigProp;
 import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.MailUtil;
 import io.renren.utils.PageUtils;
@@ -50,6 +51,9 @@ public class UserInvestReportJob implements Job {
 			if (success) {
 				break;
 			}
+		}
+		if (!ConfigProp.getIsSendEmail()) {
+			return;
 		}
 		logService.save(logVo);
 		updateRunningTime();

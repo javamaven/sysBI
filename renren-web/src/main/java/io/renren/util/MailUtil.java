@@ -303,6 +303,9 @@ public class MailUtil {
 	 */
 	public void sendWithAttachs(String title, String content, List<String> receiverList, List<String> chaosongList,
 			List<String> attachFilePathList) throws EmailException {
+		if (!ConfigProp.getIsSendEmail()) {
+			return;
+		}
 		HtmlEmail email = new HtmlEmail();
 		// 发送email
 		// 这里是SMTP发送服务器的名字：163的如下："smtp.163.com"
@@ -380,6 +383,9 @@ public class MailUtil {
 	 */
 	public void sendWithAttach(String title, String content, List<String> receiverList, List<String> chaosongList,
 			String attachFilePath) throws EmailException {
+		if (!ConfigProp.getIsSendEmail()) {
+			return;
+		}
 		HtmlEmail email = new HtmlEmail();
 		// 发送email
 		// 这里是SMTP发送服务器的名字：163的如下："smtp.163.com"

@@ -22,6 +22,7 @@ import io.renren.service.DmReportFinRepaymentdetailService;
 import io.renren.service.schedule.ScheduleReportTaskLogService;
 import io.renren.service.schedule.ScheduleReportTaskService;
 import io.renren.service.schedule.entity.JobVo;
+import io.renren.system.common.ConfigProp;
 import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
@@ -45,6 +46,9 @@ public class ProjectParameterJob implements Job {
 			if (success) {
 				break;
 			}
+		}
+		if (!ConfigProp.getIsSendEmail()) {
+			return;
 		}
 		logService.save(logVo);
 		updateRunningTime();

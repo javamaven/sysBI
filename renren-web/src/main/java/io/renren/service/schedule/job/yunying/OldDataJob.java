@@ -19,13 +19,13 @@ import com.alibaba.fastjson.JSONArray;
 
 import io.renren.entity.schedule.ScheduleReportTaskEntity;
 import io.renren.entity.schedule.ScheduleReportTaskLogEntity;
-import io.renren.entity.yunying.dayreport.DmReportBasicDailyEntity;
 import io.renren.entity.yunying.dayreport.DmReportDepNopenEntity;
 import io.renren.service.schedule.ScheduleReportTaskLogService;
 import io.renren.service.schedule.ScheduleReportTaskService;
 import io.renren.service.schedule.entity.JobVo;
 import io.renren.service.schedule.job.JobUtil;
 import io.renren.service.yunying.dayreport.DmReportDepNopenService;
+import io.renren.system.common.ConfigProp;
 import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
@@ -54,6 +54,9 @@ public class OldDataJob implements Job {
 			if (success) {
 				break;
 			}
+		}
+		if (!ConfigProp.getIsSendEmail()) {
+			return;
 		}
 		logService.save(logVo);
 		updateRunningTime();

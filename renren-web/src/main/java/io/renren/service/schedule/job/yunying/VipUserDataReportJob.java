@@ -28,6 +28,7 @@ import io.renren.service.schedule.entity.JobVo;
 import io.renren.service.schedule.job.JobUtil;
 import io.renren.service.yunying.dayreport.DmReportVipSituationService;
 import io.renren.service.yunying.dayreport.DmReportVipUserService;
+import io.renren.system.common.ConfigProp;
 import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
@@ -58,6 +59,9 @@ public class VipUserDataReportJob implements Job {
 			if (success) {
 				break;
 			}
+		}
+		if (!ConfigProp.getIsSendEmail()) {
+			return;
 		}
 		logService.save(logVo);
 		updateRunningTime();

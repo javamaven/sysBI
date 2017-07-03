@@ -26,6 +26,7 @@ import io.renren.service.schedule.entity.JobVo;
 import io.renren.service.schedule.job.JobUtil;
 import io.renren.service.yunying.basicreport.BasicReportService;
 import io.renren.service.yunying.dayreport.DmReportVipSituationService;
+import io.renren.system.common.ConfigProp;
 import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
@@ -59,8 +60,10 @@ public class FirstInvestThreeDayNotInvestReportJob implements Job {
 				break;
 			}
 		}
-		logService.save(logVo);
-		updateRunningTime();
+		if (ConfigProp.getIsSendEmail()) {
+			logService.save(logVo);
+			updateRunningTime();
+		}
 	}
 
 	/**

@@ -14,23 +14,18 @@ import org.quartz.JobDataMap;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.PersistJobDataAfterExecution;
-import org.quartz.utils.DirtyFlagMap;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
 import io.renren.entity.schedule.ScheduleReportTaskEntity;
 import io.renren.entity.schedule.ScheduleReportTaskLogEntity;
-import io.renren.entity.yunying.dayreport.DmReportVipSituationEntity;
-import io.renren.entity.yunying.dayreport.DmReportVipUserEntity;
-import io.renren.entity.yunying.dayreport.MonthlyReportEntity;
 import io.renren.service.schedule.ScheduleReportTaskLogService;
 import io.renren.service.schedule.ScheduleReportTaskService;
 import io.renren.service.schedule.entity.JobVo;
 import io.renren.service.schedule.job.JobUtil;
-import io.renren.service.yunying.dayreport.DmReportVipSituationService;
-import io.renren.service.yunying.dayreport.DmReportVipUserService;
 import io.renren.service.yunying.dayreport.MonthlyReportService;
+import io.renren.system.common.ConfigProp;
 import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
@@ -62,6 +57,9 @@ public class MonthlyReportJob implements Job {
 			if (success) {
 				break;
 			}
+		}
+		if (!ConfigProp.getIsSendEmail()) {
+			return;
 		}
 		logService.save(logVo);
 		updateRunningTime();

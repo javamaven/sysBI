@@ -57,6 +57,9 @@ public class ChannelAllReportJob implements Job {
 				break;
 			}
 		}
+		if (!ConfigProp.getIsSendEmail()) {
+			return;
+		}
 		logService.save(logVo);
 		updateRunningTime();
 	}

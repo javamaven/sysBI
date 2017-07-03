@@ -24,6 +24,7 @@ import io.renren.service.schedule.ScheduleReportTaskService;
 import io.renren.service.schedule.entity.JobVo;
 import io.renren.service.schedule.job.JobUtil;
 import io.renren.service.yunying.dayreport.DmReportActiveChannelCostService;
+import io.renren.system.common.ConfigProp;
 import io.renren.system.common.SpringBeanFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
@@ -53,8 +54,10 @@ public class ChannelCostDataReportJob implements Job {
 				break;
 			}
 		}
-		logService.save(logVo);
-		updateRunningTime();
+		if (ConfigProp.getIsSendEmail()) {
+			logService.save(logVo);
+			updateRunningTime();
+		}
 	}
 
 	@SuppressWarnings("unchecked")
