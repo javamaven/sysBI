@@ -1,6 +1,7 @@
 package io.renren.controller.yunying.dayreport;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -119,6 +120,8 @@ public class DmReportDepSalesController {
 		if (StringUtils.isNotEmpty(statPeriod)) {
 			map.put("statPeriod", statPeriod.replace("-", ""));
 		}
+		/**底层资产供应情况*/
+		String title = "各类产品的实际销售情况";
 		// 查询列表数据
 		List<DmReportDepSalesEntity> dataList = dmReportDepSalesService.queryList(map);
 		JSONArray va = new JSONArray();
@@ -127,10 +130,41 @@ public class DmReportDepSalesController {
 			va.add(entity);
 		}
 		Map<String, String> headMap = dmReportDepSalesService.getExcelFields();
-
-		String title = "各类产品的实际销售情况";
-
-		ExcelUtil.downloadExcelFile(title, headMap, va, response);
+		/*************************************************************************/
+		/**底层资产供应情况*/
+		String title2 = "底层资产供应情况";
+		Map<String, String> headMap2 = dmReportDepSalesService.getExcelFields1();
+		// 查询列表数据
+		List<DmReportDepSalesEntity> dataList2 = dmReportDepSalesService.queryLists(map);
+		JSONArray va2 = new JSONArray();
+		for (int i = 0; i < dataList2.size(); i++) {
+			DmReportDepSalesEntity entity = dataList2.get(i);
+			va2.add(entity);
+		}
+		/*************************************************************************/
+		/**理财计划留存情况（单位：万）*/
+		String title3 = "理财计划留存情况（单位：万）";
+		List<DmReportDepSalesEntity> dataList3 = dmReportDepSalesService.queryListss(map);
+		JSONArray va3 = new JSONArray();
+		for (int i = 0; i < dataList3.size(); i++) {
+			DmReportDepSalesEntity entity = dataList3.get(i);
+			va3.add(entity);
+		}
+		Map<String, String> headMap3 = dmReportDepSalesService.getExcelFields2();
+		/*************************************************************************/
+		List<String> titleList = new ArrayList<>();
+		titleList.add(title);
+		titleList.add(title2);
+		titleList.add(title3);
+		List<Map<String, String>> headMapList = new ArrayList<Map<String,String>>();
+		headMapList.add(headMap);
+		headMapList.add(headMap2);
+		headMapList.add(headMap3);
+		List<JSONArray> ja = new ArrayList<JSONArray>();
+		ja.add(va);
+		ja.add(va2);
+		ja.add(va3);
+		ExcelUtil.downloadExcelFile(titleList , headMapList, ja , response);
 	}
 	@SuppressWarnings("unchecked")
 	@ResponseBody

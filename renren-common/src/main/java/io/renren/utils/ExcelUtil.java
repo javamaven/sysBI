@@ -340,6 +340,140 @@ public class ExcelUtil {
 			e.printStackTrace();
 		}
 	}
+	
+	public static void exportExcelX(List<String> title, List<Map<String, String>> headMapList, List<JSONArray> jsonArrayList, String datePattern,
+			int colWidth, OutputStream out) {
+		if (datePattern == null)
+			datePattern = DEFAULT_DATE_PATTERN;
+		// 声明一个工作薄
+		SXSSFWorkbook workbook = new SXSSFWorkbook(1000);// 缓存
+		workbook.setCompressTempFiles(true);
+		// 表头样式
+		CellStyle titleStyle = workbook.createCellStyle();
+		titleStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		org.apache.poi.ss.usermodel.Font titleFont = workbook.createFont();
+		((org.apache.poi.ss.usermodel.Font) titleFont).setFontHeightInPoints((short) 20);
+		((org.apache.poi.ss.usermodel.Font) titleFont).setBoldweight((short) 700);
+		titleStyle.setFont((org.apache.poi.ss.usermodel.Font) titleFont);
+		// 列头样式
+		CellStyle headerStyle = workbook.createCellStyle();
+		/* headerStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND); */
+		headerStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		headerStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+		headerStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
+		headerStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+		headerStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		org.apache.poi.ss.usermodel.Font headerFont = workbook.createFont();
+		((org.apache.poi.ss.usermodel.Font) headerFont).setFontHeightInPoints((short) 12);
+		((org.apache.poi.ss.usermodel.Font) headerFont).setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		headerStyle.setFont((org.apache.poi.ss.usermodel.Font) headerFont);
+		// 单元格样式
+		CellStyle cellStyle = workbook.createCellStyle();
+		/* cellStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND); */
+		cellStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
+		cellStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+		cellStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
+		cellStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+		cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		cellStyle.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);
+		org.apache.poi.ss.usermodel.Font cellFont = workbook.createFont();
+		((org.apache.poi.ss.usermodel.Font) cellFont).setBoldweight(HSSFFont.BOLDWEIGHT_NORMAL);
+		cellStyle.setFont((org.apache.poi.ss.usermodel.Font) cellFont);
+		// 生成一个(带标题)表格
+		SXSSFSheet sheet = null;
+		// 设置列宽
+		int minBytes = colWidth < DEFAULT_COLOUMN_WIDTH ? DEFAULT_COLOUMN_WIDTH : colWidth;// 至少字节数
+		
+		for (int z = 0; z < headMapList.size(); z++) {
+			sheet = workbook.createSheet(title.get(z));// 如果数据超过了，则在第二页显示
+			Map<String, String> headMap = headMapList.get(z);
+			int[] arrColWidth = new int[headMap.size()];
+			// 产生表格标题行,以及设置列宽
+			String[] properties = new String[headMap.size()];
+			String[] headers = new String[headMap.size()];
+			int ii = 0;
+			for (Iterator<String> iter = headMap.keySet().iterator(); iter.hasNext();) {
+				String fieldName = iter.next();
+				
+				properties[ii] = fieldName;
+				headers[ii] = headMap.get(fieldName);
+				
+				int bytes = fieldName.getBytes().length;
+				arrColWidth[ii] = bytes < minBytes ? minBytes : bytes;
+				sheet.setColumnWidth(ii, arrColWidth[ii] * 256);
+				ii++;
+			}
+			
+			
+			// 遍历集合数据，产生数据行
+			int rowIndex = 0;
+			JSONArray jsonArray = jsonArrayList.get(z);
+			for (Object obj : jsonArray) {
+				if (rowIndex == 1000000 || rowIndex == 0) {
+					SXSSFRow titleRow = sheet.createRow(0);// 表头 rowIndex=0
+					titleRow.createCell(0).setCellValue(title.get(z));
+					titleRow.getCell(0).setCellStyle(titleStyle);
+					
+					sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, headMap.size() - 1));
+					
+					SXSSFRow headerRow = sheet.createRow(1); // 列头 rowIndex =1
+					for (int i = 0; i < headers.length; i++) {
+						headerRow.createCell(i).setCellValue(headers[i]);
+						headerRow.getCell(i).setCellStyle(headerStyle);
+
+					}
+					rowIndex = 2;// 数据内容从 rowIndex=2开始
+				}
+				JSONObject jo = (JSONObject) JSONObject.toJSON(obj);
+				SXSSFRow dataRow = sheet.createRow(rowIndex);
+				for (int i = 0; i < properties.length; i++) {
+					SXSSFCell newCell = dataRow.createCell(i);
+
+					Object o = jo.get(properties[i]);
+					if (o == null){
+						newCell.setCellValue("");
+//					}else if (o instanceof Date){
+//						newCell.setCellValue(new SimpleDateFormat(datePattern).format(o));
+					}else if (o instanceof Float){
+						BigDecimal setScale = new BigDecimal(o.toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
+						newCell.setCellValue(setScale.floatValue());
+					}else if (o instanceof Double){
+						BigDecimal setScale = new BigDecimal(o.toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
+						newCell.setCellValue(setScale.doubleValue());
+					}else if(o instanceof Integer){
+						newCell.setCellValue(Integer.parseInt(o.toString()));
+					}else if(o instanceof BigDecimal){
+						BigDecimal big = new BigDecimal(o.toString());
+						int intValue = big.intValue();
+						double doubleValue = big.doubleValue();
+						if(doubleValue > intValue){
+							newCell.setCellValue(doubleValue);
+						}else{
+							newCell.setCellValue(intValue);
+						}
+					}else{
+						newCell.setCellValue(o.toString());
+					}
+					
+					newCell.setCellStyle(cellStyle);
+				}
+				rowIndex++;
+			}
+			
+		}
+	
+		// 自动调整宽度
+		/*
+		 * for (int i = 0; i < headers.length; i++) { sheet.autoSizeColumn(i); }
+		 */
+		try {
+			workbook.write(out);
+			workbook.close();
+			workbook.dispose();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/*
 	 * Web导出后台方法 Controller调用
@@ -403,6 +537,41 @@ public class ExcelUtil {
 			outputStream.close();
 		} catch (Exception e) {
 			throw e;
+		}
+	}
+	
+	/*
+	 * Web导出后台方法 Controller调用
+	 */
+	public static void downloadExcelFile(List<String> titleList, List<Map<String, String>> headMap, List<JSONArray> ja,
+			HttpServletResponse response) {
+		try {
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			ExcelUtil.exportExcelX(titleList, headMap, ja, null, 0, os);
+			byte[] content = os.toByteArray();
+			InputStream is = new ByteArrayInputStream(content);
+			// 设置response参数，可以打开下载页面
+			response.reset();
+
+			response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+			response.setHeader("Content-Disposition",
+					"attachment;filename=" + new String((titleList.get(0) + ".xlsx").getBytes(), "iso-8859-1"));
+			response.setContentLength(content.length);
+			ServletOutputStream outputStream = response.getOutputStream();
+			BufferedInputStream bis = new BufferedInputStream(is);
+			BufferedOutputStream bos = new BufferedOutputStream(outputStream);
+			byte[] buff = new byte[8192];
+			int bytesRead;
+			while (-1 != (bytesRead = bis.read(buff, 0, buff.length))) {
+				bos.write(buff, 0, bytesRead);
+
+			}
+			bis.close();
+			bos.close();
+			outputStream.flush();
+			outputStream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
