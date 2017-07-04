@@ -21,7 +21,6 @@ import com.alibaba.fastjson.JSONArray;
 
 import io.renren.entity.yunying.dayreport.DmReportDepSalesEntity;
 import io.renren.service.yunying.dayreport.DmReportDepSalesService;
-import io.renren.util.DateUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
@@ -41,9 +40,6 @@ public class DmReportDepSalesController {
 	@Autowired
 	private DmReportDepSalesService dmReportDepSalesService;
 	
-//	SimpleDateFormat dateFm = new SimpleDateFormat("EEEE");
-//	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
-	
 	/**
 	 * 列表
 	 */
@@ -62,52 +58,7 @@ public class DmReportDepSalesController {
 		map.put("statPeriod",statPeriod);
 		//查询列表数据
 		List<DmReportDepSalesEntity> dmReportDepSalesList = dmReportDepSalesService.queryList(map);
-		
-
-
-//		try {
-			String week = dateFm.format(sdf.parse(statPeriod));
-			if(week.equals("星期一")){//-3
-				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 3, "yyyyMMdd");
-			}else if(week.equals("星期二") || week.equals("星期三") || week.equals("星期四") || week.equals("星期五")){//-1
-				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 1, "yyyyMMdd");
-			}else{//周六周日-7
-				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 7, "yyyyMMdd");
-			}
-			map.put("statPeriod",statPeriod);
-			List<DmReportDepSalesEntity> dmReportDepSalesList2 = dmReportDepSalesService.queryList(map);
-			for (int i = 0; i < dmReportDepSalesList.size(); i++) {
-				DmReportDepSalesEntity entity = dmReportDepSalesList.get(i);
-				for (int j = 0; j < dmReportDepSalesList2.size(); j++) {
-					DmReportDepSalesEntity vo2 = dmReportDepSalesList2.get(j);
-					if(entity.getSalesType().equals(vo2.getSalesType())){
-						String today = entity.getZongji().replace("%", "");
-						String yes = vo2.getZongji().replace("%", "");
-//						 DecimalFormat df = new DecimalFormat("0.00");
-						double rate = Double.parseDouble(today)/Double.parseDouble(yes);
-					
-//						entity.setWeekTongRate(df.format(rate*100) + "%");
-
-						
-					}
-				}
-			}
-			
-
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//			
-//		}
-		
-
-	
-
-		
-		
-		
 		int total = dmReportDepSalesService.queryTotal(map);
-		
-		
 		
 		PageUtils pageUtil = new PageUtils(dmReportDepSalesList, total, limit, page);
 		
@@ -153,43 +104,6 @@ public class DmReportDepSalesController {
 		map.put("statPeriod",statPeriod);
 		//查询列表数据
 		List<DmReportDepSalesEntity> dmReportDepSalesList = dmReportDepSalesService.queryListss(map);
-		//周同比，判断星期几
-//		try {
-			String week = dateFm.format(sdf.parse(statPeriod));
-			if(week.equals("星期一")){//-3
-				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 3, "yyyyMMdd");
-			}else if(week.equals("星期二") || week.equals("星期三") || week.equals("星期四") || week.equals("星期五")){//-1
-				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 1, "yyyyMMdd");
-			}else{//周六周日-7
-				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 7, "yyyyMMdd");
-			}
-			map.put("statPeriod",statPeriod);
-			List<DmReportDepSalesEntity> dmReportDepSalesList2 = dmReportDepSalesService.queryListss(map);
-			for (int i = 0; i < dmReportDepSalesList.size(); i++) {
-				DmReportDepSalesEntity entity = dmReportDepSalesList.get(i);
-				for (int j = 0; j < dmReportDepSalesList2.size(); j++) {
-					DmReportDepSalesEntity vo2 = dmReportDepSalesList2.get(j);
-					if(entity.getSalesType().equals(vo2.getSalesType())){
-						String today = entity.getZhanbi().replace("%", "");
-						String yes = vo2.getZhanbi().replace("%", "");
-//						 DecimalFormat df = new DecimalFormat("0.00");
-						double rate = Double.parseDouble(today)/Double.parseDouble(yes);
-						
-						entity.setWeekTongRate(df.format(rate*100) + "%");
-								
-						
-					}
-				}
-			}
-			
-
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//			
-//		}
-		
-		
-		
 		int total = dmReportDepSalesService.queryTotal(map);
 		
 		PageUtils pageUtil = new PageUtils(dmReportDepSalesList, total, limit, page);
