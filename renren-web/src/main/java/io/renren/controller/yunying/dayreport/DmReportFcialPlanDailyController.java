@@ -54,15 +54,18 @@ public class DmReportFcialPlanDailyController {
 	@ResponseBody
 	@RequestMapping("/list")
 	@RequiresPermissions("dmreportfcialplandaily:list")
-	public R list(Integer page, Integer limit, String statPeriod) {
+	public R list(Integer page, Integer limit, String statPeriodStart, String statPeriodEnd) {
 
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		Map<String, Object> map = new HashMap<>();
 		map.put("offset", (page - 1) * limit);
 		map.put("limit", limit);
-		if(StringUtils.isNotEmpty(statPeriod)){
-			map.put("statPeriod", statPeriod.replace("-", ""));
+		if(StringUtils.isNotEmpty(statPeriodStart)){
+			map.put("statPeriodStart", statPeriodStart.replace("-", ""));
+		}
+		if(StringUtils.isNotEmpty(statPeriodEnd)){
+			map.put("statPeriodEnd", statPeriodEnd.replace("-", ""));
 		}
 		// 查询列表数据
 		List<DmReportFcialPlanDailyEntity> dmReportFcialPlanDailyList = service.queryList(map);
@@ -79,10 +82,15 @@ public class DmReportFcialPlanDailyController {
 	@RequiresPermissions("dmreportfcialplandaily:list")
 	public void partExport(String params, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
-		String statPeriod = map.get("statPeriod") + "";
-		if (StringUtils.isNotEmpty(statPeriod)) {
-			map.put("statPeriod", statPeriod.replace("-", ""));
+		String statPeriodStart = map.get("statPeriodStart") + "";
+		String statPeriodEnd = map.get("statPeriodEnd") + "";
+		if(StringUtils.isNotEmpty(statPeriodStart)){
+			map.put("statPeriodStart", statPeriodStart.replace("-", ""));
 		}
+		if(StringUtils.isNotEmpty(statPeriodEnd)){
+			map.put("statPeriodEnd", statPeriodEnd.replace("-", ""));
+		}
+		
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		// 查询列表数据

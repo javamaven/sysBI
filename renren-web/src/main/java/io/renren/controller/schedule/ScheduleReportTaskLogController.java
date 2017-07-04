@@ -69,12 +69,10 @@ public class ScheduleReportTaskLogController {
 		return R.ok().put("page", pageUtil);
 	}
 
-	public void exportExcelX(String id, OutputStream out) {
+	public void exportExcelX(String id, String fileName, OutputStream out) {
 		String path = "";
-		String fileName = null;
 		String fieldName = "file";
-		String querySql = "select file from schedule_report_task_log where id=" + id;
-//		FileOutputStream outputImage = null;
+		String querySql = "select file from schedule_report_task_log_file where log_id="+id+" and file_name='"+fileName+"'";
 		JdbcHelper jdbcHelper = new JdbcHelper(dataSource);
 		try {
 			jdbcHelper.readImg(path, fileName, fieldName, querySql, out);
@@ -89,7 +87,7 @@ public class ScheduleReportTaskLogController {
 			throws IOException {
 		try {
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			exportExcelX(id + "", os);
+			exportExcelX(id + "", title, os);
 			byte[] content = os.toByteArray();
 			InputStream is = new ByteArrayInputStream(content);
 			// 设置response参数，可以打开下载页面

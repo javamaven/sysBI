@@ -36,6 +36,25 @@ public class ScheduleReportTaskLogEntity implements Serializable {
 	private Date time;
 	//备注
 	private String desc;
+	//多个附件ID
+	private String fileId;//多个形如:1,2,3
+	private String fileNames;
+	
+	public void setFileId(String fileId) {
+		this.fileId = fileId;
+	}
+	
+	public String getFileId() {
+		return fileId;
+	}
+	
+	public void setFileNames(String fileNames) {
+		this.fileNames = fileNames;
+	}
+	
+	public String getFileNames() {
+		return fileNames;
+	}
 
 	/**
 	 * 设置：

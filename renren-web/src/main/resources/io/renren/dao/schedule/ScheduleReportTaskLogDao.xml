@@ -22,13 +22,29 @@
 	</select>
 
 	<select id="queryList" resultType="io.renren.entity.schedule.ScheduleReportTaskLogEntity">
-		select * from schedule_report_task_log
+		select
+		
+			l.ID,
+			l.TASK_ID,
+			l.TIME_COST,
+			l.SEND_RESULT,
+			l.PARAMS,
+			l.RECEIVE_EMAL,
+			l.CHAOSONG_EMAIL,
+			GROUP_CONCAT(f.file_name) EMAIL_VALUE,
+			l.TIME,
+			l.DESC
+		FROM
+			schedule_report_task_log l
+		LEFT JOIN schedule_report_task_log_file f ON (l.id = f.log_id)
+		
        	where 1=1
        	
 		<if test="taskId != null and taskId.trim() != '' ">
 			and TASK_ID = #{taskId}
 		</if>
-		ORDER BY TIME DESC		
+		group by 	l.id	
+		ORDER BY TIME DESC	
 		<if test="offset != null and limit != null">
 			limit #{offset}, #{limit}
 		</if>
@@ -42,10 +58,9 @@
 		</if>
 	</select>
 	 
-	<insert id="save" parameterType="io.renren.entity.schedule.ScheduleReportTaskLogEntity">
+	<insert id="save" parameterType="io.renren.entity.schedule.ScheduleReportTaskLogEntity" useGeneratedKeys="true" keyProperty="id">
 		insert into schedule_report_task_log
 		(
-			`ID`, 
 			`TASK_ID`, 
 			`TIME_COST`, 
 			`SEND_RESULT`, 
@@ -58,7 +73,6 @@
 		)
 		values
 		(
-			#{id}, 
 			#{taskId}, 
 			#{timeCost}, 
 			#{sendResult}, 

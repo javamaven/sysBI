@@ -80,19 +80,29 @@ public class LicaiPlanReportJob implements Job {
 			queryParams.putAll(params);
 			String date_offset_num = params.get("date_offset_num") + "";
 			String[] splitArr = date_offset_num.split("-");
-			String statPeriod = params.get("statPeriod") + "";
+			String statPeriodStart = params.get("statPeriodStart") + "";
+			String statPeriodEnd = params.get("statPeriodEnd") + "";
 			if (!"0".equals(splitArr[0])) {
-				if (StringUtils.isNotEmpty(statPeriod)) {
+				if (StringUtils.isNotEmpty(statPeriodStart)) {
 					int days = Integer.valueOf(splitArr[0]);
 					if ("day".equals(splitArr[1])) {
-						statPeriod = DateUtil.getCurrDayBefore(statPeriod, -days, "yyyy-MM-dd");
+						statPeriodStart = DateUtil.getCurrDayBefore(statPeriodStart, -days, "yyyy-MM-dd");
 					} else if ("hour".equals(splitArr[1])) {
-						statPeriod = DateUtil.getHourBefore(statPeriod, -days, "yyyy-MM-dd");
+						statPeriodStart = DateUtil.getHourBefore(statPeriodStart, -days, "yyyy-MM-dd");
 					}
 				}
-				params.put("statPeriod", statPeriod);
+				if (StringUtils.isNotEmpty(statPeriodEnd)) {
+					int days = Integer.valueOf(splitArr[0]);
+					if ("day".equals(splitArr[1])) {
+						statPeriodEnd = DateUtil.getCurrDayBefore(statPeriodEnd, -days, "yyyy-MM-dd");
+					} else if ("hour".equals(splitArr[1])) {
+						statPeriodEnd = DateUtil.getHourBefore(statPeriodEnd, -days, "yyyy-MM-dd");
+					}
+				}
+				params.put("statPeriodEnd", statPeriodEnd);
 			}
-			queryParams.put("statPeriod", statPeriod.replace("-", ""));
+			queryParams.put("statPeriodStart", statPeriodStart.replace("-", ""));
+			queryParams.put("statPeriodEnd", statPeriodEnd.replace("-", ""));
 			logVo.setParams(JSON.toJSONString(params));
 			List<DmReportFcialPlanDailyEntity> queryList = service.queryList(queryParams);
 			JSONArray dataArray = new JSONArray();

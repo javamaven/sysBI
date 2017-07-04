@@ -4,31 +4,34 @@
 <mapper namespace="io.renren.dao.yunying.basicreport.BasicReportDao">
 	<!-- 	 电销筛选开通存管版本用户,记录导入信息 -->
 	<insert id="batchInsertPhoneSaleCgUser" useGeneratedKeys="true" parameterType="java.util.List">  
-	    insert into phone_sale_cg_user_import (user_id,phone, user_name, real_name, CALL_DATE, GIVE_DATE,uuid, type)   
+	    insert into phone_sale_cg_user_import (user_id,phone, user_name, real_name, CALL_DATE, GIVE_DATE,uuid, type, import_time)   
 	    values  
 	    <foreach collection="list" item="item" index="index" separator="," >  
 	         ( 
-	         #{item.user_id}, 
+	         	#{item.user_id}, 
 	         	#{item.phone}, 
 	         	#{item.user_name},
 	         	#{item.real_name},
 	         	#{item.call_date},
 	         	#{item.give_date},
 	         	#{item.uuid},
-	         	#{item.type}
+	         	#{item.type},
+	         	now()
 	         )  
 	    </foreach>  
 	</insert> 
 	
 	<select id="queryPhoneSaleCgUserTotal" resultType="int">
+		
 		SELECT
 			count(1)
 		FROM
 			phone_sale_cg_user_import p
-		LEFT JOIN edw_user_basic u ON (p.phone = u.PHONE)
+		LEFT JOIN edw_user_basic u ON (u.user_id=p.user_id)
 		WHERE
 			1 = 1
 		AND u.CG_USER_ID IS NOT NULL
+		and p.type=#{type}
 		<if test="date != null and date.trim() != '' ">
 			and p.call_date > #{date}
 		</if>
@@ -38,13 +41,12 @@
 		<if test="isKaitongCg == 2 ">
 			AND u.DEPOSITORY_OPEN_TIME IS NULL
 		</if>
-		and p.is_export = 1 
-		and p.type=#{type}
+		and p.is_export != 1
 	</select>
 	
 	<update id="updatePhoneSaleCgUserList" parameterType="Map">    
         update phone_sale_cg_user_import   
-        	set is_export='1'
+        	set is_export='1', export_time=now()
         where 1=1 
         and type=#{type}
         and user_id in     
