@@ -69,6 +69,7 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 		headMap.put("jiushiliuyue", "96个月");
 		headMap.put("zongji", "总计");
 		headMap.put("zhanbi", "占比");
+//		headMap.put("weekTongRate", "周同比");
 		return headMap;
 	}
 	@Override
@@ -107,7 +108,7 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 		headMap.put("statPeriod", "日期");
 		headMap.put("salesType", "类型");
 		headMap.put("zhanbi", "金额");
-
+//		headMap.put("weekTongRate", "周同比");
 	
 
 		return headMap;

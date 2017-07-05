@@ -41,9 +41,17 @@ public class DmReportDepSalesEntity implements Serializable {
 	private String jiushiliuyue;
 	private String zongji;
 	private String zhanbi;
-
-    
 	
+	private String weekTongRate;//周同比
+	
+	public void setWeekTongRate(String weekTongRate) {
+		this.weekTongRate = weekTongRate;
+	}
+	
+	public String getWeekTongRate() {
+		return weekTongRate;
+	}
+
 	public String getZichan() {
 		return zichan;
 	}
@@ -198,5 +206,16 @@ public class DmReportDepSalesEntity implements Serializable {
 	/**
 	 * 设置：期限
 	 */
+
+	@Override
+	public String toString() {
+		return "DmReportDepSalesEntity [statPeriod=" + statPeriod + ", shiwutian=" + shiwutian + ", zichan=" + zichan
+				+ ", salesType=" + salesType + ", yiyue=" + yiyue + ", eryue=" + eryue + ", sanyue=" + sanyue
+				+ ", liuyue=" + liuyue + ", bayue=" + bayue + ", jiuyue=" + jiuyue + ", shiyue=" + shiyue
+				+ ", shieryue=" + shieryue + ", shiwuyue=" + shiwuyue + ", shibayue=" + shibayue + ", ershisiyue="
+				+ ershisiyue + ", sanshiwuyue=" + sanshiwuyue + ", sanshiliuyue=" + sanshiliuyue + ", sishibayue="
+				+ sishibayue + ", liushiyue=" + liushiyue + ", jiushiliuyue=" + jiushiliuyue + ", zongji=" + zongji
+				+ ", zhanbi=" + zhanbi + ", weekTongRate=" + weekTongRate + "]";
+	}
 	
 }

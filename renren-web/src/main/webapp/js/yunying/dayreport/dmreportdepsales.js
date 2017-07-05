@@ -84,7 +84,8 @@ function initDetailTableGrid(){
 			{ label: '60个月', name: 'liushiyue', index: '$liushiyue', width: 50 },
 			{ label: '96个月', name: 'jiushiliuyue', index: '$jiushiliuyue', width: 50, key: true },
 			{ label: '总计', name: 'zongji', index: '$zongji', width: 50 },
-			{ label: '占比', name: 'zhanbi', index: '$zhanbi', width: 50, key: true }
+			{ label: '占比', name: 'zhanbi', index: '$zhanbi', width: 50, key: true },
+			{ label: '周同比', name: 'weekTongRate', index: '$WeekTongRate', width: 50, key: true }
 	
         ],
 		viewrecords: true,
@@ -169,7 +170,8 @@ function initlicaiTableGrid(){
         colModel: [			
 			{ label: '日期', name: 'statPeriod', index: '$STAT_PERIOD', width: 50, key: true },
 			{ label: '类型', name: 'salesType', index: '$sales_type', width: 50 }, 			
-			{ label: '金额', name: 'zhanbi', index: '$sumddd', width: 50 }		
+			{ label: '金额', name: 'zhanbi', index: '$sumddd', width: 50 },
+			{ label: '周同比', name: 'weekTongRate', index: '$WeekTongRate', width: 50, key: true }
 
         ],
  

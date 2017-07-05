@@ -125,7 +125,7 @@ public class DailyReportDataJob implements Job {
 				attachList.add(attachFilePath3);
 				mailUtil.sendWithAttachs(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
 						taskEntity.getChaosongEmailList(), attachList);
-				logVo.setEmailValue(attachFilePath);
+				logVo.setEmailValue(attachFilePath+","+attachFilePath2+","+attachFilePath3);
 			} else {
 				logVo.setEmailValue("查询没有返回数据");
 			}

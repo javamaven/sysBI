@@ -23,5 +23,8 @@ public interface DmReportDepSalesService {
 	Map<String, String> getExcelFields();
 	Map<String, String> getExcelFields1();
 	Map<String, String> getExcelFields2();
+
+
+
 	
 }
