@@ -18,7 +18,25 @@ public class DateUtil {
 //		System.out.println("getCurrDayBefore=" + getCurrDayBefore(1));
 //		System.out.println("getCurrDayBefore=" + getCurrDayBefore("20170423", 1, null));
 		
-		System.out.println("getNextMinutes=" + getNextMinutes("2017-06-09 17:00", 30, "yyyy-MM-dd HH:mm"));
+//		System.out.println("getNextMinutes=" + getNextMinutes("2017-06-09 17:00", 30, "yyyy-MM-dd HH:mm"));
+		
+		System.err.println("+++++++++" + getWeekOfDate(new Date()));
+	}
+	
+	/**
+	 * 获取当前日期是星期几<br>
+	 * 
+	 * @param dt
+	 * @return 当前日期是星期几
+	 */
+	public static String getWeekOfDate(Date dt) {
+	    String[] weekDays = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"};
+	    Calendar cal = Calendar.getInstance();
+	    cal.setTime(dt);
+	    int w = cal.get(Calendar.DAY_OF_WEEK) - 1;
+	    if (w < 0)
+	        w = 0;
+	    return weekDays[w];
 	}
 
 	public static String formatDate(Date date) {

@@ -90,8 +90,9 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 
 //			Date fireTime = ctx.getFireTime();
 			Date currDate = new Date();
-			String week = dateFm.format(currDate);
+			String week = DateUtil.getWeekOfDate(currDate);
 			String executeTime = sdf.format(currDate);
+			
 			if ("星期一".equals(week) && currDate.getHours() == 9) {
 				String currDayBefore = DateUtil.getCurrDayBefore(3, "yyyy-MM-dd");
 				registerStartTime = currDayBefore + " 17:00:00";

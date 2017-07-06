@@ -1,7 +1,6 @@
 package io.renren.controller.yunying.dayreport;
 
 import java.io.IOException;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;

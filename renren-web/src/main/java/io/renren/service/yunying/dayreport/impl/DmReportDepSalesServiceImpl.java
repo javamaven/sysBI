@@ -40,7 +40,7 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 
 		try {
 			String statPeriod= map.get("statPeriod") + "";
-			String week = dateFm.format(sdf.parse(statPeriod));
+			String week = DateUtil.getWeekOfDate(sdf.parse(statPeriod));
 			if(week.equals("星期一")){//-3
 				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 3, "yyyyMMdd");
 			}else if(week.equals("星期二") || week.equals("星期三") || week.equals("星期四") || week.equals("星期五")){//-1
@@ -101,8 +101,8 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 		List<DmReportDepSalesEntity> dmReportDepSalesList = dmReportDepSalesDao.queryLists(map);
 		try {
 			String statPeriod= map.get("statPeriod") + "";
-			String week = dateFm.format(sdf.parse(statPeriod));
-
+			String week = DateUtil.getWeekOfDate(sdf.parse(statPeriod));
+			System.err.println("+++++++++++++今天++++++++" + week);
 			if(week.equals("星期一")){//-3
 				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 3, "yyyyMMdd");
 			}else if(week.equals("星期二") || week.equals("星期三") || week.equals("星期四") || week.equals("星期五")){//-1
@@ -111,6 +111,7 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 7, "yyyyMMdd");
 			}
 			map.put("statPeriod",statPeriod);
+			System.err.println("+++++++++++++查询昨天参数++++++++" + map);
 			List<DmReportDepSalesEntity> dmReportDepSalesList2 = dmReportDepSalesDao.queryLists(map);
 			DmReportDepSalesEntity yesEntity = null;
 			for (int j = 0; j < dmReportDepSalesList2.size(); j++) {
@@ -243,7 +244,7 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 		List<DmReportDepSalesEntity> dmReportDepSalesList = dmReportDepSalesDao.queryListss(map);
 		try {
 			String statPeriod= map.get("statPeriod") + "";
-			String week = dateFm.format(sdf.parse(statPeriod));
+			String week = DateUtil.getWeekOfDate(sdf.parse(statPeriod));
 			if(week.equals("星期一")){//-3
 				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 3, "yyyyMMdd");
 			}else if(week.equals("星期二") || week.equals("星期三") || week.equals("星期四") || week.equals("星期五")){//-1
