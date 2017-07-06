@@ -63,23 +63,25 @@
 			p.real_name,
 			p.call_date,
 			p.give_date,
-			u.cg_user_id,
-			u.depository_open_time
+			IFNULL(u2.cg_user_id,u.cg_user_id) cg_user_id,
+			IFNULL(u2.depository_open_time,u.depository_open_time) depository_open_time
+			
 		FROM
 			phone_sale_cg_user_import p
-		LEFT JOIN edw_user_basic u ON (u.user_id=p.user_id)
+		LEFT JOIN edw_user_basic u ON (u.cg_user_id=p.user_id)
+		LEFT JOIN edw_user_basic u2 on (u2.user_id=p.USER_ID)
 		WHERE
 			1 = 1
-		AND u.CG_USER_ID IS NOT NULL
+		AND (u.CG_USER_ID IS NOT NULL or u2.CG_USER_ID IS NOT NULL)
 		and p.type=#{type}
 		<if test="date != null and date.trim() != '' ">
 			and p.call_date > #{date}
 		</if>
 		<if test="isKaitongCg == 1 ">
-			AND u.DEPOSITORY_OPEN_TIME IS NOT NULL
+			AND (u.DEPOSITORY_OPEN_TIME IS NOT NULL or u2.DEPOSITORY_OPEN_TIME IS NOT NULL)
 		</if>
 		<if test="isKaitongCg == 2 ">
-			AND u.DEPOSITORY_OPEN_TIME IS NULL
+			AND u.DEPOSITORY_OPEN_TIME IS NULL and u2.DEPOSITORY_OPEN_TIME IS NULL
 		</if>
 		and p.is_export != 1
 		<if test="offset != null and limit != null">
