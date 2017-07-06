@@ -53,7 +53,72 @@ public class DmReportBasicDailyEntity implements Serializable {
 	private BigDecimal endYearAwait;
 	//总待收
 	private BigDecimal allAwait;
-
+	//测算累计待收(万元)
+	private BigDecimal allWait;
+	//理财计划预约金额(万元)
+	private BigDecimal matchWait;
+	//未匹配本金(万元)
+	private BigDecimal matchCapitilWait;
+	//未匹配测算利息(万元)
+	private BigDecimal matchInterestlWait;
+	public DmReportBasicDailyEntity(){
+		
+	}
+	public DmReportBasicDailyEntity(String statPeriod, Double invCou, BigDecimal usePackMoney,
+			BigDecimal avgUsePackMoney, BigDecimal accountMoney, BigDecimal avgMoney, BigDecimal yearMoney,
+			BigDecimal avgYearMoney, BigDecimal spreadsMoney, BigDecimal discountCost, BigDecimal avgDiscountCost,
+			BigDecimal forecastAwait, BigDecimal fullAwait, BigDecimal loanAwait, BigDecimal recoverMoney,
+			BigDecimal monthNh, BigDecimal newEndYearAwait, BigDecimal endYearAwait, BigDecimal allAwait,
+			BigDecimal allWait, BigDecimal matchWait, BigDecimal matchCapitilWait, BigDecimal matchInterestlWait) {
+		super();
+		this.statPeriod = statPeriod;
+		this.invCou = invCou;
+		this.usePackMoney = usePackMoney;
+		this.avgUsePackMoney = avgUsePackMoney;
+		this.accountMoney = accountMoney;
+		this.avgMoney = avgMoney;
+		this.yearMoney = yearMoney;
+		this.avgYearMoney = avgYearMoney;
+		this.spreadsMoney = spreadsMoney;
+		this.discountCost = discountCost;
+		this.avgDiscountCost = avgDiscountCost;
+		this.forecastAwait = forecastAwait;
+		this.fullAwait = fullAwait;
+		this.loanAwait = loanAwait;
+		this.recoverMoney = recoverMoney;
+		this.monthNh = monthNh;
+		this.newEndYearAwait = newEndYearAwait;
+		this.endYearAwait = endYearAwait;
+		this.allAwait = allAwait;
+		this.allWait = allWait;
+		this.matchWait = matchWait;
+		this.matchCapitilWait = matchCapitilWait;
+		this.matchInterestlWait = matchInterestlWait;
+	}
+	public BigDecimal getAllWait() {
+		return allWait;
+	}
+	public void setAllWait(BigDecimal allWait) {
+		this.allWait = allWait;
+	}
+	public BigDecimal getMatchWait() {
+		return matchWait;
+	}
+	public void setMatchWait(BigDecimal matchWait) {
+		this.matchWait = matchWait;
+	}
+	public BigDecimal getMatchCapitilWait() {
+		return matchCapitilWait;
+	}
+	public void setMatchCapitilWait(BigDecimal matchCapitilWait) {
+		this.matchCapitilWait = matchCapitilWait;
+	}
+	public BigDecimal getMatchInterestlWait() {
+		return matchInterestlWait;
+	}
+	public void setMatchInterestlWait(BigDecimal matchInterestlWait) {
+		this.matchInterestlWait = matchInterestlWait;
+	}
 	/**
 	 * 设置：
 	 */

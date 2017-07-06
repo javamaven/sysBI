@@ -50,6 +50,29 @@ public class DmReportCashDataEntity implements Serializable {
 	private BigDecimal txCgMoney;
 	
 	private BigDecimal txCgMoneyBl;
+	//渠道名称
+	private String channelName;
+	private String isVip;
+	
+	
+
+
+
+	public String getChannelName() {
+		return channelName;
+	}
+
+	public void setChannelName(String channelName) {
+		this.channelName = channelName;
+	}
+
+	public String getIsVip() {
+		return isVip;
+	}
+
+	public void setIsVip(String isVip) {
+		this.isVip = isVip;
+	}
 
 	public String getStatPeriod() {
 		return statPeriod;

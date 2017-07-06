@@ -27,6 +27,8 @@
         <result property="czMoney" column="CZ_MONEY"/>
         <result property="txCgMoney" column="TX_CG_MONEY"/>
         <result property="realname" column="REALNAME"/>
+        <result property="ChannelName" column="CHANNEL_NAME"/>
+        <result property="IsVip" column="IS_VIP"/>
     </resultMap>
 
 	<select id="queryObject" resultType="io.renren.entity.yunying.dayreport.DmReportCashDataEntity">

@@ -66,7 +66,9 @@ function initTableGrid(){
 				{ label: '累计充值金额', name: 'czMoney', index: '$CZ_MONEY', width: 110 ,align:'right'}, 			
 				{ label: '累计提现金额', name: 'txCgMoney', index: '$TX_CG_MONEY', width: 110 ,align:'right'} ,
 				
-				{ label: '提现金额占比充值金额', name: 'txCgMoneyBl', index: '$TX_CG_MONEY', width: 90 ,align:'right'}
+				{ label: '提现金额占比充值金额', name: 'txCgMoneyBl', index: '$TX_CG_MONEY', width: 90 ,align:'right'},
+				{ label: '渠道名称', name: 'channelName', index: '$CHANNEL_NAME', width: 80 ,align:'right'}, 			
+				{ label: '是否VIP', name: 'isVip', index: '$IS_VIP', width: 80,align:'right' }	
 	        ],
 			viewrecords: true,
 	        height: $(window).height()-150,

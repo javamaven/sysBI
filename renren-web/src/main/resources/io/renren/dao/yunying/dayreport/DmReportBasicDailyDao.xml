@@ -24,13 +24,17 @@
         <result property="newEndYearAwait" column="NEW_END_YEAR_AWAIT"/>
         <result property="endYearAwait" column="END_YEAR_AWAIT"/>
         <result property="allAwait" column="ALL_AWAIT"/>
+        <result property="allWait" column="ALL_WAIT"/>
+        <result property="matchWait" column="no_match_wait"/>
+        <result property="matchCapitilWait" column="no_match_capitil_wait"/>
+        <result property="matchInterestlWait" column="no_match_interest_wait"/>
     </resultMap>
 
-	<select id="queryObject" resultType="io.renren.entity.yunying.dayreport.DmReportBasicDailyEntity">
+	<select id="queryObject" resultMap="dmReportBasicDailyMap">
 		select * from dm_report_basic_daily where STAT_PERIOD = #{value}
 	</select>
 
-	<select id="queryList" resultType="io.renren.entity.yunying.dayreport.DmReportBasicDailyEntity">
+	<select id="queryList" resultMap="dmReportBasicDailyMap">
 		select * from dm_report_basic_daily
        
        	where 1=1

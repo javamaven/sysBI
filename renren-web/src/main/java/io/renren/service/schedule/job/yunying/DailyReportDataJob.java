@@ -78,6 +78,8 @@ public class DailyReportDataJob implements Job {
 			Map<String, Object> params = JSON.parseObject(queryObject.getCondition(), Map.class);
 			Map<String, Object> queryParams = new HashMap<String, Object>();
 			queryParams.putAll(params);
+			Map<String, Object> queryParams2 = new HashMap<String, Object>();
+			Map<String, Object> queryParams3 = new HashMap<String, Object>();
 			String date_offset_num = params.get("date_offset_num") + "";
 			String[] splitArr = date_offset_num.split("-");
 			String statPeriod = params.get("statPeriod") + "";
@@ -94,10 +96,12 @@ public class DailyReportDataJob implements Job {
 			}
 			queryParams.put("statPeriod", statPeriod.replace("-", ""));
 			logVo.setParams(JSON.toJSONString(params));
+			queryParams2.putAll(queryParams);
+			queryParams3.putAll(queryParams);
 			List<DmReportDepSalesEntity> queryList = service.queryList(queryParams);
 			// vip所属人汇总信息
-			List<DmReportDepSalesEntity> totalList = service.queryLists(queryParams);
-			List<DmReportDepSalesEntity> List2 = service.queryListss(queryParams);
+			List<DmReportDepSalesEntity> totalList = service.queryLists(queryParams2);
+			List<DmReportDepSalesEntity> List2 = service.queryListss(queryParams3);
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < queryList.size(); i++) {
 				DmReportDepSalesEntity entity = queryList.get(i);

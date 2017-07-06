@@ -47,7 +47,11 @@ function initTableGrid(){
 			{ label: '本月年化投资金额', name: 'monthNh', index: '$MONTH_NH', width: 80,align:'right' }, 			
 			{ label: '新增且到12-31后还款的待收（考虑还款方式）（万元）', name: 'newEndYearAwait', index: '$NEW_END_YEAR_AWAIT', width: 190 ,align:'right'}, 			
 			{ label: '到12-31后还款的待收金额', name: 'endYearAwait', index: '$END_YEAR_AWAIT', width: 100,align:'right' }, 			
-			{ label: '总待收', name: 'allAwait', index: '$ALL_AWAIT', width: 80,align:'right' }			
+			{ label: '总待收', name: 'allAwait', index: '$ALL_AWAIT', width: 80,align:'right' },		
+			{ label: '测算累计待收(万元)', name: 'allWait', index: '$ALL_WAIT', width: 100,align:'right' }, 			
+			{ label: '理财计划预约金额(万元)', name: 'matchWait', index: '$no_match_wait', width: 100 ,align:'right'}, 			
+			{ label: '未匹配本金(万元)', name: 'matchCapitilWait', index: '$no_match_capitil_wait', width: 100 ,align:'right'}, 			
+			{ label: '未匹配测算利息(万元)', name: 'matchInterestlWait', index: '$no_match_interest_wait', width: 100,align:'right' }
         ],
 		viewrecords: true,
 		height: $(window).height()-150,
