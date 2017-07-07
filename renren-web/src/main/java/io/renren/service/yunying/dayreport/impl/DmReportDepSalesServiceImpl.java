@@ -16,7 +16,6 @@ import io.renren.entity.yunying.dayreport.DmReportDepSalesEntity;
 import io.renren.service.yunying.dayreport.DmReportDepSalesService;
 import io.renren.util.DateUtil;
 import io.renren.util.NumberUtil;
-import io.renren.utils.PageUtils;
 
 
 
@@ -68,7 +67,7 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 						}else {
 							yes = vo2.getZongji().replace("%", "");
 							DecimalFormat df = new DecimalFormat("0.00");
-							double rate = Double.parseDouble(today)/Double.parseDouble(yes);
+							double rate = (Double.parseDouble(today)-Double.parseDouble(yes))/Double.parseDouble(yes);
 							if(!"期限占比总销量".equals(vo2.getSalesType())){
 								entity.setWeekTongRate(df.format(rate*100) + "%");
 							}
@@ -130,103 +129,109 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 					if(StringUtils.isEmpty(todayEntity.getShiwutian()) || StringUtils.isEmpty(yesEntity.getShiwutian())){
 						newEntity.setShiwutian("");
 					}else{
-						newEntity.setShiwutian(""+NumberUtil.keepPrecision(Double.parseDouble(todayEntity.getShiwutian())/Double.parseDouble(yesEntity.getShiwutian()), 2));
+						newEntity.setShiwutian(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getShiwutian())-Double.parseDouble(yesEntity.getShiwutian()))/Double.parseDouble(yesEntity.getShiwutian())*100, 2)+"%");
 					}
 					
 					if(StringUtils.isEmpty(todayEntity.getYiyue()) || StringUtils.isEmpty(yesEntity.getYiyue())){
 						newEntity.setYiyue("");
 					}else{
-						newEntity.setYiyue(""+NumberUtil.keepPrecision(Double.parseDouble(todayEntity.getYiyue())/Double.parseDouble(yesEntity.getYiyue()), 2));
+						newEntity.setYiyue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getYiyue())-Double.parseDouble(yesEntity.getYiyue()))/Double.parseDouble(yesEntity.getYiyue())*100, 2)+"%");
 					}
 					
 					if(StringUtils.isEmpty(todayEntity.getEryue()) || StringUtils.isEmpty(yesEntity.getEryue())){
 						newEntity.setEryue("");
 					}else{
-						newEntity.setEryue(""+NumberUtil.keepPrecision(Double.parseDouble(todayEntity.getEryue())/Double.parseDouble(yesEntity.getEryue()), 2));
+						newEntity.setEryue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getEryue())-Double.parseDouble(yesEntity.getEryue()))/Double.parseDouble(yesEntity.getEryue())*100, 2)+"%");
 					}
 					
 					if(StringUtils.isEmpty(todayEntity.getSanyue()) || StringUtils.isEmpty(yesEntity.getSanyue())){
 						newEntity.setSanyue("");
 					}else{
-						newEntity.setSanyue(""+NumberUtil.keepPrecision(Double.parseDouble(todayEntity.getSanyue())/Double.parseDouble(yesEntity.getSanyue()), 2));
+						newEntity.setSanyue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getSanyue())-Double.parseDouble(yesEntity.getSanyue()))/Double.parseDouble(yesEntity.getSanyue())*100, 2)+"%");
 					}
 					
 					if(StringUtils.isEmpty(todayEntity.getLiuyue()) || StringUtils.isEmpty(yesEntity.getLiuyue())){
 						newEntity.setLiuyue("");
 					}else{
-						newEntity.setLiuyue(""+NumberUtil.keepPrecision(Double.parseDouble(todayEntity.getLiuyue())/Double.parseDouble(yesEntity.getLiuyue()), 2));
+						newEntity.setLiuyue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getLiuyue())-Double.parseDouble(yesEntity.getLiuyue()))/Double.parseDouble(yesEntity.getLiuyue())*100, 2)+"%");
 					}
 					
 					if(StringUtils.isEmpty(todayEntity.getBayue()) || StringUtils.isEmpty(yesEntity.getBayue())){
 						newEntity.setBayue("");
 					}else{
-						newEntity.setBayue(""+NumberUtil.keepPrecision(Double.parseDouble(todayEntity.getBayue())/Double.parseDouble(yesEntity.getBayue()), 2));
+						newEntity.setBayue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getBayue())-Double.parseDouble(yesEntity.getBayue()))/Double.parseDouble(yesEntity.getBayue())*100, 2)+"%");
 					}
 					
 					if(StringUtils.isEmpty(todayEntity.getJiuyue()) || StringUtils.isEmpty(yesEntity.getJiuyue())){
 						newEntity.setJiuyue("");
 					}else{
-						newEntity.setJiuyue(""+NumberUtil.keepPrecision(Double.parseDouble(todayEntity.getJiuyue())/Double.parseDouble(yesEntity.getJiuyue()), 2));
+						newEntity.setJiuyue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getJiuyue())-Double.parseDouble(yesEntity.getJiuyue()))/Double.parseDouble(yesEntity.getJiuyue())*100, 2)+"%");
 					}
 					
 					if(StringUtils.isEmpty(todayEntity.getShiyue()) || StringUtils.isEmpty(yesEntity.getShiyue())){
 						newEntity.setShiyue("");
 					}else{
-						newEntity.setShiyue(""+NumberUtil.keepPrecision(Double.parseDouble(todayEntity.getShiyue())/Double.parseDouble(yesEntity.getShiyue()), 2));
+						newEntity.setShiyue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getShiyue())-Double.parseDouble(yesEntity.getShiyue()))/Double.parseDouble(yesEntity.getShiyue())*100, 2)+"%");
 					}
 					
 					if(StringUtils.isEmpty(todayEntity.getShieryue()) || StringUtils.isEmpty(yesEntity.getShieryue())){
 						newEntity.setShieryue("");
 					}else{
-						newEntity.setShieryue(""+NumberUtil.keepPrecision(Double.parseDouble(todayEntity.getShieryue())/Double.parseDouble(yesEntity.getShieryue()), 2));
+						newEntity.setShieryue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getShieryue())-Double.parseDouble(yesEntity.getShieryue()))/Double.parseDouble(yesEntity.getShieryue())*100, 2)+"%");
 					}
 					
 					if(StringUtils.isEmpty(todayEntity.getShiwuyue()) || StringUtils.isEmpty(yesEntity.getShiwuyue())){
 						newEntity.setShiwuyue("");
 					}else{
-						newEntity.setShiwuyue(""+NumberUtil.keepPrecision(Double.parseDouble(todayEntity.getShiwuyue())/Double.parseDouble(yesEntity.getShiwuyue()), 2));
+						newEntity.setShiwuyue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getShiwuyue())-Double.parseDouble(yesEntity.getShiwuyue()))/Double.parseDouble(yesEntity.getShiwuyue())*100, 2)+"%");
 					}
 					
 					if(StringUtils.isEmpty(todayEntity.getShibayue()) || StringUtils.isEmpty(yesEntity.getShibayue())){
 						newEntity.setShibayue("");
 					}else{
-						newEntity.setShibayue(""+NumberUtil.keepPrecision(Double.parseDouble(todayEntity.getShibayue())/Double.parseDouble(yesEntity.getShibayue()), 2));
+						newEntity.setShibayue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getShibayue())-Double.parseDouble(yesEntity.getShibayue()))/Double.parseDouble(yesEntity.getShibayue())*100, 2)+"%");
 					}
 					
 					if(StringUtils.isEmpty(todayEntity.getErshisiyue()) || StringUtils.isEmpty(yesEntity.getErshisiyue())){
 						newEntity.setErshisiyue("");
 					}else{
-						newEntity.setErshisiyue(""+NumberUtil.keepPrecision(Double.parseDouble(todayEntity.getErshisiyue())/Double.parseDouble(yesEntity.getErshisiyue()), 2));
+						newEntity.setErshisiyue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getErshisiyue())-Double.parseDouble(yesEntity.getErshisiyue()))/Double.parseDouble(yesEntity.getErshisiyue())*100, 2)+"%");
 					}
 					
 					if(StringUtils.isEmpty(todayEntity.getSanshiwuyue()) || StringUtils.isEmpty(yesEntity.getSanshiwuyue())){
 						newEntity.setSanshiwuyue("");
 					}else{
-						newEntity.setSanshiwuyue(""+NumberUtil.keepPrecision(Double.parseDouble(todayEntity.getSanshiwuyue())/Double.parseDouble(yesEntity.getSanshiwuyue()), 2));
+						newEntity.setSanshiwuyue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getSanshiwuyue())-Double.parseDouble(yesEntity.getSanshiwuyue()))/Double.parseDouble(yesEntity.getSanshiwuyue())*100, 2)+"%");
 					}
 					
 					if(StringUtils.isEmpty(todayEntity.getSanshiliuyue()) || StringUtils.isEmpty(yesEntity.getSanshiliuyue())){
 						newEntity.setSanshiliuyue("");
 					}else{
-						newEntity.setSanshiliuyue(""+NumberUtil.keepPrecision(Double.parseDouble(todayEntity.getSanshiliuyue())/Double.parseDouble(yesEntity.getSanshiliuyue()), 2));
+						newEntity.setSanshiliuyue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getSanshiliuyue())-Double.parseDouble(yesEntity.getSanshiliuyue()))/Double.parseDouble(yesEntity.getSanshiliuyue())*100, 2)+"%");
 					}
 					
 					if(StringUtils.isEmpty(todayEntity.getSishibayue()) || StringUtils.isEmpty(yesEntity.getSishibayue())){
 						newEntity.setSishibayue("");
 					}else{
-						newEntity.setSishibayue(""+NumberUtil.keepPrecision(Double.parseDouble(todayEntity.getSishibayue())/Double.parseDouble(yesEntity.getSishibayue()), 2));
+						newEntity.setSishibayue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getSishibayue())-Double.parseDouble(yesEntity.getSishibayue()))/Double.parseDouble(yesEntity.getSishibayue())*100, 2)+"%");
 					}
 					
 					if(StringUtils.isEmpty(todayEntity.getLiushiyue()) || StringUtils.isEmpty(yesEntity.getLiushiyue())){
 						newEntity.setLiushiyue("");
 					}else{
-						newEntity.setLiushiyue(""+NumberUtil.keepPrecision(Double.parseDouble(todayEntity.getLiushiyue())/Double.parseDouble(yesEntity.getLiushiyue()), 2));
+						newEntity.setLiushiyue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getLiushiyue())-Double.parseDouble(yesEntity.getLiushiyue()))/Double.parseDouble(yesEntity.getLiushiyue())*100, 2)+"%");
 					}
 					
 					if(StringUtils.isEmpty(todayEntity.getJiushiliuyue()) || StringUtils.isEmpty(yesEntity.getJiushiliuyue())){
 						newEntity.setJiushiliuyue("");
 					}else{
-						newEntity.setJiushiliuyue(""+NumberUtil.keepPrecision(Double.parseDouble(todayEntity.getJiushiliuyue())/Double.parseDouble(yesEntity.getJiushiliuyue()), 2));
+						newEntity.setJiushiliuyue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getJiushiliuyue())-Double.parseDouble(yesEntity.getJiushiliuyue()))/Double.parseDouble(yesEntity.getJiushiliuyue())*100, 2)+"%");
+					}
+					
+					if(StringUtils.isEmpty(todayEntity.getZongji()) || StringUtils.isEmpty(yesEntity.getZongji())){
+						newEntity.setZongji("");
+					}else{
+						newEntity.setZongji(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getZongji())-Double.parseDouble(yesEntity.getZongji()))/Double.parseDouble(yesEntity.getZongji())*100, 2)+"%");
 					}
 					
 					
@@ -262,7 +267,7 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 						String today = entity.getZhanbi().replace("%", "");
 						String yes = vo2.getZhanbi().replace("%", "");
 						 DecimalFormat df = new DecimalFormat("0.00");
-						double rate = Double.parseDouble(today)/Double.parseDouble(yes);
+						double rate = (Double.parseDouble(today)-Double.parseDouble(yes))/Double.parseDouble(yes);
 						
 						entity.setWeekTongRate(df.format(rate*100) + "%");
 								
