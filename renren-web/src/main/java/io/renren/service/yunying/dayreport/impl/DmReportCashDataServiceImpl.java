@@ -82,8 +82,9 @@ public class DmReportCashDataServiceImpl implements DmReportCashDataService {
 		headMap.put("total", "账户资产权益额");
 		headMap.put("balance", "账户余额");
 		headMap.put("await", "待收金额");
-		
+		headMap.put("isVip", "是否VIP");
 		headMap.put("regTime", "注册日期");
+		headMap.put("channelName", "渠道名称");
 		headMap.put("xmStJg", "注册后首投间隔(分)(数据覆盖历史项目)");
 		headMap.put("avgXmTzJg", "平均投资时间间隔(分)(数据覆盖历史项目)");
 
@@ -99,6 +100,8 @@ public class DmReportCashDataServiceImpl implements DmReportCashDataService {
 		headMap.put("czMoney", "累计充值金额");
 		headMap.put("txCgMoney", "累计提现金额");
 		
+		headMap.put("txCgMoneyBl", "提现金额占比充值金额");
+		headMap.put("txCgMoneyBl", "提现金额占比充值金额");
 		headMap.put("txCgMoneyBl", "提现金额占比充值金额");
 		
 		return headMap;

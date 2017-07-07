@@ -40,8 +40,10 @@ function initTableGrid(){
 				{ label: '提现成功金额', name: 'money', index: '$CASH_MONEY', width: 100 ,align:'right'}, 			
 				{ label: '账户资产权益额', name: 'total', index: '$FROST', width: 120 ,align:'right'}, 			
 				{ label: '账户余额', name: 'balance', index: '$BALANCE', width: 80 ,align:'right'}, 			
-				{ label: '待收金额', name: 'await', index: '$AWAIT', width: 80,align:'right' }, 			
-				{ label: '注册日期', name: 'regTime', index: '$REG_TIME', width: 150 ,align:'right'}, 			
+				{ label: '待收金额', name: 'await', index: '$AWAIT', width: 80,align:'right' }, 	
+				{ label: '是否VIP', name: 'isVip', index: '$IS_VIP', width: 80,align:'right' },
+				{ label: '注册日期', name: 'regTime', index: '$REG_TIME', width: 150 ,align:'right'}, 	
+				{ label: '渠道名称', name: 'channelName', index: '$CHANNEL_NAME', width: 80 ,align:'right'}, 
 //				{ label: '首投时间', name: 'xmInvOneTime', index: '$XM_INV_ONE_TIME', width: 150,align:'right' }, 			
 				{ label: '注册后首投间隔(分)(数据覆盖历史项目)', name: 'xmStJg', index: '$XM_ST_JG', width: 150 ,align:'right'}, 			
 				
@@ -66,9 +68,8 @@ function initTableGrid(){
 				{ label: '累计充值金额', name: 'czMoney', index: '$CZ_MONEY', width: 110 ,align:'right'}, 			
 				{ label: '累计提现金额', name: 'txCgMoney', index: '$TX_CG_MONEY', width: 110 ,align:'right'} ,
 				
-				{ label: '提现金额占比充值金额', name: 'txCgMoneyBl', index: '$TX_CG_MONEY', width: 90 ,align:'right'},
-				{ label: '渠道名称', name: 'channelName', index: '$CHANNEL_NAME', width: 80 ,align:'right'}, 			
-				{ label: '是否VIP', name: 'isVip', index: '$IS_VIP', width: 80,align:'right' }	
+				{ label: '提现金额占比充值金额', name: 'txCgMoneyBl', index: '$TX_CG_MONEY', width: 90 ,align:'right'}		
+				
 	        ],
 			viewrecords: true,
 	        height: $(window).height()-150,
