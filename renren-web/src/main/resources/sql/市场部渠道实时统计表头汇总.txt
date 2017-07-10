@@ -1,0 +1,25 @@
+select
+	count(s.register_time) 注册人数,
+	sum(case when s.st_time is null then 0 else 1 end) 首投人数,
+	sum(case when s.st_time is null then 0 else 1 end)/count(s.register_time) 转化率,
+	sum(s.st_money) 首投金额,
+	sum(s.total_money) 累投金额,
+	sum(case when s.invest_times > 1 then 1 else 0 end) 复投人数,
+	sum(case when s.invest_times > 1 then 1 else 0 end)/sum(case when s.st_time is null then 0 else 1 end) 复投率
+from (
+	select 
+		u.*,min(p.addtime) st_time,case when p.addtime = min(p.addtime) then p.tender_capital/100 end st_money,
+		sum(p.tender_capital/100) total_money,count(1) invest_times
+	from 	
+	(select 
+				u1.user_id,u1.activity_tag,u1.register_time,u2.is_borrower
+		from mdtx_user.user_ext_info u1 , mdtx_user.user_basic_info u2
+		where 1=1 and u1.user_id = u2.id and u2.is_borrower = 0 
+			${registerTimeCond}
+			${channelLabelCond}
+			
+	) u left join mdtx_business.project_tender_detail p on (u.user_id=p.user_id)
+	group by u.user_id
+) s
+where 1=1
+${firstInvestTimeCond}

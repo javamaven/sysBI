@@ -1,0 +1,268 @@
+#################################
+1.注册人数
+#################################
+select
+	s.activity_tag,
+	count(s.register_time) 注册人数
+from (
+	select 
+		u.*,min(p.addtime) st_time,case when p.addtime = min(p.addtime) then p.tender_capital end st_money
+	from 	
+	(select 
+				u1.user_id,u1.activity_tag,u1.register_time,u2.is_borrower
+		from mdtx_user.user_ext_info u1 , mdtx_user.user_basic_info u2
+		where 1=1 and u1.user_id = u2.id and u2.is_borrower = 0 
+			${registerTimeCond}
+	) u left join mdtx_business.project_tender_detail p on (u.user_id=p.user_id)
+	group by u.user_id
+) s
+where 1=1
+${firstInvestTimeCond}
+group by s.activity_tag
+
+#################################
+2.首投人数
+#################################
+select 
+	s.activity_tag,
+	count(DISTINCT s.user_id) 首投人数
+from (
+	select 
+		u.*,min(p.addtime) st_time,case when p.addtime = min(p.addtime) then p.tender_capital end st_money
+	from 	
+	(select 
+				u1.user_id,u1.activity_tag,u1.register_time,u2.is_borrower
+		from mdtx_user.user_ext_info u1 , mdtx_user.user_basic_info u2
+		where 1=1 and u1.user_id = u2.id and u2.is_borrower = 0 
+			${registerTimeCond}
+	) u left join mdtx_business.project_tender_detail p on (u.user_id=p.user_id)
+	group by u.user_id
+) s
+where 1=1
+${firstInvestTimeCond}
+and s.st_time is not null
+group by s.activity_tag
+
+#################################
+3.复投人数
+#################################
+select 
+	a.activity_tag,
+	count(distinct a.user_id) 复投人数
+from 
+(
+	select 
+		s.user_id,
+		s.activity_tag
+	from (
+		select 
+			u.*,min(p.addtime) st_time,case when p.addtime = min(p.addtime) then p.tender_capital end st_money
+		from 	
+		(select 
+					u1.user_id,u1.activity_tag,u1.register_time,u2.is_borrower
+			from mdtx_user.user_ext_info u1 , mdtx_user.user_basic_info u2
+			where 1=1 and u1.user_id = u2.id and u2.is_borrower = 0 
+				${registerTimeCond}
+		) u left join mdtx_business.project_tender_detail p on (u.user_id=p.user_id)
+		group by u.user_id
+	) s left join mdtx_business.project_tender_detail p on (s.user_id=p.user_id)
+	where 1=1
+	${firstInvestTimeCond}
+	GROUP BY s.user_id
+	HAVING count(1) > 1
+) a where 1=1 GROUP BY a.activity_tag
+
+#################################
+4.首投金额（万元）
+#################################
+select
+	s.activity_tag,
+	round(sum(s.st_money/1000000),2) 首投金额（万元）
+from (
+	select 
+		u.*,min(p.addtime) st_time,case when p.addtime = min(p.addtime) then p.tender_capital end st_money
+	from 	
+	(   select 
+				u1.user_id,u1.activity_tag,u1.register_time,u2.is_borrower
+		from mdtx_user.user_ext_info u1 , mdtx_user.user_basic_info u2
+		where 1=1 and u1.user_id = u2.id and u2.is_borrower = 0 
+			${registerTimeCond}
+	) u left join mdtx_business.project_tender_detail p on (u.user_id=p.user_id)
+	group by u.user_id
+) s
+where 1=1
+${firstInvestTimeCond}
+group by s.activity_tag
+
+#################################
+5.累投金额（万元）
+#################################
+select
+	s.activity_tag,
+	round(sum(p.tender_capital/1000000),2) 累投金额（万元）
+from (
+	select 
+		u.*,min(p.addtime) st_time,case when p.addtime = min(p.addtime) then p.tender_capital end st_money
+	from 	
+	(select 
+				u1.user_id,u1.activity_tag,u1.register_time,u2.is_borrower
+		from mdtx_user.user_ext_info u1 , mdtx_user.user_basic_info u2
+		where 1=1 and u1.user_id = u2.id and u2.is_borrower = 0 
+			${registerTimeCond}
+	) u left join mdtx_business.project_tender_detail p on (u.user_id=p.user_id)
+	group by u.user_id
+) s  left join mdtx_business.project_tender_detail p on (s.user_id=p.user_id)
+where 1=1 
+${firstInvestTimeCond}
+group by s.activity_tag
+
+#################################
+6.首投年化投资金额（万元）
+#################################
+select 
+	u1.activity_tag,
+	round(sum(s.`首投年化投资金额（万元）`),2) 首投年化投资金额（万元）
+from 
+(
+		select 
+			a.user_id,
+			min(a.addtime) st_time,
+			case when a.addtime=MIN(a.addtime) then a.tender_capital/100*a.days/360/10000 end 首投年化投资金额（万元）
+		from 
+		(
+				SELECT
+					a.addtime,
+					a.tender_capital,
+					a.tender_subject,
+					a.tend_cash,
+					a.tend_vouche,
+					a.user_id,
+					CASE WHEN a.tender_subject = 1 THEN CASE WHEN d.borrow_term_unit = 2 AND borrow_term > 0 THEN borrow_term * 30 WHEN d.borrow_term_unit = 1 AND borrow_term > 0 THEN borrow_term WHEN borrow_term = 0 THEN IFNULL( datediff( borrow_expire_date, project_begin_date ), 0 ) END 
+					WHEN a.tender_subject = 2 THEN IFNULL( datediff( e.interest_end_date, e.interest_begin_date ), 0 ) END days
+				FROM
+					project_tender_detail a
+				LEFT JOIN creditor_purchase_order b ON a.id = b.relate_tender_detail_id
+				LEFT JOIN project d ON a.project_id = d.id
+				LEFT JOIN creditor_purchase_order e ON a.id = e.relate_tender_detail_id
+				WHERE
+				1=1
+				and a.project_id NOT IN ( SELECT DISTINCT project_id FROM financial_plan_order_detail )
+				union all
+				select
+					a.addtime,
+					a.tender_capital,
+					3,
+					a.tend_cash,
+					a.tend_vouche,
+					a.user_id,
+					l.days
+				from project_tender_detail a 
+				left join (
+						SELECT
+							a.project_id,
+							CASE WHEN c.lock_unit = 1 THEN c.lock_period WHEN c.lock_unit = 2 THEN c.lock_period * 30 END AS days
+						FROM
+							financial_plan_order_detail a
+						LEFT JOIN financial_plan c ON a.financial_plan_id = c.id
+						group by a.project_id
+				) l on (a.project_id=l.project_id)
+				where 1=1
+				and a.project_id IN ( SELECT DISTINCT project_id FROM financial_plan_order_detail )
+		) a 
+		group by a.user_id
+) s 
+left join mdtx_user.user_ext_info u1 on (s.user_id=u1.user_id)
+left join mdtx_user.user_basic_info u2 on (s.user_id=u2.id)
+where 1=1
+and u2.is_borrower = 0 
+${firstInvestTimeCond}
+${registerTimeCond}
+group by u1.activity_tag
+
+#################################
+7.年化累投金额（万元）
+#################################
+select 
+	u1.activity_tag,
+	round(SUM(s.money),2) 年化累投金额（万元）
+from 
+(
+		select 
+			a.user_id,
+			min(a.addtime) st_time,
+			sum(a.tender_capital/100*a.days/360)/10000 money
+		from 
+		(
+				SELECT
+					a.addtime,
+					a.tender_capital,
+					a.tender_subject,
+					a.tend_cash,
+					a.tend_vouche,
+					a.user_id,
+					CASE WHEN a.tender_subject = 1 THEN CASE WHEN d.borrow_term_unit = 2 AND borrow_term > 0 THEN borrow_term * 30 WHEN d.borrow_term_unit = 1 AND borrow_term > 0 THEN borrow_term WHEN borrow_term = 0 THEN IFNULL( datediff( borrow_expire_date, project_begin_date ), 0 ) END 
+					WHEN a.tender_subject = 2 THEN IFNULL( datediff( e.interest_end_date, e.interest_begin_date ), 0 ) END days
+				FROM
+					project_tender_detail a
+				LEFT JOIN creditor_purchase_order b ON a.id = b.relate_tender_detail_id
+				LEFT JOIN project d ON a.project_id = d.id
+				LEFT JOIN creditor_purchase_order e ON a.id = e.relate_tender_detail_id
+				WHERE
+				1=1
+				and a.project_id NOT IN ( SELECT DISTINCT project_id FROM financial_plan_order_detail )
+				union all
+				select
+					a.addtime,
+					a.tender_capital,
+					3,
+					a.tend_cash,
+					a.tend_vouche,
+					a.user_id,
+					l.days
+				from project_tender_detail a 
+				left join (
+						SELECT
+							a.project_id,
+							CASE WHEN c.lock_unit = 1 THEN c.lock_period WHEN c.lock_unit = 2 THEN c.lock_period * 30 END AS days
+						FROM
+							financial_plan_order_detail a
+						LEFT JOIN financial_plan c ON a.financial_plan_id = c.id
+						group by a.project_id
+				) l on (a.project_id=l.project_id)
+				where 1=1
+				and a.project_id IN ( SELECT DISTINCT project_id FROM financial_plan_order_detail )
+		) a
+		group by a.user_id
+
+) s
+left join mdtx_user.user_ext_info u1 on (s.user_id=u1.user_id)
+left join mdtx_user.user_basic_info u2 on (s.user_id=u2.id)
+where 1=1
+and u2.is_borrower = 0 
+${firstInvestTimeCond}
+${registerTimeCond}
+group by u1.activity_tag
+
+#################################
+8.待收>100人数
+#################################
+select 
+	s.activity_tag,
+	sum(case when await_money/100 > 100 then 1 else 0 end) 待收大于100人数
+from 
+(
+	select 
+		u.*,min(p.addtime) st_time,case when p.addtime = min(p.addtime) then p.tender_capital end st_money,
+		sum(IFNULL(recover_account_capital_wait,0)+IFNULL(recover_account_interest_wait ,0)) await_money
+	from 	
+	(select 
+				u1.user_id,u1.activity_tag,u1.register_time,u2.is_borrower
+		from mdtx_user.user_ext_info u1 , mdtx_user.user_basic_info u2
+		where 1=1 and u1.user_id = u2.id and u2.is_borrower = 0 
+			${registerTimeCond}
+	) u left join mdtx_business.project_tender_detail p on (u.user_id=p.user_id)
+	group by u.user_id
+) s 
+where 1=1
+${firstInvestTimeCond}
+group by s.activity_tag

@@ -1,0 +1,96 @@
+select s.* 
+from 
+(	SELECT
+		u.*, min(p.addtime) st_time,
+		round(CASE WHEN p.addtime = min(p.addtime) THEN p.tender_capital/100 END,2) st_money,
+		CASE WHEN p.addtime = min(p.addtime) THEN p.days END days,
+		count(p.addtime) 投资次数, 
+		round(sum(p.tender_capital/100),2) 累投金额,
+		round(sum(p.tender_capital/100*p.days/360),2) 年化累投金额,
+		round(sum(t.amount + t.tender_lock_amount + t.financial_lock_amount + p.recover_account_capital_wait + p.recover_account_interest_wait)/100,2) 账户资产
+	
+	FROM
+		(
+			SELECT
+				u1.user_id,
+				u2.user_name,
+				u1.activity_tag,
+				u1.register_time,
+				case when u1.register_from = 0 then '移动端无法区分'
+				 when u1.register_from = 1 then 'PC'
+				 when u1.register_from = 2 then 'IOS'
+				 when u1.register_from = 3 then 'Android'
+				 when u1.register_from = 4 then 'M站'
+				 when u1.register_from = 5 then '微信或后台'
+				 when u1.register_from = -1 then '系统'
+				 ELSE u1.register_from end register_from,
+				case when u3.real_name is null then '否' else '是' end 实名,
+				case when u2.open_depository_time is null then '否' else '是' end 绑卡
+			FROM
+				mdtx_user.user_ext_info u1,
+				mdtx_user.user_basic_info u2,
+				mdtx_user.user_auth_info u3
+			WHERE
+				1 = 1
+			AND u1.user_id = u2.id
+			AND u2.is_borrower = 0
+			and u1.user_id=u3.user_id
+			${channelLabelCond}
+			${registerTimeCond}
+		) u
+	LEFT JOIN (
+				 SELECT
+						a.addtime,
+						a.tender_capital,
+						a.tender_subject,
+						a.tend_cash,
+						a.tend_vouche,
+						a.user_id,
+						a.recover_account_capital_wait,
+						a.recover_account_interest_wait,
+						CASE WHEN a.tender_subject = 1 THEN CASE WHEN d.borrow_term_unit = 2 AND borrow_term > 0 THEN borrow_term * 30 WHEN d.borrow_term_unit = 1 AND borrow_term > 0 THEN borrow_term WHEN borrow_term = 0 THEN IFNULL( datediff( borrow_expire_date, project_begin_date ), 0 ) END 
+						WHEN a.tender_subject = 2 THEN IFNULL( datediff( e.interest_end_date, e.interest_begin_date ), 0 ) END days
+					FROM
+						project_tender_detail a
+					LEFT JOIN creditor_purchase_order b ON a.id = b.relate_tender_detail_id
+					LEFT JOIN project d ON a.project_id = d.id
+					LEFT JOIN creditor_purchase_order e ON a.id = e.relate_tender_detail_id
+					WHERE
+					1=1
+					and a.project_id NOT IN ( SELECT DISTINCT project_id FROM financial_plan_order_detail )
+					union all
+					select
+						a.addtime,
+						a.tender_capital,
+						3,
+						a.tend_cash,
+						a.tend_vouche,
+						a.user_id,
+						a.recover_account_capital_wait,
+						a.recover_account_interest_wait,
+						l.days
+					from project_tender_detail a 
+					left join (
+							SELECT
+								a.project_id,
+								CASE WHEN c.lock_unit = 1 THEN c.lock_period WHEN c.lock_unit = 2 THEN c.lock_period * 30 END AS days
+							FROM
+								financial_plan_order_detail a
+							LEFT JOIN financial_plan c ON a.financial_plan_id = c.id
+							group by a.project_id
+					) l on (a.project_id=l.project_id)
+					where 1=1
+					and a.project_id IN ( SELECT DISTINCT project_id FROM financial_plan_order_detail )
+	
+	) p ON (u.user_id = p.user_id)
+	left join account_tender t on (u.user_id=t.user_id)
+	where 1=1
+	
+	
+	
+	GROUP BY
+		u.user_id
+
+) s where 1=1 
+${firstInvestTimeCond}
+order by s.activity_tag, s.st_time

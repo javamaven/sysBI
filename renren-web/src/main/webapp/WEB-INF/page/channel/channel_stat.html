@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+#parse("sys/header.html")
+
+<style type="text/css">
+.inputClass1 {
+	height: 30px;
+	width: 120px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+.inputClass2 {
+	height: 30px;
+	width: 100px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+</style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<table border="0">
+				<tr>
+					<label>注册人数：</label><font id="register_user_num">-</font>
+					<label style="padding: 7px;"></label>
+					<label>首投人数：</label><font id="first_invest_user_num">-</font>
+					<label style="padding: 7px;"></label>
+					<label>转化率：</label><font id="first_invest_rate">-</font>
+					<label style="padding: 7px;"></label>
+					<label>首投金额：</label><font id="first_invest_amount">-</font>
+					<label style="padding: 7px;"></label>
+					<label>累投金额：</label><font id="total_invest_amount">-</font>
+					<label style="padding: 7px;"></label>
+					<label>复投人数：</label><font id="multi_invest_user_num">-</font>
+					<label style="padding: 7px;"></label>
+					<label>复投率：</label><font id="multi_invest_rate">-</font>
+				</tr>
+					<hr style="margin:1px;height:1px;border:1px;background-color:#D5D5D5;color:#D5D5D5;"/>
+				<tr height="5px;"></tr>
+				<tr>
+					<td>
+						<label>注册时间：</label>
+					</td>
+					<td>
+						<input type="text" class="inputClass1 form_datetime_2" id="registerStartTime"  placeholder="请选择日期"/>
+					</td>
+					<td>
+						-
+					</td>
+					<td>
+						<input type="text" class="inputClass1 form_datetime_2" id="registerEndTime"  placeholder="请选择日期"/>
+					</td>
+					<td>
+						<label>首投时间：</label>
+					</td>
+					<td>
+						<input type="text" class="inputClass1 form_datetime_2" id="firstInvestStartTime"  placeholder="请选择日期"/>
+					</td>
+					<td>
+						-
+					</td>
+					<td>
+						<input type="text" class="inputClass1 form_datetime_2" id="firstInvestEndTime"  placeholder="请选择日期"/>
+					</td>	
+					<td>
+						<label>渠道名称：</label>
+					</td>		
+					<td>
+						<input type="text" class="inputClass1" id="channel_name"  placeholder=""/>
+<!-- 						<select id="id_select" multiple="multiple" class="inputClass1"></select> -->
+					</td>		
+					<td>
+						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
+						<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+					</td>
+					
+				</tr>
+			</table>
+		</div>
+		
+		<ul class="nav nav-tabs" role="tablist" id="tab_div">
+			<li role="presentation" class="active" data-id="tabContent1" id="total_tab_div"><a href="#"><font color="black">渠道统计数据</font></a></li>
+			<li role="presentation" data-id="tabContent2" id="detail_tab_div"><a href="#"><font color="black">渠道明细数据</font></a></li>
+		</ul>
+		<div class="tabs-contents">
+		<!-- 标题1内容区域 -->
+		<div class="tab-content active" id="tabContent1">
+			<div id="total_div">
+				<table id="jqGrid"></table>
+		    	<div id="jqGridPager"></div>
+			</div>
+		</div>
+		<!-- 标题2内容区域 -->
+		<div class="tab-content" id="tabContent2">
+			<div id="detail_div">
+				<table id="jqGrid_detail"></table>
+		    	<div id="jqGridPager_detail"></div>
+		    </div>
+		</div>
+    </div>
+    
+</div>
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/channel/channel_stat.js?_${date.systemTime}"></script>
+</body>
+</html>
