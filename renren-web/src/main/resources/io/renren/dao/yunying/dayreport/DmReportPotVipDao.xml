@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.yunying.dayreport.DmReportPotVipDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.yunying.dayreport.DmReportPotVipEntity" id="dmReportPotVipMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="userId" column="USER_ID"/>
+        <result property="cgUserId" column="CG_USER_ID"/>
+        <result property="username" column="USERNAME"/>
+        <result property="phone" column="PHONE"/>
+        <result property="realname" column="REALNAME"/>
+        <result property="moneyAll" column="MONEY_ALL"/>
+        <result property="balance" column="BALANCE"/>
+        <result property="moneyWait" column="MONEY_WAIT"/>
+        <result property="sumInvest" column="SUM_INVEST"/>
+        <result property="avgPeriod" column="AVG_PERIOD"/>
+        <result property="amount" column="AMOUNT"/>
+        <result property="moneyInvest" column="MONEY_INVEST"/>
+        <result property="registerTime" column="REGISTER_TIME"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.yunying.dayreport.DmReportPotVipEntity">
+		select * from dm_report_pot_vip where STAT_PERIOD = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.yunying.dayreport.DmReportPotVipEntity">
+		select * from dm_report_pot_vip
+		where 1=1
+		<if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+		</if>
+		order by STAT_PERIOD desc
+      
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) 
+		from  dm_report_pot_vip 
+		where 1=1
+		<if test="statPeriod != null and statPeriod.trim() !='' ">
+			and STAT_PERIOD = #{statPeriod}
+		</if>
+
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.yunying.dayreport.DmReportPotVipEntity">
+		insert into dm_report_pot_vip
+		(
+			`STAT_PERIOD`, 
+			`USER_ID`, 
+			`CG_USER_ID`, 
+			`USERNAME`, 
+			`PHONE`, 
+			`REALNAME`, 
+			`MONEY_ALL`, 
+			`BALANCE`, 
+			`MONEY_WAIT`, 
+			`SUM_INVEST`, 
+			`AVG_PERIOD`, 
+			`AMOUNT`, 
+			`MONEY_INVEST`, 
+			`REGISTER_TIME`
+		)
+		values
+		(
+			#{statPeriod}, 
+			#{userId}, 
+			#{cgUserId}, 
+			#{username}, 
+			#{phone}, 
+			#{realname}, 
+			#{moneyAll}, 
+			#{balance}, 
+			#{moneyWait}, 
+			#{sumInvest}, 
+			#{avgPeriod}, 
+			#{amount}, 
+			#{moneyInvest}, 
+			#{registerTime}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.yunying.dayreport.DmReportPotVipEntity">
+		update dm_report_pot_vip 
+		<set>
+			<if test="userId != null">`USER_ID` = #{userId}, </if>
+			<if test="cgUserId != null">`CG_USER_ID` = #{cgUserId}, </if>
+			<if test="username != null">`USERNAME` = #{username}, </if>
+			<if test="phone != null">`PHONE` = #{phone}, </if>
+			<if test="realname != null">`REALNAME` = #{realname}, </if>
+			<if test="moneyAll != null">`MONEY_ALL` = #{moneyAll}, </if>
+			<if test="balance != null">`BALANCE` = #{balance}, </if>
+			<if test="moneyWait != null">`MONEY_WAIT` = #{moneyWait}, </if>
+			<if test="sumInvest != null">`SUM_INVEST` = #{sumInvest}, </if>
+			<if test="avgPeriod != null">`AVG_PERIOD` = #{avgPeriod}, </if>
+			<if test="amount != null">`AMOUNT` = #{amount}, </if>
+			<if test="moneyInvest != null">`MONEY_INVEST` = #{moneyInvest}, </if>
+			<if test="registerTime != null">`REGISTER_TIME` = #{registerTime}</if>
+		</set>
+		where STAT_PERIOD = #{statPeriod}
+	</update>
+	
+	<delete id="delete">
+		delete from dm_report_pot_vip where STAT_PERIOD = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from dm_report_pot_vip where STAT_PERIOD in 
+		<foreach item="statPeriod" collection="array" open="(" separator="," close=")">
+			#{statPeriod}
+		</foreach>
+	</delete>
+
+</mapper>
