@@ -1,0 +1,33 @@
+
+select * from (
+select 
+to_char(rd.recover_time,'yyyymm') month, -- 回款月份
+round(sum(rd.recover_amount)/10000,2) money -- 回款金额
+from mdtxbi.dm_trading_recover_detail rd
+where to_char(rd.recover_time,'yyyymm') between to_char(sysdate,'yyyy')||'01' and '${invest_month_time}'
+group by to_char(rd.recover_time,'yyyymm')
+order by to_char(rd.recover_time,'yyyymm')
+)
+union all
+select --  双系统 -- 年化交易额 -- 从2017-1-1到统计月月底的累计
+'2017年到统计月份最后一天年化投资额' as TIME,
+round(
+sum(
+    case
+      when pj.BORROW_TERM_UNIT=1 then -- 日标
+           pj.borrow_account*pj.BORROW_TERM/360-- 项目
+      when pj.BORROW_TERM_UNIT=2 then -- 年标
+           pj.borrow_account*30*pj.BORROW_TERM/360-- 项目
+      else 0
+    end
+        )/10000,2)as tender
+from mdtxbi.edw_trading_project pj
+where pj.stage_status in (42,44,51,81,82,83,84)
+-- and to_char(project_complete_date,'yyyy-mm-dd')
+-- between to_char(trunc(add_months(last_day(sysdate), -1) + 1), 'yyyy-mm-dd') and to_char(sysdate-1,'yyyy-mm-dd')
+--and user_id<>3697101
+and to_char(project_complete_date,'yyyyMM') between to_char(sysdate,'yyyy')||'01' and '${invest_month_time}'
+and project_id not like 'ZT%'
+
+
+

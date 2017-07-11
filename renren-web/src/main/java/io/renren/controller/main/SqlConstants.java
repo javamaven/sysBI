@@ -54,7 +54,7 @@ public class SqlConstants {
 			"			t1.change_id, " +
 			"			MIN (t1.addtime) AS minaddtime, " +
 			"			MAX (t1.addtime) AS maxaddtime, " +
-			"			SUM (t1.ACCOUNT_TENDER) AS amount " +
+			"			SUM (nvl(t1.account_money,t1.ACCOUNT_TENDER)) AS amount " +
 			"		FROM " +
 			"			diyou_borrow_tender t1 " +
 			"		WHERE " +

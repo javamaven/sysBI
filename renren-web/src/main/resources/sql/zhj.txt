@@ -450,6 +450,7 @@ select a.project_id from mdtxbi.edw_trading_project a
  union all
 select sum(project_scale)/10000 tender_sum from mdtxbi.dm_trading_ddz_borrow where to_char(issue_date,'yyyymmdd')='${investDayTime}'
 )
+
 union all
  
  --H5076
@@ -457,7 +458,7 @@ union all
  'H5076' ,
   '当期其他金融产品及收益权转让金额',
   '月度' as month,
- round(sum(borrow_account)/10000,2) from ( -- 1	141400091	551 一致
+ round(sum(borrow_account)/10000,2) from ( -- 1  141400091  551 一致
     select sum(borrow_account) borrow_account,count(1) cou from mdtxbi.edw_trading_project a
    where to_char(project_complete_date,'yyyymm')= '${investStatTime}' and a.project_id = a.from_project_id and stage in (5,8)
    and a.zhj_type=3
@@ -469,14 +470,30 @@ union all
   where pd.tender_subject=2
   and pd.tender_account_status=1
   and to_char(pd.addtime,'yyyymm')='${investStatTime}'
+  
+    union all
+  
+  select -- 理财计划中，购买的实际是退出的理财计划（实际上是债转）
+  sum(pod.tender_amount)/100,
+  count(pod.user_id)
+  from mdtxbi.ODS_MDTX_CG_FCIAL_PLAN_ORDER @ora40 po
+  left join mdtxbi.ODS_MDTX_CG_FCIAL_PLAN_ODETAIL @ora40 pod
+  on po.id=pod.financial_plan_order_id
+  where
+  pod.transfer_id>0
+  and to_char(po.tender_time,'yyyymm')='${investStatTime}'
+  and pod.TENDER_STATUS=1
  )
+ 
+
+ 
  union all
   --H5077
  select
   'H5077' ,
   '当期其他金融产品及收益权转让笔数',
   '月度' as month,
-  sum(cou) from ( -- 1	141400091	551 一致
+  sum(cou) from ( -- 1  141400091  551 一致
     select sum(borrow_account) borrow_account,count(1) cou from mdtxbi.edw_trading_project a
    where to_char(project_complete_date,'yyyymm')= '${investStatTime}' and a.project_id = a.from_project_id and stage in (5,8)
    and a.zhj_type=3
@@ -488,7 +505,21 @@ union all
   where pd.tender_subject=2
   and pd.tender_account_status=1
   and to_char(pd.addtime,'yyyymm')='${investStatTime}'
+       union all
+  
+  select -- 理财计划中，购买的实际是退出的理财计划（实际上是债转）
+  sum(pod.tender_amount)/100,
+  count(pod.user_id)
+  from mdtxbi.ODS_MDTX_CG_FCIAL_PLAN_ORDER @ora40 po
+  left join mdtxbi.ODS_MDTX_CG_FCIAL_PLAN_ODETAIL @ora40 pod
+  on po.id=pod.financial_plan_order_id
+  where
+  pod.transfer_id>0
+  and to_char(po.tender_time,'yyyymm')='${investStatTime}'
+  and pod.TENDER_STATUS=1
  )
+ 
+ 
  union all
  --H5078 
 select 
@@ -507,9 +538,19 @@ count(distinct user_id) from ( -- 12157 第一部分一致
   where pd.tender_subject=2
   and pd.tender_account_status=1
   and to_char(pd.addtime,'yyyymm')='${investStatTime}'
+     union all
+    select -- 理财计划中，购买的实际是退出的理财计划（实际上是债转）
+  pod.user_id
+  from mdtxbi.ODS_MDTX_CG_FCIAL_PLAN_ORDER @ora40 po
+  left join mdtxbi.ODS_MDTX_CG_FCIAL_PLAN_ODETAIL @ora40 pod
+  on po.id=pod.financial_plan_order_id
+  where
+  pod.transfer_id>0
+  and to_char(po.tender_time,'yyyymm')='${investStatTime}'
+  and pod.TENDER_STATUS=1
  )
+
  union all
- 
  
    --H5079
 
@@ -530,7 +571,20 @@ count(distinct user_id) from ( -- 12157 第一部分一致
   where pd.tender_subject=2
   and pd.tender_account_status=1
   and to_char(pd.addtime,'yyyymm') between to_char(sysdate,'yyyy')||'01' and '${investStatTime}'
+      union all
+  
+  select -- 理财计划中，购买的实际是退出的理财计划（实际上是债转）
+  sum(pod.tender_amount)/100,
+  count(pod.user_id)
+  from mdtxbi.ODS_MDTX_CG_FCIAL_PLAN_ORDER @ora40 po
+  left join mdtxbi.ODS_MDTX_CG_FCIAL_PLAN_ODETAIL @ora40 pod
+  on po.id=pod.financial_plan_order_id
+  where
+  pod.transfer_id>0
+  and to_char(po.tender_time,'yyyymm') between to_char(sysdate,'yyyy')||'01' and '${investStatTime}'
+  and pod.TENDER_STATUS=1
  )
+ 
  union all
     --H5080
  select 
@@ -549,7 +603,22 @@ count(distinct user_id) from ( -- 12157 第一部分一致
   where pd.tender_subject=2
   and pd.tender_account_status=1
   and to_char(pd.addtime,'yyyymm') between to_char(sysdate,'yyyy')||'01' and '${investStatTime}'
+  
+       union all
+  
+  select -- 理财计划中，购买的实际是退出的理财计划（实际上是债转）
+  sum(pod.tender_amount)/100,
+  count(pod.user_id)
+  from mdtxbi.ODS_MDTX_CG_FCIAL_PLAN_ORDER @ora40 po
+  left join mdtxbi.ODS_MDTX_CG_FCIAL_PLAN_ODETAIL @ora40 pod
+  on po.id=pod.financial_plan_order_id
+  where
+  pod.transfer_id>0
+  and to_char(po.tender_time,'yyyymm') between to_char(sysdate,'yyyy')||'01' and '${investStatTime}'
+  and pod.TENDER_STATUS=1
  )
+ 
+
 union all
 
 --H5081
@@ -569,8 +638,21 @@ count(distinct user_id) from (
   from mdtxbi.edw_trading_project_detail pd
   where pd.tender_subject=2
   and pd.tender_account_status=1
-  and to_char(pd.addtime,'yyyymm')='${investStatTime}'
+  and to_char(pd.addtime,'yyyymm') between to_char(sysdate,'yyyy')||'01'and '${investStatTime}'
+     union all
+  
+  select -- 理财计划中，购买的实际是退出的理财计划（实际上是债转）
+  pod.user_id
+  from mdtxbi.ODS_MDTX_CG_FCIAL_PLAN_ORDER @ora40 po
+  left join mdtxbi.ODS_MDTX_CG_FCIAL_PLAN_ODETAIL @ora40 pod
+  on po.id=pod.financial_plan_order_id
+  where
+  pod.transfer_id>0
+  and to_char(po.tender_time,'yyyymm') between to_char(sysdate,'yyyy')||'01'and '${investStatTime}'
+  and pod.TENDER_STATUS=1
+  
  )
+ 
 union all
 
  --H5082
@@ -578,7 +660,7 @@ union all
    'H5082' ,
   '其他金融产品及收益权累计转让金额（首次报数用）',
   '月度' as month,
-   round(sum(borrow_account)/10000,2) from ( -- 1	1562869065	8714  第一部分 一致
+   round(sum(borrow_account)/10000,2) from ( -- 1  1562869065  8714  第一部分 一致
     select sum(borrow_account) borrow_account,count(1) cou from mdtxbi.edw_trading_project a
    where to_char(project_complete_date,'yyyy') <='2016'  and a.project_id = a.from_project_id and stage in (5,8)
    and a.zhj_type=3
@@ -590,14 +672,27 @@ union all
   where pd.tender_subject=2
   and pd.tender_account_status=1
   and to_char(pd.addtime,'yyyymm')<='2016'
+    union all
+  
+  select -- 理财计划中，购买的实际是退出的理财计划（实际上是债转）
+  sum(pod.tender_amount)/100 borrow_account,
+  count(pod.user_id) cou
+  from mdtxbi.ODS_MDTX_CG_FCIAL_PLAN_ORDER @ora40 po
+  left join mdtxbi.ODS_MDTX_CG_FCIAL_PLAN_ODETAIL @ora40 pod
+  on po.id=pod.financial_plan_order_id
+  where
+  pod.transfer_id>0
+  and to_char(po.tender_time,'yyyymm')<='2016'
+  and pod.TENDER_STATUS=1
  )
+ 
  union all
   --H5083
   select 
    'H5083' ,
   '其他金融产品及收益权累计转让笔数（首次报数用）',
   '月度' as month,
-  sum(cou) from ( -- 1	1562869065	8714  第一部分 一致
+  sum(cou) from ( -- 1  1562869065  8714  第一部分 一致
     select sum(borrow_account) borrow_account,count(1) cou from mdtxbi.edw_trading_project a
    where to_char(project_complete_date,'yyyy') <='2016'  and a.project_id = a.from_project_id and stage in (5,8)
    and a.zhj_type=3
@@ -609,7 +704,21 @@ union all
   where pd.tender_subject=2
   and pd.tender_account_status=1
   and to_char(pd.addtime,'yyyymm')<='2016'
+  
+  union all
+  
+  select -- 理财计划中，购买的实际是退出的理财计划（实际上是债转）
+  sum(pod.tender_amount)/100 borrow_account,
+  count(pod.user_id) cou
+  from mdtxbi.ODS_MDTX_CG_FCIAL_PLAN_ORDER @ora40 po
+  left join mdtxbi.ODS_MDTX_CG_FCIAL_PLAN_ODETAIL @ora40 pod
+  on po.id=pod.financial_plan_order_id
+  where
+  pod.transfer_id>0
+  and to_char(po.tender_time,'yyyymm')<='2016'
+  and pod.TENDER_STATUS=1
  )
+ 
  union all
  --H5084
 
@@ -630,7 +739,21 @@ union all
   where pd.tender_subject=2
   and pd.tender_account_status=1
   and to_char(pd.addtime,'yyyymmdd')='${investDayTime}'
+  union all
+  
+  select -- 理财计划中，购买的实际是退出的理财计划（实际上是债转）
+  sum(pod.tender_amount)/100,
+  count(pod.user_id) cou
+  from mdtxbi.ODS_MDTX_CG_FCIAL_PLAN_ORDER @ora40 po
+  left join mdtxbi.ODS_MDTX_CG_FCIAL_PLAN_ODETAIL @ora40 pod
+  on po.id=pod.financial_plan_order_id
+  where
+  pod.transfer_id>0
+  and to_char(po.tender_time,'yyyymm')='${investDayTime}'
+  and pod.TENDER_STATUS=1
+  
  )
+ 
 union all
 --H6015
 select 
