@@ -27,7 +27,8 @@ var jobType = {
     26:'首投3天未复投用户',//register_not_invest_day
     27:'普通版有待收但是未开通存的账户数据',//old_data
     28:'广州P2P月报数据',//monthly_report
-    29:'每日报表数据'//Daily_Report_data
+    29:'每日报表数据',//Daily_Report_data 
+    30:'潜力VIP数据' //vip_pot
 };
 
 $(function () {

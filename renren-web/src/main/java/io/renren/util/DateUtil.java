@@ -239,4 +239,34 @@ public class DateUtil {
 		cal.add(Calendar.DATE, -days);
 		return new SimpleDateFormat(sdf).format(cal.getTime());
 	}
+	
+	/**
+	 * 获取日期月份最后一天
+	 * @param date 201707
+	 * @return
+	 */
+	public static String getLastDayOfMonth(String date) {
+		int year = Integer.parseInt(date.substring(0,4));
+		int month = Integer.parseInt(date.substring(4,6));
+		return getLastDayOfMonth(year , month);
+	}
+	/**
+	 * 获取某月的最后一天
+	 */
+	public static String getLastDayOfMonth(int year, int month) {
+		Calendar cal = Calendar.getInstance();
+		// 设置年份
+		cal.set(Calendar.YEAR, year);
+		// 设置月份
+		cal.set(Calendar.MONTH, month - 1);
+		// 获取某月最大天数
+		int lastDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
+		// 设置日历中月份的最大天数
+		cal.set(Calendar.DAY_OF_MONTH, lastDay);
+		// 格式化日期
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String lastDayOfMonth = sdf.format(cal.getTime());
+
+		return lastDayOfMonth;
+	}
 }

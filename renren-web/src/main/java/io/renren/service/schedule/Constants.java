@@ -152,5 +152,10 @@ public class Constants {
 		 */
 		public static final String DAILY_REPORT_DATA = "29";
 		
+		/**
+		 * 潜力VIP数据
+		 */
+		public static final String VIP_POT_DATA = "30";
+		
 	}
 }
