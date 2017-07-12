@@ -13,4 +13,3 @@ left join mdtxbi.dm_trading_repay_detail rpd
  on (rpp.project_id=rpd.project_id and rpp.period=rpd.period)
 where
   to_char(rpp.create_time,'yyyy-mm-dd') <='${lastDayOfMonth}'
-  and rpp.repay_status<>3 

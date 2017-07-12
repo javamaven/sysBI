@@ -28,6 +28,7 @@
         <result property="matchWait" column="no_match_wait"/>
         <result property="matchCapitilWait" column="no_match_capitil_wait"/>
         <result property="matchInterestlWait" column="no_match_interest_wait"/>
+        <result property="openCount" column="OPEN_COUNT"/>
     </resultMap>
 
 	<select id="queryObject" resultMap="dmReportBasicDailyMap">

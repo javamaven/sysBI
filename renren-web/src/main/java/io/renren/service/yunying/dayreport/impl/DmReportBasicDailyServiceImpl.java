@@ -96,6 +96,7 @@ public class DmReportBasicDailyServiceImpl implements DmReportBasicDailyService 
 		headMap.put("matchWait", "理财计划预约金额(万元)");
 		headMap.put("matchCapitilWait", "未匹配本金(万元)");
 		headMap.put("matchInterestlWait", "未匹配测算利息(万元)");
+		headMap.put("openCount", "存管开户人数");
 		return headMap;
 	}
 	

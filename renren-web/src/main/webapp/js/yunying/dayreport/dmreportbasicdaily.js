@@ -51,7 +51,8 @@ function initTableGrid(){
 			{ label: '测算累计待收(万元)', name: 'allWait', index: '$ALL_WAIT', width: 100,align:'right' }, 			
 			{ label: '理财计划预约金额(万元)', name: 'matchWait', index: '$no_match_wait', width: 100 ,align:'right'}, 			
 			{ label: '未匹配本金(万元)', name: 'matchCapitilWait', index: '$no_match_capitil_wait', width: 100 ,align:'right'}, 			
-			{ label: '未匹配测算利息(万元)', name: 'matchInterestlWait', index: '$no_match_interest_wait', width: 100,align:'right' }
+			{ label: '未匹配测算利息(万元)', name: 'matchInterestlWait', index: '$no_match_interest_wait', width: 100,align:'right' },
+			{ label: '存管开户人数', name: 'openCount', index: '$OPEN_COUNT', width: 100,align:'right' }
         ],
 		viewrecords: true,
 		height: $(window).height()-150,

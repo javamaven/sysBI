@@ -61,6 +61,15 @@ public class DmReportBasicDailyEntity implements Serializable {
 	private BigDecimal matchCapitilWait;
 	//未匹配测算利息(万元)
 	private BigDecimal matchInterestlWait;
+	
+	private BigDecimal openCount;
+	
+	public BigDecimal getOpenCount() {
+		return openCount;
+	}
+	public void setOpenCount(BigDecimal openCount) {
+		this.openCount = openCount;
+	}
 	public DmReportBasicDailyEntity(){
 		
 	}

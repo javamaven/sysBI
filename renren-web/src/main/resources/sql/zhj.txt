@@ -10,7 +10,7 @@ union all
     select 'H5033',
     '当期个体直接借贷借款金额',
     '月度' as month,
-    sum(borrow_account)/10000 borrow_account 
+    round(sum(borrow_account)/10000,2) borrow_account
     from mdtxbi.edw_trading_project a
    where to_char(project_complete_date,'yyyymm')='${investStatTime}' and a.project_id = a.from_project_id and stage in (5,8) 
    and zhj_type=1
@@ -359,7 +359,7 @@ union all
   union all
  select user_id from mdtxbi.edw_trading_ddz_inv_accountlog 
  where type in ('B','RP')
- and to_char(created_time,'yyyymm')=201703
+ and to_char(created_time,'yyyymm')='${investStatTime}'
  )
 union all
    --H5070
