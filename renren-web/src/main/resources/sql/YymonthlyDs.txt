@@ -1,0 +1,17 @@
+
+-- 当前的待收总额（万元）-- 双系统 -- 这段要求7天的待收,故要拼7天的出来
+select
+'${investEndTime}' as STATPERIOD,
+round(
+SUM(
+CASE
+  WHEN to_char(rpp.REPAY_DATE,'yyyy-mm-dd') > '${investEndTime}'
+    AND ( to_char(rpd.settle_end_time,'yyyy-mm-dd') > '${investEndTime}' OR rpd.settle_end_time IS NULL)
+  THEN (rpp.repay_capital+rpp.repay_interest)
+ELSE 0 END)/10000,2) AS DAISHOU
+FROM
+mdtxbi.edw_trading_repay_plan rpp
+left join mdtxbi.edw_trading_repay_detail rpd
+ on (rpp.project_id=rpd.project_id and rpp.period=rpd.period)
+ 
+ 

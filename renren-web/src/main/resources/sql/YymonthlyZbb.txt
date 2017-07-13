@@ -1,0 +1,179 @@
+
+select * from
+(
+with duu as
+(
+select -- 首投人数计算
+user_id, -- 用户唯一id
+REGISTER_TIME,--  注册时间
+IS_VALIDATE_IDCARD,
+case
+when nvl(NORMAL_FIRSTINVEST_TIME,to_date('2999-12-31','yyyy-mm-dd'))<nvl(DEPOSITORY_FIRSTINVEST_TIME,to_date('2999-12-31','yyyy-mm-dd')) then NORMAL_FIRSTINVEST_TIME
+when nvl(NORMAL_FIRSTINVEST_TIME,to_date('2999-12-31','yyyy-mm-dd'))>nvl(DEPOSITORY_FIRSTINVEST_TIME,to_date('2999-12-31','yyyy-mm-dd')) then DEPOSITORY_FIRSTINVEST_TIME
+end  as FIRSTINVEST_TIME --首投时间
+from mdtxbi.edw_user_basic
+where IS_BORROWER=0
+)
+select
+'${investEndTime}' as statPeriod,
+sum(case  
+    when to_char(duu.REGISTER_TIME,'yyyy-mm-dd') between '${investStatTime}' and '${investEndTime}' then 1 
+    else 0 
+    end )as BZZHUCE,
+sum(case  
+    when to_char(duu.REGISTER_TIME,'yyyy-mm-dd') between '${investStatTime}' and '${investEndTime}' and duu.IS_VALIDATE_IDCARD=1 then 1 
+    else 0 
+    end )as BZRENZHENG,
+sum(case  
+    when to_char(duu.FIRSTINVEST_TIME,'yyyy-mm-dd') between'${investStatTime}' and '${investEndTime}' then 1 
+    else 0 
+    end )as BZSHOUTOU ,
+sum(case  
+    when to_char(duu.REGISTER_TIME,'yyyy-mm-dd') between '${lastday}' and '${lastSevenday}' then 1 
+    else 0 
+    end )as SZZHUCE,
+sum(case  
+    when to_char(duu.REGISTER_TIME,'yyyy-mm-dd') between '${lastday}' and '${lastSevenday}' and duu.IS_VALIDATE_IDCARD=1 then 1 
+    else 0 
+    end )as SZRENZHENG,
+sum(case  
+    when to_char(duu.FIRSTINVEST_TIME,'yyyy-mm-dd') between'${lastday}' and '${lastSevenday}' then 1 
+    else 0 
+    end )as SZSHOUTOU ,
+sum(case  
+    when to_char(duu.REGISTER_TIME,'yyyy-mm-dd')<='${investEndTime}' then 1 
+    else 0 
+    end )as ZZHUCE,
+sum(case  
+    when to_char(duu.FIRSTINVEST_TIME,'yyyy-mm-dd')<='${investEndTime}' then 1 
+    else 0 
+    end )as ZSHOUTOU,  
+sum(case  
+    when to_char(duu.REGISTER_TIME,'yyyy-mm-dd')between '2017-07-01' and '${investEndTime}' then 1 
+    else 0 
+    end )as BYZHUCE,
+sum(case  
+    when to_char(duu.FIRSTINVEST_TIME,'yyyy-mm-dd') between '2017-07-01' and '${investEndTime}' then 1 
+    else 0 
+    end )as BYSHOUTOU 
+from duu
+)
+
+
+union all
+select 
+'日期（本周年化投资情况）' as num1,
+1,
+1,
+1,
+1,
+null,
+null,
+null,
+null,
+null,
+null
+from dual
+union all
+
+
+-- 日期 本周年化投资金额（万元）本周投资金额（万元）上周年化投资金额（万元）上周投资金额（万元）
+select
+(to_char(sysdate-1,'yyyy-mm-dd')) as d_day,
+sum(case when date_tender between '${investStatTime}' and '${investEndTime}' then nian_xiang else 0 end) as this_week_nt,--本周年化投资金额
+sum(case when date_tender between '${investStatTime}' and '${investEndTime}' then sum_tender else 0 end) as this_td,
+sum(case when date_tender between '${lastday}' and '${lastSevenday}' then nian_xiang else 0 end) as last_week_nt,-- 上周年化投资金额
+sum(case when date_tender between '${lastday}' and '${lastSevenday}' then sum_tender else 0 end) as last_td,
+null,
+null,
+null,
+null,
+null,
+null
+from
+(
+select
+to_char(project_complete_date,'yyyy-mm-dd') as date_tender,-- 直接从项目表，按照满标日期统计
+round(
+sum(
+    case
+      when pj.BORROW_TERM_UNIT=1 then -- 日标
+           pj.borrow_account*pj.BORROW_TERM/360-- 项目
+      when pj.BORROW_TERM_UNIT=2 then -- 年标
+           pj.borrow_account*30*pj.BORROW_TERM/360-- 项目
+      else 0
+    end
+        )/10000,2)as nian_xiang,
+round(sum(pj.borrow_account)/10000,2) as sum_tender
+from mdtxbi.dm_trading_project pj
+where pj.project_id not like 'ZT%'
+group by to_char(project_complete_date,'yyyy-mm-dd')
+--order by to_char(project_complete_date,'yyyy-mm-dd')
+)
+
+union all
+select 
+'日期（回款明细）' as num1,
+2,
+2,
+2,
+2,
+null,
+null,
+null,
+null,
+null,
+null
+from dual
+union all
+-- 日期  普通版回款（万元）存管版回款（万元）总回款( 万元)  理财解锁金额
+
+select * from
+(
+with cr as
+(
+SELECT  --存管版
+to_char (rpp.REPAY_DATE,'yyyy-mm-dd') as r_time,
+-- rpp.from_sys,
+sum (rpp.repay_capital+rpp.repay_interest)as REPAY_account_WAIT,
+sum(case when rpp.from_sys=0 then rpp.repay_capital+rpp.repay_interest else 0 end) ptb_r ,
+sum(case when rpp.from_sys=1 then rpp.repay_capital+rpp.repay_interest else 0 end) cgb_r 
+FROM
+mdtxbi.edw_trading_repay_plan rpp
+left join mdtxbi.edw_trading_repay_detail rpd on (rpp.project_id=rpd.project_id and rpp.period=rpd.period)
+WHERE
+ (to_char(rpd.settle_end_time,'yyyy-mm-dd') > '${investEndTime}' OR rpd.settle_end_time IS NULL)
+ and to_char (rpp.REPAY_DATE,'yyyy-mm-dd') between '${investEndTime}' and '${afterday}'
+GROUP BY to_char(rpp.REPAY_DATE,'yyyy-mm-dd')
+order by to_char(rpp.REPAY_DATE,'yyyy-mm-dd')
+),
+lcjs as
+(
+select  -- 未来7天理财计划解除锁定金额
+to_char (po.unlock_time,'yyyy-mm-dd') as unlock_time,
+round(sum(po.tender_amount）/100,2) as unlock_money
+from mdtxbi.ods_mdtx_cg_fcial_plan_order@ora40 po
+where -- po.apply_exit_time is null and
+ to_char(po.unlock_time,'yyyy-mm-dd') between '${investEndTime}' and  '${afterday}'
+--where (to_char(po.unlock_time,'yyyy-mm-dd'))=to_char(sysdate+2,'yyyy-mm-dd')
+group by to_char(po.unlock_time,'yyyy-mm-dd')
+order by to_char(po.unlock_time,'yyyy-mm-dd') 
+)
+select
+cr.r_time,
+round(cr.ptb_r/10000,2) as ptb_repay_account_wait,
+round(cr.cgb_r/10000,2) as cgb_repay_account_wait,
+round(cr.REPAY_account_WAIT/10000,2) as repay_account_wait,
+round(nvl(lcjs.unlock_money,0)/10000,2) as unlock_money,
+null as nul1,
+null as nul2,
+null as nul3,
+null as nul4,
+null as nul5,
+null as nul6
+from cr left join lcjs on  cr.r_time=lcjs.unlock_time
+order by cr.r_time
+)
+
+ 
+ 

@@ -26,10 +26,9 @@
 					</td>
 					<td>
 						<select id="list_select" class="inputClass2" >
-							<option value ="vip_detail" selected="selected">待收金额（万元）</option>
-							<option value ="vip_count">项目年化投资金额（万元）</option>
-							<option value ="huikuan">回款金额（万元）</option>
-							<option value ="xiaoshou">销售的资产期限</option>
+							<option value ="vip_detail" selected="selected">周报(新增待收，人数，投资额，项目)</option>
+							<option value ="vip_count">周报(人数明细,投资金额)</option>
+							<option value ="daishou">当前待收总额7天前</option>
 						</select>
 					</td>
 				</tr>
@@ -40,7 +39,11 @@
 					</td>
 					<td>
 					
-						<input type="text" class="inputClass2 form_datetime_2" id="invest_month_time"  placeholder="请选择开始月份"/>
+						<input type="text" class="inputClass2 form_datetime_2" id="invest_stat_time"  placeholder="请选择月份"/>
+					</td>
+					<td>
+					
+						<input type="text" class="inputClass2 form_datetime_2" id="invest_end_time"  placeholder="请选择日期"/>
 					</td>
 					<td>
 						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
@@ -59,13 +62,9 @@
 		    <table id="jqGrid_count"></table>
 		    <div id="jqGridPager_count"></div>
 		</div>
-		<div id="huikuan_div">
-		    <table id="jqGrid_huikuan"></table>
-		    <div id="jqGridPager_huikuan"></div>
-		</div>
-		<div id="xiaoshou_div">
-		    <table id="jqGrid_xiaoshou"></table>
-		    <div id="jqGridPager_xiaoshou"></div>
+		<div id="vip_daishou_div">
+		    <table id="jqGrid_daishou"></table>
+		    <div id="jqGridPager_daishou"></div>
 		</div>
     </div>
     
@@ -214,6 +213,6 @@
 <link rel="stylesheet" href="${rc.contextPath}/js/schedule/taskwin.css"></link>
 <script src="${rc.contextPath}/js/schedule/addtask.js?_${date.systemTime}"></script>
 <script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
-<script src="${rc.contextPath}/js/yunying/monthly_report_yy.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/yunying/monthly_report_zb.js?_${date.systemTime}"></script>
 </body>
 </html>

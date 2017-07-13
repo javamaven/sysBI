@@ -258,6 +258,33 @@ public class MonthlyReportYyController {
 			invest_month_time = invest_month_time.replace("-", "");
 		}
 		
+		String bbday="";
+		bbday=invest_month_time;
+		String lastday="";
+		lastday=invest_month_time+"01";
+		String time="";
+		time=DateUtil.getLastDayOfMonth(invest_month_time);
+		if (StringUtils.isNotEmpty(time)) {
+			time = time.replace("-", "");
+
+		}
+		
+		List<Map<String, Object>> resultList3 = new ArrayList<Map<String, Object>>();
+
+		try {
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/YymonthlyZc.txt"));
+			detail_sql = detail_sql.replace("${invest_month_time}", time);
+			detail_sql = detail_sql.replace("${lastday}", lastday);
+			detail_sql = detail_sql.replace("${bbday}", bbday);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList3.addAll(list);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		
 		//查询待收
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
@@ -341,21 +368,31 @@ public class MonthlyReportYyController {
 		}
 		Map<String, String> headMap3 = getHkListExcelFields();
 		String title3 = "回款金额（万元）";
+		// 查询列表数据
+		JSONArray va4 = new JSONArray();
+		for (int i = 0; i < resultList3.size(); i++) {
+			va4.add(resultList3.get(i));
+		}
+		Map<String, String> headMap4 = getHkListExcelFields22();
+		String title4 = "销售的资产期限";
 		
 		List<String> titleList = new ArrayList<>();
 		titleList.add(title);
 		titleList.add(title2);
 		titleList.add(title3);
+		titleList.add(title4);
 		
 		List<Map<String, String>> headMapList = new ArrayList<Map<String,String>>();
 		headMapList.add(headMap);
 		headMapList.add(headMap2);
 		headMapList.add(headMap3);
+		headMapList.add(headMap4);
 		
 		List<JSONArray> ja = new ArrayList<JSONArray>();
 		ja.add(va);
 		ja.add(va2);
 		ja.add(va3);
+		ja.add(va4);
 
 		ExcelUtil.downloadExcelFile(titleList , headMapList, ja , response);
 //		ExcelUtil.downloadExcelFile(title, headMap, va, response);
@@ -389,6 +426,18 @@ public class MonthlyReportYyController {
 
 		headMap.put("MONTH", "月份");
 		headMap.put("MONEY", "回款金额（万元）");
+
+
+		return headMap;
+
+	}
+	private Map<String, String> getHkListExcelFields22() {
+
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+
+		headMap.put("MONTH", "日期");
+		headMap.put("QIXIAN", "资产期限");
+		headMap.put("MONEY", "资产金额");
 
 
 		return headMap;

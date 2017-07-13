@@ -1,0 +1,161 @@
+--select to_char(sysdate-8,'yyyy-mm-dd') from dual;
+-- 本周新增到年底的待收 上周新增到年底的待收
+select '日期（新增待收情况）' as num1,
+1 as num2,
+1 as xixi from dual
+union all
+select 
+'${investEndTime}' d_day,
+round(
+SUM(
+CASE
+  WHEN to_char(rpp.REPAY_DATE,'yyyy-mm-dd') > '2017-12-31'
+    AND ( to_char(rpd.settle_end_time,'yyyy-mm-dd') > '${investEndTime}' OR rpd.settle_end_time IS NULL)
+    and   to_char(rpp.create_time,'yyyy-mm-dd')
+    between '${investStatTime}' and '${investEndTime}'
+  THEN (rpp.repay_capital+rpp.repay_interest)
+  
+ELSE 0 END)/10000,2) AS tw_wait, -- 本周新增且到年底才到期的投资额
+round( 
+SUM(
+CASE
+  WHEN to_char(rpp.REPAY_DATE,'yyyy-mm-dd') > '2017-12-31'
+    AND ( to_char(rpd.settle_end_time,'yyyy-mm-dd') > '${lastSevenday}' OR rpd.settle_end_time IS NULL)
+    and   to_char(rpp.create_time,'yyyy-mm-dd')
+    between '${lastday}' and '${lastSevenday}'
+  THEN (rpp.repay_capital+rpp.repay_interest)
+ELSE 0 END)/10000,2) AS lw_wait -- 上周新增且到年底才到期的投资额
+FROM
+mdtxbi.edw_trading_repay_plan rpp
+left join mdtxbi.edw_trading_repay_detail rpd
+ on (rpp.project_id=rpd.project_id and rpp.period=rpd.period)
+ union all
+ 
+select 
+'日期（注册、首投人数）' as num1,
+2 as num2,2 as num3
+from dual
+union all
+ ------ 日期 注册人数  首投人数
+ select * from
+ (
+with duu as
+(
+select -- 首投人数计算
+user_id, -- 用户唯一id
+REGISTER_TIME,--  注册时间
+IS_VALIDATE_IDCARD,
+case
+when nvl(NORMAL_FIRSTINVEST_TIME,to_date('2999-12-31','yyyy-mm-dd'))<nvl(DEPOSITORY_FIRSTINVEST_TIME,to_date('2999-12-31','yyyy-mm-dd')) then NORMAL_FIRSTINVEST_TIME
+when nvl(NORMAL_FIRSTINVEST_TIME,to_date('2999-12-31','yyyy-mm-dd'))>nvl(DEPOSITORY_FIRSTINVEST_TIME,to_date('2999-12-31','yyyy-mm-dd')) then DEPOSITORY_FIRSTINVEST_TIME
+end  as FIRSTINVEST_TIME --首投时间
+from mdtxbi.edw_user_basic
+where IS_BORROWER=0
+)
+select A.reg_date,A.reg_num,B.ft_num
+from
+(
+select -- 按照注册时间统计
+to_char(duu.REGISTER_TIME,'yyyy-mm-dd') as reg_date,
+count(duu.user_id) as reg_num
+from duu
+where to_char(duu.REGISTER_TIME,'yyyy-mm-dd') between '${investStatTime}' and '${investEndTime}'
+group by to_char(duu.REGISTER_TIME,'yyyy-mm-dd')
+)A
+left join
+(
+select -- 按照首投时间统计
+to_char(duu.FIRSTINVEST_TIME,'yyyy-mm-dd') as ft_date,
+count(duu.user_id) as ft_num
+from duu
+where to_char(duu.FIRSTINVEST_TIME,'yyyy-mm-dd') between '${investStatTime}' and '${investEndTime}'
+group by to_char(duu.FIRSTINVEST_TIME,'yyyy-mm-dd')
+)B
+on A.reg_date=B.ft_date
+order by A.reg_date)
+union all
+select '日期(本周年化投资情况)' as num1,
+3 as num2,
+3 as num3
+from dual
+union all
+select * from(
+select -- 当天项目年化投资额（万元）
+-- to_char(sysdate-1,'yyyy-mm-dd') d_day,
+to_char(project_complete_date,'yyyy-mm-dd') d_day,
+round(
+sum(
+    case
+      when pj.BORROW_TERM_UNIT=1 then -- 日标
+           pj.borrow_account*pj.BORROW_TERM/360-- 项目
+      when pj.BORROW_TERM_UNIT=2 then -- 年标
+           pj.borrow_account*30*pj.BORROW_TERM/360-- 项目
+      else 0
+    end
+        )/10000,2)as nian_tender, -- 当天项目年化投资额（万元）
+round(sum(pj.borrow_account)/10000,2) sum_tender -- 当天项目投资额（万元）
+from mdtxbi.edw_trading_project pj 
+where 
+ (to_char(project_complete_date,'yyyy-mm-dd') between '${investStatTime}' and '${investEndTime}')
+and pj.project_id not like 'ZT%'
+group by to_char(project_complete_date,'yyyy-mm-dd')  -- 按照满标时间计算
+order by to_char(project_complete_date,'yyyy-mm-dd') 
+)
+union all
+select '日期（项目类型）' as num1,
+4 as num2,
+4 as num3
+from dual
+union all
+select '普通项目' type,
+       case
+         when borrow_term_unit = 1 then
+          (case
+            when borrow_term = 0 then
+             trunc(interest_end_date - project_complete_date)
+            else
+             borrow_term
+          end)
+         when borrow_term_unit = 2 then
+          borrow_term * 30
+       end,
+       sum(borrow_account)
+  from edw_trading_project
+ where to_char(project_complete_date, 'yyyymmdd') between '${dayday}' and
+       '${day}'
+   and project_id not in
+       (select distinct normal_id
+          from edw_trading_project_conf
+         where stat_period between '${dayday}' and '${day}')
+   and project_id not like '%ZT%'
+ group by case
+            when borrow_term_unit = 1 then
+             (case
+               when borrow_term = 0 then
+                trunc(interest_end_date - project_complete_date)
+               else
+                borrow_term
+             end)
+            when borrow_term_unit = 2 then
+             borrow_term * 30
+          end
+union all
+select '智投计划',
+       case
+         when borrow_term_unit = 1 then
+          borrow_term
+         when borrow_term_unit = 2 then
+          borrow_term * 30
+       end,
+       sum(borrow_account)
+  from edw_trading_project
+ where to_char(project_complete_date, 'yyyymmdd') between '${dayday}' and
+       '${day}'
+   and project_id like '%ZT%'
+ group by case
+            when borrow_term_unit = 1 then
+             borrow_term
+            when borrow_term_unit = 2 then
+             borrow_term * 30
+          end
+
