@@ -7,6 +7,7 @@ $(function () {
 	initSelectEvent();
 	initTimeCond1();
 	initHuikuanTableGrid();
+	initXiaoShouTableGrid();
 });
 
 
@@ -19,15 +20,24 @@ function initSelectEvent(){
 			$("#vip_detail_div").show();
 			$("#vip_count_div").hide();
 			$("#huikuan_div").hide();
+			$("#xiaoshou_div").hide();
 		}else if(select == 'vip_count'){
 			$("#vip_detail_div").hide();
 			$("#vip_count_div").show();
 			$("#huikuan_div").hide();
+			$("#xiaoshou_div").hide();
 		}
 		else if(select == 'huikuan'){
 			$("#vip_detail_div").hide();
 			$("#vip_count_div").hide();
 			$("#huikuan_div").show();
+			$("#xiaoshou_div").hide();
+		}
+		else if(select == 'xiaoshou'){
+			$("#vip_detail_div").hide();
+			$("#vip_count_div").hide();
+			$("#huikuan_div").hide();
+			$("#xiaoshou_div").show();
 		}
 	});
 }
@@ -164,7 +174,39 @@ function initHuikuanTableGrid(){
     });
     $("#huikuan_div").hide();
 }
-
+function initXiaoShouTableGrid(){
+    $("#jqGrid_xiaoshou").jqGrid({
+        datatype: "json",
+        colModel: [			
+			{ label: '日期', name: 'MONTH', index: '$MONTH', width: 80 ,align:'right'}, 			
+			{ label: '资产期限', name: 'QIXIAN', index: '$MONEY', width: 100,align:'right' },
+			{ label: '资产金额', name: 'MONEY', index: '$MONEY', width: 100,align:'right' }
+ 			
+						
+        ],
+		viewrecords: true,
+        height: $(window).height()-170,
+        rowNum: 20,
+        rownumbers: true, 
+        autowidth:true,
+        pager: "#jqGridPager_xiaoshou",
+        jsonReader : {
+            root: "page.list",
+            page: "page.currPage",
+            total: "page.totalPage",
+            records: "page.totalCount"
+        },
+        prmNames : {
+            page:"page", 
+            rows:"limit", 
+            order: "order"
+        },
+        gridComplete:function(){
+        	//隐藏grid底部滚动条
+        }
+    });
+    $("#xiaoshou_div").hide();
+}
 
 
 var vm = new Vue({
@@ -197,6 +239,13 @@ var vm = new Vue({
 				$("#jqGrid_huikuan").jqGrid('setGridParam',{ 
 					datatype:'json', 
 					url: '../yunying/yyp2p/huikuanlist',
+		            postData: getParams()
+	            }).trigger("reloadGrid");
+			}else if(select == 'xiaoshou'){
+				$("#jqGrid_xiaoshou").jqGrid("clearGridData");
+				$("#jqGrid_xiaoshou").jqGrid('setGridParam',{ 
+					datatype:'json', 
+					url: '../yunying/yyp2p/zichanlist',
 		            postData: getParams()
 	            }).trigger("reloadGrid");
 			}

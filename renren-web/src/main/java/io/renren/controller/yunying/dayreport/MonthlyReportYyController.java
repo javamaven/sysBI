@@ -160,7 +160,7 @@ public class MonthlyReportYyController {
 		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
 		long l2 = System.currentTimeMillis();
 
-		System.err.println("++++++++电销日报明细查询耗时：" + (l2 - l1));
+		System.err.println("++++++++运营周报明细查询耗时：" + (l2 - l1));
 		return R.ok().put("page", pageUtil);
 	}
 	
@@ -199,7 +199,51 @@ public class MonthlyReportYyController {
 		return R.ok().put("page", pageUtil);
 	}
 
-	
+	@ResponseBody
+	@RequestMapping("/zichanlist")
+	@RequiresPermissions("phonesale:list")
+	public R ziChanList(Integer page, Integer limit, String invest_month_time) {
+		long l1 = System.currentTimeMillis();
+		int start = (page - 1) * limit;
+		int end = start + limit;
+
+		if (StringUtils.isNotEmpty(invest_month_time)) {
+			invest_month_time = invest_month_time.replace("-", "");
+
+		}
+		String bbday="";
+		bbday=invest_month_time;
+		String lastday="";
+		lastday=invest_month_time+"01";
+		String time="";
+		time=DateUtil.getLastDayOfMonth(invest_month_time);
+		if (StringUtils.isNotEmpty(time)) {
+			time = time.replace("-", "");
+
+		}
+		
+		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+
+		try {
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/YymonthlyZc.txt"));
+			detail_sql = detail_sql.replace("${invest_month_time}", time);
+			detail_sql = detail_sql.replace("${lastday}", lastday);
+			detail_sql = detail_sql.replace("${bbday}", bbday);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList.addAll(list);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		int total = resultList.size();
+		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
+		long l2 = System.currentTimeMillis();
+
+		System.err.println("++++++++电销日报明细查询耗时：" + (l2 - l1));
+		return R.ok().put("page", pageUtil);
+	}
 	
 
 	@SuppressWarnings("unchecked")
