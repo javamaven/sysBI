@@ -193,6 +193,7 @@
 		FROM
 			edw_user_basic u
 		left join dim_channel d  on (u.ACTIVITY_TAG=d.CHANNEL_LABEL)
+		left join DIM_CHANNEL_TYPE c on (d.CHANNEL_LABEL=c.CHANNEL_LABEL)
 		WHERE
 			1 = 1
 		<if test="registerStartTime != null and registerStartTime.trim() != '' ">
@@ -204,19 +205,13 @@
 		
 		and u.DEPOSITORY_FIRSTINVEST_TIME is NULL
 		and u.NORMAL_FIRSTINVEST_TIME is null
-		and d.PAYMENT_WAY not like '%免费%'
-		and d.PAYMENT_WAY not like '%测试%'
-		and d.PAYMENT_WAY not like '%置换%'
-		and d.PAYMENT_WAY not like '%CPS%'
-		
-		and d.CHANNEL_NAME not like '%免费%'
-		and d.CHANNEL_NAME not like '%测试%'
-		and d.CHANNEL_NAME not like '%置换%'
-		and d.CHANNEL_NAME not like '%CPS%'
+
 		
 		AND d.CHANNEL_NAME not LIKE '%触宝%'
 		AND d.CHANNEL_NAME not LIKE '%北瓜%'
 		AND d.CHANNEL_NAME not LIKE '%360摇一摇%'
+		
+		and c.CHANNEL_TYPE like '%付费%'
 		
 	</select>
 

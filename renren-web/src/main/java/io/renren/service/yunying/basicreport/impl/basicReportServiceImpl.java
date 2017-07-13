@@ -109,14 +109,13 @@ public class basicReportServiceImpl implements BasicReportService {
 			"	d.CHANNEL_LABEL, " +
 			"	d.PAYMENT_WAY " +
 			"FROM " +
-			"	DIM_CHANNEL d " +
+			"	DIM_CHANNEL d LEFT JOIN DIM_CHANNEL_TYPE C ON (D.CHANNEL_LABEL = C.CHANNEL_LABEL)" +
 			"WHERE " +
 			"	1 = 1 " +
-			"AND d.PAYMENT_WAY not LIKE '%CPS%' and d.CHANNEL_NAME not LIKE '%CPS%' " +
+			"AND C.CHANNEL_TYPE LIKE '%免费%' " +
 			"AND d.CHANNEL_NAME not LIKE '%触宝%' " +
 			"AND d.CHANNEL_NAME not LIKE '%北瓜%' " +
-			"AND d.CHANNEL_NAME not LIKE '%360摇一摇%' " ;
-//			"AND ( d.PAYMENT_WAY LIKE '%免费%' OR d.PAYMENT_WAY LIKE '%测试%' OR d.PAYMENT_WAY LIKE '%置换%' OR d.CHANNEL_NAME LIKE '%免费%' OR d.CHANNEL_NAME LIKE '%测试%' OR d.CHANNEL_NAME LIKE '%置换%' )  ";
+			"AND d.CHANNEL_NAME not LIKE '%360摇一摇%' " ;			
 	
 	private Map<String, String> getChannelMap() throws SQLException {
 		List<Map<String, Object>> channel_list = new JdbcUtil(dataSourceFactory, "oracle26").query(channel_sql);
