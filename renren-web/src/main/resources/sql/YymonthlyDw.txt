@@ -1,0 +1,242 @@
+--1.数据总览
+--平台累计交易额 
+select 
+'${invest_end_time}' as time,
+'平台累计交易额' as zhibiao,
+round(A.project_scale+B.tender_capital,0) money
+from 
+(SELECT  -- 点点赚 
+  SUM(ddzb.project_scale)/10000  AS project_scale --项目在当日应结息时点前最终已投金额，该金额在结息时就为最终值，不会被改写。
+  FROM  mdtxbi.edw_trading_ddz_borrow ddzb
+WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${invest_end_time}')A,
+(select -- 截止某一天的交易额（项目和债转，按照实际成交时间）
+sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
+ from mdtxbi.edw_trading_project_detail pd
+ where 
+ pd.tender_account_status=1
+ and to_char(pd.addtime,'yyyy-mm-dd')<='${invest_end_time}')B
+union all
+
+--累计为投资者赚取收益
+select
+'${invest_end_time}',
+'累计为投资者赚取收益',
+ round(A.ri+B.RV+C.RIddz,0)
+from 
+(select
+sum(rp.RECOVER_INTEREST_YES+rp.RECOVER_INTEREST_wait)/10000 as RI
+from mdtxbi.edw_trading_recover_plan rp
+where to_char(rp.create_time,'yyyy-mm-dd')<='${invest_end_time}')A,
+(select -- 红包收益
+sum(pd.tend_vouche)/10000 as RV
+from mdtxbi.edw_trading_project_detail pd
+where pd.tender_subject in (1,3) and to_char(pd.create_time,'yyyy-mm-dd')<='${invest_end_time}'
+and pd.tender_subject<>2)B,
+(SELECT  -- 点点赚 
+  sum(ddzb.INTEREST)/10000  as RIddz-- 利息 
+  FROM mdtxbi.edw_trading_ddz_borrow ddzb
+WHERE to_char(ddzb.ISSUE_DATE, 'yyyy-mm-dd')<='${invest_end_time}'
+)C
+union all
+--累计交易次数   (累计撮合交易次数，还需加上消金和小贷的数据) 
+select 
+'${invest_end_time}',
+'累计交易次数',
+sum(cou) from(
+select count(pd.user_id)cou from mdtxbi.edw_trading_project_detail pd where to_char(addtime,'yyyymmdd')<='${endtime}' -- and investment_status=20
+union all 
+select sum(db.invest_cou) cou
+from mdtxbi.edw_trading_ddz_borrow db where to_char(db.issue_date,'yyyymmdd')<='${endtime}'
+)
+union all
+--标的数据
+--预期收益率区间
+--标的数据
+--预期收益率区间
+select 
+'${monthtime}',
+case when apr between 0.1 and 5 then '标利率0~5%的数量'
+     when apr between 5.1 and 7 then '标利率5~7%的数量'
+     when apr between 7.1 and 9 then '标利率7~9%的数量'
+     when apr between 9.1 and 11 then '标利率9~11%的数量'
+     when apr between 11.1 and 13 then '标利率11~13%的数量'
+     when apr between 13.1 and 15 then '标利率13~15%的数量'
+     when apr > 15 then '标利率15%以上的数量'
+     end 利率区间,count(1) 标的数量
+from (
+select borrow_apr+nvl(borrow_apr_extra,0) as apr,
+project_id
+from mdtxbi.edw_trading_project 
+where to_char(project_complete_date,'yyyymm')='${monthtime}' and stage in (4,5,8))
+group by 
+case when apr between 0.1 and 5 then '标利率0~5%的数量'
+     when apr between 5.1 and 7 then '标利率5~7%的数量'
+     when apr between 7.1 and 9 then '标利率7~9%的数量'
+     when apr between 9.1 and 11 then '标利率9~11%的数量'
+     when apr between 11.1 and 13 then '标利率11~13%的数量'
+     when apr between 13.1 and 15 then '标利率13~15%的数量'
+     when apr > 15 then '标利率15%以上的数量' end
+
+               union all
+--借款额
+select
+'${monthtime}',
+ case when borrow_account between 0.1 and 10000 then '金额1万以下标的数量'
+            when borrow_account between 10000.1 and 100000 then '金额1~10万标的数量'
+            when borrow_account between 100000.1 and 1000000 then '金额10~100万标的数量'
+            when borrow_account >1000000 then '金额100万以上标的数量' end 金额区间,count(1) 标的数量
+from  mdtxbi.edw_trading_project 
+where stage in (4,5,8)
+and to_char(project_complete_date, 'yyyymm') = '${monthtime}'
+group by case when borrow_account between 0.1 and 10000 then '金额1万以下标的数量'
+            when borrow_account between 10000.1 and 100000 then '金额1~10万标的数量'
+            when borrow_account between 100000.1 and 1000000 then '金额10~100万标的数量'
+            when borrow_account >1000000 then '金额100万以上标的数量' end 
+        union all    
+--用户数据
+--按投资金额分布
+select
+'${monthtime}',
+ case when money between 0.1 and 10000 then '投资金额1万以下的人数' 
+            when money between 10000.1 and 100000 then '投资金额1~10万的人数'
+            when money between 100000.1 and 1000000 then '投资金额10~100万的人数'
+            when money > 1000000 then '投资金额100万以上的人数' end 投资金额区间,
+            count(user_id)  投资人次
+from (
+select user_id,sum(case when pd.tender_subject=2 then pd.tend_cash else tender_capital end) money from mdtxbi.edw_trading_project_detail pd
+where to_char(addtime,'yyyymm')='${monthtime}' and pd.tender_account_status=1
+group by user_id) 
+group by case when money between 0.1 and 10000 then '投资金额1万以下的人数' 
+            when money between 10000.1 and 100000 then '投资金额1~10万的人数'
+            when money between 100000.1 and 1000000 then '投资金额10~100万的人数'
+            when money > 1000000 then '投资金额100万以上的人数' end
+  union all          
+--交易次数
+-- 环比
+select '${lastMonthTimeString}' as d_month,
+'交易次数(环比)',
+sum(cou) from(
+select 
+count(1) cou 
+from mdtxbi.edw_trading_project_detail pd
+where to_char(addtime,'yyyymm')='${lastMonthTimeString}'
+and pd.tender_account_status=1
+union all
+select sum(db.invest_cou) cou from  mdtxbi.edw_trading_ddz_borrow db where to_char(db.issue_date,'yyyymm')='${lastMonthTimeString}')
+
+union all
+
+select '${monthtime}' as d_month, 
+'交易次数(环比)',
+sum(cou) from(
+select 
+count(1) cou 
+from mdtxbi.edw_trading_project_detail pd
+where to_char(addtime,'yyyymm')='${monthtime}'
+and pd.tender_account_status=1
+union all
+select sum(db.invest_cou) cou from  mdtxbi.edw_trading_ddz_borrow db where to_char(db.issue_date,'yyyymm')='${monthtime}')
+union all
+-- 同比
+select '${lastyeartime}' as d_month,
+'交易次数(同比)',
+sum(cou) from(
+select 
+count(1) cou 
+from mdtxbi.edw_trading_project_detail pd
+where to_char(addtime,'yyyymm')='${lastyeartime}'
+and pd.tender_account_status=1
+union all
+select sum(db.invest_cou) cou from  mdtxbi.edw_trading_ddz_borrow db where to_char(db.issue_date,'yyyymm')='${lastyeartime}')
+
+union all
+
+select '${monthtime}' as d_month,
+'交易次数(同比)',
+ sum(cou) from(
+select 
+count(1) cou 
+from mdtxbi.edw_trading_project_detail pd
+where to_char(addtime,'yyyymm')='${monthtime}'
+and pd.tender_account_status=1
+union all
+select sum(db.invest_cou) cou from  mdtxbi.edw_trading_ddz_borrow db where to_char(db.issue_date,'yyyymm')='${monthtime}')
+
+union all
+
+--交易额 -- 有可能要根据累计交易额做调整
+
+
+-- 环比
+
+
+select '${lastMonthTimeString}' as d_month,
+'交易额(环比)',
+round(A.project_scale+B.tender_capital,0) as all_tender
+from 
+(SELECT  -- 点点赚 
+  SUM(ddzb.project_scale)/10000  AS project_scale --项目在当日应结息时点前最终已投金额，该金额在结息时就为最终值，不会被改写。
+  FROM  mdtxbi.edw_trading_ddz_borrow ddzb
+WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${time}' and to_char(ISSUE_DATE, 'yyyy-mm-dd')>='${firstTime}')A,
+(select -- 截止某一天的交易额（项目和债转，按照实际成交时间）
+sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
+ from mdtxbi.edw_trading_project_detail pd
+ where 
+ pd.tender_account_status=1
+ and to_char(pd.addtime,'yyyy-mm-dd')between '${firstTime}' and '${time}')B
+
+union all
+
+select 
+'${monthtime}' as d_month,
+'交易额(环比)',
+round(A.project_scale+B.tender_capital,0) as all_tender
+from 
+(SELECT  -- 点点赚 
+  SUM(ddzb.project_scale)/10000  AS project_scale --项目在当日应结息时点前最终已投金额，该金额在结息时就为最终值，不会被改写。
+  FROM  mdtxbi.edw_trading_ddz_borrow ddzb
+WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${invest_end_time}' and to_char(ISSUE_DATE, 'yyyy-mm-dd')>='${firstMonth}')A,
+(select -- 截止某一天的交易额（项目和债转，按照实际成交时间）
+sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
+ from mdtxbi.edw_trading_project_detail pd
+ where 
+ pd.tender_account_status=1
+ and to_char(pd.addtime,'yyyy-mm-dd')between '${firstMonth}' and '${invest_end_time}')B
+
+union all
+
+-- 同比
+
+
+select '${lastyeartime}' as d_month,
+'交易额(同比)',
+round(A.project_scale+B.tender_capital,0) as all_tender
+from 
+(SELECT  -- 点点赚 
+  SUM(ddzb.project_scale)/10000  AS project_scale --项目在当日应结息时点前最终已投金额，该金额在结息时就为最终值，不会被改写。
+  FROM  mdtxbi.edw_trading_ddz_borrow ddzb
+WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${firstlasttime}' and to_char(ISSUE_DATE, 'yyyy-mm-dd')>='${firstMonthTime}')A,
+(select -- 截止某一天的交易额（项目和债转，按照实际成交时间）
+sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
+ from mdtxbi.edw_trading_project_detail pd
+ where 
+ pd.tender_account_status=1
+ and to_char(pd.addtime,'yyyy-mm-dd')between '${firstMonthTime}' and '${firstlasttime}')B
+
+union all
+
+select 
+'${monthtime}' as d_month,
+'交易额(同比)',
+round(A.project_scale+B.tender_capital,0) as all_tender
+from 
+(SELECT  -- 点点赚 
+  SUM(ddzb.project_scale)/10000  AS project_scale --项目在当日应结息时点前最终已投金额，该金额在结息时就为最终值，不会被改写。
+  FROM  mdtxbi.edw_trading_ddz_borrow ddzb
+WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${invest_end_time}' and to_char(ISSUE_DATE, 'yyyy-mm-dd')>='${firstMonth}')A,
+(select -- 截止某一天的交易额（项目和债转，按照实际成交时间）
+sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
+ from mdtxbi.edw_trading_project_detail pd
+ where 
+ pd.tender_account_status=1
+ and to_char(pd.addtime,'yyyy-mm-dd')between '${firstMonth}' and '${invest_end_time}')B

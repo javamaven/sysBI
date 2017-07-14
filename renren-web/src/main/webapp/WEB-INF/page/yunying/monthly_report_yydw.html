@@ -26,9 +26,7 @@
 					</td>
 					<td>
 						<select id="list_select" class="inputClass2" >
-							<option value ="vip_detail" selected="selected">周报(新增待收，人数，投资额，项目)</option>
-							<option value ="vip_count">周报(人数明细,投资金额)</option>
-							<option value ="daishou">当前待收总额7天前</option>
+							<option value ="vip_detail" selected="selected">对外运营报告数据</option>
 						</select>
 					</td>
 				</tr>
@@ -39,11 +37,7 @@
 					</td>
 					<td>
 					
-						<input type="text" class="inputClass2 form_datetime_2" id="invest_stat_time"  placeholder="请选择开始时间"/>
-					</td>
-					<td>
-					
-						<input type="text" class="inputClass2 form_datetime_2" id="invest_end_time"  placeholder="请选择结束时间"/>
+						<input type="text" class="inputClass2 form_datetime_2" id="invest_end_time"  placeholder="请选择查询月份最后一天"/>
 					</td>
 					<td>
 						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
@@ -61,10 +55,6 @@
 		<div id="vip_count_div">
 		    <table id="jqGrid_count"></table>
 		    <div id="jqGridPager_count"></div>
-		</div>
-		<div id="vip_daishou_div">
-		    <table id="jqGrid_daishou"></table>
-		    <div id="jqGridPager_daishou"></div>
 		</div>
     </div>
     
@@ -213,6 +203,6 @@
 <link rel="stylesheet" href="${rc.contextPath}/js/schedule/taskwin.css"></link>
 <script src="${rc.contextPath}/js/schedule/addtask.js?_${date.systemTime}"></script>
 <script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
-<script src="${rc.contextPath}/js/yunying/monthly_report_zb.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/yunying/monthly_report_yxdw.js?_${date.systemTime}"></script>
 </body>
 </html>
