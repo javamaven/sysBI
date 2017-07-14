@@ -57,6 +57,10 @@ function initExportFunction(){
 		var select = $("#list_select").children('option:selected').val();
 		if(select == 'vip_detail'){
 			executePost('../yunying/zbp2p/exportExcel', {'params' : JSON.stringify(params)});
+		}else if(select == 'vip_count'){
+			executePost('../yunying/zbp2p/exportExcel', {'params' : JSON.stringify(params)});
+		}else if(select == 'daishou'){
+			executePost('../yunying/zbp2p/exportExcel', {'params' : JSON.stringify(params)});
 		}
 	});
 

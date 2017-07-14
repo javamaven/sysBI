@@ -68,6 +68,12 @@ function initExportFunction(){
 		var select = $("#list_select").children('option:selected').val();
 		if(select == 'vip_detail'){
 			executePost('../yunying/yyp2p/exportExcel', {'params' : JSON.stringify(params)});
+		}else if(select == 'huikuan'){
+			executePost('../yunying/yyp2p/exportExcel', {'params' : JSON.stringify(params)});
+		}else if(select == 'vip_count'){
+			executePost('../yunying/yyp2p/exportExcel', {'params' : JSON.stringify(params)});
+		}else if(select == 'xiaoshou'){
+			executePost('../yunying/yyp2p/exportExcel', {'params' : JSON.stringify(params)});
 		}
 		
 	});

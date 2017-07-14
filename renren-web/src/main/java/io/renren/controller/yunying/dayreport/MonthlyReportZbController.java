@@ -202,8 +202,9 @@ public class MonthlyReportZbController {
 		if (StringUtils.isNotEmpty(invest_end_time)) {
 			day = invest_end_time.replace("-", "");
 		}
-
-
+		String beforeOneday=DateUtil.getCurrDayBefore(invest_end_time,-1, "yyyy-MM-dd");
+		
+		String beforeSevenday=DateUtil.getCurrDayBefore(beforeOneday,-6, "yyyy-MM-dd");
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 
 		try {
@@ -214,6 +215,8 @@ public class MonthlyReportZbController {
 			detail_sql = detail_sql.replace("${lastSevenday}", lastSevenday);
 			detail_sql = detail_sql.replace("${lastday}", lastday);
 			detail_sql = detail_sql.replace("${afterday}", afterday);
+			detail_sql = detail_sql.replace("${beforeOneday}", beforeOneday);
+			detail_sql = detail_sql.replace("${beforeSevenday}", beforeSevenday);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			String BZZHUCE="";
 			String BZRENZHENG="";
