@@ -62,7 +62,9 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 		if (!ConfigProp.getIsSendEmail()) {
 			return;
 		}
+		log.info("+++++++++保存发送日志+++++++++++++" + logVo);
 		logService.save(logVo);
+		log.info("+++++++++更改最后发送时间+++++++++++++");
 		updateRunningTime();
 	}
 
@@ -80,7 +82,7 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 		JobDataMap jobDataMap = ctx.getJobDetail().getJobDataMap();
 		JobVo jobVo = (JobVo) jobDataMap.get("jobVo");
 		ScheduleReportTaskEntity taskEntity = jobVo.getTaskEntity();
-		log.info("+++++++++RegisterOneHourNotInvestReportJob+++++++++++++" + taskEntity);
+		log.info("+++++++++电销每小时注册未投资任务启动+++++++++++++");
 		MailUtil mailUtil = new MailUtil();
 		JobUtil jobUtil = new JobUtil();
 		try {
@@ -92,7 +94,7 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 			Date currDate = new Date();
 			String week = DateUtil.getWeekOfDate(currDate);
 			String executeTime = sdf.format(currDate);
-			
+			log.info("+++++++++week+++++++++++++" + week);
 			if ("星期一".equals(week) && currDate.getHours() == 9) {
 				String currDayBefore = DateUtil.getCurrDayBefore(3, "yyyy-MM-dd");
 				registerStartTime = currDayBefore + " 17:00:00";
@@ -108,8 +110,10 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 			queryParams.put("registerStartTime", registerStartTime);
 			queryParams.put("registerEndTime", registerEndTime);
 			logVo.setParams(JSON.toJSONString(queryParams));
+			log.info("+++++++++查询条件+++++++++++++" + queryParams);
 			PageUtils page = service.queryList(1, 10000, registerStartTime, registerEndTime, 0, 10000);
 			List<Map<String, Object>> dataList = (List<Map<String, Object>>) page.getList();
+			log.info("+++++++++查询返回结果+++++++++++++" + dataList);
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < dataList.size(); i++) {
 				Map<String, Object> entity = dataList.get(i);
@@ -122,8 +126,10 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 				title = "注册一小时未投资用户-W-" + month + day + "_" + Hour + "-" + dataList.size();
 				
 				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
+				log.info("+++++++++生成附件文件+++++++++++++" + attachFilePath);
 				mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
 						taskEntity.getChaosongEmailList(), attachFilePath);
+				log.info("+++++++++发送邮件结束+++++++++++++");
 				logVo.setEmailValue(attachFilePath);
 			} else {
 				logVo.setEmailValue("查询没有返回数据");
@@ -133,6 +139,7 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 			flag = false;
 			logVo.setSendResult("fail");
 			logVo.setDesc(JobUtil.getStackTrace(e));
+			log.info(logVo.getDesc());
 			e.printStackTrace();
 		} finally {
 			long l2 = System.currentTimeMillis();
