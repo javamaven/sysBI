@@ -51,8 +51,12 @@ public class ScheduleReportTaskController {
 					entity.setNextRunTime("-");
 					continue;
 				}
-				String time = CronExpressionUtil.nextRunTime(entity.getSendRate());
-				entity.setNextRunTime(time);
+//				cron = "0 00 9-18/1 ? * 2,3,4,5,6";
+//				String time = CronExpressionUtil.nextRunTime(entity.getSendRate());
+				List<String> nextRunTimes = CronExpressionUtil.nextRunTimes(entity.getSendRate(), 1);
+				if(nextRunTimes != null && nextRunTimes.size() > 0){
+					entity.setNextRunTime(nextRunTimes.get(0).toString());
+				}
 			} catch (ParseException e) {
 				e.printStackTrace();
 			}
