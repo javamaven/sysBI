@@ -97,8 +97,12 @@ public class DmReportBasicDailyController {
 	public void partExport(String params, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String statPeriod = map.get("statPeriod") + "";
+		String reg_begindate = map.get("reg_begindate") + "";
 		if (StringUtils.isNotEmpty(statPeriod)) {
 			map.put("statPeriod", statPeriod.replace("-", ""));
+		}
+		if(StringUtils.isNotEmpty(reg_begindate)){
+			map.put("reg_begindate", reg_begindate.replace("-", ""));
 		}
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
