@@ -39,9 +39,12 @@
 		select * from dm_report_basic_daily
        
        	where 1=1
-       	<if test="statPeriod != null and statPeriod.trim() !='' ">
-			and STAT_PERIOD = #{statPeriod}
+       	<if test="reg_begindate != null and reg_begindate.trim() != '' and statPeriod != null and statPeriod.trim() != ''">
+			AND STAT_PERIOD BETWEEN #{reg_begindate} AND #{statPeriod}
 		</if>
+<!--        	<if test="statPeriod != null and statPeriod.trim() !='' "> -->
+<!-- 			and STAT_PERIOD = #{statPeriod} -->
+<!-- 		</if> -->
 		order by STAT_PERIOD desc
 		<if test="offset != null and limit != null">
 			limit #{offset}, #{limit}

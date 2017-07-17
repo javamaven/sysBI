@@ -3,6 +3,7 @@ $(function () {
   initTimeCond();
   initExportFunction();
   initEvent();
+  initTimeCond2();
 });
 
 function initExportFunction(){
@@ -16,6 +17,16 @@ function initExportFunction(){
 
 function initTimeCond(){
     $("#stat_period").datetimepicker({
+        format: 'yyyy-mm-dd',
+        minView:'month',
+        language: 'zh-CN',
+        autoclose:true
+    }).on("click",function(){
+    });
+}
+
+function initTimeCond2(){
+    $("#reg_begindate").datetimepicker({
         format: 'yyyy-mm-dd',
         minView:'month',
         language: 'zh-CN',
@@ -167,7 +178,8 @@ var vm = new Vue({
 
 function getParams(){
 	var params = {
-        	'statPeriod': $("#stat_period").val()
+        	'statPeriod': $("#stat_period").val(),
+        	'reg_begindate': $("#reg_begindate").val()
 	};
 	return params;
 }

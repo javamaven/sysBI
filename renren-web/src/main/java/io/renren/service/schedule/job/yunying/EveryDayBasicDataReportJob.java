@@ -81,6 +81,7 @@ public class EveryDayBasicDataReportJob implements Job {
 			String date_offset_num = params.get("date_offset_num") + "";
 			String[] splitArr = date_offset_num.split("-");
 			String statPeriod = params.get("statPeriod") + "";
+			String reg_begindate = params.get("reg_begindate") + "";
 			if (!"0".equals(splitArr[0])) {
 				if (StringUtils.isNotEmpty(statPeriod)) {
 					int days = Integer.valueOf(splitArr[0]);
@@ -89,10 +90,17 @@ public class EveryDayBasicDataReportJob implements Job {
 					} else if ("hour".equals(splitArr[1])) {
 						statPeriod = DateUtil.getHourBefore(statPeriod, -days, "yyyy-MM-dd");
 					}
+					if ("day".equals(splitArr[1])) {
+						reg_begindate = DateUtil.getCurrDayBefore(reg_begindate, -days, "yyyy-MM-dd");
+					} else if ("hour".equals(splitArr[1])) {
+						reg_begindate = DateUtil.getHourBefore(reg_begindate, -days, "yyyy-MM-dd");
+					}
 					params.put("statPeriod", statPeriod);
+					params.put("reg_begindate", reg_begindate);
 				}
 			}
 			queryParams.put("statPeriod", statPeriod.replace("-", ""));
+			queryParams.put("reg_begindate", reg_begindate.replace("-", ""));
 			logVo.setParams(JSON.toJSONString(params));
 
 			List<DmReportBasicDailyEntity> queryList = service.queryList(queryParams);

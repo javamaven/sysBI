@@ -55,7 +55,7 @@ public class DmReportBasicDailyController {
 	@ResponseBody
 	@RequestMapping("/list")
 	@RequiresPermissions("dmreportbasicdaily:list")
-	public R list(Integer page, Integer limit, String statPeriod){
+	public R list(Integer page, Integer limit, String statPeriod,String reg_begindate){
 
 
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
@@ -65,6 +65,9 @@ public class DmReportBasicDailyController {
 		map.put("limit", limit);
 		if(StringUtils.isNotEmpty(statPeriod)){
 			map.put("statPeriod", statPeriod.replace("-", ""));
+		}
+		if(StringUtils.isNotEmpty(reg_begindate)){
+			map.put("reg_begindate", reg_begindate.replace("-", ""));
 		}
 		//查询列表数据
 		List<DmReportBasicDailyEntity> dmReportBasicDailyList = service.queryList(map);
