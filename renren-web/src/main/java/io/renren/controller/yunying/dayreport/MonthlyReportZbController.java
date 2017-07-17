@@ -193,6 +193,8 @@ public class MonthlyReportZbController {
 		String day="";
 		String dayday="";
 		String afterday="";
+		String firstday="";
+		String firstday2="";
 		lastSevenday = DateUtil.getCurrDayBefore(invest_end_time, 7, "yyyy-MM-dd");
 		lastday = DateUtil.getCurrDayBefore(lastSevenday, 6, "yyyy-MM-dd");
 		afterday=DateUtil.getCurrDayBefore(invest_end_time, -6, "yyyy-MM-dd");;
@@ -202,6 +204,8 @@ public class MonthlyReportZbController {
 		if (StringUtils.isNotEmpty(invest_end_time)) {
 			day = invest_end_time.replace("-", "");
 		}
+		firstday2=dayday.substring(0,6);
+		firstday=dayday.substring(0,6)+"01";
 		String beforeOneday=DateUtil.getCurrDayBefore(invest_end_time,-1, "yyyy-MM-dd");
 		
 		String beforeSevenday=DateUtil.getCurrDayBefore(beforeOneday,-6, "yyyy-MM-dd");
@@ -217,6 +221,9 @@ public class MonthlyReportZbController {
 			detail_sql = detail_sql.replace("${afterday}", afterday);
 			detail_sql = detail_sql.replace("${beforeOneday}", beforeOneday);
 			detail_sql = detail_sql.replace("${beforeSevenday}", beforeSevenday);
+			detail_sql = detail_sql.replace("${firstday2}", firstday2);
+			detail_sql = detail_sql.replace("${firstday}", firstday);
+			detail_sql = detail_sql.replace("${day}", day);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			String BZZHUCE="";
 			String BZRENZHENG="";
@@ -236,7 +243,12 @@ public class MonthlyReportZbController {
 					 System.out.println(BZZHUCE);
 					 }else if (date.equals("2")) {
 						 BZZHUCE="普通版回款（万元）";
-					}else{
+					}else if (date.equals("3")) {
+						 BZZHUCE="本月销售年化交易额";
+					}else if (date.equals("-1")) {
+						 BZZHUCE="";
+					}
+					 else{
 						BZZHUCE=date+"";
 					}
 
@@ -251,7 +263,12 @@ public class MonthlyReportZbController {
 					 BZRENZHENG="本周投资金额（万元";
 					 }else if (date.equals("2")) {
 						 BZRENZHENG="存管版回款（万元）";
-					}else{
+					}else if (date.equals("3")) {
+						 BZRENZHENG="";
+					}else if (date.equals("-1")) {
+						 BZRENZHENG="";
+					}
+					 else{
 						BZRENZHENG=date+"";
 					}
 				 map.put("BZRENZHENG", BZRENZHENG);
@@ -268,7 +285,12 @@ public class MonthlyReportZbController {
 					 System.out.println(BZSHOUTOU);
 					 }else if (date.equals("2")) {
 						 BZSHOUTOU="总回款( 万元)";
-					}else{
+					}else if (date.equals("3")) {
+						BZSHOUTOU="";
+					}else if (date.equals("-1")) {
+						BZSHOUTOU="";
+					}
+					 else{
 						BZSHOUTOU=date+"";
 					}
 				 map.put("BZSHOUTOU", BZSHOUTOU);
@@ -285,7 +307,12 @@ public class MonthlyReportZbController {
 					 System.out.println(SZZHUCE);
 					 }else if (date.equals("2")) {
 						 SZZHUCE="理财解锁金额";
-					}else{
+					}else if (date.equals("3")) {
+						SZZHUCE="";
+					}else if (date.equals("-1")) {
+						SZZHUCE="";
+					}
+					 else{
 						SZZHUCE=date+"";
 					}
 				 map.put("SZZHUCE", SZZHUCE);

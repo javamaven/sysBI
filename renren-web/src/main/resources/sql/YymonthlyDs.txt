@@ -13,5 +13,5 @@ FROM
 mdtxbi.edw_trading_repay_plan rpp
 left join mdtxbi.edw_trading_repay_detail rpd
  on (rpp.project_id=rpd.project_id and rpp.period=rpd.period)
- 
+ where  to_char(rpp.create_time,'yyyy-mm-dd')<='${investEndTime}'
  

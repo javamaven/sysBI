@@ -79,7 +79,7 @@ union all
 
 -- 日期 本周年化投资金额（万元）本周投资金额（万元）上周年化投资金额（万元）上周投资金额（万元）
 select
-(to_char(sysdate-1,'yyyy-mm-dd')) as d_day,
+'${investEndTime}' as d_day,
 sum(case when date_tender between '${investStatTime}' and '${investEndTime}' then nian_xiang else 0 end) as this_week_nt,--本周年化投资金额
 sum(case when date_tender between '${investStatTime}' and '${investEndTime}' then sum_tender else 0 end) as this_td,
 sum(case when date_tender between '${lastday}' and '${lastSevenday}' then nian_xiang else 0 end) as last_week_nt,-- 上周年化投资金额
@@ -143,7 +143,7 @@ mdtxbi.edw_trading_repay_plan rpp
 left join mdtxbi.edw_trading_repay_detail rpd on (rpp.project_id=rpd.project_id and rpp.period=rpd.period)
 WHERE
  (to_char(rpd.settle_end_time,'yyyy-mm-dd') > '${investEndTime}' OR rpd.settle_end_time IS NULL)
- and to_char (rpp.REPAY_DATE,'yyyy-mm-dd') between '${investEndTime}' and '${afterday}'
+ and to_char (rpp.REPAY_DATE,'yyyy-mm-dd') between '${beforeOneday}' and '${beforeSevenday}'
 GROUP BY to_char(rpp.REPAY_DATE,'yyyy-mm-dd')
 order by to_char(rpp.REPAY_DATE,'yyyy-mm-dd')
 ),
@@ -154,7 +154,7 @@ to_char (po.unlock_time,'yyyy-mm-dd') as unlock_time,
 round(sum(po.tender_amount）/100,2) as unlock_money
 from mdtxbi.ods_mdtx_cg_fcial_plan_order@ora40 po
 where -- po.apply_exit_time is null and
- to_char(po.unlock_time,'yyyy-mm-dd') between '${investEndTime}' and  '${afterday}'
+ to_char(po.unlock_time,'yyyy-mm-dd') between '${beforeOneday}' and  '${beforeSevenday}'
 --where (to_char(po.unlock_time,'yyyy-mm-dd'))=to_char(sysdate+2,'yyyy-mm-dd')
 group by to_char(po.unlock_time,'yyyy-mm-dd')
 order by to_char(po.unlock_time,'yyyy-mm-dd') 
@@ -174,6 +174,23 @@ null as nul6
 from cr left join lcjs on  cr.r_time=lcjs.unlock_time
 order by cr.r_time
 )
+union all
+select '日期（本月销售年化交易额）',
+3,3,3,3,null,null,null,null,null,
+null 
+from dual
+union all
+select * from (
+select
+'${firstday2}',
+round(sum(case when pd.tender_subject<>2 then pd.tender_capital*BORROW_PERIOD/360 else 
+pd.tend_cash*BORROW_PERIOD/360 end)/10000,2) as sum_tender, -- 本月销售年化交易额（万元）
+-1 as nul1,-1 as nul2,-1 as nul3,null as nul4,null as nul5,null as nul6,null as nul7,null as unl8,null as nul9
 
- 
+from mdtxbi.dm_trading_project_detail pd
+where to_char(pd.addtime,'yyyymmdd') between '${firstday}' and '${day}'
+and pd.tender_account_status=1
+group by to_char(pd.addtime,'yyyymm')
+order by to_char(pd.addtime,'yyyymm')
+)
  
