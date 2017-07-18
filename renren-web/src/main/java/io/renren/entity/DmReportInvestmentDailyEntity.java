@@ -2,7 +2,6 @@ package io.renren.entity;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.util.Date;
 
 
 
@@ -28,7 +27,7 @@ public class DmReportInvestmentDailyEntity implements Serializable {
 	//操作平台
 	private String tenderFrom;
 	//投资时间
-	private Date addtime;
+	private String  addtime;
 	//涉及项目类型
 	private String borrowType;
 	//投资记录ID
@@ -45,7 +44,25 @@ public class DmReportInvestmentDailyEntity implements Serializable {
 	private BigDecimal recoverAccountWait;
 	//
 	private BigDecimal cia;
+	
+	private String  registerTime;
+	
+	
 
+
+	public String getRegisterTime() {
+		return registerTime;
+	}
+	public void setRegisterTime(String registerTime) {
+		this.registerTime = registerTime;
+	}
+	
+	public String getAddtime() {
+		return addtime;
+	}
+	public void setAddtime(String addtime) {
+		this.addtime = addtime;
+	}
 	/**
 	 * 设置：统计日期
 	 */
@@ -133,15 +150,6 @@ public class DmReportInvestmentDailyEntity implements Serializable {
 	/**
 	 * 设置：投资时间
 	 */
-	public void setAddtime(Date addtime) {
-		this.addtime = addtime;
-	}
-	/**
-	 * 获取：投资时间
-	 */
-	public Date getAddtime() {
-		return addtime;
-	}
 	/**
 	 * 设置：涉及项目类型
 	 */

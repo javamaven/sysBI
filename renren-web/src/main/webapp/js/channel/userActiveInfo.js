@@ -57,6 +57,7 @@ function initExportFunction(){
 	$('#btn_exports').click(function(){
 		var params = {
         	'statPeriod': $("#stat_day").val(), 
+        	'phone': $("#shouji").val(), 
         	'afterInvestBalance_start': $("#start_multi_invest_money").val(), 
         	'afterInvestBalance_end': $("#end_multi_invest_money").val(),
         	'startFirstInvestTime': $("#start_first_invest_time").val() ,
@@ -93,6 +94,7 @@ function resetTotalInfo(){
 function getParams(){
 	var params = {
 			'statPeriod': $("#stat_day").val(), 
+			'phone': $("#shouji").val(), 
         	'afterInvestBalance_start': $("#start_multi_invest_money").val(), 
         	'afterInvestBalance_end': $("#end_multi_invest_money").val(),
         	'startFirstInvestTime': $("#start_first_invest_time").val() ,
@@ -263,7 +265,8 @@ function initTable(){
 							return '';
 						}
 					}		
-				}
+				},
+				{ label: '手机号码', name: 'phone', index: '$PHONE', width: 100,align:'right' }
 				
 	        ],
 			viewrecords: true,

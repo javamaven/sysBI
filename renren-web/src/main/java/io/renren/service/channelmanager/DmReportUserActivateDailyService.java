@@ -37,7 +37,7 @@ public interface DmReportUserActivateDailyService {
 			String afterInvestBalance_end, String startFirstInvestTime, String endFirstInvestTime,
 			String startTotalMoney, String endTotalMoney, String startTotalInvestAmount, String endTotalInvestAmount,
 			String startFirstInvestAmount, String endFirstInvestAmount, String startRegisterTime,
-			String endRegisterTime, String bangCard, String realName, String channelName, String registerFrom);
+			String endRegisterTime, String bangCard, String realName, String channelName, String registerFrom,String phone);
 
 	Map<String, String> getExcelFields();
 }

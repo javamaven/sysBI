@@ -106,7 +106,8 @@ function initTableGrid(){
 					}
 				}
 			},
-			{ label: '目前状态', name: 'stage', index: '$STAGE', width: 80,align:'right'}
+			{ label: '目前状态', name: 'stage', index: '$STAGE', width: 80,align:'right'},
+			{ label: '注册时间', name: 'registerTime', index: 'REGISTER_TIME', width: 150 ,align:'right'}
 			
 //			STAGE 项目阶段（1待提交审核 2审核中待发布、3审核通过待排标、4已发布筹款中、5还款中、8已结清、9流标） 
 //			,				

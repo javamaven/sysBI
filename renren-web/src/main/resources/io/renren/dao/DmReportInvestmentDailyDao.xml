@@ -21,6 +21,7 @@
         <result property="stage" column="STAGE"/>
         <result property="recoverAccountWait" column="RECOVER_ACCOUNT_WAIT"/>
         <result property="cia" column="CIA"/>
+        <result property="registerTime" column="REGISTER_TIME"/>
     </resultMap>
     
 	<sql id="cond">
@@ -112,7 +113,8 @@
 				WHEN STAGE=8 THEN '已结清'
 				WHEN STAGE=9 THEN '流标'
 			ELSE STAGE END AS STAGE,
-			RECOVER_ACCOUNT_WAIT
+			RECOVER_ACCOUNT_WAIT,
+			REGISTER_TIME
 		
 		from dm_report_investment_daily
        

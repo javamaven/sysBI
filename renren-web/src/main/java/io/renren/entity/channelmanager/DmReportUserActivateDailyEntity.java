@@ -56,6 +56,17 @@ public class DmReportUserActivateDailyEntity implements Serializable {
 	
 	private String secAddtime;
 	
+	private String phone;
+	
+	
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
 
 	public String getSecAddtime() {
 		return secAddtime;

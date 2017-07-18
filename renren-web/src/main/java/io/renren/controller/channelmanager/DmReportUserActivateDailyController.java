@@ -53,7 +53,8 @@ public class DmReportUserActivateDailyController {
 			String afterInvestBalance_start, String afterInvestBalance_end, String startFirstInvestTime,
 			String endFirstInvestTime, String startTotalMoney, String endTotalMoney, String startTotalInvestAmount,
 			String endTotalInvestAmount, String startFirstInvestAmount, String endFirstInvestAmount,
-			String startRegisterTime, String endRegisterTime, String bangCard, String realName, String channelName, String registerFrom) {
+			String startRegisterTime, String endRegisterTime, String bangCard,String phone,
+			String realName, String channelName, String registerFrom) {
 
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
@@ -61,7 +62,7 @@ public class DmReportUserActivateDailyController {
 		PageUtils pageUtil = service.query(page, limit, statPeriod, afterInvestBalance_start, afterInvestBalance_end,
 				startFirstInvestTime, endFirstInvestTime, startTotalMoney, endTotalMoney, startTotalInvestAmount,
 				endTotalInvestAmount, startFirstInvestAmount, endFirstInvestAmount, startRegisterTime, endRegisterTime,
-				bangCard, realName, channelName, registerFrom);
+				bangCard, realName, channelName, registerFrom,phone);
 
 		return R.ok().put("page", pageUtil);
 	}

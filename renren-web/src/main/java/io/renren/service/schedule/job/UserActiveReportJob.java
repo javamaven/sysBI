@@ -95,6 +95,7 @@ public class UserActiveReportJob implements Job {
 			String bangCard = params.get("bangCard") + "";
 			String realName = params.get("realName") + "";
 			String channelName = params.get("channelName") + "";
+			String phone = params.get("phone") + "";
 
 			String[] splitArr = date_offset_num.split("-");
 			if (!"0".equals(splitArr[0])) {
@@ -111,7 +112,7 @@ public class UserActiveReportJob implements Job {
 			PageUtils pages = service.query(1, 1000 * 10000, statPeriod, afterInvestBalance_start,
 					afterInvestBalance_end, startFirstInvestTime, endFirstInvestTime, startTotalMoney, endTotalMoney,
 					startTotalInvestAmount, endTotalInvestAmount, startFirstInvestAmount, endFirstInvestAmount,
-					startRegisterTime, endRegisterTime, bangCard, realName, channelName, registerFrom);
+					startRegisterTime, endRegisterTime, bangCard, realName, channelName, registerFrom,phone);
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < pages.getList().size(); i++) {
 				ChannelStftInfoEntity entity = (ChannelStftInfoEntity) pages.getList().get(i);

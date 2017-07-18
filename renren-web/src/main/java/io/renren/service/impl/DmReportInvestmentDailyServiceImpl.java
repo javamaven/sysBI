@@ -100,16 +100,19 @@ public class DmReportInvestmentDailyServiceImpl implements DmReportInvestmentDai
 		headMap.put("username", "用户名称");
 		headMap.put("channelId", "渠道ID");
 		headMap.put("channelName", "渠道名称");
+		headMap.put("activityTag", "渠道标记");
 		headMap.put("tenderFrom", "操作平台");
-		headMap.put("addTime", "投资时间");
+		headMap.put("addtime", "投资时间");
 		headMap.put("borrowType", "涉及项目类型");
-		headMap.put("投资记录ID", "pid");
+		headMap.put("pid", "投资记录ID");
 		headMap.put("projectName", "涉及项目名称");
 		headMap.put("tenderCapital", "涉及项目本金");
 		headMap.put("borrowPeriod", "涉及项目期限");
-		headMap.put("stage", "目前状态");
-
 		headMap.put("recoverAccountWait", "当前持有总金额");
+		headMap.put("stage", "目前状态");
+		headMap.put("registerTime", "注册时间");
+
+
 		return headMap;
 	}
 
