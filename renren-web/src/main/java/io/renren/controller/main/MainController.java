@@ -699,8 +699,8 @@ public class MainController {
 //			}
 			//直接增加2400w
 			int hours = new Date().getHours();
-			total_day += 24000000/24 * hours;
-			total_month += Integer.parseInt(currDayStr.substring(6, 8))*24000000;
+			total_day += 20000000/24 * hours;
+			total_month += Integer.parseInt(currDayStr.substring(6, 8))*20000000;
 			
 			numberFormat.setGroupingUsed(false);
 			System.err.println("++++++当月投资总额+++++" + numberFormat.format((int)total_month));
@@ -806,8 +806,10 @@ public class MainController {
 		List<Integer> dataList = new ArrayList<Integer>();
 		List<String> province_list = new ArrayList<String>();
 		try {
+			String currDayStr = DateUtil.getCurrDayStr();
 			JdbcUtil util = new JdbcUtil(dataSourceFactory, "oracle26");
-			String addTime = "2017-06-29 00:00:00";
+			String addTime = "";
+			addTime = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6) + "-01 00:00:00";
 			List<Map<String, Object>> list = util.query(SqlConstants.province_invest_sql, addTime);
 			for (int i = 0; i < list.size(); i++) {
 				Map<String, Object> map = list.get(i);

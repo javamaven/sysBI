@@ -14,6 +14,7 @@ public class SqlConstants {
 			"	dm_report_internal_display " +
 			"where 1=1 " +
 			"and type=1 " + 
+			"and CAPITAL > 500 " + //投资金额小于500元的过滤掉
 			"and addtime >= ? " +
 			"and addtime <= ? " +
 			"order by addtime asc ";

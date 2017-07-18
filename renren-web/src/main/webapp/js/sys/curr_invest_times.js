@@ -1,10 +1,11 @@
 $(function() {
-	initCurrInvestTimesEcharts();
+//	initCurrInvestTimesEcharts();
+	queryCurrInvestTimesData();
 	setInterval('queryCurrInvestTimesData()', 5*60*1000);
 });
 
-var CurrInvestTimes_Obj = document.getElementById('curr_invest_times_chart_div');
-var CurrInvestTimes_Chart ;
+//var CurrInvestTimes_Obj = document.getElementById('curr_invest_times_chart_div');
+//var CurrInvestTimes_Chart ;
 function initCurrInvestTimesEcharts() {
 	//折线图
 	CurrInvestTimes_Chart = echarts.init(CurrInvestTimes_Obj);
@@ -18,7 +19,9 @@ function queryCurrInvestTimesData(){
 		data: {},
 		contentType: "application/json;charset=utf-8",
 		success : function(data) {
-			CurrInvestTimes_Chart.setOption(getCurrInvestTimesOption(data));
+//			CurrInvestTimes_Chart.setOption(getCurrInvestTimesOption(data));
+			$("#day_invest_times").html(formatNumber( data.day, 0));
+			$("#month_invest_times").html(formatNumber( data.month, 0));
 		}
 	});
 }

@@ -1,0 +1,81 @@
+html,body{font-family: 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;background: #000000;}
+.circle-holder{width:4.1rem;font-size:4.1rem;position: absolute;}
+.circle{width:43.9%;height:0;padding-bottom: 43.9%;display: inline-block;position: absolute;top:0;}
+.circle1{background: url(../images/circle1.png) no-repeat;background-size:cover;margin-right: 12.2%;left:0;}
+.circle2{background: url(../images/circle2.png) no-repeat;background-size:cover;right:0;}
+.circle .circle-title{font-size:9.75%;font-weight: bolder;margin-bottom: .05rem;}
+.circle .circle-text{font-size:4.878%;font-weight: bolder;}
+.circle .circle-text,.circle .circle-title{text-align: center;}
+.circle1 .circle-title{color:#2eb1c3; }
+.circle1 .circle-text{color:#b3f6ff;}
+.circle2 .circle-title{color:#fff21a; }
+.circle2 .circle-text{color:#fffaa9;}
+.circle-inner{position: absolute;left:0;top:50%;margin-top:-26.8%;width:100%;border-radius: 50%;}
+.invest-num-holder{position: absolute;left:0;top:0;width:4.4rem;font-size: 4.4rem;font-weight:bold;}
+.invest-num{width:100%;height: 0;padding-bottom: 28.4%;background: url(../images/investNumBg.png) no-repeat;background-size: contain;}
+.invest-num .inner{position: absolute;left:9.1%;top:50%;margin-top: -7.1%;}
+.invest-title,.invest-content{color:#00edff;}
+.invest-title{font-size:5.33%;}
+.invest-content{font-size:6.8%;}
+.place-holder{position: absolute;top:0;right:0;width:4.4rem;}
+.place-holder .place1{background:url(../images/place1.png) no-repeat;background-size: contain;width:100%;height: 0;padding-bottom: 6.818%;}
+.place-holder .place-content{background: url(../images/placeBgDot.png) repeat;width:95.45%;margin:0 2.27%;background-size: contain;position: relative;}
+.place-holder .place-content:after{
+	content:'';
+	position: absolute;left:-1px;bottom:0;padding-bottom: 4.7619%;height:0;width:0.71428%;
+	background: url(../images/placeAfter.png) no-repeat;background-size: cover;
+}
+.place-holder .place2{background:url(../images/place2.png) no-repeat;background-size: contain;width:100%;height: 0;padding-bottom: 9.545%;
+}
+.place-content .inner{padding:.1rem .1rem .1rem .2rem;}
+
+.video-holder{width:4.4rem;position: absolute;height: 2.64rem;}
+.video-bg{width:100%;background: url(../images/videoBg.png) no-repeat;background-size: contain;height:100%;}
+.video-content{padding:4.3% 4.25% 4.3% 4.25%;position: relative;width:100%;height:100%;box-sizing: border-box;}
+.video-content img{width:100%;height:100%;}
+
+.invest-price-holder{width:4.9rem;font-size: 4.9rem;position:absolute;z-index:100;}
+.invest-price{width:100%;height:0;padding-bottom: 45.681%;position: relative;background: url(../images/invest-price.png) no-repeat;background-size:contain;}
+.invest-price .inner{position: absolute;top:50%;left:7.75%;color:#00edff;margin-top: -12.5%}
+.invest-price-title{font-size:5.714%;font-weight:bold;}
+.invest-price-content{font-size: 9%;font-weight:bold;}
+.today-invest{width:3.75rem;font-size: 3.75rem;font-weight: bold;color: #ffbe23;position: absolute;}
+.today-invest-title{font-size: 5.33%;padding-bottom: .05rem;}
+.today-invest-price{font-size: 10.66%;padding-bottom: .1rem;}
+.today-invest-bar{background-color:#5c440c;height:.2rem;width:100%;position: relative;}
+.today-invest-bar .inner{background-color:#ffbe23;position: absolute;left:0;top:0; height:100%;}
+
+.month-invest{width:3.75rem;font-size: 3.75rem;font-weight: bold;color: #00ff60;position: absolute;top:0;right:0;}
+.month-invest-title{font-size: 5.33%;padding-bottom: .05rem;}
+.month-invest-price{font-size: 10.66%;padding-bottom: .1rem;}
+.month-invest-bar{background-color:#0e4824;height:.2rem;width:100%;position: relative;}
+.month-invest-bar .inner{background-color:#00ff60;position: absolute;left:0;top:0; height:100%;}
+
+
+.top-holder{position: absolute;width:4.4rem;}
+.top-holder .top1{background:url(../images/top1.png) no-repeat;background-size: contain;width:100%;height: 0;padding-bottom: 8.636%;}
+.top-holder .top-content{background: url(../images/topBgDot.png) repeat;width:100%;background-size: contain;position: relative;}
+.top-holder .top-content:after{
+	content:'';
+	position: absolute;left:2%;bottom:-2px;padding-bottom: 4.7619%;height:0;width:0.71428%;
+	background: url(../images/placeAfter.png) no-repeat;background-size: cover;
+}
+.top-holder .top2{background:url(../images/top2.png) no-repeat;background-size: contain;width:100%;height: 0;padding-bottom: 10%;
+}
+.top-content .inner{padding:.1rem .1rem .1rem .2rem;font-size: .18rem;color:#00edff;}
+.top-title{position: absolute;top:0;left:.4rem;background: url(../images/topTitle.png) no-repeat;background-size:contain;width:2.92rem;font-size:2.92rem;height:.38rem;color:#00edff;text-align: center;line-height: .38rem;}
+.top-title .inner{font-size: 6.16%;}
+#province_invest_chart_div{margin-top:-52px;}
+
+
+
+
+
+
+
+
+
+
+
+
+

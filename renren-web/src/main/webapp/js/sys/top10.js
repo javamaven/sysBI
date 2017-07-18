@@ -111,12 +111,14 @@ var option = {
                                '#FE8463','#9BCA63','#FAD860','#F3A43B','#60C0DD',
                                '#D7504B','#C6E579','#F4E001','#F0805A','#26C0C0'
                             ];
-                            return colorList[params.dataIndex]
+                            
+//                            return colorList[params.dataIndex]
+                            return '#B0E2FF';
                         },
                         label: {  
                             show: true,//是否展示  
                             offset: [0,-2],
-//                            position: 'right',
+                            position: 'right',
                             // position: 默认自适应，水平布局为'top'，垂直布局为'right'，可选为
                             //           'inside'|'left'|'right'|'top'|'bottom'
                             // textStyle: null      // 默认使用全局文本样式，详见TEXTSTYLE

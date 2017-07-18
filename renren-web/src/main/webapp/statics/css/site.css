@@ -22,7 +22,11 @@
 
 .news-item
 {
-    padding:4px 4px;
+    padding:5px 5px;
     margin:0px;
-    border-bottom:1px dotted #555; 
+    font-size: 12px;
+    /*border-bottom:1px dotted #555;*/ 
+}
+.news-item-bg{
+	background-color:yellow;
 }

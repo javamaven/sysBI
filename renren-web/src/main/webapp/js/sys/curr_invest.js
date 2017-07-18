@@ -1,10 +1,11 @@
 $(function() {
-	initCurrInvestEcharts();
+//	initCurrInvestEcharts();
+	queryCurrInvestData();
 	setInterval('queryCurrInvestData()', 5*60*1000);
 });
 
-var CurrInvest_Obj = document.getElementById('curr_invest_chart_div');
-var CurrInvest_Chart ;
+//var CurrInvest_Obj = document.getElementById('curr_invest_chart_div');
+//var CurrInvest_Chart ;
 function initCurrInvestEcharts() {
 	//折线图
 	CurrInvest_Chart = echarts.init(CurrInvest_Obj);
@@ -18,7 +19,18 @@ function queryCurrInvestData(){
 		data: {},
 		contentType: "application/json;charset=utf-8",
 		success : function(data) {
-			CurrInvest_Chart.setOption(getCurrInvestOption(data));
+			console.info(data)
+			if(data.day > 100000000){
+				$("#day_invest").html(formatNumber( data.day/100000000, 2) + "亿元");
+        	}else{
+        		$("#day_invest").html(formatNumber( data.day/10000, 2) + "万元");
+        	}
+			if(data.month > 100000000){
+				$("#month_invest").html(formatNumber( data.month/100000000, 2) + "亿元");
+        	}else{
+        		$("#month_invest").html(formatNumber( data.month/10000, 2) + "万元");
+        	}
+//			CurrInvest_Chart.setOption(getCurrInvestOption(data));
 		}
 	});
 }

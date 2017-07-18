@@ -64,7 +64,7 @@ public class ScheduleJob extends QuartzJobBean {
 			
 			logger.info("任务执行完毕，任务ID：" + scheduleJob.getJobId() + "  总共耗时：" + times + "毫秒");
 		} catch (Exception e) {
-			logger.error("任务执行失败，任务ID：" + scheduleJob.getJobId(), e);
+//			logger.error("任务执行失败，任务ID：" + scheduleJob.getJobId(), e);
 			
 			//任务执行总时长
 			long times = System.currentTimeMillis() - startTime;

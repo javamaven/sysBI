@@ -6,6 +6,11 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- 1、当天当月投资额：5分钟刷新一次 -->
+<!-- 2、平台投资额：30秒刷新一次 -->
+<!-- 3、平台投资额：30秒刷新一次 -->
+<!-- 4、省份TOP10投资：30分钟刷新一次 -->
+<!-- 5、累计投资笔数：5分钟刷新一次 -->
 
 <!-- 不保留缓存 -->
 <meta http-equiv="Expires"   CONTENT="0">
@@ -14,8 +19,12 @@
 
 <script src="${rc.contextPath}/statics/libs/echarts2/js/echarts.js"></script>
 
-<link href="${rc.contextPath}/statics/css/site.css" rel="stylesheet"
-	type="text/css" />
+<link href="${rc.contextPath}/statics/css/site.css" rel="stylesheet" type="text/css" />
+
+<!-- 大屏样式 -->
+<link href="${rc.contextPath}/statics/css/main/css/style.css" rel="stylesheet" type="text/css" />
+<link href="${rc.contextPath}/statics/css/main/css/style.css" rel="stylesheet" type="text/css" />
+
 <!-- 数字翻牌 -->
 <link href="${rc.contextPath}/statics/css/flapper.css" type="text/css" rel="stylesheet" />
 
@@ -32,54 +41,118 @@
 <script src="${rc.contextPath}/statics/libs/jquery.flapper.js"></script>
 <link href="${rc.contextPath}/js/sys/util.js" rel="stylesheet">
 	
-
-	
-<!-- 	<link href="${rc.contextPath}/statics/css/video/js/video-js.css" rel="stylesheet"> -->
 <title>经分主页</title>
 </head>
 <body style="height: 100%; width: 100%" ondblclick="openMainWin()">
-	<!-- 数字翻牌 触发用到 -->
-	<div style="display: none;">
-		<input id="typesomething"></input> <a class="btn btn-primary"id="showme">查询</a>
-		<!--  <input id="typesomething_2"></input> <a class="btn btn-primary" id="showme_2">查询</a> --> 
-	</div>
 
 	<div>
+		<div class="circle-holder" style="left:.5rem;top:0.3rem;">
+			<div class="circle1 circle">
+				<div class="circle-inner">
+					<div class="circle-title" id="month_invest_times"></div>
+					<div class="circle-text">当月交易笔数</div>
+				</div>
+			</div><div class="circle2 circle">
+				<div class="circle-inner">
+					<div class="circle-title" id="day_invest_times"></div>
+					<div class="circle-text">当天交易笔数</div>
+				</div>
+			</div>
+		</div>
+		 <div class="invest-num-holder" style="left: 0.4rem;top: 2.2rem;">
+		 	<div class="invest-num">
+			 	<div class="inner">
+			 		<div class="invest-title">累计交易笔数</div>
+			 		<div class="invest-content" id="total_invest_times"></div>
+			 	</div>
+			 </div>
+		 </div>
+	
+		 <div class="place-holder" style="top: 3.5rem;right: 0.4rem;">
+		 	<div class="place1"></div>
+		 	<div class="place-content">
+		 		<div class="inner">
+					<div style="width: 100%; color: #FFF;  border-radius: 10px 10px 10px 10px;"
+						class=""><!-- col-md-4 -->
+						<div class=""><!-- col-xs-12 -->
+							<ul id="listPage" class="demo2">
+								<li class="news-item">.</li>
+								<li class="news-item">.</li>
+								<li class="news-item">.</li>
+								<li class="news-item">.</li>
+<!-- 								<li class="news-item">.</li> -->
+							</ul>
+						</div>
+					</div>
+		 		</div>
+		 	</div>
+		 	<div class="place2"></div>
+		 </div>	
+
+		  <!--  视频-->
+		 <div class="video-holder" style="bottom: 0.52rem;right: 0.4rem;">
+		 	<div class="video-bg">
+		 		<div class="video-content">
+<!-- 		 			<img src="../images/demo.jpg"> -->
+		 			<video controls preload="auto"  autoplay="autoplay" loop="loop" width="100%" height="100%"  data-setup="{}"  src="../statics/css/video/民贷天下党支部成立大会视频.mp4">
+					</video>
+		 		</div>
+		 	</div>
+		 </div>
+		 
+		 <!-- top10 -->
+		 <div style="bottom: 0.52rem;left: 0.4rem;" class="top-holder">
+		 	<div class="top1"></div>
+		 	<div class="top-title">
+		 		<div class='inner'>TOP10 省份累计投资额（万元）</div>
+		 	</div>
+		 	<div class="top-content">
+		 		<div class="inner">
+		 			<div id="province_invest_chart_div" class="content"  
+						style=" width: 100%; height: 370px; bottom: 1%; background: #000; border-radius: 10px 10px 10px 10px;padding-left: 20px;"></div>
+	
+		 		</div>
+		 	</div>
+		 	<div class="top2"></div>
+		 </div>
+		 
+		 <div class="today-invest" style="right:.8rem;top:.5rem;z-index:100;">
+		 	<div class="today-invest-title">当天投资总额</div>
+		 	<div class="today-invest-price" id="day_invest"></div>
+		 	<div class="today-invest-bar"><div class="inner" style="width:50%;"></div></div>
+		 </div>
+		 <div class="month-invest" style="top: 2rem;right:.8rem;z-index:100;">
+		 	<div class="month-invest-title">当月投资总额</div>
+		 	<div class="month-invest-price" id="month_invest"></div>
+		 	<div class="month-invest-bar"><div class="inner" style="width:50%;"></div></div>
+		 </div>
+		 <!-- 平台投资总额 -->
+		 <div class="invest-price-holder" style="left: 5.8rem;top:1.7rem;">
+		 	<div class="invest-price">
+		 		<div class="inner">
+		 			<div class="invest-price-title">
+			 			平台投资总额
+			 		</div>
+			 		<div class="invest-price-content" id="total_invest">
+<!-- 			 			107,154,120,000 -->
+			 		</div>
+		 		</div>
+		 	</div>
+		 </div>
+		 
+		 
 		<!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-		<div id="main"></div>
+		<div id="main" style="height: 500px;width: 550px;left: 31%;bottom: 2%;position: absolute;"></div>
 		<!-- 地图上的小袋 -->
-<!-- 		<div style="position: absolute; left: 65%; top: 20%;" class="col-md-3" -->
-<!-- 			id="map_xiaodai"> -->
-<!-- 			<img src="../statics/picture/xd-3.gif" -->
-<!-- 				style="width: 30%; height: 30%;" id="map_xd" /> -->
-<!-- 		</div> -->
 		<!-- 公司logo -->
-		<div style="position: absolute; left: 2.5%; top: 5%;" class="col-md-3">
-			<img src="../statics/picture/logo-2.png"
-				style="width: 130%; height: 130%;" /> <font color="#fff" size="4"><span
+		<div style="position: absolute; left: 38%; top: 5%;" class="col-md-3">
+			<img src="../statics/picture/logo-new.png"
+				style="width: 100%; height: 100%;" /> <font color="#fff" size="4"><span
 				id="nowDateTimeSpan"></span></font>
 		</div>
 		  
 		<!-- 平台投资总额 -->
-		<div style="position: absolute; left: 2.5%; top: 15%;"
-			class="col-md-4">
-			<img src="../statics/picture/tj_tit-2.png"
-				style="width: 80%; height: 80%;" />
-		</div>
 		<!-- 平台投资总额 翻牌 -->
-		<div style="position: absolute; left: 2.5%; top: 25%;"
-			class="col-md-12">
-			<div class="activity"></div>
-			<input class="display M" />
-		</div>		
-				
-<!-- 		 <div class="mainAreaBg mainAreaPos"> -->
-<!-- 			<div class="mianAreaInner"> -->
-<!-- 				<img src="../statics/picture/tj_tit-2.png" style="width: 80%; height: 80%;z-index:2000" /> -->
-<!-- 				<div class="mainTitle">平台投资总额</div> -->
-<!-- 				<div class="mainPrice">102,7493,0204</div> -->
-<!-- 			</div> -->
-<!-- 		 </div> -->
 
 <!--
 		<video id="my-video" class="video-js" controls preload="auto"  autoplay="autoplay" loop="loop"
@@ -87,101 +160,10 @@
 			<source src="../statics/css/video/民贷天下党支部成立大会视频.mp4">
 		</video>
 -->
-		<!-- 列表上的小袋-->
-		<div style="position: absolute; left: 2.5%; top: 65%;"
-			class="col-md-3">
-			<img src="../statics/picture/4.png" style="width: 30%; height: 30%;" />
-		</div>
-		<!-- 滚动列表 -->
-		<div
-			style="position: absolute; left: 1%; bottom: 2%; color: #FFF; background: #000; border-radius: 10px 10px 10px 10px;"
-			class="col-md-4">
-			<div class="col-xs-12">
-				<ul id="listPage" class="demo2">
-					<li class="news-item">.</li>
-					<li class="news-item">.</li>
-					<li class="news-item">.</li>
-					<li class="news-item">.</li>
-					<li class="news-item">.</li>
-				</ul>
-			</div>
-		</div>
-		
-		<!-- 当天投资，当月投资总额 -->
-		<div id="curr_invest_chart_div" class="content"
-			style="position: absolute; right: -27%; width: 50%; height: 400px; top: 1%; background: #000; border-radius: 10px 10px 10px 10px;"></div>
-	
 
-		
-<!-- 		<!-- 个人投资TOP10--> 
-<!-- 		<div style="position: absolute; right: 4%; bottom: 40%;"> -->
-<!-- 			<font style="width: 30%; height: 30%;color:white;font-weight: bold;font-family: serif;">个人累计投资TOP10</font> -->
-<!-- 		</div> -->
-<!-- 		<div  style="position: absolute; left: 1%; bottom: 2%; color: #FFF; background: #000; border-radius: 10px 10px 10px 10px;"> -->
-			
-
-<!-- 		</div> -->
-		<!-- top10标题-->
-		<div style="position: absolute; right: 2%; top: 51%;"
-			class="col-md-2">
-			<img src="../statics/picture/top10_title.png" style="width: 100%; height: 100%;" />
-		</div>
-		<div id="top10_chart_div" class="content"
-			style="position: absolute; right: 1%; width: 18%; height: 400px; bottom: 1%; background: #000; border-radius: 10px 10px 10px 10px;"></div>
-	
-
-
-<!-- 		<div id="qushi_chart_div" class="content" -->
-<!-- 			style="position: absolute; left: 37%; width: 30%; height: 200px; bottom: 2%; color: red; background: #000; border-radius: 10px 10px 10px 10px;"></div> -->
 	</div>
 
 	<script type="text/javascript">
-            function startTime()
-            {
-                var today=new Date();//定义日期对象
-                var yyyy = today.getFullYear();//通过日期对象的getFullYear()方法返回年
-                var MM = today.getMonth()+1;//通过日期对象的getMonth()方法返回年
-                var dd = today.getDate();//通过日期对象的getDate()方法返回年
-                var hh=today.getHours();//通过日期对象的getHours方法返回小时
-                var mm=today.getMinutes();//通过日期对象的getMinutes方法返回分钟
-                var ss=today.getSeconds();//通过日期对象的getSeconds方法返回秒
-                // 如果分钟或小时的值小于10，则在其值前加0，比如如果时间是下午3点20分9秒的话，则显示15：20：09
-                MM=checkTime(MM);
-                dd=checkTime(dd);
-                mm=checkTime(mm);
-                ss=checkTime(ss);
-                var day; //用于保存星期（getDay()方法得到星期编号）
-                if(today.getDay()==0)   day   =   "星期日 "
-                if(today.getDay()==1)   day   =   "星期一 "
-                if(today.getDay()==2)   day   =   "星期二 "
-                if(today.getDay()==3)   day   =   "星期三 "
-                if(today.getDay()==4)   day   =   "星期四 "
-                if(today.getDay()==5)   day   =   "星期五 "
-                if(today.getDay()==6)   day   =   "星期六 "
-                document.getElementById('nowDateTimeSpan').innerHTML=yyyy+"-"+MM +"-"+ dd +" " + hh+":"+mm+":"+ss+"   " + day;
-                setTimeout('startTime()',1000);//每一秒中重新加载startTime()方法
-            }
-
-            function checkTime(i)
-            {
-                if (i<10){
-                    i="0" + i;
-                }
-                  return i;
-            }
-
-
-   //地图上的小袋，随机出现
-   function randon_style(){
-        $("#map_xiaodai").removeAttr("style");
-        //<img src="../statics/picture/xd-3.gif" style="width:30%;height:30%;"/>
-        var div_map = document.getElementById("map_xiaodai");
-        var img_map = document.getElementById("map_xd");
-        img_map.setAttribute('src','../statics/picture/xd-'+Math.round(Math.random()*8+1)+'.gif');
-        var xd_left = Math.round(Math.random()*50 + 40);
-        var xd_top = Math.round(Math.random()*50 + 30);
-        div_map.style.cssText="position:absolute; left:"+xd_left+"%;top:"+xd_top+"%;";
-     };
 
 	var ctx = "${rc.contextPath}";
 	var myChart;
@@ -189,10 +171,10 @@
 	var worldMapContainer = document.getElementById('main');
 	//用于使chart自适应高度和宽度,通过窗体高宽计算容器高宽
 	var resizeWorldMapContainer = function () {
-		  worldMapContainer.style.width = document.documentElement.clientWidth + "px";
-		  worldMapContainer.style.height = document.documentElement.clientHeight + "px";
+// 		  worldMapContainer.style.width = document.documentElement.clientWidth + "px";
+// 		  worldMapContainer.style.height = document.documentElement.clientHeight + "px";
 	};
-	resizeWorldMapContainer();
+// 	resizeWorldMapContainer();
 	
 	 require.config({
 	        paths: {
@@ -229,20 +211,21 @@
     	 }
       
 	 }
-	 
+		//累计投资笔数
+	 function queryTotalInvestTimes(){
+	      $.ajax({
+	         type: "POST",
+	         url: "../main/queryTotalInvestTimes",
+	         contentType: "application/json;charset=utf-8",
+	         success : function(msg) {
+	        	 $("#total_invest_times").html( formatNumber(msg.total_invest,0) );
+	         }
+	      });
+	  }
 
 	$(function () {
 		
-// 		var myPlayer = videojs('my-video');
-// 		videojs("my-video").ready(function(){
-// 			var myPlayer = this;
-// 			myPlayer.play();
-// 		});
 		
-        var mod_int;
-        clearInterval(mod_int);
-        mod_int = setInterval('mod_invest()', 1000);
-                
 	    queryDituData();
 	    queryInvestInfo();
 		getTotalInvest();
@@ -260,23 +243,11 @@
 	    clearInterval(del_int);	    
 	    del_int=setInterval('delStr()', 10000);
 	    
-	    var tolInv_intl;
-	    clearInterval(tolInv_intl);	    
-	    tolInv_intl=setInterval('getTotalInvest()', 30*1000);
-	    
-	    //var tolUser_int;
-	    //clearInterval(tolUser_int);
-	    //tolUser_int=setInterval('getTotalUserNum()', 30*1000);
-	    
-// 	    var ranSty_int;
-// 	    clearInterval(ranSty_int);	    
-// 	    ranSty_int=setInterval('randon_style()', 10*1000);
-	    
-	    document.documentElement.style.fontSize = document.documentElement.clientWidth / 19.2 + 'px';
+	    document.documentElement.style.fontSize = document.documentElement.clientWidth / 16 + 'px';
 
 	    setTimeout('refreshWindow()',2*60*60*1000); 
-	    
-	    
+	    queryTotalInvestTimes();//累计成交笔数
+	    setInterval('queryTotalInvestTimes()', 5*60*1000);
 	    $('.skillbar').each(function(){
 			$(this).find('.skillbar-bar').animate({
 
@@ -427,14 +398,15 @@
 // 	            roam: false,
 	            hoverable: false,
 	            mapType: 'china',
-	            mapLocation: {x:'center',y:'center'},
+	            mapLocation: {x:'center',y:'bottom'},
 	            itemStyle:{
 	                normal:{
 	                    borderColor:'#404a59',
 	                    borderWidth:0.5,
 	                    areaStyle:{
 // 	                        color: '#323c48'
-							color: '#000'
+	                        color: '#1b1b1b'
+// 							color: '#000'
 	                    }
 	                }
 	            },
@@ -614,14 +586,22 @@
          }
       });
   }
-      
+   
+  var bgColor = true;
    function addElementLiList(obj, investDataList) {
 	　　　    var ul = document.getElementById(obj);
 	　　　    for (var i = 0; i < investDataList.length; i++) {
 		　　　      var investData = investDataList[i];
 		  　　　    var li = document.createElement("li");
-		      li.setAttribute("class", "news-item");
-		      li.innerHTML = '位于 ' + investData.CITY +'市 的投资人投资  ￥<span style="color:yellow; font-family:"楷体"; font-weight:bold;">' + investData.CAPITAL + '元</span> 于 ' + investData.TO_CITY +'市 的借款人';　　　
+		      
+// 		      if(bgColor){
+// 		    	  bgColor = false;
+		    	  li.setAttribute("class", "news-item");
+// 		      }else{
+// 		    	  bgColor = true;
+// 		    	  li.setAttribute("class", "news-item news-item-bg");
+// 		      }
+		      li.innerHTML = '位于 ' + investData.CITY +'市 的投资人投资  ￥<span style="color:yellow; font-family:"楷体";font-weight:bold;">' + investData.CAPITAL + '元</span> 于 ' + investData.TO_CITY +'市 的借款人';　　　
 		  　  	  ul.appendChild(li);
 	    }
 　　  }
@@ -657,19 +637,19 @@
 	        //data: JSON.stringify(pageInfo),
 	        contentType: "application/json;charset=utf-8",
 	        success : function(msg) {
-	                //console.log(msg);
-	                if(first_load==0){
-                        before_invest =msg.total_amount;
-                        after_invest = msg.total_amount;
-	                    document.getElementById("typesomething").value=after_invest;
-	                    first_load++;
-	                }else{
-                        before_invest =after_invest;
-                        after_invest = parseInt(msg.total_amount);
-                        //console.log(after_invest);
-	                    document.getElementById("typesomething").value=before_invest;
-	                }
-	                $("#showme").click();
+	                console.log(msg);
+	                $("#total_invest").html(formatNumber(msg.total_amount, 2));
+// 	                if(first_load==0){
+//                         before_invest =msg.total_amount;
+//                         after_invest = msg.total_amount;
+// 	                    document.getElementById("typesomething").value=after_invest;
+// 	                    first_load++;
+// 	                }else{
+//                         before_invest =after_invest;
+//                         after_invest = parseInt(msg.total_amount);
+// 	                    document.getElementById("typesomething").value=before_invest;
+// 	                }
+// 	                $("#showme").click();
 	            }
 	       });
     };
@@ -1110,13 +1090,15 @@
             };
 
             window.addEventListener("resize",function(){
-                resizeWorldMapContainer();
+//                 resizeWorldMapContainer();
                 myChart.resize();
             });
 
     </script>
-   
-       <script src="${rc.contextPath}/js/sys/top10.js"></script>
+   <script src="${rc.contextPath}/js/sys/province_invest.js"></script>
+<!--        <script src="${rc.contextPath}/js/sys/top10.js"></script> -->
        <script src="${rc.contextPath}/js/sys/curr_invest.js"></script>
+       <script src="${rc.contextPath}/js/sys/curr_invest_times.js"></script>
+       
 </body>
 </html>

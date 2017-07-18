@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.Job;
@@ -79,28 +78,33 @@ public class EveryDayBasicDataReportJob implements Job {
 			Map<String, Object> queryParams = new HashMap<String, Object>();
 			queryParams.putAll(params);
 			String date_offset_num = params.get("date_offset_num") + "";
-			String[] splitArr = date_offset_num.split("-");
+//			String[] splitArr = date_offset_num.split("-");
 			String statPeriod = params.get("statPeriod") + "";
 			String reg_begindate = params.get("reg_begindate") + "";
-			if (!"0".equals(splitArr[0])) {
-				if (StringUtils.isNotEmpty(statPeriod)) {
-					int days = Integer.valueOf(splitArr[0]);
-					if ("day".equals(splitArr[1])) {
-						statPeriod = DateUtil.getCurrDayBefore(statPeriod, -days, "yyyy-MM-dd");
-					} else if ("hour".equals(splitArr[1])) {
-						statPeriod = DateUtil.getHourBefore(statPeriod, -days, "yyyy-MM-dd");
-					}
-					if ("day".equals(splitArr[1])) {
-						reg_begindate = DateUtil.getCurrDayBefore(reg_begindate, -days, "yyyy-MM-dd");
-					} else if ("hour".equals(splitArr[1])) {
-						reg_begindate = DateUtil.getHourBefore(reg_begindate, -days, "yyyy-MM-dd");
-					}
-					params.put("statPeriod", statPeriod);
-					params.put("reg_begindate", reg_begindate);
-				}
-			}
-			queryParams.put("statPeriod", statPeriod.replace("-", ""));
-			queryParams.put("reg_begindate", reg_begindate.replace("-", ""));
+//			if (!"0".equals(splitArr[0])) {
+//				if (StringUtils.isNotEmpty(statPeriod)) {
+//					int days = Integer.valueOf(splitArr[0]);
+//					if ("day".equals(splitArr[1])) {
+//						statPeriod = DateUtil.getCurrDayBefore(statPeriod, -days, "yyyy-MM-dd");
+//					} else if ("hour".equals(splitArr[1])) {
+//						statPeriod = DateUtil.getHourBefore(statPeriod, -days, "yyyy-MM-dd");
+//					}
+//					if ("day".equals(splitArr[1])) {
+//						reg_begindate = DateUtil.getCurrDayBefore(reg_begindate, -days, "yyyy-MM-dd");
+//					} else if ("hour".equals(splitArr[1])) {
+//						reg_begindate = DateUtil.getHourBefore(reg_begindate, -days, "yyyy-MM-dd");
+//					}
+//					params.put("statPeriod", statPeriod);
+//					params.put("reg_begindate", reg_begindate);
+//				}
+//			}
+			
+			statPeriod = DateUtil.getCurrDayBefore(1);//yyyyMMdd
+			reg_begindate = DateUtil.getCurrDayBefore(1);//yyyyMMdd
+			queryParams.put("statPeriod", statPeriod);
+			queryParams.put("reg_begindate", reg_begindate);
+			params.put("statPeriod", statPeriod);
+			params.put("reg_begindate", reg_begindate);
 			logVo.setParams(JSON.toJSONString(params));
 
 			List<DmReportBasicDailyEntity> queryList = service.queryList(queryParams);

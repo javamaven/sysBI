@@ -111,7 +111,8 @@ var option = {
                                '#FE8463','#9BCA63','#FAD860','#F3A43B','#60C0DD',
                                '#D7504B','#C6E579','#F4E001','#F0805A','#26C0C0'
                             ];
-                            return colorList[12]
+//                            return colorList[12]
+                            return '#a6faff';
                         },
                         label: {  
                             show: true,//是否展示  
@@ -128,7 +129,7 @@ var option = {
                         }  
 	            	}
 	            },
-	            barWidth:22,
+	            barWidth:16,
 	            data: data_list
 //	            data: [18203, 23489, 29034, 104970, 131744, 630230]
 	        }
