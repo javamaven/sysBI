@@ -1,0 +1,253 @@
+
+
+-- 存管版红包明细
+
+select 
+'红包奖金券'as hongbao,
+'运营红包和券'as yunying,
+'存管版'as cunguan,
+'${invest_month}' as time,
+sum(yunyingfeiyong) AS YUNYINGFEIYONG from
+(
+
+-- 存管版红包明细
+
+with pd as -- 有使用新手红包的投资情况
+(
+select
+a.id, 
+a.user_id,
+a.tender_capital,
+a.tend_vouche,
+row_number() over (partition by a.user_id order by a.addtime asc) ranks,
+a.borrow_period,
+a.addtime
+from mdtxbi.edw_trading_project_detail a
+where a.tender_account_status=1
+),
+hd as(
+select 
+vl.user_id, -- 用户名
+mv.prize_template_id, -- 红包模板id
+pd.tend_vouche, -- 该次购买使用的红包金额
+pd.ranks,
+vl.create_time
+from mdtxbi.edw_reward_voucher_log vl 
+left join mdtxbi.edw_reward_voucher mv
+on vl.hongbao_id=mv.id and vl.from_sys=mv.from_sys 
+left join mdtxbi.edw_reward_user_voucher uv
+on (mv.id=uv.voucher_id and mv.from_sys=uv.from_sys and vl.user_id=uv.user_id) 
+left join pd
+on pd.id=vl.tender_id
+where 
+mv.from_sys=1
+and vl.use_status=1
+),
+fafang as 
+(
+select  -- 发放的红包
+mv.prize_template_id,
+count(uv.user_id) fa
+from 
+mdtxbi.edw_reward_user_voucher uv
+left join mdtxbi.edw_reward_voucher mv
+on (mv.id=uv.voucher_id and mv.from_sys=uv.from_sys)
+where uv.from_sys=1 and to_char(RECEIVE_TIME,'yyyy-mm-dd') between '${investMonthTime}' and '${investEndTime}'
+group by mv.prize_template_id
+),
+shiyong as 
+(
+select -- 按照红包分类的使用情况
+hd.prize_template_id,
+count(distinct(hd.user_id))  as v_num,-- 红包使用人数
+sum(nvl(hd.tend_vouche,0)) as sum_vouche,
+sum(case when hd.ranks=1 then nvl(hd.tend_vouche,0)else 0 end ) as ft_vouche,  -- 首投的红包成本
+sum(case when hd.ranks>1 then nvl(hd.tend_vouche,0)else 0 end ) as sc_vouche  -- 复投的红包成
+from hd
+where  to_char(hd.create_time,'yyyy-mm-dd') between '${investMonthTime}' and '${investEndTime}'
+group by 
+hd.prize_template_id
+order by 
+hd.prize_template_id
+),
+guisu as
+(
+SELECT 
+pt.id,
+pt.name,
+pt.DESCRIPTION,
+pt.APPLY_USER,
+case
+  when pt.apply_user ='市场部' then '归属市场部'
+  when pt.apply_user ='电销部' and pt.name like '%新手%' then '归属市场部'  
+  when  pt.name like '%注册%' then '仅首投归市场'
+  else '归属运营部'
+end attri_department
+FROM MDTXBI.ODS_MDTX_CG_prize_template@ora40 pt
+)
+select
+gg.name as NAME,-- "名称"
+nvl(ff.prize_template_id,ss.prize_template_id) as ID, -- 券号NID/红包模板ID
+nvl(ff.fa,0)  as FAFANG ,-- "发放人数"
+nvl(ss.v_num,0) as SHIYONG, -- 使用人数
+nvl(ss.sum_vouche,0) as ZMONEY, --  "使用总金额(元)"
+nvl(ss.ft_vouche,0) as  FIRSTMONEY ,-- "用户首投时使用金额(元)"
+'存管版' as RED,-- "红包所属系统"
+'${invest_month}' as TIME, -- "数据统计周期"
+gg.DESCRIPTION as YONGTU,-- "用途"
+gg.APPLY_USER as BUMEN, -- "所属于部门"
+gg.attri_department as CHENGBEN, -- "成本分摊方式"
+--ss.sum_vouche,
+case 
+when gg.attri_department='归属市场部' then nvl(ss.sum_vouche,0)
+when gg.attri_department='仅首投归市场' then nvl(ss.ft_vouche,0)
+else 0 end as SHICHANGFEIYONG, -- "市场部费用(元)"
+case 
+when gg.attri_department='归属市场部' then 0
+when gg.attri_department='仅首投归市场' then nvl(ss.sc_vouche,0)
+else nvl(ss.sum_vouche,0) end as  YUNYINGFEIYONG -- "运营部费用(元)"
+from shiyong ss full join fafang ff on ss.prize_template_id=ff.prize_template_id
+left join guisu gg on  gg.id=nvl(ss.prize_template_id,ff.prize_template_id)
+where nvl(ff.prize_template_id,ss.prize_template_id) is not null
+)
+union all
+-------- 2222222222222
+      select 
+      '贴息',
+      '平台贴息',
+      '存管版',
+      tiexi,
+      repay_interest_extra_platform
+       from
+       (
+        WITH TMP AS (
+ 
+     SELECT cprd.id, cprd.project_id,
+            cprd.repay_interest_extra / 100 repay_interest_extra,
+            cprd.settle_end_time,
+            CASE
+               WHEN cpe.subsidy_interest_rate_platform +
+                    cpe.subsidy_interest_rate_organize > 0 THEN
+                cpe.subsidy_interest_rate_platform /
+                (cpe.subsidy_interest_rate_platform +
+                cpe.subsidy_interest_rate_organize)
+               ELSE
+                0
+             END AS precent
+       FROM mdtxbi.ods_mdtx_cg_pro_repay_detail@ora40 cprd
+       LEFT JOIN mdtxbi.ods_mdtx_cg_pro_extend@ora40 cpe
+         ON cprd.project_id = cpe.project_id
+      WHERE cprd.bank_status = 2
+ )
+ SELECT 
+ to_char(settle_end_time, 'yyyy-mm') tiexi,
+ SUM(repay_interest_extra * precent ) repay_interest_extra_platform
+ FROM TMP
+ where to_char(settle_end_time, 'yyyy-mm')='${invest_month}'
+ GROUP BY  to_char(settle_end_time, 'yyyy-mm')
+ order by  to_char(settle_end_time, 'yyyy-mm')
+ )
+ union all
+ 
+ -- 33333333333333333
+  SELECT
+       '贴息',
+      '平台贴息',
+      '普通版',
+      '${invest_month}',
+   SUM(income_new) 投资成功平台贴息
+  FROM mdtxbi.ods_mjkf_diyou_account_log_dd@ora40 ald
+ WHERE TYPE = 'borrow_success_platform_discount'
+   AND to_char(ald.addtime / 86400000 +
+               to_date('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'yyyymm') =
+       '${wuMonth}'
+union all
+select * from (
+-- 4444444444444
+WITH dbryes AS -- 提取满足条件（已经全部还还完）的borrow_nid及项目最后一期实际还款时间
+ (SELECT dbr1.borrow_nid,
+         to_char(dbr1.repay_action_time / 86400000 +
+                  to_date('1970-01-01 08:00:00', 'yyyy-mm-dd hh24:mi:ss'),
+                  'yyyy-mm-dd hh24:mi:ss') repay_action_time --项目最后一期实际还款时间
+    FROM  mdtxbi.ods_mjkf_diyou_borrow_repay@ORA40 dbr1
+   RIGHT JOIN (SELECT dbr.borrow_nid, MAX(dbr.repay_period) repay_period
+                FROM mdtxbi.ods_mjkf_diyou_borrow_repay@ORA40 dbr
+               GROUP BY dbr.borrow_nid) dbr2
+      ON dbr1.borrow_nid = dbr2.borrow_nid
+     AND dbr1.repay_period = dbr2.repay_period
+   WHERE to_char(dbr1.repay_action_time / 86400000 +
+                 to_date('1970-01-01 08:00:00', 'yyyy-mm-dd hh24:mi:ss'), 'yyyyMM') BETWEEN
+         '${firstMonth}' AND '${wuMonth}')
+
+SELECT 
+'贴息',
+'投即生息',
+'普通版',
+to_char(to_date(repay_action_time, 'yyyy-mm-dd hh24:mi:ss'), 'yyyy-MM') 投即生息发生日期,
+       round(SUM(shengxi), 2) 投即生息金额
+  FROM (SELECT dbt.user_id,
+                --投资人id
+                dbt.id,
+                --投资id
+                dbt.borrow_nid,
+                --投资标的nid
+                dbt.account_tender,
+                --投资金额（含销售奖励）
+                to_char(dbt.addtime / 86400000 +
+                         to_date('1970-01-01 08:00:00', 'yyyy-mm-dd hh24:mi:ss'),
+                         'yyyy-MM-dd hh24:mi:ss') touzitime,
+                --投资时间
+                to_char(db.reverify_time / 86400000 +
+                         to_date('1970-01-01 08:00:00', 'yyyy-mm-dd hh24:mi:ss'),
+                         'yyyy-MM-dd hh24:mi:ss') reverify_time,
+                --满标复审时间
+                db.borrow_apr,
+                --标的利率
+                db.platform_discount_scale,
+                --贴息利率
+                (db.borrow_apr + nvl(db.platform_discount_scale, 0)) / 100 borrow_apr_plus_pds,
+                --最终利率
+                to_char(dbt.interest_start_time / 86400000 +
+                         to_date('1970-01-01 08:00:00', 'yyyy-mm-dd hh24:mi:ss'),
+                         'yyyy-MM-dd hh24:mi:ss') interest_start_time,
+                -- 起息时间
+                dbry.repay_action_time,
+                --项目最后一期实际还款时间
+                round(dbt.account_tender *
+                       ((db.borrow_apr + nvl(db.platform_discount_scale, 0)) / 100) *
+                       (to_date(to_char(db.reverify_time / 86400000 +
+                                        to_date('1970-01-01 08:00:00',
+                                                'yyyy-mm-dd hh24:mi:ss'),
+                                        'yyyyMMdd '), 'yyyymmdd') -
+                       to_date(to_char(dbt.addtime / 86400000 +
+                                        to_date('1970-01-01 08:00:00',
+                                                'yyyy-mm-dd hh24:mi:ss'), 'yyyymmdd'),
+                                'yyyymmdd')) / 360, 4) shengxi
+         
+           FROM mdtxbi.ods_mjkf_diyou_borrow_tender@ORA40 dbt
+           JOIN dbryes dbry
+             ON dbt.borrow_nid = dbry.borrow_nid
+           LEFT JOIN mdtxbi.ods_mjkf_diyou_borrow@ORA40 db
+             ON dbt.borrow_nid = db.borrow_nid
+          WHERE db.invest_begin_interest_status = 1 --invest_begin_interest_status 1支持投即生息
+            AND dbt.change_id IS NULL
+            AND dbt.status = 1) --1投资成功
+        toujisx
+        where to_char(to_date(repay_action_time, 'yyyy-mm-dd hh24:mi:ss'), 'yyyy-MM')='${invest_month}'
+ GROUP BY to_char(to_date(repay_action_time, 'yyyy-mm-dd hh24:mi:ss'), 'yyyy-MM')
+ ORDER BY 投即生息发生日期
+ )
+ union all
+ --- 55555555555555555555555
+SELECT
+'投资推广提成',
+'投资返利',
+'普通版',
+'${invest_month}',
+ SUM(income_new) 投资推广提成
+  FROM mdtxbi.ods_mjkf_diyou_account_log_dd@ora40 ald
+ WHERE TYPE = 'borrow_spreads_tender'
+   AND to_char(ald.addtime / 86400000 +
+               to_date('1970-01-01 08:00:00', 'YYYY-MM-DD HH24:MI:SS'), 'yyyymm') =
+       '${wuMonth}'
+ 
