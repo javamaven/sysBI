@@ -17,5 +17,10 @@ public interface DmReportDepSalesDao extends BaseDao<DmReportDepSalesEntity> {
 	List<DmReportDepSalesEntity> queryLists(Map<String, Object> map);
 
 	List<DmReportDepSalesEntity> queryListss(Map<String, Object> map);
+
+	List<DmReportDepSalesEntity> queryListha(Map<String, Object> map);
+	List<DmReportDepSalesEntity> queryListxi(Map<String, Object> map);
+
+	List<DmReportDepSalesEntity> queryListhe(Map<String, Object> map);
 	
 }

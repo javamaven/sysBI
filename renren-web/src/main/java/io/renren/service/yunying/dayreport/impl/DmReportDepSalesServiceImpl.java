@@ -34,20 +34,28 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 	@Override
 	public List<DmReportDepSalesEntity> queryList(Map<String, Object> map){
 		
-		List<DmReportDepSalesEntity> dmReportDepSalesList = dmReportDepSalesDao.queryList(map);
-
+	
+		
+		
+			List<DmReportDepSalesEntity> dmReportDepSalesList = dmReportDepSalesDao.queryList(map);
+		
 
 		try {
-			String statPeriod= map.get("statPeriod") + "";
-			String week = DateUtil.getWeekOfDate(sdf.parse(statPeriod));
+			String reg_begindate= map.get("reg_begindate") + "";
+			String reg_enddate= map.get("reg_enddate") + "";
+			String week = DateUtil.getWeekOfDate(sdf.parse(reg_enddate));
+			
+				
 			if(week.equals("星期一")){//-3
-				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 3, "yyyyMMdd");
+				reg_enddate = DateUtil.getCurrDayBefore(reg_enddate, 3, "yyyyMMdd");
 			}else if(week.equals("星期二") || week.equals("星期三") || week.equals("星期四") || week.equals("星期五")){//-1
-				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 1, "yyyyMMdd");
+				reg_enddate = DateUtil.getCurrDayBefore(reg_enddate, 1, "yyyyMMdd");
 			}else{//周六周日-7
-				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 7, "yyyyMMdd");
+				reg_enddate = DateUtil.getCurrDayBefore(reg_enddate, 7, "yyyyMMdd");
 			}
-			map.put("statPeriod",statPeriod);
+			
+			map.put("reg_enddate",reg_enddate);
+			map.put("reg_begindate",reg_enddate);
 			List<DmReportDepSalesEntity> dmReportDepSalesList2 = dmReportDepSalesDao.queryList(map);
 			for (int i = 0; i < dmReportDepSalesList.size(); i++) {
 				DmReportDepSalesEntity entity = dmReportDepSalesList.get(i);
@@ -78,7 +86,7 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 				}
 			}
 			
-
+			
 		} catch (ParseException e) {
 			e.printStackTrace();
 			
@@ -99,17 +107,19 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 	public List<DmReportDepSalesEntity> queryLists(Map<String, Object> map){
 		List<DmReportDepSalesEntity> dmReportDepSalesList = dmReportDepSalesDao.queryLists(map);
 		try {
-			String statPeriod= map.get("statPeriod") + "";
-			String week = DateUtil.getWeekOfDate(sdf.parse(statPeriod));
+			String reg_begindate= map.get("reg_begindate") + "";
+			String reg_enddate= map.get("reg_enddate") + "";
+			String week = DateUtil.getWeekOfDate(sdf.parse(reg_enddate));
 			System.err.println("+++++++++++++今天++++++++" + week);
 			if(week.equals("星期一")){//-3
-				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 3, "yyyyMMdd");
+				reg_enddate = DateUtil.getCurrDayBefore(reg_enddate, 3, "yyyyMMdd");
 			}else if(week.equals("星期二") || week.equals("星期三") || week.equals("星期四") || week.equals("星期五")){//-1
-				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 1, "yyyyMMdd");
+				reg_enddate = DateUtil.getCurrDayBefore(reg_enddate, 1, "yyyyMMdd");
 			}else{//周六周日-7
-				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 7, "yyyyMMdd");
+				reg_enddate = DateUtil.getCurrDayBefore(reg_enddate, 7, "yyyyMMdd");
 			}
-			map.put("statPeriod",statPeriod);
+			map.put("reg_enddate",reg_enddate);
+			map.put("reg_begindate",reg_enddate);
 			System.err.println("+++++++++++++查询昨天参数++++++++" + map);
 			List<DmReportDepSalesEntity> dmReportDepSalesList2 = dmReportDepSalesDao.queryLists(map);
 			DmReportDepSalesEntity yesEntity = null;
@@ -248,16 +258,18 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 	public List<DmReportDepSalesEntity> queryListss(Map<String, Object> map){
 		List<DmReportDepSalesEntity> dmReportDepSalesList = dmReportDepSalesDao.queryListss(map);
 		try {
-			String statPeriod= map.get("statPeriod") + "";
-			String week = DateUtil.getWeekOfDate(sdf.parse(statPeriod));
+			String reg_begindate= map.get("reg_begindate") + "";
+			String reg_enddate= map.get("reg_enddate") + "";
+			String week = DateUtil.getWeekOfDate(sdf.parse(reg_enddate));
 			if(week.equals("星期一")){//-3
-				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 3, "yyyyMMdd");
+				reg_enddate = DateUtil.getCurrDayBefore(reg_enddate, 3, "yyyyMMdd");
 			}else if(week.equals("星期二") || week.equals("星期三") || week.equals("星期四") || week.equals("星期五")){//-1
-				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 1, "yyyyMMdd");
+				reg_enddate = DateUtil.getCurrDayBefore(reg_enddate, 1, "yyyyMMdd");
 			}else{//周六周日-7
-				statPeriod = DateUtil.getCurrDayBefore(statPeriod, 7, "yyyyMMdd");
+				reg_enddate = DateUtil.getCurrDayBefore(reg_enddate, 7, "yyyyMMdd");
 			}
-			map.put("statPeriod",statPeriod);
+			map.put("reg_enddate",reg_enddate);
+			map.put("reg_begindate",reg_enddate);
 			List<DmReportDepSalesEntity> dmReportDepSalesList2 = dmReportDepSalesDao.queryListss(map);
 			for (int i = 0; i < dmReportDepSalesList.size(); i++) {
 				DmReportDepSalesEntity entity = dmReportDepSalesList.get(i);
@@ -289,7 +301,18 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 	public int queryTotal(Map<String, Object> map){
 		return dmReportDepSalesDao.queryTotal(map);
 	}
-	
+	@Override
+	public List<DmReportDepSalesEntity> queryListha(Map<String, Object> map){
+		return dmReportDepSalesDao.queryListha(map);
+	}
+	@Override
+	public List<DmReportDepSalesEntity> queryListhe(Map<String, Object> map){
+		return dmReportDepSalesDao.queryListhe(map);
+	}
+	@Override
+	public List<DmReportDepSalesEntity> queryListxi(Map<String, Object> map){
+		return dmReportDepSalesDao.queryListxi(map);
+	}
 	@Override
 	public Map<String, String> getExcelFields() {
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
@@ -323,6 +346,38 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 		return headMap;
 	}
 	@Override
+	public Map<String, String> getExcelFieldsha() {
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+		headMap.put("statPeriod", "日期");
+		headMap.put("salesType", "产品");
+		headMap.put("shiwutian", "15天");
+		headMap.put("yiyue", "1个月");
+
+		headMap.put("eryue", "2个月");
+		headMap.put("sanyue", "3个月");
+		headMap.put("liuyue", "6个月");
+		headMap.put("bayue", "8个月");
+
+		headMap.put("jiuyue", "9个月");
+		headMap.put("shiyue", "10个月");
+		headMap.put("shieryue", "12个月");
+		
+		headMap.put("shiwuyue", "15个月");
+		headMap.put("shibayue", "18个月");
+		headMap.put("ershisiyue", "24个月");
+
+		headMap.put("sanshiwuyue", "35个月");
+		headMap.put("sanshiliuyue", "36个月");
+		headMap.put("sishibayue", "48个月");
+
+		headMap.put("liushiyue", "60个月");
+		headMap.put("jiushiliuyue", "96个月");
+		headMap.put("zongji", "总计");
+		headMap.put("zhanbi", "占比");
+		return headMap;
+	}
+	
+	@Override
 	public Map<String, String> getExcelFields1() {
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
 		headMap.put("statPeriod", "日期");
@@ -352,6 +407,7 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 		headMap.put("zongji", "总计");
 		return headMap;
 	}
+
 	@Override
 	public Map<String, String> getExcelFields2() {
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
@@ -363,5 +419,16 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 
 		return headMap;
 	}
+	public Map<String, String> getExcelFieldshe() {
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+		headMap.put("statPeriod", "日期");
+		headMap.put("salesType", "类型");
+		headMap.put("zhanbi", "金额");
+//		headMap.put("weekTongRate", "周同比");
+	
+
+		return headMap;
+	}
+
 	
 }

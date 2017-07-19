@@ -82,19 +82,27 @@ public class DailyReportDataJob implements Job {
 			Map<String, Object> queryParams3 = new HashMap<String, Object>();
 			String date_offset_num = params.get("date_offset_num") + "";
 			String[] splitArr = date_offset_num.split("-");
-			String statPeriod = params.get("statPeriod") + "";
+			String reg_begindate = params.get("reg_begindate") + "";
+			String reg_enddate = params.get("reg_enddate") + "";
 			if (!"0".equals(splitArr[0])) {
-				if (StringUtils.isNotEmpty(statPeriod)) {
+				if (StringUtils.isNotEmpty(reg_begindate)) {
 					int days = Integer.valueOf(splitArr[0]);
 					if ("day".equals(splitArr[1])) {
-						statPeriod = DateUtil.getCurrDayBefore(statPeriod, -days, "yyyyMMdd");
+						reg_begindate = DateUtil.getCurrDayBefore(reg_begindate, -days, "yyyyMMdd");
 					} else if ("hour".equals(splitArr[1])) {
-						statPeriod = DateUtil.getHourBefore(statPeriod, -days, "yyyyMMdd");
+						reg_begindate = DateUtil.getHourBefore(reg_begindate, -days, "yyyyMMdd");
 					}
-					params.put("statPeriod", statPeriod);
+					if ("day".equals(splitArr[1])) {
+						reg_enddate = DateUtil.getCurrDayBefore(reg_enddate, -days, "yyyyMMdd");
+					} else if ("hour".equals(splitArr[1])) {
+						reg_enddate = DateUtil.getHourBefore(reg_enddate, -days, "yyyyMMdd");
+					}
+					params.put("reg_begindate", reg_begindate);
+					params.put("reg_enddate", reg_enddate);
 				}
 			}
-			queryParams.put("statPeriod", statPeriod.replace("-", ""));
+			queryParams.put("reg_enddate", reg_enddate.replace("-", ""));
+			queryParams.put("reg_begindate", reg_begindate.replace("-", ""));
 			logVo.setParams(JSON.toJSONString(params));
 			queryParams2.putAll(queryParams);
 			queryParams3.putAll(queryParams);

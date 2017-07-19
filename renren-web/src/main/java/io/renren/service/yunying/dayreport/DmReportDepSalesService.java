@@ -19,10 +19,16 @@ public interface DmReportDepSalesService {
 	List<DmReportDepSalesEntity> queryList(Map<String, Object> map);
 	List<DmReportDepSalesEntity> queryLists(Map<String, Object> map);
 	List<DmReportDepSalesEntity> queryListss(Map<String, Object> map);
+	List<DmReportDepSalesEntity> queryListha(Map<String, Object> map);
+	List<DmReportDepSalesEntity> queryListxi(Map<String, Object> map);
+	List<DmReportDepSalesEntity> queryListhe(Map<String, Object> map);
 	int queryTotal(Map<String, Object> map);
 	Map<String, String> getExcelFields();
+	Map<String, String> getExcelFieldsha();
 	Map<String, String> getExcelFields1();
 	Map<String, String> getExcelFields2();
+//	Map<String, String> getExcelFieldxi();
+	Map<String, String> getExcelFieldshe();
 
 
 

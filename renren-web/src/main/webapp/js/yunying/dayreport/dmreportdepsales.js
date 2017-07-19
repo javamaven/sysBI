@@ -6,6 +6,7 @@ $(function () {
 	initEvent();
 	initSelectEvent();
 	initlicaiTableGrid();
+	initTimeCond2();
 });
 
 
@@ -33,7 +34,17 @@ function initSelectEvent(){
 }
 
 function initTimeCond(){
-    $("#stat_period").datetimepicker({
+    $("#reg_begindate").datetimepicker({
+        format: 'yyyy-mm-dd',
+        minView:'month',
+        language: 'zh-CN',
+        autoclose:true
+    }).on("click",function(){
+    });
+}
+
+function initTimeCond2(){
+    $("#reg_enddate").datetimepicker({
         format: 'yyyy-mm-dd',
         minView:'month',
         language: 'zh-CN',
@@ -242,7 +253,8 @@ var vm = new Vue({
 
 function getParams(){
 	var params = {
-        	'statPeriod': $("#stat_period").val().replace(/-/g,"")
+        	'reg_begindate': $("#reg_begindate").val().replace(/-/g,""),
+        	'reg_enddate': $("#reg_enddate").val().replace(/-/g,"")
 	};
 	return params;
 }
