@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.druid.sql.visitor.functions.If;
 
 import io.renren.dao.schedule.ScheduleReportTaskLogDao;
 import io.renren.entity.schedule.ScheduleReportTaskLogEntity;
@@ -58,8 +59,11 @@ public class ScheduleReportTaskLogServiceImpl implements ScheduleReportTaskLogSe
 				String[] split = filePath.split(",");
 				for (int i = 0; i < split.length; i++) {
 					String path = split[i];
-					String fileName = path.substring(path.indexOf("attach-temp") + 12, path.length());
-					new JdbcHelper(dataSource).storeImg(path, coloumnIndex, insert_file_sql, null,vo.getId(), fileName);
+					if(path.indexOf("attach-temp") >= 0){
+						String fileName = path.substring(path.indexOf("attach-temp") + 12, path.length());
+						new JdbcHelper(dataSource).storeImg(path, coloumnIndex, insert_file_sql, null,vo.getId(), fileName);
+					}
+					
 				}
 			}
 		} catch (Exception e) {

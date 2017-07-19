@@ -84,25 +84,26 @@ public class DailyReportDataJob implements Job {
 			String[] splitArr = date_offset_num.split("-");
 			String reg_begindate = params.get("reg_begindate") + "";
 			String reg_enddate = params.get("reg_enddate") + "";
-			if (!"0".equals(splitArr[0])) {
-				if (StringUtils.isNotEmpty(reg_begindate)) {
-					int days = Integer.valueOf(splitArr[0]);
-					if ("day".equals(splitArr[1])) {
-						reg_begindate = DateUtil.getCurrDayBefore(reg_begindate, -days, "yyyyMMdd");
-					} else if ("hour".equals(splitArr[1])) {
-						reg_begindate = DateUtil.getHourBefore(reg_begindate, -days, "yyyyMMdd");
-					}
-					if ("day".equals(splitArr[1])) {
-						reg_enddate = DateUtil.getCurrDayBefore(reg_enddate, -days, "yyyyMMdd");
-					} else if ("hour".equals(splitArr[1])) {
-						reg_enddate = DateUtil.getHourBefore(reg_enddate, -days, "yyyyMMdd");
-					}
-					params.put("reg_begindate", reg_begindate);
-					params.put("reg_enddate", reg_enddate);
-				}
-			}
-			queryParams.put("reg_enddate", reg_enddate.replace("-", ""));
-			queryParams.put("reg_begindate", reg_begindate.replace("-", ""));
+//			if (!"0".equals(splitArr[0])) {
+//				if (StringUtils.isNotEmpty(reg_begindate)) {
+//					int days = Integer.valueOf(splitArr[0]);
+//					if ("day".equals(splitArr[1])) {
+//						reg_begindate = DateUtil.getCurrDayBefore(reg_begindate, -days, "yyyyMMdd");
+//					} else if ("hour".equals(splitArr[1])) {
+//						reg_begindate = DateUtil.getHourBefore(reg_begindate, -days, "yyyyMMdd");
+//					}
+//					if ("day".equals(splitArr[1])) {
+//						reg_enddate = DateUtil.getCurrDayBefore(reg_enddate, -days, "yyyyMMdd");
+//					} else if ("hour".equals(splitArr[1])) {
+//						reg_enddate = DateUtil.getHourBefore(reg_enddate, -days, "yyyyMMdd");
+//					}
+//					params.put("reg_begindate", reg_begindate);
+//					params.put("reg_enddate", reg_enddate);
+//				}
+//			}
+			queryParams.put("reg_enddate", DateUtil.getCurrDayBefore(1));
+			queryParams.put("reg_begindate", DateUtil.getCurrDayBefore(1));
+			
 			logVo.setParams(JSON.toJSONString(params));
 			queryParams2.putAll(queryParams);
 			queryParams3.putAll(queryParams);
@@ -110,6 +111,16 @@ public class DailyReportDataJob implements Job {
 			// vip所属人汇总信息
 			List<DmReportDepSalesEntity> totalList = service.queryLists(queryParams2);
 			List<DmReportDepSalesEntity> List2 = service.queryListss(queryParams3);
+			
+			boolean hasData = false;
+			for (int i = 0; i < queryList.size(); i++) {
+				DmReportDepSalesEntity entity = queryList.get(i);
+				if(StringUtils.isNotEmpty(entity.getStatPeriod())){
+					hasData = true;
+					break;
+				}
+			}
+			
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < queryList.size(); i++) {
 				DmReportDepSalesEntity entity = queryList.get(i);
@@ -125,7 +136,7 @@ public class DailyReportDataJob implements Job {
 				DmReportDepSalesEntity entity = List2.get(i);
 				dataArray3.add(entity);
 			}
-			if (queryList.size() > 0) {
+			if (queryList.size() > 0 && hasData) {
 				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
 				String attachFilePath2 = jobUtil.buildAttachFile(dataArray2, title2, title2,
 						service.getExcelFields1());
