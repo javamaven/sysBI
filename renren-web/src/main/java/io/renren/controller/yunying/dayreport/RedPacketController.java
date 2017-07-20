@@ -30,6 +30,7 @@ import com.alibaba.fastjson.JSONArray;
 
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
+import io.renren.util.DateUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
@@ -81,15 +82,19 @@ public class RedPacketController {
 	@ResponseBody
 	@RequestMapping("/list")
 	@RequiresPermissions("phonesale:list")
-	public R daylist(Integer page, Integer limit, String invest_end_time,String invest_month_time) {
+	public R daylist(Integer page, Integer limit,String statPeriod) {
 //		if (StringUtils.isNotEmpty(invest_month_time)) {
 //			invest_month_time = invest_month_time.replace("-", "");
 //		}
 		String invest_month="";
-		if (StringUtils.isNotEmpty(invest_month_time)) {
-			invest_month = invest_month_time.substring(0,7);
+		String firstDay="";
+		if (StringUtils.isNotEmpty(statPeriod)) {
+			invest_month = statPeriod.substring(0,7);
+			firstDay=statPeriod+"-01";
 	}
-		
+		int year = Integer.parseInt(statPeriod.substring(0,4));
+		int month = Integer.parseInt(statPeriod.substring(6,7));
+		String lastDayOfMonth = DateUtil.getLastDayOfMonth(year, month);
 		long l1 = System.currentTimeMillis();
 
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
@@ -98,8 +103,8 @@ public class RedPacketController {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql;
 			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/redPacket.txt"));
-			detail_sql = detail_sql.replace("${investEndTime}", invest_end_time);
-			detail_sql = detail_sql.replace("${investMonthTime}", invest_month_time);
+			detail_sql = detail_sql.replace("${investEndTime}", lastDayOfMonth);
+			detail_sql = detail_sql.replace("${investMonthTime}", firstDay);
 			detail_sql = detail_sql.replace("${invest_month}", invest_month);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
@@ -118,32 +123,34 @@ public class RedPacketController {
 	@ResponseBody
 	@RequestMapping("/ddylist")
 	@RequiresPermissions("phonesale:list")
-	public R daylist1(Integer page, Integer limit, String invest_end_time,String invest_month_time) {
+	public R daylist1(Integer page, Integer limit, String statPeriod) {
 		long l1 = System.currentTimeMillis();
 		int start = (page - 1) * limit;
 		int end = start + limit;
 
+		
+		String firstDay="";
+		int year = Integer.parseInt(statPeriod.substring(0,4));
+		int month = Integer.parseInt(statPeriod.substring(6,7));
+		String lastDayOfMonth = DateUtil.getLastDayOfMonth(year, month);//最后一天
 		String invest_month="";
 		String wuMonth="";
 		String firstMonth="";
-		if (StringUtils.isNotEmpty(invest_month_time)) {
-			invest_month = invest_month_time.substring(0,7);
+		if (StringUtils.isNotEmpty(statPeriod)) {
+			invest_month = statPeriod.substring(0,7);// 2017-05
+			firstMonth = statPeriod.substring(0,4)+"01";// 201701
+			wuMonth = invest_month.replace("-", "");//201705
+			firstDay=statPeriod+"-01";
 	}
 		
-		if (StringUtils.isNotEmpty(invest_month_time)) {
-			firstMonth = invest_month_time.substring(0,4)+"01";
-	}
-		if (StringUtils.isNotEmpty(invest_month_time)) {
-			wuMonth = invest_month.replace("-", "");
-	}
 
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> totalList = new ArrayList<Map<String, Object>>();
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/redPacketHz.txt"));
-			detail_sql = detail_sql.replace("${investEndTime}", invest_end_time);
-			detail_sql = detail_sql.replace("${investMonthTime}", invest_month_time);
+			detail_sql = detail_sql.replace("${investEndTime}", lastDayOfMonth);
+			detail_sql = detail_sql.replace("${investMonthTime}", statPeriod);
 			detail_sql = detail_sql.replace("${invest_month}", invest_month);
 			detail_sql = detail_sql.replace("${wuMonth}", wuMonth);
 			detail_sql = detail_sql.replace("${firstMonth}", firstMonth);
