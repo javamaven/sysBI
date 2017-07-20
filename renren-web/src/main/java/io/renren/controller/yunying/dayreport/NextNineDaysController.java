@@ -151,19 +151,15 @@ public class NextNineDaysController {
 			throws IOException {
 		
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
-		String invest_end_time = map.get("invest_end_time") + "";
-		String invest_month_time = map.get("invest_month_time") + "";
-		if (StringUtils.isNotEmpty(invest_month_time)) {
-			invest_month_time = invest_month_time.replace("-", "");
-		}
+
+		long l1 = System.currentTimeMillis();
+
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
-		
+
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql;
-			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/yxP2P.txt"));
-			detail_sql = detail_sql.replace("${investEndTime}", invest_end_time);
-			detail_sql = detail_sql.replace("${investMonthTime}", invest_month_time);
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/nextNineDays.txt"));
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
 		} catch (SQLException e) {
@@ -177,7 +173,7 @@ public class NextNineDaysController {
 			va.add(resultList.get(i));
 		}
 		Map<String, String> headMap = null;
-		String title = "越秀P2P数据";
+		String title = "未来九日回款情况";
 		headMap = getDayListExcelFields();
 
 		ExcelUtil.downloadExcelFile(title, headMap, va, response);
@@ -188,18 +184,12 @@ public class NextNineDaysController {
 
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
 
-		headMap.put("TYPE", "分类");
-		headMap.put("NUM", "人数(穿透)");
-		headMap.put("SUM", "借款余额(穿透)");
-		headMap.put("BORROW_USER", "人数(非穿透)");
-		headMap.put("BORROW_CAPITAL", "借款余额(非穿透)");
-		headMap.put("NUMM", "人数(总)");
-		headMap.put("SUMM", "借款余额(总)");
-		headMap.put("AVGG", "人均借款余额(万)");
-		headMap.put("NUMS", "出借人数(总)");
-		headMap.put("AVGS", "平均借款期限(天)");
-		headMap.put("AVGLI", "平均借款利率(万)");
-		headMap.put("YUQI", "逾期");
+		headMap.put("TIME", "回款日期");
+		headMap.put("PTB_REPAY_ACCOUNT_WAIT", "普通版回款");
+		headMap.put("CGB_REPAY_ACCOUNT_WAIT", "存管版回款");
+		headMap.put("REPAY_ACCOUNT_WAIT", "总回款");
+		headMap.put("UNLOCK_MONEY", "理财计划解锁金额");
+		headMap.put("LJ_UNLOCK_MONEY", "累计解锁未退出金额");
 		return headMap;
 
 	}

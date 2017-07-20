@@ -40,10 +40,10 @@ function initExportFunction(){
 		
 		var select = $("#list_select").children('option:selected').val();
 		if(select == 'vip_detail'){
-			executePost('../yunying/yxp2p/exportExcel', {'params' : JSON.stringify(params)});
+			executePost('../yunying/hongbao/exportExcel', {'params' : JSON.stringify(params)});
 		}
 		else if(select == 'vip_count'){
-			executePost('../yunying/p2p/exportExcel2', {'params' : JSON.stringify(params)});
+			executePost('../yunying/hongbao/exportExcel', {'params' : JSON.stringify(params)});
 		}
 	});
 

@@ -179,19 +179,28 @@ public class RedPacketController {
 			throws IOException {
 		
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
-		String invest_end_time = map.get("invest_end_time") + "";
-		String invest_month_time = map.get("invest_month_time") + "";
-		if (StringUtils.isNotEmpty(invest_month_time)) {
-			invest_month_time = invest_month_time.replace("-", "");
-		}
-		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+		String statPeriod = map.get("statPeriod") + "";
 		
+		long l1 = System.currentTimeMillis();
+
+		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+
 		try {
+			String invest_month="";
+			String firstDay="";
+			if (StringUtils.isNotEmpty(statPeriod)) {
+				invest_month = statPeriod.substring(0,7);
+				firstDay=statPeriod+"-01";
+		}
+			int year = Integer.parseInt(statPeriod.substring(0,4));
+			int month = Integer.parseInt(statPeriod.substring(6,7));
+			String lastDayOfMonth = DateUtil.getLastDayOfMonth(year, month);
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql;
-			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/yxP2P.txt"));
-			detail_sql = detail_sql.replace("${investEndTime}", invest_end_time);
-			detail_sql = detail_sql.replace("${investMonthTime}", invest_month_time);
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/redPacket.txt"));
+			detail_sql = detail_sql.replace("${investEndTime}", lastDayOfMonth);
+			detail_sql = detail_sql.replace("${investMonthTime}", firstDay);
+			detail_sql = detail_sql.replace("${invest_month}", invest_month);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
 		} catch (SQLException e) {
@@ -199,16 +208,77 @@ public class RedPacketController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		
+		
+
+		List<Map<String, Object>> resultList2 = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> totalList = new ArrayList<Map<String, Object>>();
+		try {
+			String firstDay="";
+			int year = Integer.parseInt(statPeriod.substring(0,4));
+			int month = Integer.parseInt(statPeriod.substring(6,7));
+			String lastDayOfMonth = DateUtil.getLastDayOfMonth(year, month);//最后一天
+			String invest_month="";
+			String wuMonth="";
+			String firstMonth="";
+			if (StringUtils.isNotEmpty(statPeriod)) {
+				invest_month = statPeriod.substring(0,7);// 2017-05
+				firstMonth = statPeriod.substring(0,4)+"01";// 201701
+				wuMonth = invest_month.replace("-", "");//201705
+				firstDay=statPeriod+"-01";
+		}
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/redPacketHz.txt"));
+			detail_sql = detail_sql.replace("${investEndTime}", lastDayOfMonth);
+			detail_sql = detail_sql.replace("${investMonthTime}", statPeriod);
+			detail_sql = detail_sql.replace("${invest_month}", invest_month);
+			detail_sql = detail_sql.replace("${wuMonth}", wuMonth);
+			detail_sql = detail_sql.replace("${firstMonth}", firstMonth);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList2.addAll(list);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		
 		// 查询列表数据
 		JSONArray va = new JSONArray();
 		for (int i = 0; i < resultList.size(); i++) {
 			va.add(resultList.get(i));
 		}
-		Map<String, String> headMap = null;
-		String title = "越秀P2P数据";
-		headMap = getDayListExcelFields();
+		Map<String, String> headMap = getDayListExcelFields();
+		String title = "存管版红包明细";
+		
+		// 查询列表数据
+		JSONArray va2 = new JSONArray();
+		for (int i = 0; i < resultList2.size(); i++) {
+			va2.add(resultList2.get(i));
+		}
+		Map<String, String> headMap2 = getDayListExcelFields2();
+		String title2 = "运营成本汇总";
+		
+		
+		List<String> titleList = new ArrayList<>();
+		titleList.add(title);
+		titleList.add(title2);
 
-		ExcelUtil.downloadExcelFile(title, headMap, va, response);
+		
+		List<Map<String, String>> headMapList = new ArrayList<Map<String,String>>();
+		headMapList.add(headMap);
+		headMapList.add(headMap2);
+
+		
+		List<JSONArray> ja = new ArrayList<JSONArray>();
+		ja.add(va);
+		ja.add(va2);
+
+
+		ExcelUtil.downloadExcelFile(titleList , headMapList, ja , response);
+
+//		ExcelUtil.downloadExcelFile(title, headMap, va, response);
 	}
 
 	
@@ -216,22 +286,35 @@ public class RedPacketController {
 
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
 
-		headMap.put("TYPE", "分类");
-		headMap.put("NUM", "人数(穿透)");
-		headMap.put("SUM", "借款余额(穿透)");
-		headMap.put("BORROW_USER", "人数(非穿透)");
-		headMap.put("BORROW_CAPITAL", "借款余额(非穿透)");
-		headMap.put("NUMM", "人数(总)");
-		headMap.put("SUMM", "借款余额(总)");
-		headMap.put("AVGG", "人均借款余额(万)");
-		headMap.put("NUMS", "出借人数(总)");
-		headMap.put("AVGS", "平均借款期限(天)");
-		headMap.put("AVGLI", "平均借款利率(万)");
-		headMap.put("YUQI", "逾期");
+		headMap.put("NAME", "渠道名称");
+		headMap.put("ID", "券号NID/红包模板ID");
+		headMap.put("FAFANG", "发放人数");
+		headMap.put("SHIYONG", "使用人数");
+		headMap.put("ZMONEY", "使用总金额(元)");
+		headMap.put("FIRSTMONEY", "用户首投时使用金额(元)");
+		headMap.put("RED", "红包所属系统");
+		headMap.put("TIME", "数据统计周期");
+		headMap.put("YONGTU", "用途");
+		headMap.put("BUMEN", "所属于部门");
+		headMap.put("CHENGBEN", "成本分摊方式");
+		headMap.put("SHICHANGFEIYONG", "市场部费用(元)");
+		headMap.put("YUNYINGFEIYONG", "运营部费用(元)");
 		return headMap;
 
 	}
+	private Map<String, String> getDayListExcelFields2() {
 
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+
+		headMap.put("HONGBAO", "一级科目");
+		headMap.put("YUNYING", "二级");
+		headMap.put("CUNGUAN", "归属系统");
+		headMap.put("TIME", "统计周期");
+		headMap.put("YUNYINGFEIYONG", "成本");
+
+		return headMap;
+
+	}
 
 
 

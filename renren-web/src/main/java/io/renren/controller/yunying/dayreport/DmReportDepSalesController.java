@@ -75,7 +75,7 @@ public class DmReportDepSalesController {
 		
 		int total = dmReportDepSalesService.queryTotal(map);
 
-		PageUtils pageUtil = new PageUtils(dmReportDepSalesList, total, limit, page);
+		PageUtils pageUtil = new PageUtils(dmReportDepSalesList,total, limit, page);
 		
 		return R.ok().put("page", pageUtil);
 		}
