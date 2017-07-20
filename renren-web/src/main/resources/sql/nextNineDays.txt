@@ -1,0 +1,152 @@
+with ptb_r as
+(
+SELECT -- 普通版
+to_char(repay_time/86400000+to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd') as  r_time,
+  '普通版' as version,
+  sum(repay_account)  as REPAY_account_WAIT -- 应还本息
+FROM
+mdtxbi.ods_mjkf_diyou_borrow_repay@ora40
+WHERE
+ (to_char(repay_yestime/86400000+to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd') > to_char(sysdate,'yyyy-mm-dd') or repay_yestime IS NULL) -- 还没还
+ and to_char(repay_time/86400000+to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd') between to_char(sysdate+1,'yyyy-mm-dd') and to_char(sysdate+9,'yyyy-mm-dd')
+group by to_char(repay_time/86400000+to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd')
+order by to_char(repay_time/86400000+to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd')
+),
+cgb_r as
+(
+SELECT  --存管版
+to_char (rpp.REPAY_DATE,'yyyy-mm-dd') as r_time,
+  '存管版' as version,
+  sum (rpp.repay_capital+rpp.repay_interest)/100 as REPAY_account_WAIT
+FROM
+mdtxbi.ods_mdtx_cg_pro_repay_plan@ora40 rpp
+left join mdtxbi.ods_mdtx_cg_pro_repay_detail@ora40 rpd on (rpp.project_id=rpd.project_id and rpp.period=rpd.period)
+WHERE
+ (to_char(rpd.settle_end_time,'yyyy-mm-dd') > to_char(sysdate,'yyyy-mm-dd') OR rpd.settle_end_time IS NULL)
+ and to_char (rpp.REPAY_DATE,'yyyy-mm-dd') between to_char(sysdate+1,'yyyy-mm-dd') and to_char(sysdate+9,'yyyy-mm-dd')
+ and rpp.repay_status<>3
+GROUP BY to_char(rpp.REPAY_DATE,'yyyy-mm-dd')
+order by to_char(rpp.REPAY_DATE,'yyyy-mm-dd')
+),
+lcjh as
+(
+select  -- 未来9天理财计划接触锁定金额
+to_char (po.unlock_time,'yyyy-mm-dd') as unlock_time,
+sum(po.tender_amount）/100 as unlock_money
+from mdtxbi.ods_mdtx_cg_fcial_plan_order@ora40 po
+where 
+ to_char(po.unlock_time,'yyyy-mm-dd') between to_char(sysdate+1,'yyyy-mm-dd') and  to_char(sysdate+9,'yyyy-mm-dd')
+group by to_char(po.unlock_time,'yyyy-mm-dd')
+order by to_char(po.unlock_time,'yyyy-mm-dd')
+),
+
+TMP_DATE AS (
+select to_date(date_time_id,'yyyy-mm-dd')+10 as date_time_id
+from mdtxbi.dim_date_time
+where
+  date_time_id between to_char(sysdate-9,'yyyymmdd') and to_char(sysdate,'yyyymmdd')
+),
+lj as
+(
+select -- 今天累计之前接触锁定又还没有推出的理财计划规模
+to_char(td.date_time_id,'yyyy-mm-dd') as lj_day,
+sum(po.tender_amount)/100 sum_ul
+from mdtxbi.ods_mdtx_cg_fcial_plan_order@ora40 po,TMP_DATE td
+where to_char(po.unlock_time,'yyyy-mm-dd')<=to_char(td.date_time_id,'yyyy-mm-dd') -- 解锁时间在今天前
+and po.order_status<>5
+group by to_char(td.date_time_id,'yyyy-mm-dd')
+order by to_char(td.date_time_id,'yyyy-mm-dd')
+)
+select
+ptb_r.r_time as time,
+round(ptb_r.REPAY_account_WAIT/10000,2) as ptb_repay_account_wait,
+round(cgb_r.REPAY_account_WAIT/10000,2) as cgb_repay_account_wait,
+round((ptb_r.REPAY_account_WAIT+cgb_r.REPAY_account_WAIT)/10000,2) as repay_account_wait,
+nvl(round(lcjh.unlock_money/10000,2),0) as unlock_money,
+nvl(round(sum_ul/10000,2),0) as lj_unlock_money
+from ptb_r
+left join cgb_r on ptb_r.r_time=cgb_r.r_time
+left join lcjh on lcjh.unlock_time=ptb_r.r_time
+left join lj on lj.lj_day=ptb_r.r_time
+union all
+select 
+'汇总',
+sum(ptb_repay_account_wait),
+sum(cgb_repay_account_wait),
+sum(repay_account_wait),
+SUM(unlock_money),
+sum(lj_unlock_money)
+from(
+with ptb_r as
+(
+SELECT -- 普通版
+to_char(repay_time/86400000+to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd') as  r_time,
+  '普通版' as version,
+  sum(repay_account)  as REPAY_account_WAIT -- 应还本息
+FROM
+mdtxbi.ods_mjkf_diyou_borrow_repay@ora40
+WHERE
+ (to_char(repay_yestime/86400000+to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd') > to_char(sysdate,'yyyy-mm-dd') or repay_yestime IS NULL) -- 还没还
+ and to_char(repay_time/86400000+to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd') between to_char(sysdate+1,'yyyy-mm-dd') and to_char(sysdate+9,'yyyy-mm-dd')
+group by to_char(repay_time/86400000+to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd')
+order by to_char(repay_time/86400000+to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'),'yyyy-mm-dd')
+),
+cgb_r as
+(
+SELECT  --存管版
+to_char (rpp.REPAY_DATE,'yyyy-mm-dd') as r_time,
+  '存管版' as version,
+  sum (rpp.repay_capital+rpp.repay_interest)/100 as REPAY_account_WAIT
+FROM
+mdtxbi.ods_mdtx_cg_pro_repay_plan@ora40 rpp
+left join mdtxbi.ods_mdtx_cg_pro_repay_detail@ora40 rpd on (rpp.project_id=rpd.project_id and rpp.period=rpd.period)
+WHERE
+ (to_char(rpd.settle_end_time,'yyyy-mm-dd') > to_char(sysdate,'yyyy-mm-dd') OR rpd.settle_end_time IS NULL)
+ and to_char (rpp.REPAY_DATE,'yyyy-mm-dd') between to_char(sysdate+1,'yyyy-mm-dd') and to_char(sysdate+9,'yyyy-mm-dd')
+ and rpp.repay_status<>3
+GROUP BY to_char(rpp.REPAY_DATE,'yyyy-mm-dd')
+order by to_char(rpp.REPAY_DATE,'yyyy-mm-dd')
+),
+lcjh as
+(
+select  -- 未来9天理财计划接触锁定金额
+to_char (po.unlock_time,'yyyy-mm-dd') as unlock_time,
+sum(po.tender_amount）/100 as unlock_money
+from mdtxbi.ods_mdtx_cg_fcial_plan_order@ora40 po
+where 
+ to_char(po.unlock_time,'yyyy-mm-dd') between to_char(sysdate+1,'yyyy-mm-dd') and  to_char(sysdate+9,'yyyy-mm-dd')
+group by to_char(po.unlock_time,'yyyy-mm-dd')
+order by to_char(po.unlock_time,'yyyy-mm-dd')
+),
+
+TMP_DATE AS (
+select to_date(date_time_id,'yyyy-mm-dd')+10 as date_time_id
+from mdtxbi.dim_date_time
+where
+  date_time_id between to_char(sysdate-9,'yyyymmdd') and to_char(sysdate,'yyyymmdd')
+),
+lj as
+(
+select -- 今天累计之前接触锁定又还没有推出的理财计划规模
+to_char(td.date_time_id,'yyyy-mm-dd') as lj_day,
+sum(po.tender_amount)/100 sum_ul
+from mdtxbi.ods_mdtx_cg_fcial_plan_order@ora40 po,TMP_DATE td
+where to_char(po.unlock_time,'yyyy-mm-dd')<=to_char(td.date_time_id,'yyyy-mm-dd') -- 解锁时间在今天前
+and po.order_status<>5
+group by to_char(td.date_time_id,'yyyy-mm-dd')
+order by to_char(td.date_time_id,'yyyy-mm-dd')
+)
+select
+ptb_r.r_time as time,
+round(ptb_r.REPAY_account_WAIT/10000,2) as ptb_repay_account_wait,
+round(cgb_r.REPAY_account_WAIT/10000,2) as cgb_repay_account_wait,
+round((ptb_r.REPAY_account_WAIT+cgb_r.REPAY_account_WAIT)/10000,2) as repay_account_wait,
+nvl(round(lcjh.unlock_money/10000,2),0) as unlock_money,
+nvl(round(sum_ul/10000,2),0) as lj_unlock_money
+from ptb_r
+left join cgb_r on ptb_r.r_time=cgb_r.r_time
+left join lcjh on lcjh.unlock_time=ptb_r.r_time
+left join lj on lj.lj_day=ptb_r.r_time
+)
+
+

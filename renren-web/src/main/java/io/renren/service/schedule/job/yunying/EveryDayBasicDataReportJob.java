@@ -100,7 +100,7 @@ public class EveryDayBasicDataReportJob implements Job {
 //			}
 			
 			statPeriod = DateUtil.getCurrDayBefore(1);//yyyyMMdd
-			reg_begindate = DateUtil.getCurrDayBefore(1);//yyyyMMdd
+			reg_begindate = DateUtil.getCurrDayBefore(9);//yyyyMMdd
 			queryParams.put("statPeriod", statPeriod);
 			queryParams.put("reg_begindate", reg_begindate);
 			params.put("statPeriod", statPeriod);
