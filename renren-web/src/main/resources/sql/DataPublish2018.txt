@@ -1,0 +1,16 @@
+--平台累计交易额  -- 每个月更新当月，历史数据保持不变
+select 
+'${nian1}年' as YEAR,
+'${yue1}月' as MONTH,
+round((A.project_scale+B.tender_capital)/10000,0) as SUM
+from 
+(SELECT  -- 点点赚 
+  SUM(ddzb.project_scale)/10000  AS project_scale --项目在当日应结息时点前最终已投金额，该金额在结息时就为最终值，不会被改写。
+  FROM  mdtxbi.edw_trading_ddz_borrow ddzb
+WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${lastDayOfMonth}')A,
+(select -- 截止某一天的交易额（项目和债转，按照实际成交时间）
+sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
+ from mdtxbi.edw_trading_project_detail pd
+ where 
+ pd.tender_account_status=1
+ and to_char(pd.addtime,'yyyy-mm-dd')<='${lastDayOfMonth}')B

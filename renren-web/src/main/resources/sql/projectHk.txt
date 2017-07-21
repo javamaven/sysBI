@@ -1,0 +1,33 @@
+select 
+'${nian1}年' as dmonth,
+'${yue1}月'as month,
+round(sum(case when style=5 then sum_tender else 0 end)/10000,0) as tian,
+round(sum(case when style=2 or style=4 then sum_tender else 0 end)/10000,0) as yue, 
+round(sum(case when style=1 then sum_tender else 0 end)/10000,0) as daoqi, 
+round(sum(case when style=3 then sum_tender else 0 end)/10000,0) as benxi
+--sum(case when style=4 then sum_tender else 0 end) as 气球贷
+from 
+(
+SELECT  -- 点点赚 
+to_char(ddzb.created_time_, 'yyyy-mm') d_month,
+5 as style,
+  SUM(ddzb.project_scale_)  AS sum_tender  --项目在当日应结息时点前最终已投金额，该金额在结息时就为最终值，不会被改写。
+  FROM mdtxbi.ods_mjkf_ddz_borrow@ora40 ddzb
+WHERE to_char(ddzb.created_time_, 'yyyy-mm-dd') between '${firstMonthDay}' and '${lastDayOfMonth}'
+group by to_char(ddzb.created_time_, 'yyyy-mm')
+union all 
+select -- 截止某一天的交易额（项目和债转，按照实际成交时间）
+to_char(pd.addtime,'yyyy-mm') d_month,
+pj.borrow_style,
+sum(case when tender_subject=2 then tend_cash else tender_capital end) as sum_tender
+
+ from mdtxbi.edw_trading_project_detail pd
+ left join mdtxbi.edw_trading_project pj
+ on pj.project_id=pd.project_id
+ where 
+ pd.tender_account_status=1
+ and to_char(pd.addtime,'yyyy-mm-dd') between '${firstMonthDay}' and '${lastDayOfMonth}'
+group by pj.borrow_style,to_char(pd.addtime,'yyyy-mm')
+)
+group by d_month
+order by d_month

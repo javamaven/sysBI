@@ -1,4 +1,5 @@
 $(function () {
+	initEcharts();
 	initDetailTableGrid();
 	initTimeCond();
 	initExportFunction();
@@ -7,7 +8,15 @@ $(function () {
 	initTimeCond1();
 	initCountTableGrid();
 	initDaiShouTableGrid();
+	initZiChanTableGrid();
 });
+
+var echartDivObj = document.getElementById('echart_div');
+var chart ;
+function initEcharts() {
+	//折线图
+	chart = echarts.init(echartDivObj);
+}
 
 
 
@@ -19,14 +28,22 @@ function initSelectEvent(){
 			$("#vip_detail_div").show();
 			$("#vip_count_div").hide();
 			$("#vip_daishou_div").hide();
+			$("#zichan_div").hide();
 		}else if(select == 'vip_count'){
 			$("#vip_detail_div").hide();
 			$("#vip_count_div").show();
 			$("#vip_daishou_div").hide();
+			$("#zichan_div").hide();
 		}else if(select == 'daishou'){
 			$("#vip_detail_div").hide();
 			$("#vip_count_div").hide();
 			$("#vip_daishou_div").show();
+			$("#zichan_div").hide();
+		}else if(select == 'zichan'){
+			$("#vip_detail_div").hide();
+			$("#vip_count_div").hide();
+			$("#vip_daishou_div").hide();
+			$("#zichan_div").show();
 		}
 	});
 }
@@ -172,42 +189,171 @@ function initDaiShouTableGrid(){
     $("#vip_daishou_div").hide();
 }
 
-var vm = new Vue({
-	el:'#rrapp',
-	data:{
-		showList: true,
-		title: null,
-		dmReportDdzRemain: {}
-	},
-	methods: {
-		reload: function (event) {
-			vm.showList = true;
-			var select = $("#list_select").children('option:selected').val();
-			if(select == 'vip_detail'){
-				$("#jqGrid").jqGrid("clearGridData");
-				$("#jqGrid").jqGrid('setGridParam',{ 
-					datatype:'json', 
-					url: '../yunying/zbp2p/list',
-		            postData: getParams()
-	            }).trigger("reloadGrid");
-			}else if(select == 'vip_count'){
-				$("#jqGrid_count").jqGrid("clearGridData");
-				$("#jqGrid_count").jqGrid('setGridParam',{ 
-					datatype:'json', 
-					url: '../yunying/zbp2p/ddylist',
-		            postData: getParams()
-	            }).trigger("reloadGrid");
-			}else if(select == 'daishou'){
-				$("#jqGrid_daishou").jqGrid("clearGridData");
-				$("#jqGrid_daishou").jqGrid('setGridParam',{ 
-					datatype:'json', 
-					url: '../yunying/zbp2p/daishoulist',
-		            postData: getParams()
-	            }).trigger("reloadGrid");
-			}
-		}
+function initZiChanTableGrid(){
+    $("#jqGrid_zichan").jqGrid({
+        datatype: "json",
+        colModel: [			
+        	{ label: '期限（月）', name: 'QIXIAN', index: '$STAT_PERIOD', width: 100,align:'right' },
+			{ label: '销售金额（万元）', name: 'MONEY', index: '$MONTH_TENDER_COU', width: 100 ,align:'right'}
+        ],
+		viewrecords: true,
+        height: $(window).height()-400,
+        rowNum: 20,
+//        rownumbers: true, 
+        autowidth:true,
+        pager: "#jqGridPager_zichan",
+        jsonReader : {
+            root: "page.list",
+            page: "page.currPage",
+            total: "page.totalPage",
+            records: "page.totalCount"
+        },
+        prmNames : {
+            page:"page", 
+            rows:"limit", 
+            order: "order"
+        },
+        gridComplete:function(){
+        	//隐藏grid底部滚动条
+        },
+        loadComplete: function(){
+        	
+			var rows = $("#jqGrid_zichan").jqGrid("getRowData");
+			console.info(rows)
+			var option = getOption(rows);
+			chart.setOption(option);
+        }
+    });
+    $("#zichan_div").hide();
+}
+
+function getOption(rows){
+	console.info('++++++++getOption++++++++')
+	console.info(rows)
+	var date_list = [];
+	var data_list = [];
+	for (var i = 0; i < rows.length; i++) {
+		var row = rows[i];
+		date_list.push(row.QIXIAN);
+		data_list.push(row.MONEY);
 	}
-});
+	var option = {
+	    color: ['#3398DB'],
+	    tooltip : {
+	        trigger: 'axis',
+	        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+	            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+	        }
+	
+	    },
+	    grid: {
+	        left: '3%',
+	        right: '4%',
+	        bottom: '3%',
+	        containLabel: true
+	    },
+	    xAxis : [
+	        {
+	            type : 'category',
+	            data : date_list,
+	            axisTick: {
+	                alignWithLabel: true
+	            }
+	        }
+	    ],
+	    yAxis : [
+	        {
+	            type : 'value'
+	        }
+	    ],
+	    series : [
+	        {
+	            name:'解锁金额（万元）',
+	            type:'bar',
+	            barWidth: '60%',
+	            data: data_list
+	        }
+	    ]
+	};
+	return option;
+
+}
+
+
+//var vm = new Vue({
+//	el:'#rrapp',
+//	data:{
+//		showList: true,
+//		title: null,
+//		dmReportDdzRemain: {}
+//	},
+//	methods: {
+//		reload: function (event) {
+//			vm.showList = true;
+//			var select = $("#list_select").children('option:selected').val();
+//			if(select == 'vip_detail'){
+//				$("#jqGrid").jqGrid("clearGridData");
+//				$("#jqGrid").jqGrid('setGridParam',{ 
+//					datatype:'json', 
+//					url: '../yunying/zbp2p/list',
+//		            postData: getParams()
+//	            }).trigger("reloadGrid");
+//			}else if(select == 'vip_count'){
+//				$("#jqGrid_count").jqGrid("clearGridData");
+//				$("#jqGrid_count").jqGrid('setGridParam',{ 
+//					datatype:'json', 
+//					url: '../yunying/zbp2p/ddylist',
+//		            postData: getParams()
+//	            }).trigger("reloadGrid");
+//			}else if(select == 'daishou'){
+//				$("#jqGrid_daishou").jqGrid("clearGridData");
+//				$("#jqGrid_daishou").jqGrid('setGridParam',{ 
+//					datatype:'json', 
+//					url: '../yunying/zbp2p/daishoulist',
+//		            postData: getParams()
+//	            }).trigger("reloadGrid");
+//			}
+//		}
+//	}
+//});
+
+function reload(){
+//	vm.showList = true;
+	var select = $("#list_select").children('option:selected').val();
+	if(select == 'vip_detail'){
+		$("#jqGrid").jqGrid("clearGridData");
+		$("#jqGrid").jqGrid('setGridParam',{ 
+			datatype:'json', 
+			url: '../yunying/zbp2p/list',
+            postData: getParams()
+        }).trigger("reloadGrid");
+	}else if(select == 'vip_count'){
+		$("#jqGrid_count").jqGrid("clearGridData");
+		$("#jqGrid_count").jqGrid('setGridParam',{ 
+			datatype:'json', 
+			url: '../yunying/zbp2p/ddylist',
+            postData: getParams()
+        }).trigger("reloadGrid");
+	}else if(select == 'daishou'){
+		$("#jqGrid_daishou").jqGrid("clearGridData");
+		$("#jqGrid_daishou").jqGrid('setGridParam',{ 
+			datatype:'json', 
+			url: '../yunying/zbp2p/daishoulist',
+            postData: getParams()
+        }).trigger("reloadGrid");
+		
+	}else if(select == 'zichan'){
+		$("#jqGrid_zichan").jqGrid("clearGridData");
+		$("#jqGrid_zichan").jqGrid('setGridParam',{ 
+			datatype:'json', 
+			url: '../yunying/zbp2p/zichanlist',
+            postData: getParams()
+        }).trigger("reloadGrid");
+		
+	}
+}
+
+
 
 function getParams(){
 	var params = {

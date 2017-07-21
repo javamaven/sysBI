@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
+import com.alibaba.druid.sql.ast.statement.SQLIfStatement.Else;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
@@ -37,12 +39,13 @@ import io.renren.utils.R;
 import io.renren.utils.RRException;
 
 @Controller
-@RequestMapping(value = "/yunying/nine")
-public class NextNineDaysController {
+@RequestMapping(value = "/yunying/pilu")
+public class DataPublishController {
 
 
 	@Autowired
 	private DataSourceFactory dataSourceFactory;
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
 
 	/**
 	 * 上传文件
@@ -82,19 +85,10 @@ public class NextNineDaysController {
 	@ResponseBody
 	@RequestMapping("/list")
 	@RequiresPermissions("phonesale:list")
-	public R daylist(Integer page, Integer limit, String end_time,String begin_time) {
-		
-		String beforeDay="";
-		String beforeNineDay="";
-		String beforeDaywu="";
-		if (StringUtils.isNotEmpty(begin_time)) {
-//			beforeDay = begin_time.replace("-", "");
-			beforeDay = DateUtil.getCurrDayBefore(begin_time, 1, "yyyy-MM-dd");
-			beforeDaywu = beforeDay.replace("-", "");
-			beforeNineDay = DateUtil.getCurrDayBefore(begin_time, 10, "yyyy-MM-dd");
-			beforeNineDay=beforeNineDay.replace("-", "");
+	public R daylist(Integer page, Integer limit, String invest_end_time,String invest_month_time) {
+		if (StringUtils.isNotEmpty(invest_month_time)) {
+			invest_month_time = invest_month_time.replace("-", "");
 		}
-
 		long l1 = System.currentTimeMillis();
 
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
@@ -102,14 +96,86 @@ public class NextNineDaysController {
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql;
-			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/nextNineDays.txt"));
-			detail_sql = detail_sql.replace("${end_time}", end_time);
-			detail_sql = detail_sql.replace("${begin_time}", begin_time);
-			detail_sql = detail_sql.replace("${beforeDay}", beforeDay);
-			detail_sql = detail_sql.replace("${beforeNineDay}", beforeNineDay);
-			detail_sql = detail_sql.replace("${beforeDaywu}", beforeDaywu);
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
-			resultList.addAll(list);
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/DataPublish.txt"));
+			List<Map<String, Object>> list2 = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList.addAll(list2);
+			String currDate =sdf.format(new Date());
+
+			int year = Integer.parseInt(currDate.substring(0,4));
+			int month = Integer.parseInt(currDate.substring(4,6));
+			System.err.println(month);
+			if (year!=-1) {
+				if (year==2017) {
+					for (int i = 7; i <= month; i++) {
+						System.err.println("查询" + i + "月数据");
+						String lastDayOfMonth = DateUtil.getLastDayOfMonth(year, i);
+						int nian=Integer.parseInt(lastDayOfMonth.substring(0,4));
+						int yue=Integer.parseInt(lastDayOfMonth.substring(5,7));
+						String nian1=nian+"";
+						String yue1=yue+"";
+						System.err.println("查询日期" + lastDayOfMonth);
+//					String path = this.getClass().getResource("/").getPath();
+
+					detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/DataPublish2018.txt"));
+					detail_sql = detail_sql.replace("${lastDayOfMonth}", lastDayOfMonth);
+					detail_sql = detail_sql.replace("${nian1}", nian1);
+					detail_sql = detail_sql.replace("${yue1}", yue1);
+					List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+					resultList.addAll(list);
+					}
+				}else {
+					for (int i = 7; i <= 12; i++) {
+						System.err.println("查询" + i + "月数据");
+						String lastDayOfMonth = DateUtil.getLastDayOfMonth((year-(year-2017)), i);
+						int nian=Integer.parseInt(lastDayOfMonth.substring(0,4));
+						int yue=Integer.parseInt(lastDayOfMonth.substring(5,7));
+						String nian1=nian+"";
+						String yue1=yue+"";
+						System.err.println("查询日期" + lastDayOfMonth);
+//					String path = this.getClass().getResource("/").getPath();
+					detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/DataPublish2018.txt"));
+					detail_sql = detail_sql.replace("${lastDayOfMonth}", lastDayOfMonth);
+					detail_sql = detail_sql.replace("${nian1}", nian1);
+					detail_sql = detail_sql.replace("${yue1}", yue1);
+					List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+					resultList.addAll(list);
+				}
+			
+			}
+				if (year>2017) {
+					int years=year;
+					int months=0;
+					for (int j = 0; j <years-2017; j++) {
+					
+						
+						 year=year-(year-2018-j);//2018
+						 if (year>=2018) {
+							 if (year!=years) {
+								 months=12;
+							}else {
+								  months=month;
+							}
+						 }
+			 for (int i = 1; i <= months; i++) {
+				System.err.println("查询" + i + "月数据");
+				String lastDayOfMonth = DateUtil.getLastDayOfMonth(year, i);
+				int nian=Integer.parseInt(lastDayOfMonth.substring(0,4));
+				int yue=Integer.parseInt(lastDayOfMonth.substring(5,7));
+				String nian1=nian+"";
+				String yue1=yue+"";
+				System.err.println("查询日期" + lastDayOfMonth);
+//				String path = this.getClass().getResource("/").getPath();
+				detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/DataPublish2018.txt"));
+				detail_sql = detail_sql.replace("${lastDayOfMonth}", lastDayOfMonth);
+				detail_sql = detail_sql.replace("${nian1}", nian1);
+				detail_sql = detail_sql.replace("${yue1}", yue1);
+				List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+				resultList.addAll(list);
+			}
+				year=years+1;
+			}
+			}
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -125,20 +191,102 @@ public class NextNineDaysController {
 	@ResponseBody
 	@RequestMapping("/ddylist")
 	@RequiresPermissions("phonesale:list")
-	public R daylist1(Integer page, Integer limit,  String end_time,String begin_time) {
+	public R daylist1(Integer page, Integer limit, String investEndTime) {
 		long l1 = System.currentTimeMillis();
 		int start = (page - 1) * limit;
 		int end = start + limit;
 
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
-//		List<Map<String, Object>> totalList = new ArrayList<Map<String, Object>>();
+
 		try {
+
 			String path = this.getClass().getResource("/").getPath();
-			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/licaijihua.txt"));
-			detail_sql = detail_sql.replace("${end_time}", end_time);
-			detail_sql = detail_sql.replace("${begin_time}", begin_time);
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
-			resultList.addAll(list);
+			String detail_sql;
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/projectfuzhu.txt"));
+			List<Map<String, Object>> list2 = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList.addAll(list2);
+			String currDate =sdf.format(new Date());
+			int year = Integer.parseInt(currDate.substring(0,4));
+			int month = Integer.parseInt(currDate.substring(4,6));
+			System.err.println(month);
+			if (year!=-1) {
+				if (year==2017) {
+					for (int i = 7; i <= month; i++) {
+						System.err.println("查询" + i + "月数据");
+						String lastDayOfMonth = DateUtil.getLastDayOfMonth(year, i);
+						String firstMonthDay=(lastDayOfMonth.substring(0,7))+"-01";
+						int nian=Integer.parseInt(lastDayOfMonth.substring(0,4));
+						int yue=Integer.parseInt(lastDayOfMonth.substring(5,7));
+						String nian1=nian+"";
+						String yue1=yue+"";
+						System.err.println("查询日期" + lastDayOfMonth);
+//					String path = this.getClass().getResource("/").getPath();
+
+					detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/projectHK.txt"));
+					detail_sql = detail_sql.replace("${lastDayOfMonth}", lastDayOfMonth);
+					detail_sql = detail_sql.replace("${firstMonthDay}", firstMonthDay);
+					detail_sql = detail_sql.replace("${nian1}", nian1);
+					detail_sql = detail_sql.replace("${yue1}", yue1);
+					List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+					resultList.addAll(list);
+					}
+				}else {
+					for (int i = 7; i <= 12; i++) {
+						System.err.println("查询" + i + "月数据");
+						String lastDayOfMonth = DateUtil.getLastDayOfMonth((year-(year-2017)), i);
+						String firstMonthDay=(lastDayOfMonth.substring(0,7))+"-01";
+						int nian=Integer.parseInt(lastDayOfMonth.substring(0,4));
+						int yue=Integer.parseInt(lastDayOfMonth.substring(5,7));
+						String nian1=nian+"";
+						String yue1=yue+"";
+						System.err.println("查询日期" + lastDayOfMonth);
+//					String path = this.getClass().getResource("/").getPath();
+					detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/projectfuzhuHK.txt"));
+					detail_sql = detail_sql.replace("${lastDayOfMonth}", lastDayOfMonth);
+					detail_sql = detail_sql.replace("${firstMonthDay}", firstMonthDay);
+					detail_sql = detail_sql.replace("${nian1}", nian1);
+					detail_sql = detail_sql.replace("${yue1}", yue1);
+					List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+					resultList.addAll(list);
+				}
+			
+			}
+				if (year>2017) {
+					int years=year;
+					int months=0;
+					for (int j = 0; j <years-2017; j++) {
+					
+						
+						 year=year-(year-2018-j);//2018
+						 if (year>=2018) {
+							 if (year!=years) {
+								 months=12;
+							}else {
+								  months=month;
+							}
+						 }
+			 for (int i = 1; i <= months; i++) {
+				System.err.println("查询" + i + "月数据");
+				String lastDayOfMonth = DateUtil.getLastDayOfMonth(year, i);
+				String firstMonthDay=(lastDayOfMonth.substring(0,7))+"-01";
+				int nian=Integer.parseInt(lastDayOfMonth.substring(0,4));
+				int yue=Integer.parseInt(lastDayOfMonth.substring(5,7));
+				String nian1=nian+"";
+				String yue1=yue+"";
+				System.err.println("查询日期" + lastDayOfMonth);
+//				String path = this.getClass().getResource("/").getPath();
+				detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/DataPublish2018.txt"));
+				detail_sql = detail_sql.replace("${lastDayOfMonth}", lastDayOfMonth);
+				detail_sql = detail_sql.replace("${firstMonthDay}", firstMonthDay);
+				detail_sql = detail_sql.replace("${nian1}", nian1);
+				detail_sql = detail_sql.replace("${yue1}", yue1);
+				List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+				resultList.addAll(list);
+			}
+				year=years+1;
+			}
+			}
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -162,15 +310,19 @@ public class NextNineDaysController {
 			throws IOException {
 		
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
-
-		long l1 = System.currentTimeMillis();
-
+		String invest_end_time = map.get("invest_end_time") + "";
+		String invest_month_time = map.get("invest_month_time") + "";
+		if (StringUtils.isNotEmpty(invest_month_time)) {
+			invest_month_time = invest_month_time.replace("-", "");
+		}
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
-
+		
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql;
-			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/nextNineDays.txt"));
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/yxP2P.txt"));
+			detail_sql = detail_sql.replace("${investEndTime}", invest_end_time);
+			detail_sql = detail_sql.replace("${investMonthTime}", invest_month_time);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
 		} catch (SQLException e) {
@@ -184,7 +336,7 @@ public class NextNineDaysController {
 			va.add(resultList.get(i));
 		}
 		Map<String, String> headMap = null;
-		String title = "未来九日回款情况";
+		String title = "越秀P2P数据";
 		headMap = getDayListExcelFields();
 
 		ExcelUtil.downloadExcelFile(title, headMap, va, response);
@@ -195,12 +347,18 @@ public class NextNineDaysController {
 
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
 
-		headMap.put("TIME", "回款日期");
-		headMap.put("PTB_REPAY_ACCOUNT_WAIT", "普通版回款");
-		headMap.put("CGB_REPAY_ACCOUNT_WAIT", "存管版回款");
-		headMap.put("REPAY_ACCOUNT_WAIT", "总回款");
-		headMap.put("UNLOCK_MONEY", "理财计划解锁金额");
-		headMap.put("LJ_UNLOCK_MONEY", "累计解锁未退出金额");
+		headMap.put("TYPE", "分类");
+		headMap.put("NUM", "人数(穿透)");
+		headMap.put("SUM", "借款余额(穿透)");
+		headMap.put("BORROW_USER", "人数(非穿透)");
+		headMap.put("BORROW_CAPITAL", "借款余额(非穿透)");
+		headMap.put("NUMM", "人数(总)");
+		headMap.put("SUMM", "借款余额(总)");
+		headMap.put("AVGG", "人均借款余额(万)");
+		headMap.put("NUMS", "出借人数(总)");
+		headMap.put("AVGS", "平均借款期限(天)");
+		headMap.put("AVGLI", "平均借款利率(万)");
+		headMap.put("YUQI", "逾期");
 		return headMap;
 
 	}

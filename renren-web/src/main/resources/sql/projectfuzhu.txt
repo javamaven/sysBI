@@ -1,0 +1,160 @@
+
+select 
+'2015年'as DMONTH,
+'5月'as MONTH,
+0 as TIAN,
+0 as YUE,
+9000 as DAOQI,
+0 as BENXI
+from dual
+union all
+select 
+'2015年'as time,
+'6月'as month,
+0 as money,0,9900,0
+from dual
+union all
+select 
+'2015年'as time,
+'7月'as month,
+0 as money,0,14600,100
+from dual
+union all
+select 
+'2015年'as time,
+'8月'as month,
+0 as money,4200,6900,1400
+from dual
+union all
+select 
+'2015年'as time,
+'9月'as month,
+0 as money,4100,16200,800
+from dual
+union all
+select 
+'2015年'as time,
+'10月'as month,
+0 as money,2600,19000,1300
+from dual
+union all
+select 
+'2015年'as time,
+'11月'as month,
+0 as money,2100,34700,800
+from dual
+union all
+select 
+'2015年'as time,
+'12月'as month,
+0 as money,900,54000,600
+from dual
+union all
+select 
+'2016年'as time,
+'1月'as month,
+0 as money,200,29200,800
+from dual
+union all
+select 
+'2016年'as time,
+'2月'as month,
+0 as money,300,36300,100
+from dual
+union all
+select 
+'2016年'as time,
+'3月'as month,
+5000 as money,300,36500,600
+from dual
+union all
+select 
+'2016年'as time,
+'4月'as month,
+32300 as money,3600,46200,700
+from dual
+union all
+select 
+'2016年'as time,
+'5月'as month,
+52000 as money,7900,43300,1100
+from dual
+union all
+select 
+'2016年'as time,
+'6月'as month,
+68700 as money,500,51300,1400
+from dual
+union all
+select 
+'2016年'as time,
+'7月'as month,
+77500 as money,1800,43500,1700
+from dual
+union all
+select 
+'2016年'as time,
+'8月'as month,
+77500 as money,2200,61900,400
+from dual
+union all
+select 
+'2016年'as time,
+'9月'as month,
+75100 as money,9900,69000,200
+from dual
+union all
+select 
+'2016年'as time,
+'10月'as month,
+75800 as money,8800,72200,100
+from dual
+union all
+select 
+'2016年'as time,
+'11月'as month,
+54400 as money,700,110050,500
+from dual
+union all
+select 
+'2016年'as time,
+'12月'as month,
+41900 as money,1200,109640,2433
+from dual
+union all
+select 
+'2017年'as time,
+'1月'as month,
+43407 as money,804,81623,1452
+from dual
+union all
+select 
+'2017年'as time,
+'2月'as month,
+55976 as money,1272,105792,3958
+from dual
+union all
+select 
+'2017年'as time,
+'3月'as month,
+99962 as money,565,73940,3253
+from dual
+union all
+select 
+'2017年'as time,
+'4月'as month,
+139538 as money,13077,5280,3412
+from dual
+union all
+select 
+'2017年'as time,
+'5月'as month,
+137560 as money,8676,25892,1061
+from dual
+union all
+select 
+'2017年'as time,
+'6月'as month,
+94678 as money,5096,37483,473
+from dual
+

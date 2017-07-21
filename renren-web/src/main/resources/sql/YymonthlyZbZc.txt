@@ -1,0 +1,74 @@
+select 
+QIXIAN,MONEY
+from
+(
+select
+case when a.period<=7 then '7天'
+     when a.period>7 and a.period<=15 then '15天'
+     when a.period>15 then to_char(round(a.period/30,0)) || '月'end as QIXIAN,
+case when a.period<=7 then 0.25
+     when a.period>7 and a.period<=15 then 0.5
+     when a.period>15 then round(a.period/30,0) end ranks,
+round(sum(sum_ba)/10000,2) as MONEY
+from 
+(
+select '普通项目' type,
+       case
+         when borrow_term_unit = 1 then
+          (case
+            when borrow_term = 0 then
+             trunc(interest_end_date - project_complete_date)
+            else
+             borrow_term
+          end)
+         when borrow_term_unit = 2 then
+          borrow_term * 30
+       end as period,
+       sum(borrow_account) as sum_ba
+  from mdtxbi.edw_trading_project
+ where to_char(project_complete_date, 'yyyymmdd') between 20170710 and 20170716
+   and project_id not in
+       (select distinct normal_id
+          from mdtxbi.edw_trading_project_conf
+         where stat_period between  20170701 and 20170716)
+   and project_id not like '%ZT%'
+ group by case
+            when borrow_term_unit = 1 then
+             (case
+               when borrow_term = 0 then
+                trunc(interest_end_date - project_complete_date)
+               else
+                borrow_term
+             end)
+            when borrow_term_unit = 2 then
+             borrow_term * 30
+          end
+union all
+select '智投计划',
+       case
+         when borrow_term_unit = 1 then
+          borrow_term
+         when borrow_term_unit = 2 then
+          borrow_term * 30
+       end as period,
+       sum(borrow_account) as sum_ba
+  from mdtxbi.edw_trading_project
+ where to_char(project_complete_date, 'yyyymmdd') between '${invest_stat_time}' and '${invest_end_time}'
+   and project_id like '%ZT%'
+ group by case
+            when borrow_term_unit = 1 then
+             borrow_term
+            when borrow_term_unit = 2 then
+             borrow_term * 30
+          end
+)a
+group by 
+case when a.period<=7 then '7天'
+     when a.period>7 and a.period<=15 then '15天'
+     when a.period>15 then to_char(round(a.period/30,0)) || '月'end,
+     case when a.period<=7 then 0.25
+     when a.period>7 and a.period<=15 then 0.5
+     when a.period>15 then round(a.period/30,0) end
+)
+order by ranks
+    

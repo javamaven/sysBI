@@ -1,0 +1,8 @@
+select  -- 未来9天理财计划接触锁定金额
+to_char (po.unlock_time,'yyyy-mm-dd') as TIME,
+round(sum(po.tender_amount）/1000000,0) as MONEY
+from mdtxbi.ods_mdtx_cg_fcial_plan_order@ora40 po
+where 
+ to_char(po.unlock_time,'yyyy-mm-dd') between '${begin_time}' and  '${end_time}'
+group by to_char(po.unlock_time,'yyyy-mm-dd')
+order by to_char(po.unlock_time,'yyyy-mm-dd')

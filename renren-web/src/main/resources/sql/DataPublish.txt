@@ -1,0 +1,183 @@
+select 
+'2015年'as YEAR,
+'1月'as MONTH,
+1 as SUM
+from dual
+union all
+select 
+'2015年'as time,
+'2月'as month,
+1 as money
+from dual
+union all
+select 
+'2015年'as time,
+'3月'as month,
+2 as money
+from dual
+union all
+select 
+'2015年'as time,
+'4月'as month,
+3 as money
+from dual
+union all
+select 
+'2015年'as time,
+'5月'as month,
+4 as money
+from dual
+union all
+select 
+'2015年'as time,
+'6月'as month,
+5 as money
+from dual
+union all
+select 
+'2015年'as time,
+'7月'as month,
+6 as money
+from dual
+union all
+select 
+'2015年'as time,
+'8月'as month,
+7 as money
+from dual
+union all
+select 
+'2015年'as time,
+'9月'as month,
+10 as money
+from dual
+union all
+select 
+'2015年'as time,
+'10月'as month,
+12 as money
+from dual
+union all
+select 
+'2015年'as time,
+'11月'as month,
+16 as money
+from dual
+union all
+select 
+'2015年'as time,
+'12月'as month,
+21 as money
+from dual
+
+union all
+select 
+'2016年'as time,
+'1月'as month,
+24 as money
+from dual
+union all
+select 
+'2016年'as time,
+'2月'as month,
+28 as money
+from dual
+union all
+select 
+'2016年'as time,
+'3月'as month,
+32 as money
+from dual
+union all
+select 
+'2016年'as time,
+'4月'as month,
+40 as money
+from dual
+union all
+select 
+'2016年'as time,
+'5月'as month,
+50 as money
+from dual
+union all
+select 
+'2016年'as time,
+'6月'as month,
+63 as money
+from dual
+union all
+select 
+'2016年'as time,
+'7月'as month,
+75 as money
+from dual
+union all
+select 
+'2016年'as time,
+'8月'as month,
+89 as money
+from dual
+union all
+select 
+'2016年'as time,
+'9月'as month,
+105 as money
+from dual
+union all
+select 
+'2016年'as time,
+'10月'as month,
+121 as money
+from dual
+union all
+select 
+'2016年'as time,
+'11月'as month,
+138 as money
+from dual
+union all
+select 
+'2016年'as time,
+'12月'as month,
+153 as money
+from dual
+union all
+select 
+'2017年'as time,
+'1月'as month,
+166 as money
+from dual
+union all
+select 
+'2017年'as time,
+'2月'as month,
+182 as money
+from dual
+union all
+select 
+'2017年'as time,
+'3月'as month,
+199 as money
+from dual
+union all
+select 
+'2017年'as time,
+'4月'as month,
+215 as money
+from dual
+union all
+select 
+'2017年'as time,
+'5月'as month,
+233 as money
+from dual
+union all
+select 
+'2017年'as time,
+'6月'as month,
+247 as money
+from dual
+
+
+ 

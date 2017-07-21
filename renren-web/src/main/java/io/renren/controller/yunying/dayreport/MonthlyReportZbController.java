@@ -376,6 +376,42 @@ public class MonthlyReportZbController {
 		return R.ok().put("page", pageUtil);
 	}
 	
+	@ResponseBody
+	@RequestMapping("/zichanlist")
+	@RequiresPermissions("phonesale:list")
+	public R zichanlist(Integer page, Integer limit, String invest_end_time,String invest_stat_time) {
+
+		if (StringUtils.isNotEmpty(invest_stat_time)) {
+			invest_stat_time = invest_stat_time.replace("-", "");
+		}
+		if (StringUtils.isNotEmpty(invest_end_time)) {
+			invest_end_time = invest_end_time.replace("-", "");
+		}
+		
+		long l1 = System.currentTimeMillis();
+
+		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+		try {
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql;
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/YymonthlyZbZc.txt"));
+			detail_sql = detail_sql.replace("${invest_end_time}", invest_end_time);
+			detail_sql = detail_sql.replace("${invest_stat_time}", invest_stat_time);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList.addAll(list);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		int total = resultList.size();
+		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
+		long l2 = System.currentTimeMillis();
+
+		System.err.println("++++++++运营周报待收查询耗时：" + (l2 - l1));
+		return R.ok().put("page", pageUtil);
+	}
+	
 	/**
 	 * 
 	 * @param params

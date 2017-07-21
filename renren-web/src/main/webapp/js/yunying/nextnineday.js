@@ -1,13 +1,20 @@
 $(function () {
+	initEcharts();
 	initDetailTableGrid();
 	initTimeCond();
 	initExportFunction();
 	initEvent();
 	initSelectEvent();
 	initTimeCond1();
+	initCountTableGrid();
 });
 
-
+var echartDivObj = document.getElementById('echart_div');
+var chart ;
+function initEcharts() {
+	//折线图
+	chart = echarts.init(echartDivObj);
+}
 
 function initSelectEvent(){
 	//日报，月报切换
@@ -24,7 +31,7 @@ function initSelectEvent(){
 }
 
 function initTimeCond(){
-    $("#invest_end_time").datetimepicker({
+    $("#end_time").datetimepicker({
         format: 'yyyy-mm-dd',
         minView:'month',
         language: 'zh-CN',
@@ -33,8 +40,8 @@ function initTimeCond(){
     });
 }
 function initTimeCond1(){
-    $("#invest_month_time").datetimepicker({
-        format: 'yyyy-mm',
+    $("#begin_time").datetimepicker({
+        format: 'yyyy-mm-dd',
         minView:'month',
         language: 'zh-CN',
         autoclose:true
@@ -73,7 +80,7 @@ function initDetailTableGrid(){
         ],
 		viewrecords: true,
         height: $(window).height()-170,
-        rowNum: 20,
+        rowNum: 300,
         rownumbers: true, 
         autowidth:true,
 //        shrinkToFit: false,
@@ -96,43 +103,153 @@ function initDetailTableGrid(){
         }
     });
 }
+function initCountTableGrid(){
+    $("#jqGrid_count").jqGrid({
+        datatype: "json",
+        colModel: [			
+			{ label: '日期', name: 'TIME', index: '$TIME', width: 100,align:'right' },
+			{ label: '解锁金额(万元)', name: 'MONEY', index: '$MONEY', width: 80 ,align:'right'} 			
+        ],
+		viewrecords: true,
+        height: $(window).height()-170,
+        rowNum: 300,
+//        rownumbers: true, 
+        autowidth:true,
+        pager: "#jqGridPager_count",
+        jsonReader : {
+            root: "page.list",
+            page: "page.currPage",
+            total: "page.totalPage",
+            records: "page.totalCount"
+        },
+        prmNames : {
+            page:"page", 
+            rows:"limit", 
+            order: "order"
+        },
+        gridComplete:function(){
+        	//隐藏grid底部滚动条
+        	
+        },
+        loadComplete: function(){
+			var rows = $("#jqGrid_count").jqGrid("getRowData");
+			var option = getOption(rows);
+			chart.setOption(option);
+        }
+    });
+    $("#vip_count_div").hide();
+    
+    
+}
 
-
-
-var vm = new Vue({
-	el:'#rrapp',
-	data:{
-		showList: true,
-		title: null,
-		dmReportDdzRemain: {}
-	},
-	methods: {
-		reload: function (event) {
-			vm.showList = true;
-			var select = $("#list_select").children('option:selected').val();
-			if(select == 'vip_detail'){
-				$("#jqGrid").jqGrid("clearGridData");
-				$("#jqGrid").jqGrid('setGridParam',{ 
-					datatype:'json', 
-					url: '../yunying/nine/list',
-		            postData: getParams()
-	            }).trigger("reloadGrid");
-			}else if(select == 'vip_count'){
-				$("#jqGrid_count").jqGrid("clearGridData");
-				$("#jqGrid_count").jqGrid('setGridParam',{ 
-					datatype:'json', 
-					url: '../yunying/p2p/ddylist',
-		            postData: getParams()
-	            }).trigger("reloadGrid");
-			}
-		}
+function getOption(rows){
+	console.info('++++++++getOption++++++++')
+	console.info(rows)
+	var date_list = [];
+	var data_list = [];
+	for (var i = 0; i < rows.length; i++) {
+		var row = rows[i];
+		date_list.push(row.TIME);
+		data_list.push(row.MONEY);
 	}
-});
+	var option = {
+	    color: ['#3398DB'],
+	    tooltip : {
+	        trigger: 'axis',
+	        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+	            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+	        }
+	    },
+	    grid: {
+	        left: '3%',
+	        right: '4%',
+	        bottom: '3%',
+	        containLabel: true
+	    },
+	    xAxis : [
+	        {
+	            type : 'category',
+	            data : date_list,
+	            axisTick: {
+	                alignWithLabel: true
+	            }
+	        }
+	    ],
+	    yAxis : [
+	        {
+	            type : 'value'
+	        }
+	    ],
+	    series : [
+	        {
+	            name:'解锁金额（万元）',
+	            type:'bar',
+	            barWidth: '60%',
+	            data: data_list
+	        }
+	    ]
+	};
+	return option;
+
+}
+
+
+//var vm = new Vue({
+//	el:'#rrapp',
+//	data:{
+//		showList: true,
+//		title: null,
+//		dmReportDdzRemain: {}
+//	},
+//	methods: {
+//		reload: function (event) {
+//			vm.showList = true;
+//			var select = $("#list_select").children('option:selected').val();
+//			if(select == 'vip_detail'){
+//				$("#jqGrid").jqGrid("clearGridData");
+//				$("#jqGrid").jqGrid('setGridParam',{ 
+//					datatype:'json', 
+//					url: '../yunying/nine/list',
+//		            postData: getParams()
+//	            }).trigger("reloadGrid");
+//			}else if(select == 'vip_count'){
+//				$("#jqGrid_count").jqGrid("clearGridData");
+//				$("#jqGrid_count").jqGrid('setGridParam',{ 
+//					datatype:'json', 
+//					url: '../yunying/nine/ddylist',
+//		            postData: getParams()
+//	            }).trigger("reloadGrid");
+//				
+//			}
+//		}
+//	}
+//});
+
+function reload(){
+//	vm.showList = true;
+	var select = $("#list_select").children('option:selected').val();
+	if(select == 'vip_detail'){
+		$("#jqGrid").jqGrid("clearGridData");
+		$("#jqGrid").jqGrid('setGridParam',{ 
+			datatype:'json', 
+			url: '../yunying/nine/list',
+            postData: getParams()
+        }).trigger("reloadGrid");
+	}else if(select == 'vip_count'){
+		$("#jqGrid_count").jqGrid("clearGridData");
+		$("#jqGrid_count").jqGrid('setGridParam',{ 
+			datatype:'json', 
+			url: '../yunying/nine/ddylist',
+            postData: getParams()
+        }).trigger("reloadGrid");
+		
+	}
+}
 
 function getParams(){
 	var params = {
-        	'invest_end_time': $("#invest_end_time").val(),
-        	'invest_month_time': $("#invest_month_time").val()
+        	'begin_time': $("#begin_time").val(),
+        	'end_time': $("#end_time").val()
 	};
 	return params;
 }
