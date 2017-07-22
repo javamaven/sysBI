@@ -119,7 +119,7 @@ public class NextNineDaysController {
 		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
 		long l2 = System.currentTimeMillis();
 
-		System.err.println("++++++++越秀P2P查询耗时：" + (l2 - l1));
+		System.err.println("++++++++未来回款情况查询耗时：" + (l2 - l1));
 		return R.ok().put("page", pageUtil);
 	}
 	@ResponseBody
@@ -160,17 +160,37 @@ public class NextNineDaysController {
 	@RequestMapping("/exportExcel")
 	public void exportMonthListExcel(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-		
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
+		String begin_time = map.get("begin_time") + "";
+		String end_time = map.get("end_time") + "";
+
 
 		long l1 = System.currentTimeMillis();
-
+      
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+
+		String beforeDay="";
+		String beforeNineDay="";
+		String beforeDaywu="";
+		if (StringUtils.isNotEmpty(begin_time)) {
+//			beforeDay = begin_time.replace("-", "");
+			beforeDay = DateUtil.getCurrDayBefore(begin_time, 1, "yyyy-MM-dd");
+			beforeDaywu = beforeDay.replace("-", "");
+			beforeNineDay = DateUtil.getCurrDayBefore(begin_time, 10, "yyyy-MM-dd");
+			beforeNineDay=beforeNineDay.replace("-", "");
+		}
+
+
 
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql;
 			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/nextNineDays.txt"));
+			detail_sql = detail_sql.replace("${end_time}", end_time);
+			detail_sql = detail_sql.replace("${begin_time}", begin_time);
+			detail_sql = detail_sql.replace("${beforeDay}", beforeDay);
+			detail_sql = detail_sql.replace("${beforeNineDay}", beforeNineDay);
+			detail_sql = detail_sql.replace("${beforeDaywu}", beforeDaywu);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
 		} catch (SQLException e) {
@@ -206,6 +226,56 @@ public class NextNineDaysController {
 	}
 
 
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping("/exportExcel2")
+	public void exportMonthListExcel2(String params, HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+		Map<String, Object> map = JSON.parseObject(params, Map.class);
+		String begin_time = map.get("begin_time") + "";
+		String end_time = map.get("end_time") + "";
+
+
+		long l1 = System.currentTimeMillis();
+      
+		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+
+		try {
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/licaijihua.txt"));
+			detail_sql = detail_sql.replace("${end_time}", end_time);
+			detail_sql = detail_sql.replace("${begin_time}", begin_time);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList.addAll(list);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		// 查询列表数据
+		JSONArray va = new JSONArray();
+		for (int i = 0; i < resultList.size(); i++) {
+			va.add(resultList.get(i));
+		}
+		Map<String, String> headMap = null;
+		String title = "理财计划接触锁定监控";
+		headMap = getDayListExcelFields2();
+
+		ExcelUtil.downloadExcelFile(title, headMap, va, response);
+	}
+
+	
+	private Map<String, String> getDayListExcelFields2() {
+
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+
+		headMap.put("TIME", "日期");
+		headMap.put("MONEY", "解锁金额(万元)");
+		return headMap;
+
+	}	
+	
+	
 
 
 	private static SimpleDateFormat dateSdf = new SimpleDateFormat("yyyy-MM-dd");

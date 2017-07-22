@@ -77,6 +77,7 @@ public class DmReportRecoverDataServiceImpl implements DmReportRecoverDataServic
 		headMap.put("phone", "电话");
 		headMap.put("projectId", "回款项目号");
 		headMap.put("money", "回款金额");
+		headMap.put("moneyWait", "待收金额");
 		
 		headMap.put("borrowPeriod", "项目期限");
 		headMap.put("regTime", "注册日期");

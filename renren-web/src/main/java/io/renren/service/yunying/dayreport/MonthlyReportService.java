@@ -23,7 +23,7 @@ public interface MonthlyReportService {
 	
 	Map<String, String> getExcelFields();
 	Map<String, String> getExcelFields2();
-	PageUtils queryList(Integer page, Integer limit, String invest_end_time,String invest_stat_time);
+	PageUtils queryList(Integer page, Integer limit, String statPeriod);
 
-	PageUtils queryList1(Integer page, Integer limit, String invest_stat_time, String invest_end_time);
+	PageUtils queryList1(Integer page, Integer limit,String statPeriod);
 }

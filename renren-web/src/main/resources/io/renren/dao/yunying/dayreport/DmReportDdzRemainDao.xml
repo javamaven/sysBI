@@ -15,6 +15,7 @@
         <result property="isInternal" column="IS_INTERNAL"/>
         <result property="isInternalTuijian" column="IS_INTERNAL_TUIJIAN"/>
         <result property="realname" column="REALNAME"/>
+        <result property="moneyWait" column="MONEY_WAIT"/>
     </resultMap>
 
 	<select id="queryObject" resultType="io.renren.entity.yunying.dayreport.DmReportDdzRemainEntity">
@@ -33,7 +34,8 @@
 			XM_INV_MONEY, 
 			IS_INTERNAL, 
 			IS_INTERNAL_TUIJIAN, 
-			REALNAME	
+			REALNAME,
+			MONEY_WAIT	
 		from dm_report_ddz_remain
         where 1=1
 		<if test="statPeriod != null and statPeriod.trim() !='' ">

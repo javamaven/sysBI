@@ -26,6 +26,7 @@
         <result property="czMoney" column="CZ_MONEY"/>
         <result property="txCgMoney" column="TX_CG_MONEY"/>
         <result property="dateCou" column="DATE_COU"/>
+  		 <result property="moneyWait" column="MONEY_WAIT"/>
     </resultMap>
 
 	<select id="queryObject" resultType="io.renren.entity.yunying.dayreport.DmReportRecoverDataEntity">

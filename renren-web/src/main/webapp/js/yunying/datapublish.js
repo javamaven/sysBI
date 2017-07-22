@@ -1,4 +1,5 @@
 $(function () {
+	initEcharts();
 	initDetailTableGrid();
 	initTimeCond();
 	initExportFunction();
@@ -8,7 +9,12 @@ $(function () {
 	initCountTableGrid();
 });
 
-
+var echartDivObj = document.getElementById('echart_div');
+var chart ;
+function initEcharts() {
+	//折线图
+	chart = echarts.init(echartDivObj);
+}
 
 function initSelectEvent(){
 	//日报，月报切换
@@ -52,7 +58,7 @@ function initExportFunction(){
 			executePost('../yunying/pilu/exportExcel', {'params' : JSON.stringify(params)});
 		}
 		else if(select == 'vip_count'){
-			executePost('../yunying/p2p/exportExcel2', {'params' : JSON.stringify(params)});
+			executePost('../yunying/pilu/exportExcel2', {'params' : JSON.stringify(params)});
 		}
 	});
 
@@ -65,7 +71,7 @@ function initDetailTableGrid(){
         colModel: [
 			{ label: '年份', name: 'YEAR', index: '$YEAR', width: 90,align:'right' },
 			{ label: '月份', name: 'MONTH', index: '$MONTH', width: 90 ,align:'right'}, 			
-			{ label: '平台累计交易额 ', name: 'SUM', index: '$SUM', width: 90 ,align:'right'}	
+			{ label: '平台累计交易额（亿元） ', name: 'SUM', index: '$SUM', width: 90 ,align:'right'}	
         ],
 		viewrecords: true,
         height: $(window).height()-170,
@@ -89,8 +95,78 @@ function initDetailTableGrid(){
         },
         gridComplete:function(){
         	//隐藏grid底部滚动条
+        },
+        loadComplete: function(){
+//			var rows = $("#jqGrid_count").jqGrid("getRowData");
+			queryEchartData();
         }
     });
+}
+
+function queryEchartData(){
+	var paramsUrl = '';
+	paramsUrl += 'page=1&limit=200';
+	 $.ajax({
+		    type: "GET",
+		    url: "../yunying/pilu/list?" + paramsUrl,
+//		    data: JSON.stringify(getParams()),
+		    contentType: "application/json;charset=utf-8",
+		    success : function(msg) {
+		    	console.info(msg.page.list)
+		    	chart.setOption(getOption(msg.page.list));
+		    }
+	 });
+}
+
+function getOption(rows){
+	console.info('++++++++getOption++++++++')
+	console.info(rows)
+	var date_list = [];
+	var data_list = [];
+	for (var i = 0; i < rows.length; i++) {
+		var row = rows[i];
+		date_list.push(row.YEAR+row.MONTH);
+		data_list.push(row.SUM);
+	}
+	var option = {
+	    color: ['#3398DB'],
+	    tooltip : {
+	        trigger: 'axis',
+	        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
+	            type : 'shadow'        // 默认为直线，可选为：'line' | 'shadow'
+	        }
+	    },
+	    grid: {
+	        left: '3%',
+	        right: '4%',
+	        bottom: '3%',
+	        containLabel: true
+	    },
+	    xAxis : [
+	        {
+	            type : 'category',
+	            data : date_list,
+	            axisTick: {
+	                alignWithLabel: true
+	            }
+	        }
+	    ],
+	    yAxis : [
+	        {
+	            type : 'value'
+	        }
+	    ],
+	    series : [
+	        {
+	            name:'平台累计交易额（亿元）',
+	            type:'bar',
+	            barWidth: '60%',
+	            data: data_list
+	        }
+	    ]
+	};
+	return option;
+
 }
 
 function initCountTableGrid(){
@@ -128,35 +204,58 @@ function initCountTableGrid(){
     $("#vip_count_div").hide();
 }
 
-var vm = new Vue({
-	el:'#rrapp',
-	data:{
-		showList: true,
-		title: null,
-		dmReportDdzRemain: {}
-	},
-	methods: {
-		reload: function (event) {
-			vm.showList = true;
-			var select = $("#list_select").children('option:selected').val();
-			if(select == 'vip_detail'){
-				$("#jqGrid").jqGrid("clearGridData");
-				$("#jqGrid").jqGrid('setGridParam',{ 
-					datatype:'json', 
-					url: '../yunying/pilu/list',
-		            postData: getParams()
-	            }).trigger("reloadGrid");
-			}else if(select == 'vip_count'){
-				$("#jqGrid_count").jqGrid("clearGridData");
-				$("#jqGrid_count").jqGrid('setGridParam',{ 
-					datatype:'json', 
-					url: '../yunying/pilu/ddylist',
-		            postData: getParams()
-	            }).trigger("reloadGrid");
-			}
-		}
+//var vm = new Vue({
+//	el:'#rrapp',
+//	data:{
+//		showList: true,
+//		title: null,
+//		dmReportDdzRemain: {}
+//	},
+//	methods: {
+//		reload: function (event) {
+//			vm.showList = true;
+//			var select = $("#list_select").children('option:selected').val();
+//			if(select == 'vip_detail'){
+//				$("#jqGrid").jqGrid("clearGridData");
+//				$("#jqGrid").jqGrid('setGridParam',{ 
+//					datatype:'json', 
+//					url: '../yunying/pilu/list',
+//		            postData: getParams()
+//	            }).trigger("reloadGrid");
+//			}else if(select == 'vip_count'){
+//				$("#jqGrid_count").jqGrid("clearGridData");
+//				$("#jqGrid_count").jqGrid('setGridParam',{ 
+//					datatype:'json', 
+//					url: '../yunying/pilu/ddylist',
+//		            postData: getParams()
+//	            }).trigger("reloadGrid");
+//			}
+//		}
+//	}
+//});
+
+function reload(){
+//	vm.showList = true;
+	var select = $("#list_select").children('option:selected').val();
+	if(select == 'vip_detail'){
+		$("#jqGrid").jqGrid("clearGridData");
+		$("#jqGrid").jqGrid('setGridParam',{ 
+			datatype:'json', 
+			url: '../yunying/pilu/list',
+            postData: getParams()
+        }).trigger("reloadGrid");
+	}else if(select == 'vip_count'){
+		$("#jqGrid_count").jqGrid("clearGridData");
+		$("#jqGrid_count").jqGrid('setGridParam',{ 
+			datatype:'json', 
+			url: '../yunying/pilu/ddylist',
+            postData: getParams()
+        }).trigger("reloadGrid");
+		
 	}
-});
+}
+
+
 
 function getParams(){
 	var params = {

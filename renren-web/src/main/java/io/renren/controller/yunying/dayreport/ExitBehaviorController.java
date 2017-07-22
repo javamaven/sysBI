@@ -28,7 +28,6 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
-import io.renren.service.yunying.dayreport.MonthlyReportService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
 import io.renren.utils.ExcelUtil;
@@ -37,11 +36,9 @@ import io.renren.utils.R;
 import io.renren.utils.RRException;
 
 @Controller
-@RequestMapping(value = "/yunying/p2p")
-public class MonthlyReportController {
+@RequestMapping(value = "/yunying/exit")
+public class ExitBehaviorController {
 
-	@Autowired
-	private MonthlyReportService service;
 
 	@Autowired
 	private DataSourceFactory dataSourceFactory;
@@ -84,32 +81,70 @@ public class MonthlyReportController {
 	@ResponseBody
 	@RequestMapping("/list")
 	@RequiresPermissions("phonesale:list")
-	public R daylist(Integer page, Integer limit, String statPeriod) {
-		
+	public R daylist(Integer page, Integer limit, String exit_end_time,String exit_stat_time) {
+		if (StringUtils.isNotEmpty(exit_end_time)) {
+			exit_end_time = exit_end_time.replace("-", "");
+		}if (StringUtils.isNotEmpty(exit_stat_time)) {
+			exit_stat_time = exit_stat_time.replace("-", "");
+		}
 		long l1 = System.currentTimeMillis();
-		
-		PageUtils pageUtil = service.queryList(page, limit, statPeriod);
+
+		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+
+		try {
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql;
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/ExitBehavior.txt"));
+			detail_sql = detail_sql.replace("${exit_stat_time}", exit_stat_time);
+			detail_sql = detail_sql.replace("${exit_end_time}", exit_end_time);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList.addAll(list);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		int total = resultList.size();
+		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
 		long l2 = System.currentTimeMillis();
 
-		System.err.println("++++++++广州P2P查询耗时：" + (l2 - l1));
+		System.err.println("++++++++越秀P2P查询耗时：" + (l2 - l1));
 		return R.ok().put("page", pageUtil);
 	}
-
-	/**
-	 * 列表
-	 */
 	@ResponseBody
 	@RequestMapping("/ddylist")
 	@RequiresPermissions("phonesale:list")
-	public R daylist1(Integer page, Integer limit,String statPeriod) {
+	public R daylist1(Integer page, Integer limit, String investEndTime) {
 		long l1 = System.currentTimeMillis();
-	
-		PageUtils pageUtil = service.queryList1(page, limit, statPeriod);
+		int start = (page - 1) * limit;
+		int end = start + limit;
+
+		if (StringUtils.isNotEmpty(investEndTime)) {
+			investEndTime = investEndTime.replace("-", "");
+		}
+
+		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> totalList = new ArrayList<Map<String, Object>>();
+		try {
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/five.txt"));
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList.addAll(list);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		int total = resultList.size();
+		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
 		long l2 = System.currentTimeMillis();
 
-		System.err.println("++++++++广州P2P五大投资人查询耗时：" + (l2 - l1));
+		System.err.println("++++++++电销日报明细查询耗时：" + (l2 - l1));
 		return R.ok().put("page", pageUtil);
 	}
+
+	
+	
 
 	@SuppressWarnings("unchecked")
 	@ResponseBody
@@ -118,21 +153,22 @@ public class MonthlyReportController {
 			throws IOException {
 		
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
-		String invest_end_time = map.get("invest_end_time") + "";
-		String invest_stat_time = map.get("invest_stat_time") + "";
-		if (StringUtils.isNotEmpty(invest_end_time)) {
-			invest_end_time = invest_end_time.replace("-", "");
+		String exit_end_time = map.get("exit_end_time") + "";
+		String exit_stat_time = map.get("exit_stat_time") + "";
+		if (StringUtils.isNotEmpty(exit_stat_time)) {
+			exit_stat_time = exit_stat_time.replace("-", "");
 		}
-		if (StringUtils.isNotEmpty(invest_stat_time)) {
-			invest_stat_time = invest_stat_time.replace("-", "");
+		if (StringUtils.isNotEmpty(exit_end_time)) {
+			exit_end_time = exit_end_time.replace("-", "");
 		}
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
-
+		
 		try {
 			String path = this.getClass().getResource("/").getPath();
-			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/P2P.txt"));
-			detail_sql = detail_sql.replace("${investEndTime}", invest_end_time);
-			detail_sql = detail_sql.replace("${investStatTime}", invest_stat_time);
+			String detail_sql;
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/ExitBehavior.txt"));
+			detail_sql = detail_sql.replace("${exit_stat_time}", exit_stat_time);
+			detail_sql = detail_sql.replace("${exit_end_time}", exit_end_time);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
 		} catch (SQLException e) {
@@ -146,120 +182,32 @@ public class MonthlyReportController {
 			va.add(resultList.get(i));
 		}
 		Map<String, String> headMap = null;
-		String title = "P2P数据";
+		String title = "退出理财计划当天投资行为";
 		headMap = getDayListExcelFields();
 
 		ExcelUtil.downloadExcelFile(title, headMap, va, response);
 	}
 
-	@SuppressWarnings("unchecked")
-	@ResponseBody
-	@RequestMapping("/exportExcel2")
-	public void ListExcel(String params, HttpServletRequest request, HttpServletResponse response) throws IOException {
-		Map<String, Object> map = JSON.parseObject(params, Map.class);
-		String invest_end_time = map.get("invest_end_time") + "";
-		String invest_stat_time = map.get("invest_stat_time") + "";
-		if (StringUtils.isNotEmpty(invest_end_time)) {
-			invest_end_time = invest_end_time.replace("-", "");
-		}
-		if (StringUtils.isNotEmpty(invest_stat_time)) {
-			invest_stat_time = invest_stat_time.replace("-", "");
-		}
-		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
-
-		try {
-			String path = this.getClass().getResource("/").getPath();
-			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/five.txt"));
-			detail_sql = detail_sql.replace("${investEndTime}", invest_end_time);
-			detail_sql = detail_sql.replace("${investStatTime}", invest_stat_time);
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
-			resultList.addAll(list);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		// 查询列表数据
-		JSONArray va = new JSONArray();
-		for (int i = 0; i < resultList.size(); i++) {
-			va.add(resultList.get(i));
-		}
-		Map<String, String> headMap = null;
-		String title = "本月前五大投资人";
-		headMap = getFiveListExcelFields();
-
-		ExcelUtil.downloadExcelFile(title, headMap, va, response);
-	}
-
+	
 	private Map<String, String> getDayListExcelFields() {
 
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
 
-		headMap.put("STAT_TYPE", "指标明细");
-		headMap.put("STAT_NUM", "指标");
-
+		headMap.put("TIME", "退出时间");
+		headMap.put("EXIT", "退出");
+		headMap.put("TIXIAN", "提现");
+		headMap.put("CHONGZHI", "充值");
+		headMap.put("QIANYI", "迁移");
+		headMap.put("FUTOU", "复投");
+		headMap.put("HONGBAO", "复投使用红包");
+		headMap.put("FUTOULV", "复投率");
+		headMap.put("LICAI", "复投理财计划");
 		return headMap;
 
 	}
 
-	private Map<String, String> getFiveListExcelFields() {
 
-		Map<String, String> headMap = new LinkedHashMap<String, String>();
 
-		headMap.put("REALNAME", "姓名");
-		headMap.put("TENDER_CAPITAL", "金额(万元)");
-
-		return headMap;
-
-	}
-
-	/**
-	 * 列表
-	 */
-	@ResponseBody
-	@RequestMapping("/monthTotalList")
-	@RequiresPermissions("phonesale:list")
-	public R monthTotalList(Integer page, Integer limit, String investEndTime) {
-		long l1 = System.currentTimeMillis();
-		int start = (page - 1) * limit;
-		int end = start + limit;
-		System.err.println("+++++++++++++++start=" + start + " ;end=" + end);
-		List<Map<String, Object>> resultList = null;
-
-		String path = this.getClass().getResource("/").getPath();
-		String detail_sql;
-		String startTime = "  CASE WHEN mark=1 THEN TO_CHAR(tud.call_date,'yyyyMMdd') ELSE CASE WHEN TO_CHAR(SYSDATE,'yyyyMMdd') BETWEEN TO_CHAR(ADD_MONTHS(SYSDATE,-1),'yyyyMM')||'01' AND TO_CHAR(SYSDATE,'yyyyMM')||'04' THEN TO_CHAR(ADD_MONTHS(SYSDATE,-1),'yyyyMM')||'01' ELSE TO_CHAR(SYSDATE,'yyyyMM')||'01' END END ";
-		String endTime = " CASE WHEN TO_CHAR(SYSDATE, 'yyyyMMdd') BETWEEN TO_CHAR ( ADD_MONTHS (SYSDATE ,- 1), 'yyyyMM') || '01' AND TO_CHAR (SYSDATE, 'yyyyMM') || '04' THEN TO_CHAR (SYSDATE, 'yyyyMM') || '03' ELSE TO_CHAR ( ADD_MONTHS (SYSDATE, 1), 'yyyyMM' ) || '03' END ";
-		try {
-			detail_sql = FileUtil.readAsString(new File(path + File.separator + "phone_sale_month_total_sql.txt"));
-			if (StringUtils.isEmpty(investEndTime)) {
-				detail_sql = detail_sql.replace("${investStartTime}", startTime);
-				detail_sql = detail_sql.replace("${investEndTime}", endTime);
-			} else {
-				endTime = investEndTime.replace("-", "");
-				startTime = endTime.substring(0, 6) + "01";
-				detail_sql = detail_sql.replace("${investStartTime}", startTime);
-				detail_sql = detail_sql.replace("${investEndTime}", endTime);
-			}
-			resultList = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		int total = resultList.size();
-		List<Map<String, Object>> retList = new ArrayList<Map<String, Object>>();
-		if (end > total) {
-			retList.addAll(resultList.subList(start, total));
-		} else {
-			retList.addAll(resultList.subList(start, end));
-		}
-		PageUtils pageUtil = new PageUtils(retList, total, limit, page);
-		long l2 = System.currentTimeMillis();
-
-		System.err.println("++++++++电销月报汇总列表信息查询耗时：" + (l2 - l1));
-		return R.ok().put("page", pageUtil);
-	}
 
 	private static SimpleDateFormat dateSdf = new SimpleDateFormat("yyyy-MM-dd");
 

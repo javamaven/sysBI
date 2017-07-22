@@ -19,6 +19,7 @@ import io.renren.entity.yunying.dayreport.MonthlyReportEntity;
 import io.renren.service.yunying.dayreport.MonthlyReportService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
+import io.renren.util.DateUtil;
 import io.renren.utils.PageUtils;
 
 @Service("Service")
@@ -60,20 +61,23 @@ public class MonthlyReportServiceImpl implements MonthlyReportService {
 	}
 
 	@Override
-	public PageUtils queryList(Integer page, Integer limit, String invest_stat_time,String invest_end_time) {
-		if (StringUtils.isNotEmpty(invest_end_time)) {
-			invest_end_time = invest_end_time.replace("-", "");
-		}
-		if (StringUtils.isNotEmpty(invest_stat_time)) {
-			invest_stat_time = invest_stat_time.replace("-", "");
-		}
+	public PageUtils queryList(Integer page, Integer limit, String statPeriod) {
+//		if (StringUtils.isNotEmpty(invest_end_time)) {
+//			invest_end_time = invest_end_time.replace("-", "");
+//		}
+		int year = Integer.parseInt(statPeriod.substring(0,4));
+		int month = Integer.parseInt(statPeriod.substring(6,7));
+		String lastDayOfMonth = DateUtil.getLastDayOfMonth(year, month);
+		lastDayOfMonth = lastDayOfMonth.replace("-", "");
+		String firstDay= statPeriod.replace("-", "")+"01";
 
+	
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/P2P.txt"));
-			detail_sql = detail_sql.replace("${investEndTime}", invest_stat_time);
-			detail_sql = detail_sql.replace("${investStatTime}", invest_end_time);
+			detail_sql = detail_sql.replace("${investEndTime}", lastDayOfMonth);
+			detail_sql = detail_sql.replace("${investStatTime}", firstDay);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
 		} catch (SQLException e) {
@@ -86,20 +90,19 @@ public class MonthlyReportServiceImpl implements MonthlyReportService {
 		return pageUtil;
 	}
 	@Override
-	public PageUtils queryList1(Integer page, Integer limit, String invest_stat_time,String invest_end_time) {
-		if (StringUtils.isNotEmpty(invest_end_time)) {
-			invest_end_time = invest_end_time.replace("-", "");
-		}
-		if (StringUtils.isNotEmpty(invest_stat_time)) {
-			invest_stat_time = invest_stat_time.replace("-", "");
-		}
+	public PageUtils queryList1(Integer page, Integer limit, String statPeriod) {
+		int year = Integer.parseInt(statPeriod.substring(0,4));
+		int month = Integer.parseInt(statPeriod.substring(6,7));
+		String lastDayOfMonth = DateUtil.getLastDayOfMonth(year, month);
+		lastDayOfMonth = lastDayOfMonth.replace("-", "");
+		String firstDay= statPeriod.replace("-", "")+"01";
 
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/five.txt"));
-			detail_sql = detail_sql.replace("${investEndTime}", invest_stat_time);
-			detail_sql = detail_sql.replace("${investStatTime}", invest_end_time);
+			detail_sql = detail_sql.replace("${investEndTime}", lastDayOfMonth);
+			detail_sql = detail_sql.replace("${investStatTime}", firstDay);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
 		} catch (SQLException e) {

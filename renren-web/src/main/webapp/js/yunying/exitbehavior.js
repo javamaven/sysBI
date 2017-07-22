@@ -1,10 +1,10 @@
 $(function () {
 	initDetailTableGrid();
-	initCountTableGrid();
 	initTimeCond();
 	initExportFunction();
 	initEvent();
 	initSelectEvent();
+	initTimeCond1();
 });
 
 
@@ -24,8 +24,17 @@ function initSelectEvent(){
 }
 
 function initTimeCond(){
-    $("#statPeriod").datetimepicker({
-        format: 'yyyy-mm',
+    $("#exit_end_time").datetimepicker({
+        format: 'yyyy-mm-dd',
+        minView:'month',
+        language: 'zh-CN',
+        autoclose:true
+    }).on("click",function(){
+    });
+}
+function initTimeCond1(){
+    $("#exit_stat_time").datetimepicker({
+        format: 'yyyy-mm-dd',
         minView:'month',
         language: 'zh-CN',
         autoclose:true
@@ -33,14 +42,13 @@ function initTimeCond(){
     });
 }
 
-
 function initExportFunction(){
 	$('#btn_exports').click(function(){
 		var params = getParams();
 		
 		var select = $("#list_select").children('option:selected').val();
 		if(select == 'vip_detail'){
-			executePost('../yunying/p2p/exportExcel', {'params' : JSON.stringify(params)});
+			executePost('../yunying/exit/exportExcel', {'params' : JSON.stringify(params)});
 		}
 		else if(select == 'vip_count'){
 			executePost('../yunying/p2p/exportExcel2', {'params' : JSON.stringify(params)});
@@ -53,14 +61,21 @@ function initDetailTableGrid(){
     $("#jqGrid").jqGrid({
 //        url: '../yunying/dmreportvipuser/list',
         datatype: "json",
-        colModel: [			
-			{ label: '指标明细', name: 'STAT_TYPE', index: '$STAT_TYPE', width: 90 ,align:'right'}, 			
-			{ label: '指标', name: 'STAT_NUM', index: '$STAT_NUM', width: 90 ,align:'right'} 			
+        colModel: [
+			{ label: '退出时间', name: 'TIME', index: '$TYPE', width: 90,align:'right' },
+			{ label: '退出', name: 'EXIT', index: '$NUM', width: 90 ,align:'right'}, 			
+			{ label: '提现', name: 'TIXIAN', index: '$SUM', width: 90 ,align:'right'}, 
+			{ label: '充值', name: 'CHONGZHI', index: '$BORROW_USER', width: 90 ,align:'right'}, 			
+			{ label: '迁移', name: 'QIANYI', index: '$BORROW_CAPITAL', width: 90 ,align:'right'}, 	
+			{ label: '复投', name: 'FUTOU', index: '$NUMM', width: 90,align:'right' },
+			{ label: '复投使用红包', name: 'HONGBAO', index: '$SUMM', width: 90 ,align:'right'},		
+			{ label: '复投率', name: 'FUTOULV', index: '$AVGG', width: 90 ,align:'right'},
+			{ label: '复投理财计划', name: 'LICAI', index: '$NUMS', width: 90,align:'right' }
 				
         ],
 		viewrecords: true,
         height: $(window).height()-170,
-        rowNum: 20,
+        rowNum: 200,
         rownumbers: true, 
         autowidth:true,
 //        shrinkToFit: false,
@@ -84,38 +99,6 @@ function initDetailTableGrid(){
     });
 }
 
-function initCountTableGrid(){
-    $("#jqGrid_count").jqGrid({
-        datatype: "json",
-        colModel: [			
-			{ label: '姓名', name: 'REALNAME', index: '$REALNAME', width: 80 ,align:'right'}, 			
-			{ label: '金额(万元)', name: 'TENDER_CAPITAL', index: '$TENDER_CAPITAL', width: 100,align:'right' }			
- 			
-						
-        ],
-		viewrecords: true,
-        height: $(window).height()-170,
-        rowNum: 20,
-        rownumbers: true, 
-        autowidth:true,
-        pager: "#jqGridPager_count",
-        jsonReader : {
-            root: "page.list",
-            page: "page.currPage",
-            total: "page.totalPage",
-            records: "page.totalCount"
-        },
-        prmNames : {
-            page:"page", 
-            rows:"limit", 
-            order: "order"
-        },
-        gridComplete:function(){
-        	//隐藏grid底部滚动条
-        }
-    });
-    $("#vip_count_div").hide();
-}
 
 
 var vm = new Vue({
@@ -133,7 +116,7 @@ var vm = new Vue({
 				$("#jqGrid").jqGrid("clearGridData");
 				$("#jqGrid").jqGrid('setGridParam',{ 
 					datatype:'json', 
-					url: '../yunying/p2p/list',
+					url: '../yunying/exit/list',
 		            postData: getParams()
 	            }).trigger("reloadGrid");
 			}else if(select == 'vip_count'){
@@ -150,7 +133,8 @@ var vm = new Vue({
 
 function getParams(){
 	var params = {
-			'statPeriod': $("#statPeriod").val()
+        	'exit_end_time': $("#exit_end_time").val(),
+        	'exit_stat_time': $("#exit_stat_time").val()
 	};
 	return params;
 }

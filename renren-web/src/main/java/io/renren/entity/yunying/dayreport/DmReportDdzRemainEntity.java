@@ -34,6 +34,16 @@ public class DmReportDdzRemainEntity implements Serializable {
 	private String isInternalTuijian;
 	//
 	private String realname;
+	private String moneyWait;
+	
+
+	public String getMoneyWait() {
+		return moneyWait;
+	}
+
+	public void setMoneyWait(String moneyWait) {
+		this.moneyWait = moneyWait;
+	}
 
 	/**
 	 * 设置：

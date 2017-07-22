@@ -61,6 +61,17 @@ public class DmReportRecoverDataEntity implements Serializable {
 	private BigDecimal txCgMoneyBl;
 	// 本次推送记录数
 	private BigDecimal dateCou;
+	
+	private String moneyWait;
+	
+
+	public String getMoneyWait() {
+		return moneyWait;
+	}
+
+	public void setMoneyWait(String moneyWait) {
+		this.moneyWait = moneyWait;
+	}
 
 	public String getStatPeriod() {
 		return statPeriod;

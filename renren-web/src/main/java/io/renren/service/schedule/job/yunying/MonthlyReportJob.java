@@ -84,30 +84,24 @@ public class MonthlyReportJob implements Job {
 			
 			String date_offset_num = params.get("date_offset_num") + "";
 			String[] splitArr = date_offset_num.split("-");
-			String invest_end_time = params.get("invest_end_time") + "";
-			String invest_stat_time = params.get("invest_stat_time") + "";
+			String statPeriod = params.get("invest_end_time") + "";
+//			String invest_stat_time = params.get("invest_stat_time") + "";
 			if (!"0".equals(splitArr[0])) {
-				if (StringUtils.isNotEmpty(invest_end_time)) {
+				if (StringUtils.isNotEmpty(statPeriod)) {
 					int days = Integer.valueOf(splitArr[0]);
 					if ("day".equals(splitArr[1])) {
-						invest_end_time = DateUtil.getCurrDayBefore(invest_end_time, -days, "yyyyMMdd");
+						statPeriod = DateUtil.getCurrDayBefore(statPeriod, -days, "yyyyMMdd");
 					} else if ("hour".equals(splitArr[1])) {
-						invest_end_time = DateUtil.getHourBefore(invest_end_time, -days, "yyyyMMdd");
+						statPeriod = DateUtil.getHourBefore(statPeriod, -days, "yyyyMMdd");
 					}
-					if ("day".equals(splitArr[1])) {
-						invest_stat_time = DateUtil.getCurrDayBefore(invest_stat_time, -days, "yyyyMMdd");
-					} else if ("hour".equals(splitArr[1])) {
-						invest_stat_time = DateUtil.getHourBefore(invest_stat_time, -days, "yyyyMMdd");
-					}
-					params.put("statPeriod", invest_end_time);
-					params.put("statPeriod", invest_stat_time);
+					
+					params.put("statPeriod", statPeriod);
 				}
 			}
-			queryParams.put("statPeriod", invest_end_time);
-			queryParams.put("statPeriod", invest_stat_time);
+			queryParams.put("statPeriod", statPeriod);
 			logVo.setParams(JSON.toJSONString(params));
-			 PageUtils page = service.queryList(1, 100000, invest_end_time,invest_stat_time);
-			 PageUtils page1 = service.queryList1(1, 100000,invest_end_time,invest_stat_time);
+			 PageUtils page = service.queryList(1, 100000, statPeriod);
+			 PageUtils page1 = service.queryList1(1, 100000,statPeriod);
 			// vip所属人汇总信息
 //			List<MonthlyReportEntity> totalList = serviceTotal.queryList(queryParams);
 			JSONArray dataArray = new JSONArray();

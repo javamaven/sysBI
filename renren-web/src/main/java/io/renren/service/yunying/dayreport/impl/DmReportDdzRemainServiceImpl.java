@@ -78,6 +78,7 @@ public class DmReportDdzRemainServiceImpl implements DmReportDdzRemainService {
 		headMap.put("phone", "电话");
 
 		headMap.put("regTime", "注册时间");
+		headMap.put("moneyWait", "待收金额");
 		headMap.put("availableAmount", "点点赚余额");
 		headMap.put("cou", "点点赚持有天数");
 

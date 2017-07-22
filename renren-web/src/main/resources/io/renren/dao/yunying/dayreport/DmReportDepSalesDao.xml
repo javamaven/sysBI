@@ -239,6 +239,8 @@
 			) o
 			order BY STAT_PERIOD desc,num
 			;
+			  DROP TABLE IF EXISTS TMPhaha;
+			CREATE TEMPORARY TABLE TMPhaha AS
 			select 
 			STAT_PERIOD,
 			SALES_TYPE,
@@ -300,13 +302,6 @@
 			 when sanshiliuyue='0.00%' then '' 
 			else sanshiliuyue end as sanshiliuyue,
 			
-			case when sishibayue='0.00' then '' 
-			when sishibayue='0.00%' then '' 
-			else sishibayue end as sishibayue,
-			
-			case when shibayue='0.00' then '' 
-			when shibayue='0.00%' then ''
-			else shibayue end as shibayue,
 			case when liushiyue='0.00' then ''
 			when liushiyue='0.00%' then ''
 			 else liushiyue end as liushiyue,
@@ -316,7 +311,8 @@
 			else jiushiliuyue end as jiushiliuyue,
 			ZONGJI,
 			ZHANBI
-			from TMPkeai
+			from TMPkeai;
+			select * from TMPhaha
 		
 	</select>
 	
@@ -525,6 +521,8 @@
 			) o
 			order BY STAT_PERIOD desc,num
 			;
+			   DROP TABLE IF EXISTS TMPhaha;
+			CREATE TEMPORARY TABLE TMPhaha AS
 			select 
 			STAT_PERIOD,
 			SALES_TYPE,
@@ -590,9 +588,6 @@
 			when sishibayue='0.00%' then '' 
 			else sishibayue end as sishibayue,
 			
-			case when shibayue='0.00' then '' 
-			when shibayue='0.00%' then ''
-			else shibayue end as shibayue,
 			case when liushiyue='0.00' then ''
 			when liushiyue='0.00%' then ''
 			 else liushiyue end as liushiyue,
@@ -602,7 +597,8 @@
 			else jiushiliuyue end as jiushiliuyue,
 			ZONGJI,
 			ZHANBI
-			from TMPkeai
+			from TMPkeai;
+			select * from TMPhaha
 	
 	</select>
 	
@@ -711,6 +707,8 @@
 							concat(round(zongji*100/zongji,2),'%')
 							from tmp112
 							;
+							  DROP TABLE IF EXISTS TMPhaha;
+							CREATE TEMPORARY TABLE TMPhaha AS
 							select 
 							STAT_PERIOD,
 							ZICHAN,
@@ -785,7 +783,8 @@
 							when jiushiliuyue='0.00%' then '' 
 							else jiushiliuyue end as jiushiliuyue,
 							ZONGJI
-							FROM TMPHEHE
+							FROM TMPHEHE;
+							select * from TMPhaha
 														
 	
 	</select>
@@ -898,6 +897,9 @@
 							from tmp112) o
 							 GROUP BY STAT_PERIOD DESC,NUM
 							;
+							
+							DROP TABLE IF EXISTS TMPhaha;
+							CREATE TEMPORARY TABLE TMPhaha AS
 							select 
 							STAT_PERIOD,
 							ZICHAN,
@@ -972,7 +974,9 @@
 							when jiushiliuyue='0.00%' then '' 
 							else jiushiliuyue end as jiushiliuyue,
 							ZONGJI
-							FROM TMPHEHE
+							FROM TMPHEHE;
+							select * from TMPhaha
+							
 
 														
 	
@@ -993,6 +997,8 @@
 	
 	</select>
 		<select id="queryListhe" resultType="io.renren.entity.yunying.dayreport.DmReportDepSalesEntity">
+		DROP TABLE IF EXISTS TMPhaha;
+		CREATE TEMPORARY TABLE TMPhaha AS
 		select
 		STAT_PERIOD,
 		sales_type,
@@ -1003,12 +1009,13 @@
 			AND STAT_PERIOD BETWEEN #{reg_begindate} AND #{reg_enddate}
 		</if> 
 		AND name='留存情况'
-		GROUP  BY STAT_PERIOD DESC,sales_type desc,PERIOD
+		GROUP  BY STAT_PERIOD DESC,sales_type desc,PERIOD;
+		select * from TMPhaha
 	
 	</select>
 	
  	<select id="queryTotal" resultType="int">
-		select count(*) from dm_report_dep_sales 
+		select count(*) from TMPhaha 
 	</select>
 	 
 	<insert id="save" parameterType="io.renren.entity.yunying.dayreport.DmReportDepSalesEntity">

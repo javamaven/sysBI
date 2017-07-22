@@ -58,7 +58,7 @@ function initExportFunction(){
 			executePost('../yunying/nine/exportExcel', {'params' : JSON.stringify(params)});
 		}
 		else if(select == 'vip_count'){
-			executePost('../yunying/p2p/exportExcel2', {'params' : JSON.stringify(params)});
+			executePost('../yunying/nine/exportExcel2', {'params' : JSON.stringify(params)});
 		}
 	});
 
@@ -132,14 +132,30 @@ function initCountTableGrid(){
         	
         },
         loadComplete: function(){
-			var rows = $("#jqGrid_count").jqGrid("getRowData");
-			var option = getOption(rows);
-			chart.setOption(option);
+//			var rows = $("#jqGrid_count").jqGrid("getRowData");
+			queryEchartData();
         }
     });
     $("#vip_count_div").hide();
     
     
+}
+
+function queryEchartData(){
+	var paramsUrl = '';
+	var begin_time = $("#begin_time").val();
+	var end_time = $("#end_time").val();
+	paramsUrl += 'page=1&limit=300&begin_time=' + begin_time + '&end_time=' + end_time;
+	 $.ajax({
+		    type: "GET",
+		    url: "../yunying/nine/ddylist?" + paramsUrl,
+//		    data: JSON.stringify(getParams()),
+		    contentType: "application/json;charset=utf-8",
+		    success : function(msg) {
+		    	console.info(msg)
+		    	chart.setOption(getOption(msg.page.list));
+		    }
+	 });
 }
 
 function getOption(rows){

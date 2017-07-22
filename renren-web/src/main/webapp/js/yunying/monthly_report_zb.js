@@ -198,7 +198,7 @@ function initZiChanTableGrid(){
         ],
 		viewrecords: true,
         height: $(window).height()-400,
-        rowNum: 20,
+        rowNum: 100,
 //        rownumbers: true, 
         autowidth:true,
         pager: "#jqGridPager_zichan",
@@ -218,13 +218,32 @@ function initZiChanTableGrid(){
         },
         loadComplete: function(){
         	
-			var rows = $("#jqGrid_zichan").jqGrid("getRowData");
-			console.info(rows)
-			var option = getOption(rows);
-			chart.setOption(option);
+//			var rows = $("#jqGrid_zichan").jqGrid("getRowData");
+//			console.info(rows)
+//			var option = getOption(rows);
+//			chart.setOption(option);
+			queryEchartData();
         }
     });
     $("#zichan_div").hide();
+}
+
+
+function queryEchartData(){
+	var paramsUrl = '';
+	var invest_stat_time = $("#invest_stat_time").val();
+	var invest_end_time = $("#invest_end_time").val();
+	paramsUrl += 'page=1&limit=100&invest_stat_time=' + invest_stat_time + '&invest_end_time=' + invest_end_time;
+	 $.ajax({
+		    type: "GET",
+		    url: "../yunying/zbp2p/zichanlist?" + paramsUrl,
+//		    data: JSON.stringify(getParams()),
+		    contentType: "application/json;charset=utf-8",
+		    success : function(msg) {
+		    	console.info(msg)
+		    	chart.setOption(getOption(msg.page.list));
+		    }
+	 });
 }
 
 function getOption(rows){
@@ -268,7 +287,7 @@ function getOption(rows){
 	    ],
 	    series : [
 	        {
-	            name:'解锁金额（万元）',
+	            name:'销售金额（万元）',
 	            type:'bar',
 	            barWidth: '60%',
 	            data: data_list
