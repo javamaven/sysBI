@@ -1,6 +1,6 @@
 $(function() {
 	initProvinceInvestEcharts();
-	setInterval('queryProvinceInvestData()', 30*60*1000);
+//	setInterval('queryProvinceInvestInitData()', 30*60*1000);
 });
 
 var ProvinceInvest_Obj = document.getElementById('province_invest_chart_div');
@@ -19,6 +19,7 @@ function queryProvinceInvestData(){
 		contentType: "application/json;charset=utf-8",
 		success : function(data) {
 			var ProvinceInvestList = data.data_list;
+			console.info(ProvinceInvestList)
 			ProvinceInvest_Chart.setOption(getProvinceInvestOption(ProvinceInvestList));
 		}
 	});

@@ -1,0 +1,34 @@
+
+select
+  min(d.stat_peroid) 日期,
+  -- 高净值用户
+  count(distinct d.user_id) 总投资用户,
+  nvl(sum(case when d.MONEY_WAIT >= 100000 then 1 else 0 end),0) 总高净值用户,
+  round(nvl(sum(case when d.MONEY_WAIT >= 100000 then 1 else 0 end),0)/count(distinct d.user_id),4) 占比,
+  -- 沉默用户
+  sum(case when d.day_no_invest >= 30 then 1 else 0 end) 沉默全量用户,
+  sum(case when d.day_no_invest >= 30 and d.MONEY_WAIT >= 100000 then 1 else 0 end) 沉默_高净值用户,
+  round(sum(case when d.day_no_invest >= 30 and d.MONEY_WAIT >= 100000 then 1 else 0 end)
+  /sum(case when d.day_no_invest >= 30 then 1 else 0 end),4) 沉默_占比,
+  -- 新用户
+  sum(case when d.money_invest_count <= 5 then 1 else 0 end) 全量新用户,
+  sum(case when d.money_invest_count <= 5 and d.MONEY_WAIT >= 100000 then 1 else 0 end) 新用户_高净值用户,
+  round(sum(case when d.money_invest_count <= 5 and d.MONEY_WAIT >= 100000 then 1 else 0 end)
+  /sum(case when d.money_invest_count <= 5 then 1 else 0 end),4) 新用户_占比,
+  -- 成熟用户
+  sum(case when d.money_invest_count > 5 then 1 else 0 end) 成熟全量用户,
+  sum(case when d.money_invest_count > 5 and d.MONEY_WAIT >= 100000 then 1 else 0 end) 成熟_高净值用户,
+  round(sum(case when d.money_invest_count > 5 and d.MONEY_WAIT >= 100000 then 1 else 0 end)
+  /sum(case when d.money_invest_count > 5 then 1 else 0 end),4) 成熟_占比,
+  -- 自然用户
+  sum(case when d.IS_SPREADS=0 and d.IS_STAFF=0 and d.CHANNEL_NAME='-1' then 1 else 0 end) 自然全量用户,
+  sum(case when d.IS_SPREADS=0 and d.IS_STAFF=0 and d.CHANNEL_NAME='-1' and d.MONEY_WAIT >= 100000 then 1 else 0 end) 自然_高净值用户,
+  round(sum(case when d.IS_SPREADS=0 and d.IS_STAFF=0 and d.CHANNEL_NAME='-1' and d.MONEY_WAIT >= 100000 then 1 else 0 end)
+  /sum(case when d.IS_SPREADS=0 and d.IS_STAFF=0 and d.CHANNEL_NAME='-1' then 1 else 0 end),4) 自然_占比
+
+from MDTXBI.DM_REPORT_MDTX_ANALYZE d
+where 1 = 1
+and d.stat_peroid=?
+
+
+

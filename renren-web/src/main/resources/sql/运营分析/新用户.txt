@@ -1,0 +1,43 @@
+select 
+  min(d.stat_peroid) 日期,
+  -- 全量
+  count(d.user_id) 用户数,
+  sum(case when d.MONEY_WAIT >= 100000 then 1 else 0 end) 高净值用户数_全量,
+  sum(d.money_invest) 总投资金额_全量,
+  sum(d.money_wait) 总待收_全量,
+  round(sum(d.MONEY_VOUCHER/d.money_invest_count)/count(d.user_id),2) 平均红包金额_全量,
+  -- 投资次数 1 次
+  sum(case when d.money_invest_count = 1 then 1 else 0 end) 用户数_1,
+  sum(case when d.MONEY_WAIT >= 100000 and d.money_invest_count = 1 then 1 else 0 end) 高净值用户数_1,
+  sum(case when d.money_invest_count = 1 then d.money_invest else 0 end) 总投资金额_1,
+  sum(case when d.money_invest_count = 1 then d.money_wait else 0 end) 总待收_1,
+  round(sum(case when d.money_invest_count = 1 then d.MONEY_VOUCHER/d.money_invest_count else 0 end)
+  /sum(case when d.money_invest_count = 1 then 1 else 0 end),2) 平均红包金额_1,
+  -- 投资次数 2 次
+  sum(case when d.money_invest_count = 2 then 1 else 0 end) 用户数_2,
+  sum(case when d.MONEY_WAIT >= 100000 and d.money_invest_count = 2 then 1 else 0 end) 高净值用户数_2,
+  sum(case when d.money_invest_count = 2 then d.money_invest else 0 end) 总投资金额_2,
+  sum(case when d.money_invest_count = 2 then d.money_wait else 0 end) 总待收_2,
+  round(sum(case when d.money_invest_count = 2 then d.MONEY_VOUCHER/d.money_invest_count else 0 end)
+  /sum(case when d.money_invest_count = 2 then 1 else 0 end),2) 平均红包金额_2,
+  -- 投资次数 3 次
+  sum(case when d.money_invest_count = 3 then 1 else 0 end) 用户数_3,
+  sum(case when d.MONEY_WAIT >= 100000 and d.money_invest_count = 3 then 1 else 0 end) 高净值用户数_3,
+  sum(case when d.money_invest_count = 3 then d.money_invest else 0 end) 总投资金额_3,
+  sum(case when d.money_invest_count = 3 then d.money_wait else 0 end) 总待收_3,
+  round(sum(case when d.money_invest_count = 3 then d.MONEY_VOUCHER/d.money_invest_count else 0 end)
+  /sum(case when d.money_invest_count = 3 then 1 else 0 end),2) 平均红包金额_3,
+  -- 投资次数 [4,5] 次
+  sum(case when d.money_invest_count > 3 then 1 else 0 end) 用户数_4_5,
+  sum(case when d.MONEY_WAIT >= 100000 and d.money_invest_count > 3 then 1 else 0 end) 高净值用户数_4_5,
+  sum(case when d.money_invest_count > 3 then d.money_invest else 0 end) 总投资金额_4_5,
+  sum(case when d.money_invest_count > 3 then d.money_wait else 0 end) 总待收_4_5,
+  round(sum(case when d.money_invest_count > 3 then d.MONEY_VOUCHER/d.money_invest_count else 0 end)
+  /sum(case when d.money_invest_count > 3 then 1 else 0 end),2) 平均红包金额_4_5
+  
+  
+from MDTXBI.DM_REPORT_MDTX_ANALYZE d
+
+where 1=1
+and d.stat_peroid=?
+and d.MONEY_INVEST_COUNT <= 5

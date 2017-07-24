@@ -79,28 +79,43 @@ public class ChannelCostDataReportJob implements Job {
 			String date_offset_num = params.get("date_offset_num") + "";
 			String[] splitArr = date_offset_num.split("-");
 			String statPeriod = params.get("statPeriod") + "";
-			if (!"0".equals(splitArr[0])) {
-				if (StringUtils.isNotEmpty(statPeriod)) {
-					int days = Integer.valueOf(splitArr[0]);
-					if ("day".equals(splitArr[1])) {
-						statPeriod = DateUtil.getCurrDayBefore(statPeriod, -days, "yyyy-MM-dd");
-					} else if ("hour".equals(splitArr[1])) {
-						statPeriod = DateUtil.getHourBefore(statPeriod, -days, "yyyy-MM-dd");
-					}
-					params.put("statPeriod", statPeriod);
-				}
-			}
+//			if (!"0".equals(splitArr[0])) {
+//				if (StringUtils.isNotEmpty(statPeriod)) {
+//					int days = Integer.valueOf(splitArr[0]);
+//					if ("day".equals(splitArr[1])) {
+//						statPeriod = DateUtil.getCurrDayBefore(statPeriod, -days, "yyyy-MM-dd");
+//					} else if ("hour".equals(splitArr[1])) {
+//						statPeriod = DateUtil.getHourBefore(statPeriod, -days, "yyyy-MM-dd");
+//					}
+//					params.put("statPeriod", statPeriod);
+//				}
+//			}
 			queryParams.put("statPeriod", statPeriod);
 			logVo.setParams(JSON.toJSONString(params));
 
-//			List<DmReportActiveChannelCostEntity> queryList = service.queryList(queryParams);
 			List<Map<String, Object>> queryList = service.queryCostList(queryParams);
+			
+			boolean yesterdayHasData = false;
+			String yesterday = DateUtil.getCurrDayBefore(1);
+			//如果昨天没有数据，则不发送邮件
+			for (int i = 0; i < queryList.size(); i++) {
+				Map<String, Object> entity = queryList.get(i);
+				String day = entity.get("STATPERIOD") + "";
+				if(StringUtils.isNotEmpty(day)){
+					if(yesterday.equals(day.replace("-", ""))){
+						yesterdayHasData = true;
+						break;
+					}
+				}
+			}
+			
+			
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < queryList.size(); i++) {
 				Map<String, Object> entity = queryList.get(i);
 				dataArray.add(entity);
 			}
-			if (queryList.size() > 0) {
+			if (queryList.size() > 0 && yesterdayHasData) {
 				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
 				mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
 						taskEntity.getChaosongEmailList(), attachFilePath);

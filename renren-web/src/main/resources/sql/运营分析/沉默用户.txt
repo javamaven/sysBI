@@ -1,0 +1,42 @@
+select
+  min(d.stat_peroid) 日期,
+  -- 全量
+  count(distinct d.user_id) 人数,
+  sum(case when d.money_wait >= 100000 then 1 else 0 end) 高净值用户数_全量,
+  round(sum(d.money_invest/d.money_invest_count)/count(distinct d.user_id),2) 平均投资金额_全量,
+  -- =30
+  sum(case when d.day_no_invest = 30 then 1 else 0 end) 人数_30,
+  sum(case when d.money_wait >= 100000 and d.day_no_invest = 30 then 1 else 0 end) 高净值用户数_30,
+  round(sum(case when d.day_no_invest = 30 then d.MONEY_INVEST/d.money_invest_count else 0 end)
+  /sum(case when d.day_no_invest = 30 then 1 else 0 end),2) 平均投资金额_30,
+  -- (30,90)
+  sum(case when d.day_no_invest > 30 and d.day_no_invest < 90 then 1 else 0 end) 人数_30_90,
+  sum(case when d.money_wait >= 100000 and d.day_no_invest > 30 and d.day_no_invest < 90 then 1 else 0 end) 高净值用户数_30_90,
+  round(sum(case when d.day_no_invest > 30 and d.day_no_invest < 90 then d.MONEY_INVEST/d.money_invest_count else 0 end)
+  /sum(case when d.day_no_invest > 30 and d.day_no_invest < 90 then 1 else 0 end),2) 平均投资金额_30_90,
+  -- =90
+  sum(case when d.day_no_invest = 90 then 1 else 0 end) 人数_90,
+  sum(case when d.money_wait >= 100000 and d.day_no_invest = 90 then 1 else 0 end) 高净值用户数_90,
+  round(sum(case when d.day_no_invest = 90 then d.MONEY_INVEST/d.money_invest_count else 0 end)
+  /sum(case when d.day_no_invest = 90 then 1 else 0 end),2) 平均投资金额_90,
+  -- (90,180)
+  sum(case when d.day_no_invest > 90 and d.day_no_invest < 180 then 1 else 0 end) 人数_90_180,
+  sum(case when d.money_wait >= 100000 and d.day_no_invest > 90 and d.day_no_invest < 180 then 1 else 0 end) 高净值用户数_90_180,
+  round(sum(case when d.day_no_invest > 90 and d.day_no_invest < 180 then d.MONEY_INVEST/d.money_invest_count else 0 end)
+  /sum(case when d.day_no_invest > 90 and d.day_no_invest < 180 then 1 else 0 end),2) 平均投资金额_90_180,
+  -- =180
+  sum(case when d.day_no_invest = 180 then 1 else 0 end) 人数_180,
+  sum(case when d.money_wait >= 100000 and d.day_no_invest = 180 then 1 else 0 end) 高净值用户数_180,
+  round(sum(case when d.day_no_invest = 180 then d.MONEY_INVEST/d.money_invest_count else 0 end)
+  /sum(case when d.day_no_invest = 180 then 1 else 0 end),2) 平均投资金额_180,  
+  -- >180
+  sum(case when d.day_no_invest > 180 then 1 else 0 end) 人数_大于180,
+  sum(case when d.money_wait >= 100000 and d.day_no_invest > 180 then 1 else 0 end) 高净值用户数_大于180,
+  round(sum(case when d.day_no_invest > 180 then d.MONEY_INVEST/d.money_invest_count else 0 end)
+  /sum(case when d.day_no_invest > 180 then 1 else 0 end),2) 平均投资金额_大于180    
+  
+from MDTXBI.DM_REPORT_MDTX_ANALYZE d
+
+where 1=1
+and d.stat_peroid=?
+and d.DAY_NO_INVEST >= 30

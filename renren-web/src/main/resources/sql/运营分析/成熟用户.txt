@@ -1,0 +1,43 @@
+select
+  min(d.stat_peroid) 日期,
+  count(d.user_id) 全量用户,
+  -- 待收
+  sum(case when d.money_wait = 0 then 1 else 0 end) 待收_0,
+  sum(case when d.money_wait > 0 and d.money_wait < 5000 then 1 else 0 end) 待收_0_5000,
+  sum(case when d.money_wait >= 5000 and d.money_wait < 10000 then 1 else 0 end) 待收_5000_10000,
+  sum(case when d.money_wait >= 10000 and d.money_wait < 20000 then 1 else 0 end) 待收_10000_20000,
+  sum(case when d.money_wait >= 20000 and d.money_wait < 50000 then 1 else 0 end) 待收_20000_50000,
+  sum(case when d.money_wait >= 50000 and d.money_wait < 100000 then 1 else 0 end) 待收_50000_100000,
+  sum(case when d.money_wait >= 100000 then 1 else 0 end) 待收_大于等于100000,
+  -- 待收人数占比
+  round(count(d.user_id)/count(d.user_id),4) 占比_全量,
+  round(sum(case when d.money_wait = 0 then 1 else 0 end)/count(d.user_id),4) 占比_待收_0,
+  round(sum(case when d.money_wait > 0 and d.money_wait < 5000 then 1 else 0 end)/count(d.user_id),4) 占比_待收_0_5000,
+  round(sum(case when d.money_wait >= 5000 and d.money_wait < 10000 then 1 else 0 end)/count(d.user_id),4) 占比_待收_5000_10000,
+  round(sum(case when d.money_wait >= 10000 and d.money_wait < 20000 then 1 else 0 end)/count(d.user_id),4) 占比_待收_10000_20000,
+  round(sum(case when d.money_wait >= 20000 and d.money_wait < 50000 then 1 else 0 end)/count(d.user_id),4) 占比_待收_20000_50000,
+  round(sum(case when d.money_wait >= 50000 and d.money_wait < 100000 then 1 else 0 end)/count(d.user_id),4) 占比_待收_50000_100000,
+  round(sum(case when d.money_wait >= 100000 then 1 else 0 end)/count(d.user_id),4) 占比_待收_大于等于100000,
+  -- 平均投资金额
+  sum(case when d.money_invest/d.money_invest_count > 0 and d.money_invest/d.money_invest_count < 1000 then 1 else 0 end) 平均投资金额_0_1000,
+  sum(case when d.money_invest/d.money_invest_count >= 1000 and d.money_invest/d.money_invest_count < 3000 then 1 else 0 end) 平均投资金额_1000_3000,
+  sum(case when d.money_invest/d.money_invest_count >= 3000 and d.money_invest/d.money_invest_count < 5000 then 1 else 0 end) 平均投资金额_3000_5000,
+  sum(case when d.money_invest/d.money_invest_count >= 5000 and d.money_invest/d.money_invest_count < 10000 then 1 else 0 end) 平均投资金额_5000_10000,
+  sum(case when d.money_invest/d.money_invest_count >= 10000 and d.money_invest/d.money_invest_count < 20000 then 1 else 0 end) 平均投资金额_10000_20000,
+  sum(case when d.money_invest/d.money_invest_count >= 20000 and d.money_invest/d.money_invest_count < 50000 then 1 else 0 end) 平均投资金额_20000_50000,
+  sum(case when d.money_invest/d.money_invest_count >= 50000 and d.money_invest/d.money_invest_count < 100000 then 1 else 0 end) 平均投资金额_50000_100000,
+  sum(case when d.money_invest/d.money_invest_count >= 100000 then 1 else 0 end) 平均投资金额_大于等于100000,
+  -- 平均投资金额人数占比
+  round(sum(case when d.money_invest/d.money_invest_count > 0 and d.money_invest/d.money_invest_count < 1000 then 1 else 0 end)/count(d.user_id),2) 占比_平均投资金额_0_1000,
+  round(sum(case when d.money_invest/d.money_invest_count >= 1000 and d.money_invest/d.money_invest_count < 3000 then 1 else 0 end)/count(d.user_id),2) 占比_平均投资金额_1000_3000,
+  round(sum(case when d.money_invest/d.money_invest_count >= 3000 and d.money_invest/d.money_invest_count < 5000 then 1 else 0 end)/count(d.user_id),2) 占比_平均投资金额_3000_5000,
+  round(sum(case when d.money_invest/d.money_invest_count >= 5000 and d.money_invest/d.money_invest_count < 10000 then 1 else 0 end)/count(d.user_id),2) 占比_平均投资金额_5000_10000,  
+  round(sum(case when d.money_invest/d.money_invest_count >= 10000 and d.money_invest/d.money_invest_count < 20000 then 1 else 0 end)/count(d.user_id),2) 占比_平均投资金额_10000_20000,
+  round(sum(case when d.money_invest/d.money_invest_count >= 20000 and d.money_invest/d.money_invest_count < 30000 then 1 else 0 end)/count(d.user_id),2) 占比_平均投资金额_20000_50000,
+  round(sum(case when d.money_invest/d.money_invest_count >= 50000 and d.money_invest/d.money_invest_count < 100000 then 1 else 0 end)/count(d.user_id),2) 占比_平均投资金额_50000_100000,
+  round(sum(case when d.money_invest/d.money_invest_count >= 100000 then 1 else 0 end)/count(d.user_id),2) 占比_平均投资金额_大于等于10万
+from MDTXBI.DM_REPORT_MDTX_ANALYZE d
+
+where 1=1
+and d.stat_peroid=?
+and d.MONEY_INVEST_COUNT > 5

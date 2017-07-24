@@ -57,12 +57,12 @@ SELECT
 FROM 
   tmp 
   LEFT JOIN EDW_TRADING_PROJECT_DETAIL pd 
-       ON (TMP.USER_ID=PD.USER_ID 
+       ON (TMP.USER_ID=PD.USER_ID)
+  left join EDW_USER_BASIC MU on (pd.user_id=MU.USER_ID)
+  where 1=1
           and PD.TENDER_ACCOUNT_STATUS IN (0,1) 
           and tmp.MARK = 2 -- 1-内部,2-外包
           and  TO_CHAR(PD.ADDTIME,'yyyyMMDD') BETWEEN tmp.TIME_START AND tmp.TIME_END
-          )
-  left join EDW_USER_BASIC MU on (pd.user_id=MU.USER_ID)  
 )
 
 

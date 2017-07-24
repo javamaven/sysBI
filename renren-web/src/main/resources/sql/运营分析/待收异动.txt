@@ -1,0 +1,16 @@
+select 
+  min(d.stat_peroid) 日期,
+  sum(d.money_wait) 净待收金额,
+  count(1) 用户总数,
+  sum(case when d.user_level = '高净值用户' then 1 else 0 end) 高净值用户,
+  sum(case when d.user_level = '沉默用户' then 1 else 0 end) 沉默用户,
+  sum(case when d.user_level = '新用户' then 1 else 0 end) 新用户,
+  sum(case when d.user_level = '成熟用户' then 1 else 0 end) 成熟用户,
+  sum(case when d.user_level = '自然用户' then 1 else 0 end) 自然用户,
+  sum(case when d.user_level = '其他' then 1 else 0 end) 其他
+
+from MDTXBI.DM_REPORT_MDTX_ANALYZE d
+
+where 1=1
+and d.stat_peroid=?
+

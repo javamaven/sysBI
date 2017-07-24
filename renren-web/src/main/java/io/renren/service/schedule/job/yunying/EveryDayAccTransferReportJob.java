@@ -99,12 +99,24 @@ public class EveryDayAccTransferReportJob implements Job {
 			logVo.setParams(JSON.toJSONString(params));
 
 			List<DmReportAccTransferEntity> queryList = service.queryList(queryParams);
+			
+			boolean yesterdayHasData = false;
+			String yesterday = DateUtil.getCurrDayBefore(1);
+			//如果昨天没有数据，则不发送邮件
+			for (int i = 0; i < queryList.size(); i++) {
+				DmReportAccTransferEntity entity = queryList.get(i);
+				if(entity.getStatPeriod().replace("-", "").equals(yesterday)){
+					yesterdayHasData = true;
+					break;
+				}
+			}
+			
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < queryList.size(); i++) {
 				DmReportAccTransferEntity entity = queryList.get(i);
 				dataArray.add(entity);
 			}
-			if (queryList.size() > 0) {
+			if (queryList.size() > 0 && yesterdayHasData) {
 				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
 				mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
 						taskEntity.getChaosongEmailList(), attachFilePath);

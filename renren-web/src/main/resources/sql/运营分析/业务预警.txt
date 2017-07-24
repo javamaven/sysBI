@@ -1,0 +1,6 @@
+select 
+  sum(case when d.stat_type=1 then 1 else 0 end) 用户数1,
+  sum(case when d.stat_type=2 then 1 else 0 end) 用户数2
+  
+from mdtxbi.DM_REPORT_MDTX_BEFORE_LESS d
+where stat_period=?

@@ -1,0 +1,8 @@
+select *
+  from (select ROWNUM RN, d.*, round(d.MONEY_WITHDRAW/d.MONEY_RECHARGE,4) 提现金额_充值金额
+          from mdtxbi.DM_REPORT_MDTX_BEFORE_LESS d
+         where 1 = 1
+           and stat_period = ?
+           ${statTypeCond}
+           and ROWNUM <= ${pageEnd}) a
+ WHERE a.RN > ${pageStart}

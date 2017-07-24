@@ -1,0 +1,38 @@
+select
+  min(d.stat_peroid) 日期,
+  -- 全量
+  count(distinct d.user_id) 人数,
+  round(sum(d.MONEY_INVEST),2) 总投资金额_万元,
+  round(sum(d.MONEY_VOUCHER/d.MONEY_INVEST_COUNT)/count(distinct d.user_id),2) 人均笔均红包使用_all,
+  -- [10,20)		
+  sum(case when d.money_wait >= 100000 and d.money_wait < 200000 then 1 else 0 end) 人数_10_20,
+  round(sum(case when d.money_wait >= 100000 and d.money_wait < 200000 then d.money_invest else 0 end),2) 总投资金额_10_20_万元,
+  round(sum(case when d.money_wait >= 100000 and d.money_wait < 200000 then d.MONEY_VOUCHER/d.MONEY_INVEST_COUNT else 0 end)
+  /sum(case when d.money_wait >= 100000 and d.money_wait < 200000 then 1 else 0 end),2) 人均笔均红包使用_10_20,
+  -- [20,50)		
+  sum(case when d.money_wait >= 200000 and d.money_wait < 500000 then 1 else 0 end) 人数_20_50,
+  round(sum(case when d.money_wait >= 200000 and d.money_wait < 500000 then d.money_invest else 0 end),2) 总投资金额_20_50_万元,
+  round(sum(case when d.money_wait >= 200000 and d.money_wait < 500000 then d.MONEY_VOUCHER/d.MONEY_INVEST_COUNT else 0 end)
+  /sum(case when d.money_wait >= 200000 and d.money_wait < 500000 then 1 else 0 end),2) 人均笔均红包使用_20_50,
+  -- [50,100)		
+  sum(case when d.money_wait >= 500000 and d.money_wait < 1000000 then 1 else 0 end) 人数_50_100,
+  round(sum(case when d.money_wait >= 500000 and d.money_wait < 1000000 then d.money_invest else 0 end),2) 总投资金额_50_100_万元,
+  round(sum(case when d.money_wait >= 500000 and d.money_wait < 1000000 then d.MONEY_VOUCHER/d.MONEY_INVEST_COUNT else 0 end)
+  /sum(case when d.money_wait >= 500000 and d.money_wait < 1000000 then 1 else 0 end),2) 人均笔均红包使用_50_100,
+  -- [100,200)		
+  sum(case when d.money_wait >= 1000000 and d.money_wait < 2000000 then 1 else 0 end) 人数_100_200,
+  round(sum(case when d.money_wait >= 1000000 and d.money_wait < 2000000 then d.money_invest else 0 end),2) 总投资金额_100_200_万元,
+  round(sum(case when d.money_wait >= 1000000 and d.money_wait < 2000000 then d.MONEY_VOUCHER/d.MONEY_INVEST_COUNT else 0 end)
+  /sum(case when d.money_wait >= 1000000 and d.money_wait < 2000000 then 1 else 0 end),2) 人均笔均红包使用_100_200 ,
+  -- >=200		
+  sum(case when d.money_wait >= 2000000  then 1 else 0 end) 人数_200,
+  round(sum(case when d.money_wait >= 2000000 then d.money_invest else 0 end),2) 总投资金额_200_万元,
+  round(sum(case when d.money_wait >= 2000000 then d.MONEY_VOUCHER/d.MONEY_INVEST_COUNT else 0 end)
+  /sum(case when d.money_wait >= 2000000 then 1 else 0 end),2) 人均笔均红包使用_200
+  
+
+from MDTXBI.DM_REPORT_MDTX_ANALYZE d
+
+where 1=1
+and d.stat_peroid=?
+and d.MONEY_WAIT >= 100000

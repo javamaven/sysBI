@@ -1,0 +1,6 @@
+select 
+	count(1) TOTAL
+from mdtxbi.DM_REPORT_MDTX_BEFORE_LESS d
+where 1 = 1
+   and stat_period = ?
+   ${statTypeCond}

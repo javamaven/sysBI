@@ -1,0 +1,24 @@
+select
+
+    min(d.stat_peroid) 日期,
+    count(d.user_id) 平台总投资用户,
+    sum(d.money_wait) 平台总待收金额,
+    sum(d.money_voucher) 平台红包使用总金额,
+    
+    sum(case when d.is_spreads = 0 and d.channel_name = '-1' and d.is_staff=0 then 1 else 0 end) 自然用户数,
+    round(sum(case when d.is_spreads = 0 and d.channel_name = '-1' and d.is_staff=0 then 1 else 0 end)
+    /count(d.user_id),4) 占比_自然用户数,
+    sum(case when d.is_spreads = 0 and d.channel_name = '-1' and d.is_staff=0 then d.money_wait else 0 end) 自然用户待收,
+    round(sum(case when d.is_spreads = 0 and d.channel_name = '-1' and d.is_staff=0 then d.money_wait else 0 end)
+    /sum(d.money_wait),4) 占比_自然用户待收,
+    sum(case when d.is_spreads = 0 and d.channel_name = '-1' and d.is_staff=0 then d.money_voucher else 0 end) 自然用户红包使用,
+    round(sum(case when d.is_spreads = 0 and d.channel_name = '-1' and d.is_staff=0 then d.money_voucher else 0 end)
+    /sum(d.money_voucher),4) 占比_自然用户红包使用,
+    
+    round(sum(case when d.is_spreads = 0 and d.channel_name = '-1' and d.is_staff=0 then d.BORROW_PERIOD else 0 end)
+    /sum(case when d.is_spreads = 0 and d.channel_name = '-1' and d.is_staff=0 then d.MONEY_INVEST_COUNT else 0 end),2) 自然用户项目平均投资期限
+
+from MDTXBI.DM_REPORT_MDTX_ANALYZE d
+
+where 1=1
+and d.stat_peroid=?

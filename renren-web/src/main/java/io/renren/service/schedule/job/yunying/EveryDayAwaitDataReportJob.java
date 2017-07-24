@@ -96,12 +96,27 @@ public class EveryDayAwaitDataReportJob implements Job {
 			logVo.setParams(JSON.toJSONString(params));
 
 			List<DmReportAwaitDailyEntity> queryList = service.queryList(queryParams);
+			
+			boolean yesterdayHasData = false;
+			String yesterday = DateUtil.getCurrDayBefore(1);
+			//如果昨天没有数据，则不发送邮件
+			for (int i = 0; i < queryList.size(); i++) {
+				DmReportAwaitDailyEntity entity = queryList.get(i);
+				String statPeriod2 = entity.getStatPeriod();
+				if(StringUtils.isNotEmpty(statPeriod2)){
+					if(yesterday.equals(statPeriod2.replace("-", ""))){
+						yesterdayHasData = true;
+						break;
+					}
+				}
+			}
+			
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < queryList.size(); i++) {
 				DmReportAwaitDailyEntity entity = queryList.get(i);
 				dataArray.add(entity);
 			}
-			if (queryList.size() > 0) {
+			if (queryList.size() > 0 && yesterdayHasData) {
 				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
 				mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
 						taskEntity.getChaosongEmailList(), attachFilePath);

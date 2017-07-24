@@ -28,9 +28,11 @@ public class CronExpressionUtil {
 	public static void main(String[] args) throws ParseException, InterruptedException {
 		String cron = "* * * * * ?";
 //		cron = "0 25 05 06 06 ? 2017";
-		cron = "0 50 10 ? * 1,2";
+//		cron = "0 00 9-18/1 ? * 2,3,4,5,6";
+		cron = "0 00 9-18/1 ? * 2,3,4,5,6";
+		cron = "0 00 09-16/1 ? * 2,3,4,5,6";
 		long l1 = System.currentTimeMillis();
-		System.err.println(nextRunTimes(cron, 5));
+		System.err.println(nextRunTimes(cron, 50));
 		long l2 = System.currentTimeMillis();
 		System.err.println("耗时：" + (l2 - l1));
 		// CronTriggerImpl cronTriggerImpl = new CronTriggerImpl();
@@ -71,6 +73,7 @@ public class CronExpressionUtil {
 			List<Date> dates = computeFireTimesBetween(cronTriggerImpl, null, now, calendar.getTime());// 这个是重点，一行代码搞定~~
 			for (int i = 0; i < dates.size(); i++) {
 				ret.add(sdf.format(dates.get(i)));
+				System.err.println("++" + sdf.format(dates.get(i)));
 				if(ret.size() == times){
 					break;
 				}
@@ -104,7 +107,7 @@ public class CronExpressionUtil {
 					break;
 				}
 				lst.add(d);
-				if (lst.size() >= 10) {
+				if (lst.size() >= 50) {
 					break;
 				}
 				t.triggered(cal);

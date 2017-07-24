@@ -1,0 +1,16 @@
+select 
+  min(d.stat_peroid) 日期,
+  sum(case when d.MONEY_WITHDRAW_ALL > 0 then 1 else 0 end) 当期提现总用户数,
+  sum(case when d.MONEY_WITHDRAW_MAX = 1 then 1 else 0 end) 当期总用户数,
+  round(sum(case when d.MONEY_WITHDRAW_MAX = 1 then 1 else 0 end)
+  /sum(case when d.MONEY_WITHDRAW_ALL > 0 then 1 else 0 end),4) 占当期提现用户比例,
+  sum(case when d.money_withdraw_max = 1 and d.money_wait >= 100000 then 1 else 0 end) 高净值用户,
+  sum(case when d.money_withdraw_max = 1 and d.day_no_invest >= 30 then 1 else 0 end) 沉默用户,
+  sum(case when d.money_withdraw_max = 1 and d.money_invest_count <= 5 then 1 else 0 end) 新用户,
+  sum(case when d.money_withdraw_max = 1 and d.money_invest_count > 5 then 1 else 0 end) 成熟用户,
+  sum(case when d.money_withdraw_max = 1 and d.is_spreads = 0 and d.channel_name = '-1' and d.is_staff = 0 then 1 else 0 end) 自然用户
+
+from MDTXBI.DM_REPORT_MDTX_ANALYZE d
+
+where 1=1
+and d.stat_peroid=?
