@@ -26,11 +26,11 @@ select '普通项目' type,
        end as period,
        sum(borrow_account) as sum_ba
   from mdtxbi.edw_trading_project
- where to_char(project_complete_date, 'yyyymmdd') between 20170710 and 20170716
+ where to_char(project_complete_date, 'yyyymmdd') between '${invest_stat_time}' and '${invest_end_time}'
    and project_id not in
        (select distinct normal_id
           from mdtxbi.edw_trading_project_conf
-         where stat_period between  20170701 and 20170716)
+         where stat_period between  '${firstday3}' and '${invest_end_time}')
    and project_id not like '%ZT%'
  group by case
             when borrow_term_unit = 1 then

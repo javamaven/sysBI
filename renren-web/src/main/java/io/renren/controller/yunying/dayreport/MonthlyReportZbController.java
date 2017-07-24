@@ -380,12 +380,14 @@ public class MonthlyReportZbController {
 	@RequestMapping("/zichanlist")
 	@RequiresPermissions("phonesale:list")
 	public R zichanlist(Integer page, Integer limit, String invest_end_time,String invest_stat_time) {
-
+		String end_time="";
+		String firstday3="";
 		if (StringUtils.isNotEmpty(invest_stat_time)) {
 			invest_stat_time = invest_stat_time.replace("-", "");
 		}
 		if (StringUtils.isNotEmpty(invest_end_time)) {
-			invest_end_time = invest_end_time.replace("-", "");
+			 end_time = invest_end_time.replace("-", "");
+			firstday3=invest_stat_time.substring(0,6)+"01";
 		}
 		
 		long l1 = System.currentTimeMillis();
@@ -395,8 +397,9 @@ public class MonthlyReportZbController {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql;
 			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/YymonthlyZbZc.txt"));
-			detail_sql = detail_sql.replace("${invest_end_time}", invest_end_time);
+			detail_sql = detail_sql.replace("${invest_end_time}", end_time);
 			detail_sql = detail_sql.replace("${invest_stat_time}", invest_stat_time);
+			detail_sql = detail_sql.replace("${firstday3}", firstday3);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
 		} catch (SQLException e) {
@@ -434,6 +437,10 @@ public class MonthlyReportZbController {
 		String day="";
 		String dayday="";
 		String afterday="";
+		String firstday="";
+		String firstday2="";
+		String end_time=invest_end_time+"";
+		String firstday3="";
 		lastSevenday = DateUtil.getCurrDayBefore(invest_end_time, 7, "yyyy-MM-dd");
 		lastday = DateUtil.getCurrDayBefore(lastSevenday, 6, "yyyy-MM-dd");
 		afterday=DateUtil.getCurrDayBefore(invest_end_time, -6, "yyyy-MM-dd");;
@@ -444,7 +451,11 @@ public class MonthlyReportZbController {
 			day = invest_end_time.replace("-", "");
 		}
 		
+		firstday2=dayday.substring(0,6);
+		firstday=dayday.substring(0,6)+"01";
+		String beforeOneday=DateUtil.getCurrDayBefore(invest_end_time,-1, "yyyy-MM-dd");
 		
+		String beforeSevenday=DateUtil.getCurrDayBefore(beforeOneday,-6, "yyyy-MM-dd");
 		
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 
@@ -530,6 +541,11 @@ public class MonthlyReportZbController {
 			detail_sql = detail_sql.replace("${lastSevenday}", lastSevenday);
 			detail_sql = detail_sql.replace("${lastday}", lastday);
 			detail_sql = detail_sql.replace("${afterday}", afterday);
+			detail_sql = detail_sql.replace("${beforeOneday}", beforeOneday);
+			detail_sql = detail_sql.replace("${beforeSevenday}", beforeSevenday);
+			detail_sql = detail_sql.replace("${firstday2}", firstday2);
+			detail_sql = detail_sql.replace("${firstday}", firstday);
+			detail_sql = detail_sql.replace("${day}", day);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			String BZZHUCE="";
 			String BZRENZHENG="";
@@ -549,7 +565,12 @@ public class MonthlyReportZbController {
 					 System.out.println(BZZHUCE);
 					 }else if (date.equals("2")) {
 						 BZZHUCE="普通版回款（万元）";
-					}else{
+					}else if (date.equals("3")) {
+						 BZZHUCE="本月销售年化交易额";
+					}else if (date.equals("-1")) {
+						 BZZHUCE="";
+					}
+					 else{
 						BZZHUCE=date+"";
 					}
 
@@ -564,7 +585,12 @@ public class MonthlyReportZbController {
 					 BZRENZHENG="本周投资金额（万元";
 					 }else if (date.equals("2")) {
 						 BZRENZHENG="存管版回款（万元）";
-					}else{
+					}else if (date.equals("3")) {
+						 BZRENZHENG="";
+					}else if (date.equals("-1")) {
+						 BZRENZHENG="";
+					}
+					 else{
 						BZRENZHENG=date+"";
 					}
 				 map3.put("BZRENZHENG", BZRENZHENG);
@@ -581,7 +607,12 @@ public class MonthlyReportZbController {
 					 System.out.println(BZSHOUTOU);
 					 }else if (date.equals("2")) {
 						 BZSHOUTOU="总回款( 万元)";
-					}else{
+					}else if (date.equals("3")) {
+						BZSHOUTOU="";
+					}else if (date.equals("-1")) {
+						BZSHOUTOU="";
+					}
+					 else{
 						BZSHOUTOU=date+"";
 					}
 				 map3.put("BZSHOUTOU", BZSHOUTOU);
@@ -598,7 +629,12 @@ public class MonthlyReportZbController {
 					 System.out.println(SZZHUCE);
 					 }else if (date.equals("2")) {
 						 SZZHUCE="理财解锁金额";
-					}else{
+					}else if (date.equals("3")) {
+						SZZHUCE="";
+					}else if (date.equals("-1")) {
+						SZZHUCE="";
+					}
+					 else{
 						SZZHUCE=date+"";
 					}
 				 map3.put("SZZHUCE", SZZHUCE);
@@ -640,6 +676,28 @@ public class MonthlyReportZbController {
 			e.printStackTrace();
 		}
 		
+		List<Map<String, Object>> resultList4 = new ArrayList<Map<String, Object>>();
+		try {
+			if (StringUtils.isNotEmpty(end_time)) {
+				end_time = end_time.replace("-", "");
+				invest_stat_time = invest_stat_time.replace("-", "");
+				firstday3=invest_stat_time.substring(0,6)+"01";
+			}
+		
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql;
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/YymonthlyZbZc.txt"));
+			detail_sql = detail_sql.replace("${invest_end_time}", end_time);
+			detail_sql = detail_sql.replace("${invest_stat_time}", invest_stat_time);
+			detail_sql = detail_sql.replace("${firstday3}", firstday3);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList4.addAll(list);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		
 		
 		// 查询列表数据
@@ -663,23 +721,37 @@ public class MonthlyReportZbController {
 		for (int i = 0; i < resultList3.size(); i++) {
 			va3.add(resultList3.get(i));
 		}
+		
+	
 		Map<String, String> headMap3 = getDayListExcelFields3();
 		String title3 = "当前待收金额(前七天)";
+		
+		// 查询列表数据
+		JSONArray va4 = new JSONArray();
+		for (int i = 0; i < resultList4.size(); i++) {
+			va4.add(resultList4.get(i));
+		}
+		
+		Map<String, String> headMap4 = getDayListExcelFields4();
+		String title4 = "周销售资产的期限分布";
 		
 		List<String> titleList = new ArrayList<>();
 		titleList.add(title);
 		titleList.add(title2);
 		titleList.add(title3);
+		titleList.add(title4);
 		
 		List<Map<String, String>> headMapList = new ArrayList<Map<String,String>>();
 		headMapList.add(headMap);
 		headMapList.add(headMap2);
 		headMapList.add(headMap3);
+		headMapList.add(headMap4);
 		
 		List<JSONArray> ja = new ArrayList<JSONArray>();
 		ja.add(va);
 		ja.add(va2);
 		ja.add(va3);
+		ja.add(va4);
 
 		ExcelUtil.downloadExcelFile(titleList , headMapList, ja , response);
 	}
@@ -722,6 +794,17 @@ public class MonthlyReportZbController {
 
 		headMap.put("STATPERIOD", "日期");
 		headMap.put("DAISHOU", "待收");
+	
+		return headMap;
+
+	}
+	
+	private Map<String, String> getDayListExcelFields4() {
+
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+
+		headMap.put("QIXIAN", "期限（月）");
+		headMap.put("MONEY", "销售金额（万元）");
 	
 		return headMap;
 
