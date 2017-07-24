@@ -43,7 +43,7 @@ function queryDapanAnalyse(){
 		alert('请先选择查询日期');
 		return;
 	}
-	
+	loading();
 	 $.ajax({
 		    type: "POST",
 		    url: "../analyse/queryChengshuUserAnalyse",
@@ -51,7 +51,8 @@ function queryDapanAnalyse(){
 		    contentType: "application/json;charset=utf-8",
 		    success : function(msg) {
 		    	console.info(msg)
-		    	if(msg.data_list && msg.data_list.length < 2){
+		    	loaded();
+		    	if(msg.data_list == null || msg.data_list && msg.data_list.length < 2){
 		    		alert('没有数据');
 		    	}else{
 		    		buildTable(msg.data_list);
@@ -127,6 +128,10 @@ function getCurrInvestOption(data){
 	    xAxis: [
 	        {
 	            type: 'category',
+	            axisLabel: {  
+	            	interval:0,  
+	            	rotate:20  
+	            },
 	            data: ['0', '(0,5000)', '[5000,1万)', '[1万,2万)', '[2万,5万)', '[5万,10万)', '≥10万']
 	        }
 	    ],

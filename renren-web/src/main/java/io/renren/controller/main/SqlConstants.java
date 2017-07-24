@@ -20,29 +20,29 @@ public class SqlConstants {
 			"order by addtime asc ";
 	
 	//普通标交易总额sql
-	public static String pt_total_amount = 
-			"SELECT " +
-			"	SUM (p1. ACCOUNT) AS total_amount " +
-			"FROM " +
-			"	diyou_borrow p1 " +
-			"LEFT JOIN mjkf_borrow_file p2 ON p1.borrow_nid = p2.BORROW_NID " +
-			"WHERE " +
-			"	1 = 1 " +
-			"AND p1.publish = 'yes' " +
-			"AND p1.tender_last_time <= TO_NUMBER( SYSDATE -TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 " + 
-			"AND ( " +
-			"	( " +
-			"		p1.status = 1 " +
-			"		AND p1.borrow_end_time < TO_NUMBER( SYSDATE -TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 " + 
-			"	) " +
-			"	OR p1.status = 3 " +
-			") " +
-			"AND p1.borrow_account_scale > CASE " +
-			"WHEN p2.borrow_nid IS NULL THEN " +
-			"	99.99 " +
-			"ELSE " +
-			"	0 " +
-			"END " ;
+	public static String pt_total_amount = "SELECT SUM( CASE WHEN BT.TENDER_TYPE = 'normal_tender' THEN nvl ( BT.account_money, BT.account_tender ) + nvl (BT.reward_money, 0) WHEN BT.TENDER_TYPE = 'change_tender' THEN nvl ( BT.account_money, BT.account_tender ) ELSE 0 END ) TOTAL_AMOUNT FROM diyou_borrow_tender BT WHERE BT. STATUS IN (0, 1)";
+//			"SELECT " +
+//			"	SUM (p1. ACCOUNT) AS total_amount " +
+//			"FROM " +
+//			"	diyou_borrow p1 " +
+//			"LEFT JOIN mjkf_borrow_file p2 ON p1.borrow_nid = p2.BORROW_NID " +
+//			"WHERE " +
+//			"	1 = 1 " +
+//			"AND p1.publish = 'yes' " +
+//			"AND p1.tender_last_time <= TO_NUMBER( SYSDATE -TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 " + 
+//			"AND ( " +
+//			"	( " +
+//			"		p1.status = 1 " +
+//			"		AND p1.borrow_end_time < TO_NUMBER( SYSDATE -TO_DATE('1970-01-01 8:0:0', 'YYYY-MM-DD HH24:MI:SS')) * 24 * 60 * 60 * 1000 " + 
+//			"	) " +
+//			"	OR p1.status = 3 " +
+//			") " +
+//			"AND p1.borrow_account_scale > CASE " +
+//			"WHEN p2.borrow_nid IS NULL THEN " +
+//			"	99.99 " +
+//			"ELSE " +
+//			"	0 " +
+//			"END " ;
 	
 	//普通版债转交易总额
 	public static String change_total_amount_sql = 

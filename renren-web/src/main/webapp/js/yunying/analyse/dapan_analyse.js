@@ -41,14 +41,16 @@ function queryDapanAnalyse(){
 		return;
 	}
 	
-	 $.ajax({
+	loading();
+	$.ajax({
 		    type: "POST",
 		    url: "../analyse/queryDapanAnalyse",
 		    data: JSON.stringify(getParams()),
 		    contentType: "application/json;charset=utf-8",
 		    success : function(msg) {
+		    	loaded();
 		    	console.info(msg)
-		    	if(msg.data_list && msg.data_list.length < 2){
+		    	if(msg.data_list == null || msg.data_list && msg.data_list.length < 2){
 		    		alert('没有数据');
 		    	}else{
 		    		buildTable(msg.data_list);

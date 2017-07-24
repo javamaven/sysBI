@@ -172,3 +172,60 @@ function isEmail(str){
 	var reg = /^([a-zA-Z0-9_-])+@([a-zA-Z0-9_-])+(.[a-zA-Z0-9_-])+/;
 	return reg.test(str);
 } 
+
+
+
+/*
+ * 显示loading遮罩层
+ */
+function loading() {
+	var dddd = document.createElement("div");
+	dddd.id = "mask_div";
+	dddd.style.width = "100%";
+	dddd.style.height = "100%";
+    var mask_bg = document.createElement("div");
+    mask_bg.id = "mask_bg";
+    mask_bg.style.position = "absolute";
+    mask_bg.style.top = "0px";
+    mask_bg.style.left = "0px";
+    mask_bg.style.width = "100%";
+    mask_bg.style.height = "100%";
+    mask_bg.style.backgroundColor = "black";
+    mask_bg.style.opacity = 0.03;
+    mask_bg.style.zIndex = 8888;
+ 
+    document.body.appendChild(dddd);
+    dddd.appendChild(mask_bg);
+    
+    
+    var mask_msg = document.createElement("img")
+//    <img alt="" style="width: 10%;height: 10%" src="${rc.contextPath}/statics/picture/xd-3.gif">
+     mask_msg.src = ctx + "/statics/picture/xd-3.gif";
+//    var mask_msg = document.createElement("div");
+    mask_msg.style.position = "absolute";
+    mask_msg.style.width = "15%";
+    mask_msg.style.height = "25%";
+    mask_msg.style.top = "25%";
+    mask_msg.style.left = "40%";
+    mask_msg.style.filter = "alpha(opacity=60)";
+//    mask_msg.style.backgroundColor = "white";
+//    mask_msg.style.border = "#777 1px solid";
+//    mask_msg.style.textAlign = "center";
+//    mask_msg.style.fontSize = "1.1em";
+//    mask_msg.style.fontWeight = "bold";
+//    mask_msg.style.padding = "0.5em 3em 0.5em 3em";
+    mask_msg.style.zIndex = 9999;
+//    mask_msg.innerText = "正在执行,请稍后...";
+    
+    dddd.appendChild(mask_msg);
+}
+/*
+ * 关闭遮罩层
+ */
+function loaded() {
+    var mask_bg = document.getElementById("mask_div");
+    if (mask_bg != null){
+        mask_bg.parentNode.removeChild(mask_bg);
+    }
+}
+

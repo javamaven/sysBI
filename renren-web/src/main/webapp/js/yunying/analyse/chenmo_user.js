@@ -43,12 +43,14 @@ function queryDapanAnalyse(){
 		alert('请先选择查询日期');
 		return;
 	}
+	loading();
 	 $.ajax({
 		    type: "POST",
 		    url: "../analyse/queryChenmoUserAnalyse",
 		    data: JSON.stringify(getParams()),
 		    contentType: "application/json;charset=utf-8",
 		    success : function(msg) {
+		    	loaded();
 		    	buildTable(msg.data_list);
 		    	
 		    	chart.setOption(getCurrInvestOption(msg.data_list[0]));

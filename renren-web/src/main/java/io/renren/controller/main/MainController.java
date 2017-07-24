@@ -463,7 +463,7 @@ public class MainController {
 		double total_amount = 0;
 		try {
 			total_amount += queryPutongTotalInvestAmount();
-			total_amount += queryChangeTotalInvestAmount();
+//			total_amount += queryChangeTotalInvestAmount();
 			total_amount += queryDdzTotalInvestAmount();
 			total_amount += queryCgTotalInvestAmount();
 		} catch (Exception e) {
