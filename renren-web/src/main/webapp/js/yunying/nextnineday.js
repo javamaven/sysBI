@@ -100,63 +100,32 @@ function initDetailTableGrid(){
         },
         gridComplete:function(){
         	//隐藏grid底部滚动条
-        }
-    });
-}
-function initCountTableGrid(){
-    $("#jqGrid_count").jqGrid({
-        datatype: "json",
-        colModel: [			
-			{ label: '日期', name: 'TIME', index: '$TIME', width: 100,align:'right' },
-			{ label: '解锁金额(万元)', name: 'MONEY', index: '$MONEY', width: 80 ,align:'right'} 			
-        ],
-		viewrecords: true,
-        height: $(window).height()-170,
-        rowNum: 300,
-//        rownumbers: true, 
-        autowidth:true,
-        pager: "#jqGridPager_count",
-        jsonReader : {
-            root: "page.list",
-            page: "page.currPage",
-            total: "page.totalPage",
-            records: "page.totalCount"
-        },
-        prmNames : {
-            page:"page", 
-            rows:"limit", 
-            order: "order"
-        },
-        gridComplete:function(){
-        	//隐藏grid底部滚动条
-        	
         },
         loadComplete: function(){
-//			var rows = $("#jqGrid_count").jqGrid("getRowData");
-			queryEchartData();
+			var rows = $("#jqGrid").jqGrid("getRowData");
+			var option = getOption(rows);
+			console.info(option)
+			chart.setOption(option);
         }
     });
-    $("#vip_count_div").hide();
-    
-    
 }
 
-function queryEchartData(){
-	var paramsUrl = '';
-	var begin_time = $("#begin_time").val();
-	var end_time = $("#end_time").val();
-	paramsUrl += 'page=1&limit=300&begin_time=' + begin_time + '&end_time=' + end_time;
-	 $.ajax({
-		    type: "GET",
-		    url: "../yunying/nine/ddylist?" + paramsUrl,
-//		    data: JSON.stringify(getParams()),
-		    contentType: "application/json;charset=utf-8",
-		    success : function(msg) {
-		    	console.info(msg)
-		    	chart.setOption(getOption(msg.page.list));
-		    }
-	 });
-}
+//function queryEchartData(){
+//	var paramsUrl = '';
+//	var begin_time = $("#begin_time").val();
+//	var end_time = $("#end_time").val();
+//	paramsUrl += 'page=1&limit=300&begin_time=' + begin_time + '&end_time=' + end_time;
+//	 $.ajax({
+//		    type: "GET",
+//		    url: "../yunying/nine/list?" + paramsUrl,
+////		    data: JSON.stringify(getParams()),
+//		    contentType: "application/json;charset=utf-8",
+//		    success : function(msg) {
+//		    	console.info(msg)
+//		    	chart.setOption(getOption(msg.page.list));
+//		    }
+//	 });
+//}
 
 function getOption(rows){
 	console.info('++++++++getOption++++++++')
@@ -166,7 +135,7 @@ function getOption(rows){
 	for (var i = 0; i < rows.length; i++) {
 		var row = rows[i];
 		date_list.push(row.TIME);
-		data_list.push(row.MONEY);
+		data_list.push(row.UNLOCK_MONEY);
 	}
 	var option = {
 	    color: ['#3398DB'],
@@ -198,7 +167,7 @@ function getOption(rows){
 	    ],
 	    series : [
 	        {
-	            name:'解锁金额（万元）',
+	            name:'理财计划解锁金额（万元）',
 	            type:'bar',
 	            barWidth: '60%',
 	            data: data_list
@@ -210,36 +179,7 @@ function getOption(rows){
 }
 
 
-//var vm = new Vue({
-//	el:'#rrapp',
-//	data:{
-//		showList: true,
-//		title: null,
-//		dmReportDdzRemain: {}
-//	},
-//	methods: {
-//		reload: function (event) {
-//			vm.showList = true;
-//			var select = $("#list_select").children('option:selected').val();
-//			if(select == 'vip_detail'){
-//				$("#jqGrid").jqGrid("clearGridData");
-//				$("#jqGrid").jqGrid('setGridParam',{ 
-//					datatype:'json', 
-//					url: '../yunying/nine/list',
-//		            postData: getParams()
-//	            }).trigger("reloadGrid");
-//			}else if(select == 'vip_count'){
-//				$("#jqGrid_count").jqGrid("clearGridData");
-//				$("#jqGrid_count").jqGrid('setGridParam',{ 
-//					datatype:'json', 
-//					url: '../yunying/nine/ddylist',
-//		            postData: getParams()
-//	            }).trigger("reloadGrid");
-//				
-//			}
-//		}
-//	}
-//});
+
 
 function reload(){
 //	vm.showList = true;
