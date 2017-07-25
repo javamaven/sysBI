@@ -13,9 +13,10 @@ function initSelectEvent(){
 		if(select == '1'){//首投后3天未复投
 			$("#date_text").html("首投日期：");
 			$("#stat_period").val(addDate(getCurrDate(), -3));
-			 $("#upload").hide();
+			$("#upload").hide();
 		}else{
-			 $("#upload").show();
+			$("#stat_period").val('');
+			$("#upload").show();
 			$("#date_text").html("电销开始日期：");
 		}
 	});
