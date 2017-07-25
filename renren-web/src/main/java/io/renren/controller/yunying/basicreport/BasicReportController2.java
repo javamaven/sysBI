@@ -118,7 +118,18 @@ public class BasicReportController2 {
 		try {
 			ExcelUtil.exportExcel(title, headMap, va, response);
 			map.put("idList", userIdList);
+			if("1".equals(type)){
+				UUID randomUUID = UUID.randomUUID();
+				for (int i = 0; i < dataList.size(); i++) {
+					Map<String, Object> map__ = dataList.get(i);
+					map__.put("user_id", (int)Double.parseDouble(map__.get("user_id") + "") + "");
+					map__.put("uuid", randomUUID.toString());
+					map__.put("type", type);
+				}
+				service.batchInsertPhoneSaleCgUser(dataList);
+			}
 			service.updatePhoneSaleCgUserList(map);
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

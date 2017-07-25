@@ -72,7 +72,10 @@
 		LEFT JOIN edw_user_basic u2 on (u2.user_id=p.USER_ID)
 		WHERE
 			1 = 1
-		AND (u.CG_USER_ID IS NOT NULL or u2.CG_USER_ID IS NOT NULL)
+		
+		<if test="cgUserId != null and cgUserId.trim() != '' ">
+			AND (u.CG_USER_ID IS NOT NULL or u2.CG_USER_ID IS NOT NULL)
+		</if>
 		and p.type=#{type}
 		<if test="date != null and date.trim() != '' ">
 			and p.call_date > #{date}
@@ -83,7 +86,7 @@
 		<if test="isKaitongCg == 2 ">
 			AND u.DEPOSITORY_OPEN_TIME IS NULL and u2.DEPOSITORY_OPEN_TIME IS NULL
 		</if>
-		and p.is_export != 1
+		and p.is_export != #{isExport}
 		<if test="offset != null and limit != null">
 			limit #{offset}, #{limit}
 		</if>
