@@ -26,9 +26,9 @@ public class DmReportVipUserEntity implements Serializable {
 	// 姓名
 	private String realname;
 	// 名单电话号码
-	private BigDecimal oldPhone;
+	private String oldPhone;
 	// 电话号码
-	private BigDecimal phone;
+	private String phone;
 	//
 	private BigDecimal await;
 	//
@@ -185,28 +185,28 @@ public class DmReportVipUserEntity implements Serializable {
 	/**
 	 * 设置：名单电话号码
 	 */
-	public void setOldPhone(BigDecimal oldPhone) {
+	public void setOldPhone(String oldPhone) {
 		this.oldPhone = oldPhone;
 	}
 
 	/**
 	 * 获取：名单电话号码
 	 */
-	public BigDecimal getOldPhone() {
+	public String getOldPhone() {
 		return oldPhone;
 	}
 
 	/**
 	 * 设置：电话号码
 	 */
-	public void setPhone(BigDecimal phone) {
+	public void setPhone(String phone) {
 		this.phone = phone;
 	}
 
 	/**
 	 * 获取：电话号码
 	 */
-	public BigDecimal getPhone() {
+	public String getPhone() {
 		return phone;
 	}
 
