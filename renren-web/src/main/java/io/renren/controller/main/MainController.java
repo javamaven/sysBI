@@ -731,20 +731,24 @@ public class MainController {
 			JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
 			String currDayStr = DateUtil.getCurrDayStr();//'2017-06-27 00:00:00'
 			String month = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6)  + "-" +  "01 00:00:00";
+			//存管版当月交易笔数
 			list_month_cg = util.query(SqlConstants.curr_cg_invest_times_sql, month, month);
 			total_month += Double.parseDouble(list_month_cg.get(0).get("invest_times") + "");
 			
 			JdbcUtil util2 = new JdbcUtil(dataSourceFactory, "oracle");
-			list_month_pt = util2.query(SqlConstants.curr_invest_times_sql, month);
+			//普通版当月交易笔数
+			list_month_pt = util2.query(SqlConstants.curr_invest_times_sql, month, month);
 			total_month += Double.parseDouble(list_month_pt.get(0).get("INVEST_TIMES") + "");
 			
 			JdbcUtil util_day = new JdbcUtil(dataSourceFactory, "mysql");
 			String addTime_day = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6)  + "-" + currDayStr.substring(6, 8) + " 00:00:00";
+			//存管版当天交易笔数
 			list_day_cg = util_day.query(SqlConstants.curr_cg_invest_times_sql, addTime_day, addTime_day);
 			
 			
 			JdbcUtil util2_day = new JdbcUtil(dataSourceFactory, "oracle");
-			list_day_pt = util2_day.query(SqlConstants.curr_invest_times_sql, addTime_day);
+			//普通版当天交易笔数
+			list_day_pt = util2_day.query(SqlConstants.curr_invest_times_sql, addTime_day, addTime_day);
 			
 			
 			total_day += Double.parseDouble(list_day_cg.get(0).get("invest_times") + "");
