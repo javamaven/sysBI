@@ -4,12 +4,15 @@ select *
                max(u.CG_USER_ID) CG_USER_ID,
                max(u.REALNAME) REALNAME,
                max(u.PHONE) PHONE,
+               to_char(sysdate, 'yyyy-MM-dd') GIVE_DATE,
+               to_char(max(e.call_date), 'yyyy-MM-dd') CALL_DATE,
                max(u.REGISTER_TIME) REGISTER_TIME,
                max(u.DEPOSITORY_FIRSTINVEST_TIME) DEPOSITORY_FIRSTINVEST_TIME,
                max(u.DEPOSITORY_FIRSTINVEST_BALANCE) DEPOSITORY_FIRSTINVEST_BALANCE,
                max(p.BORROW_PERIOD) BORROW_PERIOD
           FROM edw_user_basic u
           LEFT JOIN edw_trading_project_detail p ON (u.USER_ID = p.USER_ID)
+          left join phone_sale_excel_data e on (u.username=e.user_name or u.phone=e.user_name)
          WHERE 1 = 1
               
            and to_char(u.REGISTER_TIME, 'yyyy-MM') = ${month}

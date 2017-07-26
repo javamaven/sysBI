@@ -16,6 +16,8 @@ import org.aspectj.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.druid.util.StringUtils;
+
 import io.renren.dao.yunying.basicreport.BasicReportDao;
 import io.renren.service.yunying.basicreport.BasicReportService;
 import io.renren.system.jdbc.DataSourceFactory;
@@ -430,7 +432,74 @@ public class basicReportServiceImpl implements BasicReportService {
 	@Override
 	public List<Map<String, Object>> queryPhoneSaleCgUserList(Map<String, Object> map) {
 		// TODO Auto-generated method stub
-		return basicReportDao.queryPhoneSaleCgUserList(map);
+		//type=1
+		List<Map<String, Object>> list = null;
+		String type = map.get("type") + "";
+		map.put("cgUserId", "1");
+		map.put("isExport", 1);//1已导出 2未导出  and p.is_export != #{isExport}
+		if("1".equals(type)){//本月首投后三天未复投
+			map.put("statPeriod", map.get("date"));
+			map.put("limit", 100000);
+			PageUtils page = queryFirstInvestNotMultiList(map);
+			
+			list = transformListData(page, map);
+			
+		}else{
+			list = basicReportDao.queryPhoneSaleCgUserList(map);
+		}
+		return list;
+	}
+
+	//本月首投三天未复投功能与筛选存管版用户功能合并，返回结果KEY值不一样，需转换
+	private List<Map<String, Object>> transformListData(PageUtils page, Map<String, Object> params) {
+		List<Map<String, Object>> list = (List<Map<String, Object>>) page.getList();
+		List<Map<String, Object>> retList = new ArrayList<>();
+		params.put("isExport", 2);
+		String isKaitongCg = params.get("isKaitongCg") + "";//0 没选，1开通存管，2没开通存管
+		params.put("isKaitongCg", 3);
+		params.put("date", "");
+		params.put("cgUserId", "");
+		List<Map<String, Object>> exportList = basicReportDao.queryPhoneSaleCgUserList(params);
+		
+		for (int i = 0; i < list.size(); i++) {
+			Map<String, Object> map = list.get(i);
+			Map<String, Object> newMap = new HashMap<>();
+			boolean isExport = false;
+			for (int j = 0; j < exportList.size(); j++) {
+				Map<String, Object> map2 = exportList.get(j);
+				String userId1 = map.get("USER_ID") + "";
+				String userId2 = map2.get("user_id") + "";
+				if(userId1.equals(userId2)){
+					isExport = true;
+					break;
+				}
+			}
+			if(isExport){//已经导出过，不再查询
+				continue;
+			}
+			
+			newMap.put("user_id", map.get("USER_ID"));
+			newMap.put("phone", map.get("PHONE"));
+			newMap.put("user_name", map.get("USERNAME"));
+			newMap.put("real_name", map.get("REALNAME"));
+			newMap.put("call_date", map.get("CALL_DATE"));
+			newMap.put("give_date", map.get("GIVE_DATE"));
+			newMap.put("cg_user_id", map.get("CG_USER_ID"));
+			Object cgOpenTime = map.get("DEPOSITORY_FIRSTINVEST_TIME");
+			if("1".equals(isKaitongCg)){//开通存管
+				if(cgOpenTime == null || StringUtils.isEmpty(cgOpenTime.toString())){
+					continue;
+				}
+			}else if("2".equals(isKaitongCg)){//没开通存管
+				if(cgOpenTime != null && !StringUtils.isEmpty(cgOpenTime.toString())){
+					continue;
+				}
+			}
+			newMap.put("depository_open_time", cgOpenTime);
+			retList.add(newMap);
+		}
+		
+		return retList ;
 	}
 
 	@Override
