@@ -24,26 +24,6 @@ public class DateUtil {
 		System.err.println("+++++++++" + getMonthsBefore("20170202", 1));
 	}
 	
-	  /**
-	   * 月份加减
-	   * 
-	   * @return 20170425
-	   */
-	  public static String getMonthsBefore(String date, int months) {
-	        Date dt = null;
-	    try {
-	      dt = dateSdf.parse(date);
-	      Calendar rightNow = Calendar.getInstance();
-	      rightNow.setTime(dt);
-	      rightNow.add(Calendar.MONTH, -months);//日期加3个月
-	      Date dt1=rightNow.getTime();
-	      return dateSdf.format(dt1);
-	    } catch (ParseException e) {
-	      e.printStackTrace();
-	    }
-	    return "";
-	  }
-	
 	/**
 	 * 获取当前日期是星期几<br>
 	 * 
