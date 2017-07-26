@@ -654,6 +654,53 @@ public class MainController {
 		return R.ok().put("data_list", dataList);
 	}
 	
+	double yesterday_total_invest_amount = 0;//昨天投资总额
+	double last_month_total_invest_amount = 0;//上月投资总额
+	/**
+	 * 上月投资总额查询
+	 * @throws SQLException 
+	 */
+	private void queryLastMonthTotalInvestAmont() {
+		try {
+			// TODO Auto-generated method stub
+			String yesterday = DateUtil.getCurrDayBefore(1);
+			String yesterday_start =  yesterday.substring(0, 4) + "-" + yesterday.substring(4, 6)  + "-" +  yesterday.substring(6, 8) + " 00:00:00";
+			String yesterday_end =  yesterday.substring(0, 4) + "-" + yesterday.substring(4, 6)  + "-" +  yesterday.substring(6, 8) + " 23:59:59";
+			String last_month = DateUtil.getMonthsBefore(DateUtil.getCurrDayStr(), 1);//20170225
+			String year = last_month.substring(0, 4);
+			String month = last_month.substring(4, 6);
+			JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
+			String last_day_of_month = DateUtil.getLastDayOfMonth(Integer.parseInt(year), Integer.parseInt(month));
+			String month_start =  year + "-" + month  + "-" +  "01 00:00:00";
+			String month_end = last_day_of_month + " 00:00:00";
+			//当月存管版投资额
+			List<Map<String, Object>> list_month_cg = util.query(SqlConstants.last_month_cg_invest_sql, month_start, month_end, month_start, month_end);
+			last_month_total_invest_amount = Double.parseDouble(list_month_cg.get(0).get("MONEY") + "");
+			
+			JdbcUtil util2 = new JdbcUtil(dataSourceFactory, "oracle");
+			//当月普通版投资额
+			List<Map<String, Object>> list_month_pt = util2.query(SqlConstants.last_month_pt_invest_sql, month_start, month_end);
+			last_month_total_invest_amount += Double.parseDouble(list_month_pt.get(0).get("MONEY") + "");
+			
+			//昨天存管版投资额
+			JdbcUtil yes_day_util_cg = new JdbcUtil(dataSourceFactory, "mysql");
+			List<Map<String, Object>> yes_day_cg = yes_day_util_cg.query(SqlConstants.last_month_cg_invest_sql, yesterday_start, yesterday_end, yesterday_start, yesterday_end);
+			yesterday_total_invest_amount = Double.parseDouble(yes_day_cg.get(0).get("MONEY") + "");
+			
+			JdbcUtil util_yes_day_pt = new JdbcUtil(dataSourceFactory, "oracle");
+			//昨天普通版投资额
+			List<Map<String, Object>> yes_day_pt = util_yes_day_pt.query(SqlConstants.last_month_pt_invest_sql, yesterday_start, yesterday_end);
+			yesterday_total_invest_amount += Double.parseDouble(yes_day_pt.get(0).get("MONEY") + "");
+			
+			last_month_total_invest_amount += Integer.parseInt(month_end.substring(8, 10))*20000000;
+			yesterday_total_invest_amount += 20000000;
+			
+		} catch (Exception e) {
+			yesterday_total_invest_amount = 0;
+			last_month_total_invest_amount = 0;
+			e.printStackTrace();
+		}
+	}
 	/**
 	 * 当天，当月投资额
 	 * 
@@ -669,22 +716,30 @@ public class MainController {
 		double total_month = 0;
 		double total_day = 0;
 		try {
+			if(last_month_total_invest_amount == 0){
+				queryLastMonthTotalInvestAmont();
+			}
+			
 			JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
 			String currDayStr = DateUtil.getCurrDayStr();//'2017-06-27 00:00:00'
 			String month = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6)  + "-" +  "01 00:00:00";
+			//当月存管版投资额
 			list_month_cg = util.query(SqlConstants.curr_cg_invest_sql, month, month);
 			total_month += Double.parseDouble(list_month_cg.get(0).get("MONEY") + "");
 			
 			JdbcUtil util2 = new JdbcUtil(dataSourceFactory, "oracle");
+			//当月普通版投资额
 			list_month_pt = util2.query(SqlConstants.curr_invest_sql, month);
 			total_month += Double.parseDouble(list_month_pt.get(0).get("MONEY") + "");
 			
 			JdbcUtil util_day = new JdbcUtil(dataSourceFactory, "mysql");
 			String addTime_day = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6)  + "-" + currDayStr.substring(6, 8) + " 00:00:00";
+			//当天存管版投资额
 			list_day_cg = util_day.query(SqlConstants.curr_cg_invest_sql, addTime_day, addTime_day);
 			
 			
 			JdbcUtil util2_day = new JdbcUtil(dataSourceFactory, "oracle");
+			//当天普通版投资额
 			list_day_pt = util2_day.query(SqlConstants.curr_invest_sql, addTime_day);
 			
 			
@@ -714,9 +769,12 @@ public class MainController {
 			dataSourceFactory.reInitConnectionPoll();
 			e.printStackTrace();
 		}
-		return R.ok().put("day", numberFormat.format((int)total_day)).put("month", numberFormat.format((int)total_month));
+		return R.ok().put("day", numberFormat.format((double)total_day)).put("month", numberFormat.format((double)total_month))
+				.put("last_month_total_invest_amount", numberFormat.format(last_month_total_invest_amount))
+				.put("yesterday_total_invest_amount", numberFormat.format(yesterday_total_invest_amount));
 	}
 	
+
 	/**
 	 * 当天，当月投资笔数
 	 * 

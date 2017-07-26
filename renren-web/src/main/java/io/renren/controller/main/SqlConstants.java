@@ -189,8 +189,25 @@ public class SqlConstants {
 					"   and p.status = 1 ";
 	//存管版投资 调用 sqlcg_invest_amount_list
 	public static String curr_cg_invest_sql = "SELECT round(sum(tender_capital), 0) MONEY FROM ( SELECT IFNULL( CASE a.tender_subject WHEN 1 THEN a.tender_capital / 100 WHEN 2 THEN b.pay_amount / 100 END, 0 ) tender_capital, a.addtime TIME FROM project_tender_detail a LEFT JOIN creditor_purchase_order b ON a.id = b.relate_tender_detail_id WHERE a.tender_account_status IN (0, 1) AND a.id NOT IN ( SELECT tender_detail_id FROM financial_plan_order_detail ) AND a.addtime >= ? UNION ALL SELECT IFNULL(tender_amount / 100, 0), tender_time TIME FROM financial_plan_order WHERE 1 = 1 AND tender_time >= ? ) S";
-		
+	
 	/******当月投资笔数，当天投资笔数***************************************************************************************************/
+
+	/******上月投资总额***************************************************************************************************/
+	public static String last_month_pt_invest_sql = 
+			"select sum(p.account) money " +
+			"  from mjkf_p2p.diyou_borrow_change p " +
+			"where 1 = 1 " +
+			"   and p.addtime >= " +
+			"       (to_date(?, 'yyyy-mm-dd hh24:mi:ss') - " +
+			"       to_date('1970-01-01', 'yyyy-mm-dd')) * 24 * 60 * 60 * 1000 " +
+			"   and p.addtime <= " +
+			"       (to_date(?, 'yyyy-mm-dd hh24:mi:ss') - " +
+			"       to_date('1970-01-01', 'yyyy-mm-dd')) * 24 * 60 * 60 * 1000 " +
+			"   and p.status = 1 ";
+	public static String last_month_cg_invest_sql = "SELECT round(sum(tender_capital), 0) MONEY FROM ( SELECT IFNULL( CASE a.tender_subject WHEN 1 THEN a.tender_capital / 100 WHEN 2 THEN b.pay_amount / 100 END, 0 ) tender_capital, a.addtime TIME FROM project_tender_detail a LEFT JOIN creditor_purchase_order b ON a.id = b.relate_tender_detail_id WHERE a.tender_account_status IN (0, 1) AND a.id NOT IN ( SELECT tender_detail_id FROM financial_plan_order_detail ) AND a.addtime >= ? and a.addtime <= ? UNION ALL SELECT IFNULL(tender_amount / 100, 0), tender_time TIME FROM financial_plan_order WHERE 1 = 1 AND tender_time >= ? and tender_time <= ?) S";
+	
+	/******当月投资笔数，当天投资笔数***************************************************************************************************/
+
 	//普通版债转投资（普通版）
 	public static String curr_invest_times_sql = 
 					"select sum(s.times) invest_times from ( " +

@@ -30,7 +30,26 @@ function queryCurrInvestData(){
         	}else{
         		$("#month_invest").html(formatNumber( data.month/10000, 2) + "万元");
         	}
-//			CurrInvest_Chart.setOption(getCurrInvestOption(data));
+			
+			var yesterday_total_invest_amount = data.yesterday_total_invest_amount;
+			var last_month_total_invest_amount = data.last_month_total_invest_amount;
+			//当天与昨天投资额百分比
+			if(data.day > yesterday_total_invest_amount){
+				$("#last_day_rate").css("width", "100%")
+			}else{
+				var rate = data.day*100/yesterday_total_invest_amount;
+				rate = parseInt(rate);
+				$("#last_day_rate").css("width", rate + "%")
+			}
+			//当月与上月投资额百分比
+			if(data.month > last_month_total_invest_amount){
+				$("#last_month_rate").css("width", "100%")
+			}else{
+				var rate = data.month*100/last_month_total_invest_amount;
+				rate = parseInt(rate);
+				$("#last_month_rate").css("width", rate + "%")
+			}
+			
 		}
 	});
 }
