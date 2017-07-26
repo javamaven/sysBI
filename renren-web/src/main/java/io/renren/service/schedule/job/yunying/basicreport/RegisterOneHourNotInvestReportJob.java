@@ -119,7 +119,7 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 				Map<String, Object> entity = dataList.get(i);
 				dataArray.add(entity);
 			}
-			if (dataList.size() > 0) {
+//			if (dataList.size() > 0) {
 				String month = registerEndTime.substring(5 , 7);
 				String day = registerEndTime.substring(8 , 10);
 				String Hour = executeTime.substring(11 , 13);
@@ -131,9 +131,9 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 						taskEntity.getChaosongEmailList(), attachFilePath);
 				log.info("+++++++++发送邮件结束+++++++++++++");
 				logVo.setEmailValue(attachFilePath);
-			} else {
-				logVo.setEmailValue("查询没有返回数据");
-			}
+//			} else {
+//				logVo.setEmailValue("查询没有返回数据");
+//			}
 			logVo.setSendResult("success");
 		} catch (Exception e) {
 			flag = false;
