@@ -116,5 +116,10 @@ public class ChannelChannelAllController extends AbstractController {
 		//查询渠道数据
 		return R.ok().put("Channel", channelChannelAllService.queryChannel());
 	}
+	@RequestMapping("/getChannelHead")
+	public R getChannelHead(){
+		//查询渠道数据
+		return R.ok().put("ChannelHead", channelChannelAllService.queryChannelHead());
+	}
 
 }

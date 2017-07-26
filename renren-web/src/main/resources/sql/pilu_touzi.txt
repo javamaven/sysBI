@@ -1,0 +1,17 @@
+--from mdtxbi.edw_trading_project_detail
+with sum_tender as
+(
+select
+pd.user_id,
+sum(case when pd.tender_subject=2 then pd.tend_cash else pd.tender_capital end) as st
+from mdtxbi.edw_trading_project_detail pd
+where to_char(pd.addtime,'yyyy-mm-dd')<='${currDate}'
+group by pd.user_id
+)
+select 
+round(sum(case when st<10000 then 1 else 0 end)/count(1),2)*100 lv1,
+round(sum(case when st>=10000 and st<50000 then 1 else 0 end)/count(1),2)*100 lv2,
+round(sum(case when st>=50000 and st<100000 then 1 else 0end)/count(1),2)*100 lv3,
+round(sum(case when st>=100000 and st<1000000 then 1 else 0 end)/count(1),2)*100 lv4,
+round(sum(case when st>=1000000  then 1 else 0 end )/count(1),2)*100 lv5
+from sum_tender

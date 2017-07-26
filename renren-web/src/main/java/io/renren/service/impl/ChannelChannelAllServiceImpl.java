@@ -36,6 +36,10 @@ public class ChannelChannelAllServiceImpl implements ChannelChannelAllService {
 	public List<ChannelChannelAllEntity>  queryChannel() {
 		return channelChannelAllDao.queryChannel();
 	}
+	@Override
+	public List<ChannelChannelAllEntity>  queryChannelHead() {
+		return channelChannelAllDao.queryChannelHead();
+	}
 
 
 	@Override

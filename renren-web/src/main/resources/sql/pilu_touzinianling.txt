@@ -1,0 +1,9 @@
+-- 投资人年龄分布
+select 
+round(sum(case when substr(ub.birthday,1,4)<='1959' then 1 else 0 end)/count(1),2)*100 AS Y1,
+round(sum(case when substr(ub.birthday,1,4)>='1960' and substr(ub.birthday,1,4)<='1969' then 1 else 0 end)/count(1),2)*100 AS Y2,
+round(sum(case when substr(ub.birthday,1,4)>='1970' and substr(ub.birthday,1,4)<='1979' then 1 else 0 end)/count(1),2)*100 AS Y3,
+round(sum(case when substr(ub.birthday,1,4)>='1980' and substr(ub.birthday,1,4)<='1989' then 1 else 0 end)/count(1),2)*100 AS Y4,
+round(sum(case when substr(ub.birthday,1,4)>='1990' then 1 else 0 end)/count(1),2)*100 AS Y5
+from mdtxbi.edw_user_basic ub
+where ub.birthday is not null and ub.birthday not like '0%' and ub.is_borrower=0 -- 投资人

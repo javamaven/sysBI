@@ -36,6 +36,7 @@ public interface ChannelChannelAllService {
 	 * @return
 	 */
 	List<ChannelChannelAllEntity> queryChannel();
+	List<ChannelChannelAllEntity> queryChannelHead();
 
 	Map<String, String> getExcelFields();
 

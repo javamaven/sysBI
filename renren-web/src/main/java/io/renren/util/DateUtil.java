@@ -11,6 +11,7 @@ public class DateUtil {
 
 	private static SimpleDateFormat dateSdf = new SimpleDateFormat("yyyyMMdd");
 	private static SimpleDateFormat dateTimeSdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	private static SimpleDateFormat dateSdf2 = new SimpleDateFormat("yyyy-MM-dd");
 
 	public static void main(String[] args) {
 //		System.out.println(dateTimeSdf.format(new Date()));
@@ -20,7 +21,9 @@ public class DateUtil {
 		
 //		System.out.println("getNextMinutes=" + getNextMinutes("2017-06-09 17:00", 30, "yyyy-MM-dd HH:mm"));
 		
-		System.err.println("+++++++++" + getWeekOfDate(new Date()));
+//		System.err.println("+++++++++" + getWeekOfDate(new Date()));
+		
+		System.err.println(differentDaysByMillisecond("2017-05-29", "2017-06-01"));
 	}
 	
 	/**
@@ -269,4 +272,34 @@ public class DateUtil {
 
 		return lastDayOfMonth;
 	}
+	
+	/**
+     * 通过时间秒毫秒数判断两个时间的间隔
+     * @param date1
+     * @param date2
+     * @return
+     */
+    public static int differentDaysByMillisecond(Date date1,Date date2){
+        int days = (int) ((date2.getTime() - date1.getTime()) / (1000*3600*24));
+        return days;
+    }
+    
+    /**
+     * 通过时间秒毫秒数判断两个时间的间隔
+     * @param 2017-05-25
+     * @param 2017-05-27
+     * @return
+     */
+    public static int differentDaysByMillisecond(String dateStr1,String dateStr2){
+    	Date date1 = null;
+    	Date date2 = null;
+		try {
+			date1 = dateSdf2.parse(dateStr1);
+			date2 = dateSdf2.parse(dateStr2);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+        int days = (int) ((date2.getTime() - date1.getTime()) / (1000*3600*24));
+        return days;
+    }
 }

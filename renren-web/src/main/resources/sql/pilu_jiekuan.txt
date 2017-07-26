@@ -1,0 +1,9 @@
+--借款金额笔数分布
+select
+round(sum(case when (dmp.borrow_account<=30000) then 1 else 0 end)/count(1),4)  as b1,
+round(sum(case when (dmp.borrow_account>30000 and dmp.borrow_account<=100000) then 1 else 0 end)/count(1),4) as b2,
+round(sum(case when (dmp.borrow_account>100000 and dmp.borrow_account<=1000000) then 1 else 0 end)/count(1),4) as b3,
+round(sum(case when (dmp.borrow_account>1000000 ) then 1 else 0 end)/count(1),4) as b4
+from mdtxbi.edw_trading_project dmp
+where dmp.project_id NOT like 'ZT%' and  to_char(dmp.time_publish,'yyyymmdd') <= '${currDate}' 
+

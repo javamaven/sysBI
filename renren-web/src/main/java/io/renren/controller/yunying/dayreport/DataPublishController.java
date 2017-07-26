@@ -302,6 +302,310 @@ public class DataPublishController {
 
 	
 	
+	@ResponseBody
+	@RequestMapping("/biaolilv")
+	@RequiresPermissions("phonesale:list")
+	public R biaolilv(Integer page, Integer limit, String investEndTime) {
+		
+		SimpleDateFormat sdff = new SimpleDateFormat("yyyyMMdd");
+		if (StringUtils.isNotEmpty(investEndTime)) {
+			investEndTime = investEndTime.replace("-", "");
+		}
+		
+		String currDate =sdff.format(new Date());
+		String lastDayOfMonth="";
+		System.out.println(currDate);
+		int nian=Integer.parseInt(currDate.substring(0,4));
+		int yue=Integer.parseInt(currDate.substring(4,6));
+		int day1=Integer.parseInt(currDate.substring(7,8));
+		System.out.println("++++++++++"+day1+"++++++++++");
+		if (day1<5) {
+			yue=yue-1;
+			 lastDayOfMonth = DateUtil.getLastDayOfMonth(nian, yue);
+			 lastDayOfMonth=lastDayOfMonth.replace("-", "");
+			 currDate=lastDayOfMonth;
+		}
+		long l1 = System.currentTimeMillis();
+
+		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+
+		try {
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql;
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/pilu_biaolilv.txt"));
+//			detail_sql = detail_sql.replace("${investEndTime}", invest_end_time);
+			detail_sql = detail_sql.replace("${currDate}", currDate);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList.addAll(list);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		int total = resultList.size();
+		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
+		long l2 = System.currentTimeMillis();
+
+		System.err.println("++++++++表利率查询耗时：" + (l2 - l1));
+		return R.ok().put("page", pageUtil);
+	}
+	
+	
+	@ResponseBody
+	@RequestMapping("/biaoqixian")
+	@RequiresPermissions("phonesale:list")
+	public R biaoqixian(Integer page, Integer limit, String investEndTime) {
+		
+		SimpleDateFormat sdff = new SimpleDateFormat("yyyyMMdd");
+		if (StringUtils.isNotEmpty(investEndTime)) {
+			investEndTime = investEndTime.replace("-", "");
+		}
+		
+		String currDate =sdff.format(new Date());
+		String lastDayOfMonth="";
+		System.out.println(currDate);
+		int nian=Integer.parseInt(currDate.substring(0,4));
+		int yue=Integer.parseInt(currDate.substring(4,6));
+		int day1=Integer.parseInt(currDate.substring(7,8));
+		System.out.println("++++++++++"+day1+"++++++++++");
+		if (day1<5) {
+			yue=yue-1;
+			 lastDayOfMonth = DateUtil.getLastDayOfMonth(nian, yue);
+			 lastDayOfMonth=lastDayOfMonth.replace("-", "");
+			 currDate=lastDayOfMonth;
+		}
+		long l1 = System.currentTimeMillis();
+
+		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+
+		try {
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql;
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/biao_qixian.txt"));
+//			detail_sql = detail_sql.replace("${investEndTime}", invest_end_time);
+			detail_sql = detail_sql.replace("${currDate}", currDate);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList.addAll(list);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		int total = resultList.size();
+		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
+		long l2 = System.currentTimeMillis();
+
+		System.err.println("++++++++表期限查询耗时：" + (l2 - l1));
+		return R.ok().put("page", pageUtil);
+	}
+	
+	@ResponseBody
+	@RequestMapping("/jiekuan")
+	@RequiresPermissions("phonesale:list")
+	public R jiekuan(Integer page, Integer limit, String investEndTime) {
+		
+		SimpleDateFormat sdff = new SimpleDateFormat("yyyyMMdd");
+		if (StringUtils.isNotEmpty(investEndTime)) {
+			investEndTime = investEndTime.replace("-", "");
+		}
+		
+		String currDate =sdff.format(new Date());
+		String lastDayOfMonth="";
+		System.out.println(currDate);
+		int nian=Integer.parseInt(currDate.substring(0,4));
+		int yue=Integer.parseInt(currDate.substring(4,6));
+		int day1=Integer.parseInt(currDate.substring(7,8));
+		System.out.println("++++++++++"+day1+"++++++++++");
+		if (day1<5) {
+			yue=yue-1;
+			 lastDayOfMonth = DateUtil.getLastDayOfMonth(nian, yue);
+			 lastDayOfMonth=lastDayOfMonth.replace("-", "");
+			 currDate=lastDayOfMonth;
+		}
+		long l1 = System.currentTimeMillis();
+
+		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+
+		try {
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql;
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/pilu_jiekuan.txt"));
+//			detail_sql = detail_sql.replace("${investEndTime}", invest_end_time);
+			detail_sql = detail_sql.replace("${currDate}", currDate);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList.addAll(list);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		int total = resultList.size();
+		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
+		long l2 = System.currentTimeMillis();
+
+		System.err.println("++++++++借款金额查询耗时：" + (l2 - l1));
+		return R.ok().put("page", pageUtil);
+	}
+	
+	@ResponseBody
+	@RequestMapping("/touzi")
+	@RequiresPermissions("phonesale:list")
+	public R touzi(Integer page, Integer limit, String investEndTime) {
+		
+		SimpleDateFormat sdff = new SimpleDateFormat("yyyy-MM-dd");
+		if (StringUtils.isNotEmpty(investEndTime)) {
+			investEndTime = investEndTime.replace("-", "");
+		}
+		
+		String currDate =sdff.format(new Date());
+		String lastDayOfMonth="";
+		System.out.println(currDate);
+		int nian=Integer.parseInt(currDate.substring(0,4));
+		int yue=Integer.parseInt(currDate.substring(6,7));
+		int day1=Integer.parseInt(currDate.substring(8,10));
+		System.out.println("++++++++++"+day1+"++++++++++");
+		if (day1<5) {
+			yue=yue-1;
+			 lastDayOfMonth = DateUtil.getLastDayOfMonth(nian, yue);
+//			 lastDayOfMonth=lastDayOfMonth.replace("-", "");
+			 currDate=lastDayOfMonth;
+		}
+		long l1 = System.currentTimeMillis();
+
+		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+
+		try {
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql;
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/pilu_touzi.txt"));
+//			detail_sql = detail_sql.replace("${investEndTime}", invest_end_time);
+			detail_sql = detail_sql.replace("${currDate}", currDate);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList.addAll(list);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		int total = resultList.size();
+		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
+		long l2 = System.currentTimeMillis();
+
+		System.err.println("++++++++投资人数查询耗时：" + (l2 - l1));
+		return R.ok().put("page", pageUtil);
+	}
+	
+	@ResponseBody
+	@RequestMapping("/nianli")
+	@RequiresPermissions("phonesale:list")
+	public R nianlin(Integer page, Integer limit, String investEndTime) {
+
+		long l1 = System.currentTimeMillis();
+
+		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+
+		try {
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql;
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/pilu_nianlin.txt"));
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList.addAll(list);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		int total = resultList.size();
+		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
+		long l2 = System.currentTimeMillis();
+
+		System.err.println("++++++++年龄分布查询耗时：" + (l2 - l1));
+		return R.ok().put("page", pageUtil);
+	}
+	@ResponseBody
+	@RequestMapping("/xingbie")
+	@RequiresPermissions("phonesale:list")
+	public R xingbie(Integer page, Integer limit, String investEndTime) {
+
+		long l1 = System.currentTimeMillis();
+
+		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+
+		try {
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql;
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/pilu_xingbie.txt"));
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList.addAll(list);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		int total = resultList.size();
+		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
+		long l2 = System.currentTimeMillis();
+
+		System.err.println("++++++++性别分布查询耗时：" + (l2 - l1));
+		return R.ok().put("page", pageUtil);
+	}
+	
+	@ResponseBody
+	@RequestMapping("/touzinianling")
+	@RequiresPermissions("phonesale:list")
+	public R touzinianling(Integer page, Integer limit, String investEndTime) {
+
+		long l1 = System.currentTimeMillis();
+
+		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+
+		try {
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql;
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/pilu_touzinianling.txt"));
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList.addAll(list);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		int total = resultList.size();
+		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
+		long l2 = System.currentTimeMillis();
+
+		System.err.println("++++++++投资年龄分布查询耗时：" + (l2 - l1));
+		return R.ok().put("page", pageUtil);
+	}
+	
+	@ResponseBody
+	@RequestMapping("/touzixingbie")
+	@RequiresPermissions("phonesale:list")
+	public R touzixingbie(Integer page, Integer limit, String investEndTime) {
+
+		long l1 = System.currentTimeMillis();
+
+		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+
+		try {
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql;
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/pilu_touzixingbie.txt"));
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList.addAll(list);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		int total = resultList.size();
+		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
+		long l2 = System.currentTimeMillis();
+
+		System.err.println("++++++++投资性别性别分布查询耗时：" + (l2 - l1));
+		return R.ok().put("page", pageUtil);
+	}
+	
 
 	@SuppressWarnings("unchecked")
 	@ResponseBody

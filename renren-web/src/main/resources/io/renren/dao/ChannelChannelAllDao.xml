@@ -79,6 +79,10 @@
 		SELECT DISTINCT CR.channel_name_back AS CHANNEL_NAME
 		FROM dim_channel CR  WHERE 1=1
 	</select>
+	
+	<select id="queryChannelHead" resultType="io.renren.entity.ChannelChannelAllEntity">
+		select DISTINCT CHANNEL_HEAD from dim_channel
+	</select>
 
 
 

@@ -57,6 +57,21 @@ public class ChannelChannelAllEntity implements Serializable {
 	 * 平均投资间隔
 	 */
 	private String intervalsPer;
+	
+	
+	//渠道负责人
+	
+	private String channelHead;
+	
+	
+
+	public String getChannelHead() {
+		return channelHead;
+	}
+
+	public void setChannelHead(String channelHead) {
+		this.channelHead = channelHead;
+	}
 
 	public String getChannelName() {
 		return channelName;

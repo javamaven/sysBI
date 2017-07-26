@@ -1,0 +1,193 @@
+select *
+from
+(
+with tmp_user as(
+  select 
+    ub.activity_tag,
+    count(user_id) as reg_num  --注册人数
+  from  edw_user_basic ub  
+  where to_char(register_time,'yyyymmdd') between '${stat_time}' and '${end_time}'
+  group by ub.activity_tag 
+  
+),
+
+auth as(
+  select
+    activity_tag ,
+    count(user_id) as auth_num  --存管实名人数
+  from edw_user_basic ub 
+  where to_char(depository_auth_time,'yyyymmdd') between '${stat_time}' and '${end_time}'
+    and depository_auth_time is not null 
+  group by activity_tag 
+),
+
+
+recharge as(
+  select
+    ub.activity_tag,
+    count(distinct(ub.user_id)) as re_num, --充值人数
+    round(sum(amount)/10000,2) as re_amount --充值金额
+  from edw_user_basic ub 
+    left join edw_money_acc_recharge ar on ar.user_id = ub.user_id
+  where DEDUCT_STATUS in (20,10)
+    and to_char(DEDUCT_TIME_YES,'yyyymmdd') between '${stat_time}' and '${end_time}'
+  group by  ub.activity_tag  
+),
+
+withdraw as(
+  select
+    activity_tag,
+    round(sum(amount)/10000,2) as wi_amount --提现金额
+  from edw_user_basic ub
+    left join edw_money_acc_withdraw ar on ar.user_id = ub.user_id
+  where DEDUCT_STATUS in (20,10)
+    and to_char(DEDUCT_TIME_YES,'yyyymmdd') between '${stat_time}' and '${end_time}'
+  group by  ub.activity_tag  
+),
+
+invest as (
+  select 
+     ub.activity_tag,
+     count(distinct(ub.user_id)) as inv_num, -- 投资人数
+     round(sum(decode(pd.tender_subject, 2, pd.tend_cash, pd.tender_capital))/10000,2) AS inv_money --累计投资金额
+  from edw_user_basic ub 
+    left join edw_trading_project_detail pd on ub.user_id = pd.user_id
+  where tender_account_status in (0,1)
+    and to_char(addtime,'yyyymmdd') between '${stat_time}' and '${end_time}'
+  group by ub.activity_tag 
+
+),
+
+--平台全量数据
+all_reg as(
+  select 
+    count(user_id) as all_reg_num
+  from edw_user_basic ub   
+    where to_char(register_time,'yyyymmdd') between '${stat_time}' and '${end_time}'
+  
+),
+all_invest as(
+  select 
+    count(distinct(user_id)) as all_inv_num,
+    round(sum(decode(pd.tender_subject, 2, pd.tend_cash, pd.tender_capital))/10000,2) AS all_inv_money
+  from edw_trading_project_detail pd
+  where  tender_account_status in (0,1)
+    and to_char(addtime,'yyyymmdd') between '${stat_time}' and '${end_time}'
+),
+
+---以下字段和时间筛选条件无关,历史累计数据部分
+
+sum_recharge as(  --累计充值
+  select
+    ub.activity_tag,
+    sum(amount) as sum_re_amount --充值金额
+  from edw_user_basic ub 
+    left join edw_money_acc_recharge ar on ar.user_id = ub.user_id
+  where DEDUCT_STATUS in (20,10)
+  group by  ub.activity_tag  
+),
+
+max_total as(  --历史最大资产
+  select
+    activity_tag,
+    sum(max_asset) as max_asset 
+  from(
+    select
+      ub.activity_tag,
+      max(nor_balance_c+
+          dep_balance_c+
+          nor_lock_amount_c+
+          dep_tender_lock_amount_c+
+          dep_financial_lock_amount_c+
+          nor_ddz_amount_c+
+          nor_recover_capital_wait_c+
+          dep_recover_capital_wait_c) as max_asset --账户最大资产
+    from edw_user_basic ub
+      join edw_user_acc_log al on ub.user_id = al.user_id
+    where activity_tag is not null
+    group by ub.activity_tag,ub.user_id 
+  )
+  group by activity_tag
+ 
+）,
+
+channel_all as(
+  select 
+    ub.activity_tag,
+    sum(case when normal_firstinvest_time is not null or depository_firstinvest_time is not null then 1 else 0 end) as inv_num, --投资人数
+    round(sum(nor_recover_capital_wait+nor_recover_interest_wait+dep_recover_capital_wait+dep_recover_interest_wait)/10000,2) as money_wait, -- 待收金额
+    sum(case when（normal_firstinvest_time is not null or depository_firstinvest_time is not null）
+      and nor_recover_capital_wait+dep_recover_capital_wait=0 then 1 else 0 end) as wait_liushi, -- 待收流失人数
+    round(sum(ac.nor_balance+ ac.dep_balance)/10000,2) as balance, --账户余额
+    sum(nor_balance+
+        dep_balance+
+        nor_lock_amount+
+        dep_tender_lock_amount+
+        dep_financial_lock_amount+
+        nor_ddz_amount+
+        nor_recover_capital_wait+
+        dep_recover_capital_wait) as total -- 总资产
+        
+  from edw_user_basic ub
+    left join edw_user_acc_current ac on ub.user_id = ac.user_id
+  where ub.activity_tag is not null
+  group by ub.activity_tag
+
+)
+
+
+select
+  dc.channel_head as CHANNELHEAD,  --负责人
+  dc.channel_name as CHANNELNAME,  --渠道名称
+  dc.channel_label as CHANNELLABEL, --渠道标签
+  tu.reg_num as REGISTERED,  --注册人数
+  au.auth_num as CGNUM, --存管实名人数
+  re_num as CZNUM, --充值人数
+  re_amount as CZMONEY, --充值金额
+  wi_amount as TXMONEY, --提现金额
+  re_amount-wi_amount as CTMONEY, --充提差
+  inv.inv_num as INVESTNUM, -- 投资人数
+  inv.inv_money as INVESTMONEY, --投资金额
+  
+  --平台全量数据
+  ar.all_reg_num as PTZNUM, --平台注册人数
+  ai.all_inv_num as PTINVESTNUM, --平台投资人数
+  ai.all_inv_money as PTINVESTMONEY, --平台投资金额
+  
+  --以下历史累计数据
+  ca.balance as ZHMONEY, --账户余额
+  ca.money_wait as DSMONEY, -- 待收金额
+  ca.wait_liushi as DSLSNUM, -- 待收流失人数
+  round(ca.wait_liushi/decode(inv.inv_num,0,1,inv.inv_num),2) as INVESTLS, --投资用户流失率 = 有待收人数/投资人数
+  round(ca.total/decode(mt.max_asset,0,1,mt.max_asset),4) as ZICHAN, --资产留存率 = 总资产/历史账户最大资产
+  round(ca.total/decode(sr.sum_re_amount,0,1,sr.sum_re_amount),4) as CHONGZHI  -- 充值金额留存率 = 总资产/累计充值金额   
+  
+from dim_channel dc
+  left join tmp_user tu on (dc.channel_label = tu.activity_tag)
+  left join auth au on (dc.channel_label = au.activity_tag)
+  left join recharge re on (dc.channel_label = re.activity_tag)
+  left join withdraw wi on (dc.channel_label = wi.activity_tag)
+  left join invest inv on (dc.channel_label = inv.activity_tag)
+  left join all_reg ar on 1=1
+  left join all_invest ai on 1=1
+  left join sum_recharge sr on (dc.channel_label = sr.activity_tag)
+  left join max_total mt on (dc.channel_label = mt.activity_tag)
+  left join channel_all ca on (dc.channel_label = ca.activity_tag)
+  )
+  where 1=1
+${channelName}
+
+${channelHead}
+
+
+
+
+
+
+
+
+
+
+
+
+

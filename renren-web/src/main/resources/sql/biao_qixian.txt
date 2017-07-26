@@ -1,0 +1,19 @@
+--标的期限数量占比
+with abc as(
+select dmp.project_id as id,
+case when dmp.borrow_term_unit=1 then dmp.borrow_term
+     when dmp.borrow_term_unit=2 then dmp.borrow_term*30
+end as period
+from mdtxbi.edw_trading_project  dmp
+where to_char(dmp.time_publish,'yyyymmdd') <= '${currDate}'
+and dmp.project_id NOT like 'ZT%'
+)
+
+select 
+round(sum(case when ( period <=30) then 1 else 0 end)/count(1),4)*100  as p1,
+round(sum(case when (period>30 and period <=90) then 1 else 0 end)/count(1),4)*100  as p2,
+round(sum(case when (period>90 and period <=180) then 1 else 0 end)/count(1),4)*100   as p3,
+round(sum(case when (period>180 and period <=270) then 1 else 0 end)/count(1),4)*100   as p4,
+round(sum(case when (period>270 and period <=360) then 1 else 0 end)/count(1),4)*100  as p5,
+round(sum(case when (period>360 ) then 1 else 0 end)/count(1),4)*100  as p6
+from abc

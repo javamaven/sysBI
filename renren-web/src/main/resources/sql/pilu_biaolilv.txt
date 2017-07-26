@@ -1,0 +1,9 @@
+ --标的收益率笔数分布
+select
+round(sum(case when (dmp.borrow_apr<=5) then 1 else 0 end)/count(1),4)*100 as I1,
+round(sum(case when (dmp.borrow_apr>5 and dmp.borrow_apr<=7) then 1 else 0 end)/count(1),4)*100  as I2,
+round(sum(case when (dmp.borrow_apr>7 and dmp.borrow_apr<=9) then 1 else 0 end)/count(1),4)*100 as I3,
+round(sum(case when (dmp.borrow_apr>9 and dmp.borrow_apr<=11) then 1 else 0 end)/count(1),4)*100  as I4,
+round(sum(case when (dmp.borrow_apr>11 ) then 1 else 0 end)/count(1),4)*100  as I5
+from mdtxbi.edw_trading_project dmp
+where dmp.project_id NOT like 'ZT%'  and to_char(dmp.create_time,'yyyymmdd') <= '${currDate}'
