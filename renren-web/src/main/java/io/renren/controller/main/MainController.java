@@ -762,8 +762,8 @@ public class MainController {
 			total_month += Integer.parseInt(currDayStr.substring(6, 8))*20000000;
 			
 			numberFormat.setGroupingUsed(false);
-			System.err.println("++++++当月投资总额+++++" + numberFormat.format((int)total_month));
-			System.err.println("++++++当天投资总额+++++" + numberFormat.format((int)total_day));
+//			System.err.println("++++++当月投资总额+++++" + numberFormat.format((int)total_month));
+//			System.err.println("++++++当天投资总额+++++" + numberFormat.format((int)total_day));
 			
 		} catch (Exception e) {
 			dataSourceFactory.reInitConnectionPoll();
