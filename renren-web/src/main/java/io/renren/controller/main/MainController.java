@@ -467,7 +467,7 @@ public class MainController {
 			total_amount += queryDdzTotalInvestAmount();
 			total_amount += queryCgTotalInvestAmount();
 		} catch (Exception e) {
-			dataSourceFactory.reInitConnectionPoll();
+//			dataSourceFactory.reInitConnectionPoll();
 			e.printStackTrace();
 		}
 		numberFormat.setGroupingUsed(false);
@@ -689,7 +689,11 @@ public class MainController {
 			
 			
 			total_day += Double.parseDouble(list_day_cg.get(0).get("MONEY") + "");
-			total_day += Double.parseDouble(list_day_pt.get(0).get("MONEY") + "");
+			if(list_day_pt.get(0).get("MONEY") == null){
+				total_day += 0;
+			}else{
+				total_day += Double.parseDouble(list_day_pt.get(0).get("MONEY") + "");
+			}
 //			JdbcUtil util = new JdbcUtil(dataSourceFactory, "oracle26");
 //			list = util.query(SqlConstants.curr_invest_sql);
 //			for (int i = 0; i < list2.size(); i++) {
