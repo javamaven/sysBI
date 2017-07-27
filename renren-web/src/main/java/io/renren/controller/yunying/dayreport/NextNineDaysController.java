@@ -87,14 +87,25 @@ public class NextNineDaysController {
 		String beforeDay="";
 		String beforeNineDay="";
 		String beforeDaywu="";
+		int sumday=0;
+		int oneDay=0;
+		String beforeOneDay="";
+		String day="";
 		if (StringUtils.isNotEmpty(begin_time)) {
 //			beforeDay = begin_time.replace("-", "");
 			beforeDay = DateUtil.getCurrDayBefore(begin_time, 1, "yyyy-MM-dd");
 			beforeDaywu = beforeDay.replace("-", "");
-			beforeNineDay = DateUtil.getCurrDayBefore(begin_time, 10, "yyyy-MM-dd");
+			sumday=DateUtil.differentDaysByMillisecond(begin_time, end_time);
+			day=sumday+"";
+			oneDay=sumday-1;
+			beforeOneDay=oneDay+"";
+			beforeNineDay = DateUtil.getCurrDayBefore(beforeDay, oneDay, "yyyy-MM-dd");
 			beforeNineDay=beforeNineDay.replace("-", "");
+//			String lastyeartime=Integer.parseInt(lastYearTime)-1+lastYearTime2;
 		}
 
+		
+		
 		long l1 = System.currentTimeMillis();
 
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
@@ -104,6 +115,7 @@ public class NextNineDaysController {
 			String detail_sql;
 			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/nextNineDays.txt"));
 			detail_sql = detail_sql.replace("${end_time}", end_time);
+			detail_sql = detail_sql.replace("${day}", day);
 			detail_sql = detail_sql.replace("${begin_time}", begin_time);
 			detail_sql = detail_sql.replace("${beforeDay}", beforeDay);
 			detail_sql = detail_sql.replace("${beforeNineDay}", beforeNineDay);

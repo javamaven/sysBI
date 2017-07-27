@@ -41,7 +41,7 @@ order by to_char(po.unlock_time,'yyyy-mm-dd')
 ),
 
 TMP_DATE AS (
-select to_date(date_time_id,'yyyy-mm-dd')+10 as date_time_id
+select to_date(date_time_id,'yyyy-mm-dd')+${day} as date_time_id
 from mdtxbi.dim_date_time
 where
   date_time_id between '${beforeNineDay}' and '${beforeDaywu}'
@@ -120,7 +120,7 @@ order by to_char(po.unlock_time,'yyyy-mm-dd')
 ),
 
 TMP_DATE AS (
-select to_date(date_time_id,'yyyy-mm-dd')+10 as date_time_id
+select to_date(date_time_id,'yyyy-mm-dd')+${day} as date_time_id
 from mdtxbi.dim_date_time
 where
   date_time_id between '${beforeNineDay}' and '${beforeDaywu}'

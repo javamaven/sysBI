@@ -63,6 +63,7 @@ guisu as
 SELECT 
 pt.id,
 pt.name,
+pt.purpose,
 pt.DESCRIPTION,
 pt.APPLY_USER,
 case
@@ -82,7 +83,7 @@ nvl(ss.sum_vouche,0) as ZMONEY, --  "使用总金额(元)"
 nvl(ss.ft_vouche,0) as  FIRSTMONEY ,-- "用户首投时使用金额(元)"
 '存管版' as RED,-- "红包所属系统"
 '${invest_month}' as TIME, -- "数据统计周期"
-gg.DESCRIPTION as YONGTU,-- "用途"
+gg.purpose as YONGTU,-- "用途"
 gg.APPLY_USER as BUMEN, -- "所属于部门"
 gg.attri_department as CHENGBEN, -- "成本分摊方式"
 --ss.sum_vouche,
