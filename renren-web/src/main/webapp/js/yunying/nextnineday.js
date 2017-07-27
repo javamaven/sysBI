@@ -73,8 +73,8 @@ function initDetailTableGrid(){
 			{ label: '普通版回款', name: 'PTB_REPAY_ACCOUNT_WAIT', index: '$PTB_REPAY_ACCOUNT_WAIT', width: 90 ,align:'right'}, 			
 			{ label: '存管版回款', name: 'CGB_REPAY_ACCOUNT_WAIT', index: '$CGB_REPAY_ACCOUNT_WAIT', width: 90 ,align:'right'}, 
 			{ label: '总回款', name: 'REPAY_ACCOUNT_WAIT', index: '$REPAY_ACCOUNT_WAIT', width: 90 ,align:'right'}, 			
-			{ label: '理财计划解锁金额', name: 'UNLOCK_MONEY', index: '$UNLOCK_MONEY', width: 90 ,align:'right'}, 	
-			{ label: '累计解锁未退出金额', name: 'LJ_UNLOCK_MONEY', index: '$LJ_UNLOCK_MONEY', width: 90,align:'right' }
+			{ label: '理财计划解锁金额', name: 'UNLOCK_MONEY', index: '$UNLOCK_MONEY', width: 90 ,align:'right'}	
+//			{ label: '累计解锁未退出金额', name: 'LJ_UNLOCK_MONEY', index: '$LJ_UNLOCK_MONEY', width: 90,align:'right' }
 
 				
         ],

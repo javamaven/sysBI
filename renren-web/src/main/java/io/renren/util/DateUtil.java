@@ -21,7 +21,9 @@ public class DateUtil {
 		
 //		System.out.println("getNextMinutes=" + getNextMinutes("2017-06-09 17:00", 30, "yyyy-MM-dd HH:mm"));
 		
-		System.err.println("+++++++++" + getMonthsBefore("20170202", 1));
+		
+		
+		System.err.println(differentDaysByMillisecond("20170705", "20170708"));
 	}
 	
 	/**

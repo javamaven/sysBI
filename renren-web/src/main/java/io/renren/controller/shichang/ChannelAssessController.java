@@ -129,7 +129,7 @@ public class ChannelAssessController {
 		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
 		long l2 = System.currentTimeMillis();
 
-		System.err.println("++++++++越秀P2P查询耗时：" + (l2 - l1));
+		System.err.println("++++++++渠道质量评估查询耗时：" + (l2 - l1));
 		return R.ok().put("page", pageUtil);
 	}
 	@ResponseBody
@@ -174,19 +174,40 @@ public class ChannelAssessController {
 			throws IOException {
 		
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
-		String invest_end_time = map.get("invest_end_time") + "";
-		String invest_month_time = map.get("invest_month_time") + "";
-		if (StringUtils.isNotEmpty(invest_month_time)) {
-			invest_month_time = invest_month_time.replace("-", "");
+		String end_time = map.get("end_time") + "";
+		String stat_time = map.get("stat_time") + "";
+		String channelName = map.get("channelName") + "";
+		String channelHead = map.get("channelHead") + "";
+		
+		
+		if (StringUtils.isNotEmpty(end_time)) {
+			end_time = end_time.replace("-", "");
+		}
+		if (StringUtils.isNotEmpty(stat_time)) {
+			stat_time = stat_time.replace("-", "");
+		}
+		
+		
+		if (StringUtils.isNotEmpty(channelName)) {
+			channelName=" AND channelName in ("+channelName+")";
+		}else{
+			channelName="";
+		}
+		if (StringUtils.isNotEmpty(channelHead)) {
+			channelHead=" AND channelHead in ("+channelHead+")";
+		}else{
+			channelHead="";
 		}
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 		
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql;
-			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/yxP2P.txt"));
-			detail_sql = detail_sql.replace("${investEndTime}", invest_end_time);
-			detail_sql = detail_sql.replace("${investMonthTime}", invest_month_time);
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/channelAssess.txt"));
+			detail_sql = detail_sql.replace("${channelName}", channelName);
+			detail_sql = detail_sql.replace("${channelHead}", channelHead);
+			detail_sql = detail_sql.replace("${end_time}", end_time);
+			detail_sql = detail_sql.replace("${stat_time}", stat_time);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
 		} catch (SQLException e) {
@@ -200,7 +221,7 @@ public class ChannelAssessController {
 			va.add(resultList.get(i));
 		}
 		Map<String, String> headMap = null;
-		String title = "越秀P2P数据";
+		String title = "渠道质量评估";
 		headMap = getDayListExcelFields();
 
 		ExcelUtil.downloadExcelFile(title, headMap, va, response);
@@ -211,18 +232,27 @@ public class ChannelAssessController {
 
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
 
-		headMap.put("TYPE", "分类");
-		headMap.put("NUM", "人数(穿透)");
-		headMap.put("SUM", "借款余额(穿透)");
-		headMap.put("BORROW_USER", "人数(非穿透)");
-		headMap.put("BORROW_CAPITAL", "借款余额(非穿透)");
-		headMap.put("NUMM", "人数(总)");
-		headMap.put("SUMM", "借款余额(总)");
-		headMap.put("AVGG", "人均借款余额(万)");
-		headMap.put("NUMS", "出借人数(总)");
-		headMap.put("AVGS", "平均借款期限(天)");
-		headMap.put("AVGLI", "平均借款利率(万)");
-		headMap.put("YUQI", "逾期");
+		headMap.put("CHANNELHEAD", "负责人");
+		headMap.put("CHANNELNAME", "渠道名称");
+		headMap.put("CHANNELLABEL", "渠道标签");
+		headMap.put("REGISTERED", "注册人数");
+		headMap.put("CGNUM", "存管实名人数");
+		headMap.put("CZNUM", "充值人数");
+		headMap.put("CZMONEY", "充值金额万");
+		headMap.put("TXMONEY", "提现金额万");
+		headMap.put("CTMONEY", "充提差万");
+		headMap.put("INVESTNUM", "投资人数");
+		headMap.put("INVESTMONEY", "投资金额");
+		headMap.put("PTZNUM", "平台注册人数");
+		
+		headMap.put("PTINVESTNUM", "平台投资人数");
+		headMap.put("PTINVESTMONEY", "平台投资金额");
+		headMap.put("ZHMONEY", "账户余额万");
+		headMap.put("DSMONEY", "待收金额万");
+		headMap.put("DSLSNUM", "待收流失人数");
+		headMap.put("INVESTLS", "投资用户流失率");
+		headMap.put("ZICHAN", "资产留存率");
+		headMap.put("CHONGZHI", "充值金额留存率");
 		return headMap;
 
 	}

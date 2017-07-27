@@ -33,6 +33,7 @@ function initTimeCond(){
         autoclose:true
     }).on("click",function(){
     });
+    $("#end_time").val(addDate(getCurrDate(), -1));
 }
 function initTimeCond1(){
     $("#stat_time").datetimepicker({
@@ -42,19 +43,32 @@ function initTimeCond1(){
         autoclose:true
     }).on("click",function(){
     });
+    $("#stat_time").val(addDate(getCurrDate(), -7));
 }
+
+
+function getDate(datatype){
+    var today = new Date(new Date()-24*60*60*1000);
+    var halfYearAgo = new Date(new Date()-24*60*60*1000*2);
+    var startdate;
+    var enddate;
+    startdate = (today.getFullYear()) +"-" +
+        (today.getMonth() + 1 >9  ? (today.getMonth() + 1 ) : "0"+(today.getMonth() + 1 )) + "-" +
+        (today.getDate() > 10 ? today.getDate() : "0" + today.getDate());
+    enddate = (halfYearAgo.getFullYear()) +"-" +
+        (halfYearAgo.getMonth() + 1 >9  ? (halfYearAgo.getMonth() + 1 ) : "0"+(halfYearAgo.getMonth() + 1 ))+"-01";
+    return datatype==1 ? startdate : enddate;
+};
+
+//初始化时间
+document.getElementById("stat_time").value=getDate(1);
+document.getElementById("end_time").value = getYesterday(1);
 
 function initExportFunction(){
 	$('#btn_exports').click(function(){
 		var params = getParams();
-		
 		var select = $("#list_select").children('option:selected').val();
-		if(select == 'vip_detail'){
-			executePost('../yunying/yxp2p/exportExcel', {'params' : JSON.stringify(params)});
-		}
-		else if(select == 'vip_count'){
-			executePost('../yunying/p2p/exportExcel2', {'params' : JSON.stringify(params)});
-		}
+			executePost('../channel/assess/exportExcel', {'params' : JSON.stringify(params)});
 	});
 
 }  
@@ -63,26 +77,26 @@ function initDetailTableGrid(){
 //        url: '../yunying/dmreportvipuser/list',
         datatype: "json",
         colModel: [
-			{ label: '负责人', name: 'CHANNELHEAD', index: '$CHANNELHEAD', width: 90,align:'right' },
-			{ label: '渠道名称', name: 'CHANNELNAME', index: '$CHANNELNAME', width: 90 ,align:'right'}, 			
-			{ label: '渠道标签', name: 'CHANNELLABEL', index: '$CHANNELLABEL', width: 90 ,align:'right'}, 
-			{ label: '注册人数', name: 'REGISTERED', index: '$REGISTERED', width: 90 ,align:'right'}, 			
-			{ label: '存管实名人数', name: 'CGNUM', index: '$CGNUM', width: 90 ,align:'right'}, 	
+			{ label: '负责人', name: 'CHANNELHEAD', index: '$CHANNELHEAD', width: 70,align:'right' },
+			{ label: '渠道名称', name: 'CHANNELNAME', index: '$CHANNELNAME', width: 70 ,align:'right'}, 			
+			{ label: '渠道标签', name: 'CHANNELLABEL', index: '$CHANNELLABEL', width: 70 ,align:'right'}, 
+			{ label: '注册人数', name: 'REGISTERED', index: '$REGISTERED', width: 70 ,align:'right'}, 			
+			{ label: '存管实名人数', name: 'CGNUM', index: '$CGNUM', width: 70 ,align:'right'}, 	
 			{ label: '充值人数', name: 'CZNUM', index: '$CZNUM', width: 90,align:'right' },
-			{ label: '充值金额万', name: 'CZMONEY', index: '$CZMONEY', width: 90 ,align:'right'},		
-			{ label: '提现金额万', name: 'TXMONEY', index: '$TXMONEY', width: 90 ,align:'right'},
+			{ label: '充值金额万', name: 'CZMONEY', index: '$CZMONEY', width: 120 ,align:'right'},		
+			{ label: '提现金额万', name: 'TXMONEY', index: '$TXMONEY', width: 120 ,align:'right'},
 			{ label: '充提差万', name: 'CTMONEY', index: '$CTMONEY', width: 90,align:'right' },
 			{ label: '投资人数', name: 'INVESTNUM', index: '$INVESTNUM', width: 90 ,align:'right'},		
 			{ label: '投资金额', name: 'INVESTMONEY', index: '$INVESTMONEY', width: 90 ,align:'right'},
-			{ label: '平台注册人数', name: 'PTZNUM', index: '$PTZNUM', width: 90 ,align:'right'},
-			{ label: '平台投资人数', name: 'PTINVESTNUM', index: '$PTINVESTNUM', width: 90 ,align:'right'},
-			{ label: '平台投资金额', name: 'PTINVESTMONEY', index: '$PTINVESTMONEY', width: 90,align:'right' },
-			{ label: '账户余额万', name: 'ZHMONEY', index: '$ZHMONEY', width: 90 ,align:'right'},		
-			{ label: '待收金额万', name: 'DSMONEY', index: '$DSMONEY', width: 90 ,align:'right'},
-			{ label: '待收流失人数', name: 'DSLSNUM', index: '$DSLSNUM', width: 90 ,align:'right'},
-			{ label: '投资用户流失率', name: 'INVESTLS', index: '$INVESTLS', width: 90 ,align:'right'},		
-			{ label: '资产留存率', name: 'ZICHAN', index: '$ZICHAN', width: 90 ,align:'right'},
-			{ label: '充值金额留存率', name: 'CHONGZHI', index: '$CHONGZHI', width: 90 ,align:'right'}
+			{ label: '平台注册人数', name: 'PTZNUM', index: '$PTZNUM', width: 110 ,align:'right'},
+			{ label: '平台投资人数', name: 'PTINVESTNUM', index: '$PTINVESTNUM', width: 110 ,align:'right'},
+			{ label: '平台投资金额', name: 'PTINVESTMONEY', index: '$PTINVESTMONEY', width: 110,align:'right' },
+			{ label: '账户余额万', name: 'ZHMONEY', index: '$ZHMONEY', width: 100 ,align:'right'},		
+			{ label: '待收金额万', name: 'DSMONEY', index: '$DSMONEY', width: 100 ,align:'right'},
+			{ label: '待收流失人数', name: 'DSLSNUM', index: '$DSLSNUM', width: 110 ,align:'right'},
+			{ label: '投资用户流失率', name: 'INVESTLS', index: '$INVESTLS', width: 120 ,align:'right'},		
+			{ label: '资产留存率', name: 'ZICHAN', index: '$ZICHAN', width: 110 ,align:'right'},
+			{ label: '充值金额留存率', name: 'CHONGZHI', index: '$CHONGZHI', width: 120 ,align:'right'}
 				
         ],
 		viewrecords: true,
@@ -90,7 +104,7 @@ function initDetailTableGrid(){
         rowNum: 500,
         rownumbers: true, 
         autowidth:true,
-//        shrinkToFit: false,
+        shrinkToFit: false,
 //        autoScroll: false,
 //        multiselect: false,
         pager: "#jqGridPager",
@@ -107,8 +121,13 @@ function initDetailTableGrid(){
         },
         gridComplete:function(){
         	//隐藏grid底部滚动条
+        },
+        loadComplete:function(){
+        	 loaded();//去掉遮罩
         }
     });
+    
+   
 }
 
 
@@ -122,6 +141,7 @@ var vm = new Vue({
 	},
 	methods: {	
 	reload: function (event) {
+		loading();
 		vm.showList = true;
 		$("#jqGrid").jqGrid("clearGridData");
 		$("#jqGrid").jqGrid('setGridParam',{ 
