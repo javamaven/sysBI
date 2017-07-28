@@ -88,28 +88,14 @@ sum_recharge as(  --累计充值
 ),
 
 max_total as(  --历史最大资产
-  select
-    activity_tag,
-    sum(max_asset) as max_asset 
-  from(
-    select
-      ub.activity_tag,
-      max(nor_balance_c+
-          dep_balance_c+
-          nor_lock_amount_c+
-          dep_tender_lock_amount_c+
-          dep_financial_lock_amount_c+
-          nor_ddz_amount_c+
-          nor_recover_capital_wait_c+
-          dep_recover_capital_wait_c) as max_asset --账户最大资产
-    from edw_user_basic ub
-      join edw_user_acc_log al on ub.user_id = al.user_id
-    where activity_tag is not null
-    group by ub.activity_tag,ub.user_id 
-  )
-  group by activity_tag
- 
-）,
+	select * from(
+	select activity_tag, 
+	sum(max_asset) as max_asset 
+	from MDTXBI.DM_MAX_ASSET
+	 where activity_tag is not null
+	group by activity_tag
+)
+),
 
 channel_all as(
   select 
