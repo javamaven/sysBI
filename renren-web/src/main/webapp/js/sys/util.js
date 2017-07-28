@@ -228,4 +228,27 @@ function loaded() {
         mask_bg.parentNode.removeChild(mask_bg);
     }
 }
+/**
+ * 是否flat值
+ * @returns
+ */
+function isIntOrDoubleValue(value){
+	var arr = [0,1,2,3,4,5,6,7,8,9];
+	for (var i = 0; i < value.length; i++) {
+		var cc = value.charAt(i);
+		if(cc == '.'){
+			continue;
+		}
+		var isNumber = false;
+		for (var j = 0; j < arr.length; j++) {
+			if(cc == arr[j]){
+				isNumber = true;
+			}
+		}
+		if(!isNumber){
+			return false;
+		}
+	}
+	return true;
+}
 

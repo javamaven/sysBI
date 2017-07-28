@@ -1,0 +1,31 @@
+with td as 
+(
+select * from (
+select 
+pd.user_id,
+pd.addtime,
+pd.borrow_period,
+case when pd.tender_subject=2 then pd.tend_cash else pd.tender_capital end as tender_capital,
+row_number() over(partition by pd.user_id order by pd.addtime asc) ranks
+from mdtxbi.dm_trading_project_detail pd) 
+where ranks=1
+)
+
+select 
+dc.channel_name 渠道名称,
+round(sum(td.tender_capital*td.borrow_period/360),2) as 首投年化投资额
+from 
+td left join mdtxbi.edw_user_basic du
+on td.user_id=du.user_id
+left join (select distinct(dc.channel_label), dc.channel_name from mdtxbi.dim_channel dc) dc
+on dc.channel_label=du.activity_tag
+where to_char(td.addtime,'yyyy-mm')='${month}'
+and (du.activity_tag in
+(
+select 
+distinct(dcc.channel_label)
+from mdtxbi.dim_channel_cost dcc
+where to_char(dcc.fee_time,'yyyy-mm') between '${lastMonth}' and '${month}'
+and dcc.actual_cost>0
+) or du.activity_tag='invited') 
+group by dc.channel_name

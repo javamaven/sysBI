@@ -49,6 +49,11 @@ public class SysPageController {
 		return "yunying/basicreport/" + url + ".html";
 	}
 	
+	@RequestMapping("yunying/zixiao/{url}.html")
+	public String yunyingZixiao(@PathVariable("url") String url){
+		return "yunying/zixiao/" + url + ".html";
+	}
+	
 	@RequestMapping("yunying/analyse/{url}.html")
 	public String yunyingAnalyse(@PathVariable("url") String url){
 		return "yunying/analyse/" + url + ".html";

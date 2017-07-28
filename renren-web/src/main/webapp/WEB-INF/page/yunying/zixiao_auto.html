@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+#parse("sys/header.html")
+<style type="text/css">
+
+.inputClass2 {
+	height: 30px;
+	width: 200px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+</style>
+<script type="text/javascript">
+var ctx = "${rc.contextPath}";
+</script>
+</head>
+<body>
+<div>
+	<div>
+		<div class="grid-btn">
+			<table border="0" style="margin-left: 20px;">
+				<tr>
+					<td>
+						<label>统计周期：</label>
+					</td>
+					<td>
+						<select id="list_select" class="inputClass2" style="width: 120px;">
+						</select>
+					</td>
+					<td>
+						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" onclick="query()"><i class="fa fa-search"></i>&nbsp;查询</a>
+					</td>
+					
+				</tr>
+			</table>
+		</div>
+		<div style="padding: 10px;">
+		    <table id="jqGrid"></table>
+		</div>
+		<div style="padding: 10px;">
+		    <table id="shichang_reg"></table>
+		</div>
+		<div style="padding: 10px;">
+		    <table id="shichang_cost"></table>
+		</div>
+    </div>
+    
+	
+					<!-- 模态框（Modal） -->
+	<div class="modal fade" id="open_window" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog" id="window_div" style="width: 430px;">
+			<div class="modal-content">
+				<div class="modal-header" style="margin: 10px;padding: 10px;">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel"><font style="font-weight: bold;" id="window_title">录入完成值</font></h4>
+				</div>
+				<div class="modal-body" id="window_body" style="height: 70px;margin: 2px;padding: 2px;">
+					<table style="margin-left:  20px;">
+						<tr >
+							<div id="caiwu_luru_div" style="display: inline;padding: 10px;"><label>完成值：</label>
+								<input type="text" class="formClass" id="complete_value" style="width: 100px;" placeholder="录入完成值"/>%
+								&nbsp;<font color="red">如:1.88%,则输入1.88即可</font>
+							</div>
+							<div id="shichang_luru_phone_cost_div" style="display: inline;padding: 10px;"><label>电销成本：</label>
+								<input type="text" class="formClass" id="phone_sale_cost_value" style="width: 190px;" placeholder="录入电销成本"/>
+							</div>
+							<div id="queren_div" style="display: inline;padding: 10px;"><label>备注：</label>
+								<textarea class="areaClass2" id="description" style="height: 100px;"></textarea>
+							</div>
+						</tr>
+					</table>
+				</div>
+				<div class="modal-footer" style="margin: 5px;padding: 5px;">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+					</button>
+					<button id="caiwu_luru_btn" type="button" class="btn btn-primary" onclick="inputCompleteValue()">
+						确定
+					</button>			
+					<button id="yunying_queren_btn"  type="button" class="btn btn-primary" onclick="yunyingQueren()">
+						确定
+					</button>
+					<button id="shichang_queren_btn"  type="button" class="btn btn-primary" onclick="shichangQueren()">
+						确定
+					</button>
+				</div>
+			</div><!-- /.modal-content -->
+		</div>
+		<!-- /.modal -->
+	</div>
+	
+</div>
+<link rel="stylesheet" href="${rc.contextPath}/js/schedule/taskwin.css"></link>
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/yunying/zixiao_auto.js?_${date.systemTime}"></script>
+</body>
+</html>

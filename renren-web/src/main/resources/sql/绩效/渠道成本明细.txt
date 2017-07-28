@@ -1,0 +1,7 @@
+select
+dcc.channel_name 渠道名称, -- 渠道名称
+sum(nvl(dcc.actual_cost,0)) 渠道费用 -- 渠道费用
+
+from mdtxbi.dim_channel_cost dcc
+where to_char(dcc.fee_time,'yyyy-mm') ='${month}' -- 按照月份统计
+group by dcc.channel_name

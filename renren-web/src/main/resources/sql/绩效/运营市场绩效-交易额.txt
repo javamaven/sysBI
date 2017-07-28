@@ -1,0 +1,39 @@
+-- 本月年化交易额
+select
+'本月年化交易额' 指标,
+round(
+sum(
+    case
+      when pj.BORROW_TERM_UNIT=1 then -- 日标
+           pj.borrow_account*pj.BORROW_TERM/360-- 项目
+      when pj.BORROW_TERM_UNIT=2 then -- 年标
+           pj.borrow_account*30*pj.BORROW_TERM/360-- 项目
+      else 0
+    end
+        )/10000,2)as 完成值,
+        
+   '等待运营部确认' 状态     
+        
+from MDTXBI.EDW_TRADING_PROJECT pj
+where
+to_char(project_complete_date,'yyyy-mm')= ?
+and project_id not like 'ZT%'
+union all
+-- 本月销售新增年底待收金额
+select
+'本月销售新增年底待收金额' 指标,
+round(
+SUM(
+CASE
+  WHEN to_char(rpp.REPAY_DATE,'yyyy-mm-dd') > '2017-12-31'
+    AND ( to_char(rpd.settle_end_time,'yyyy-mm-dd') > ? OR rpd.settle_end_time IS NULL)
+  THEN (rpp.repay_capital+rpp.repay_interest)
+ELSE 0 END)/10000,2) AS 完成值 ,-- 待收本息
+'等待运营部确认' 状态     
+
+FROM MDTXBI.EDW_TRADING_REPAY_PLAN rpp
+left join mdtxbi.edw_trading_repay_detail rpd
+ on (rpp.project_id=rpd.project_id and rpp.period=rpd.period)
+WHERE
+to_char(rpp.create_time,'yyyy-mm')=?
+ -- to_char(rpp.create_time,'yyyy-mm-dd') between '2017-06-01' and '2017-06-30'

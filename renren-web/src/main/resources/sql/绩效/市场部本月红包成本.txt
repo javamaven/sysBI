@@ -1,0 +1,102 @@
+-- 市场部本月红包成本
+with pd as 
+(
+select
+a.id, 
+a.user_id,
+a.tender_capital,
+a.tend_vouche,
+row_number() over (partition by a.user_id order by a.addtime asc) ranks,
+a.borrow_period,
+a.addtime
+from mdtxbi.edw_trading_project_detail a
+where a.tender_account_status=1
+),
+hd as(
+select 
+vl.user_id, -- 用户名
+mv.prize_template_id, -- 红包模板id
+pd.tend_vouche, -- 该次购买使用的红包金额
+pd.ranks,
+vl.create_time
+from mdtxbi.edw_reward_voucher_log vl 
+left join mdtxbi.edw_reward_voucher mv
+on vl.hongbao_id=mv.id and vl.from_sys=mv.from_sys 
+left join mdtxbi.edw_reward_user_voucher uv
+on (mv.id=uv.voucher_id and mv.from_sys=uv.from_sys and vl.user_id=uv.user_id) 
+left join pd
+on pd.id=vl.tender_id
+where 
+mv.from_sys=1
+and vl.use_status=1
+),
+fafang as 
+(
+select  -- 发放的红包
+mv.prize_template_id,
+count(uv.user_id) fa
+from 
+mdtxbi.edw_reward_user_voucher uv
+left join mdtxbi.edw_reward_voucher mv
+on (mv.id=uv.voucher_id and mv.from_sys=uv.from_sys)
+where uv.from_sys=1 and to_char(RECEIVE_TIME,'yyyy-mm-dd') between ${startDate} and ${endDate}
+group by mv.prize_template_id
+),
+shiyong as 
+(
+select -- 按照红包分类的使用情况
+hd.prize_template_id,
+count(distinct(hd.user_id))  as v_num,-- 红包使用人数
+sum(nvl(hd.tend_vouche,0)) as sum_vouche,
+sum(case when hd.ranks=1 then nvl(hd.tend_vouche,0)else 0 end ) as ft_vouche,  -- 首投的红包成本
+sum(case when hd.ranks>1 then nvl(hd.tend_vouche,0)else 0 end ) as sc_vouche  -- 复投的红包成
+from hd
+where  to_char(hd.create_time,'yyyy-mm-dd') between ${startDate} and ${endDate}
+group by 
+hd.prize_template_id
+order by 
+hd.prize_template_id
+),
+guisu as
+(
+SELECT 
+pt.id,
+pt.name,
+pt.DESCRIPTION,
+pt.APPLY_USER,
+case
+  when pt.apply_user ='市场部' then '归属市场部'
+  when pt.apply_user ='电销部' and pt.name like '%新手%' then '归属市场部'  
+  when  pt.name like '%注册%' then '仅首投归市场'
+  else '归属运营部'
+end attri_department
+FROM MDTXBI.ODS_MDTX_CG_prize_template@ORA40 pt
+),
+hb as 
+(
+select
+gg.name as "名称",
+nvl(ff.prize_template_id,ss.prize_template_id) as "券号NID/红包模板ID",
+nvl(ff.fa,0)  as "发放人数" ,
+nvl(ss.v_num,0) as "使用人数",
+nvl(ss.sum_vouche,0) as "使用总金额(元)",
+nvl(ss.ft_vouche,0) as "用户首投时使用金额(元)",
+'存管版' as "红包所属系统",
+'2017-06' as "数据统计周期",
+gg.DESCRIPTION as "用途",
+gg.APPLY_USER as "所属于部门",
+gg.attri_department as "成本分摊方式",
+--ss.sum_vouche,
+case 
+when gg.attri_department='归属市场部' then nvl(ss.sum_vouche,0)
+when gg.attri_department='仅首投归市场' then nvl(ss.ft_vouche,0)
+else 0 end as "市场部费用(元)",
+case 
+when gg.attri_department='归属市场部' then 0
+when gg.attri_department='仅首投归市场' then nvl(ss.sc_vouche,0)
+else nvl(ss.sum_vouche,0) end as "运营部费用(元)"
+from shiyong ss full join fafang ff on ss.prize_template_id=ff.prize_template_id
+left join guisu gg on  gg.id=nvl(ss.prize_template_id,ff.prize_template_id)
+where nvl(ff.prize_template_id,ss.prize_template_id) is not null
+)
+select sum("市场部费用(元)") as 市场部本月红包成本 from hb

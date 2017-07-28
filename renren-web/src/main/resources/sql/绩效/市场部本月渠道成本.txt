@@ -1,0 +1,4 @@
+select
+sum(nvl(dcc.actual_cost,0)) 市场部本月渠道成本
+from mdtxbi.dim_channel_cost dcc
+where to_char(dcc.fee_time,'yyyy-mm') = ${month}

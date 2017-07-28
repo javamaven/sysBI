@@ -1,0 +1,17 @@
+select 
+  ${month} month,
+  sum(case when u.register_time between to_date(${startTime},'yyyy-MM-dd hh24:mi:ss') 
+                            and to_date(${endTime},'yyyy-MM-dd hh24:mi:ss') then 1 else 0 end ) 本月注册人数,
+  sum(case when u.depository_firstinvest_time is null and u.normal_firstinvest_time between to_date(${startTime},'yyyy-MM-dd hh24:mi:ss') 
+                            and to_date(${endTime},'yyyy-MM-dd hh24:mi:ss') then 1 
+           when u.normal_firstinvest_time is null and u.depository_firstinvest_time between to_date(${startTime},'yyyy-MM-dd hh24:mi:ss') 
+                            and to_date(${endTime},'yyyy-MM-dd hh24:mi:ss') then 1            
+           when u.normal_firstinvest_time > u.depository_firstinvest_time and u.depository_firstinvest_time between to_date(${startTime},'yyyy-MM-dd hh24:mi:ss') 
+                            and to_date(${endTime},'yyyy-MM-dd hh24:mi:ss') then 1
+           when u.depository_firstinvest_time > u.normal_firstinvest_time and u.normal_firstinvest_time between to_date(${startTime},'yyyy-MM-dd hh24:mi:ss') 
+                            and to_date(${endTime},'yyyy-MM-dd hh24:mi:ss') then 1                          
+           else 0 end ) 本月首投人数                        
+                            
+from mdtxbi.edw_user_basic u 
+where 1 = 1
+and u.is_borrower=0
