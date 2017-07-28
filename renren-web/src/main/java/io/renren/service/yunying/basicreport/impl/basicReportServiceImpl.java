@@ -75,7 +75,7 @@ public class basicReportServiceImpl implements BasicReportService {
 			for (int i = 0; i < resultList.size(); i++) {
 				Map<String, Object> map = resultList.get(i);
 				String channel_label = map.get("用户来源") + "";
-				if (channel_map.containsKey(channel_label)) {
+				if (channel_map.containsKey(channel_label) || StringUtils.isEmpty(channel_label)) {
 					map.put("用户来源", channel_map.get(channel_label));
 					list.add(map);
 				}

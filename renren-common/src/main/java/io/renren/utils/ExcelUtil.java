@@ -712,6 +712,9 @@ public class ExcelUtil {
             for (int r = 1; r < rowCount; r++) {
                 map = new HashMap<String ,Object>();
                 Row row = sheet.getRow(r);
+                if(row == null){
+                	continue;
+                }
                 int cellCount = row.getPhysicalNumberOfCells(); // 获取总列数
 //                int cellCount = row.getLastCellNum();
                 System.err.println("第"+ r + "行，列数为：" + cellCount);
