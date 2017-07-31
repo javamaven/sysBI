@@ -86,6 +86,26 @@ public class ZixiaoCalcuteController extends AbstractController {
 	}
 	
 	@SuppressWarnings("deprecation")
+	public Map<String,Object> getShichangMubiao(int month){
+		Map<String,Object> mubiaoMap = new HashMap<>();
+		String path = this.getClass().getResource("/").getPath();
+		try {
+			List<String> readLines = FileUtils.readLines(new File(path + File.separator + "sql/绩效/市场部目标.txt"));
+			for (int i = 0; i < readLines.size(); i++) {
+				String line = readLines.get(i);
+				if(line.contains("_" + month + "月")){
+					String[] split = line.split(",");
+					mubiaoMap.put(split[0], split[1]);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return mubiaoMap;
+	}
+	
+	@SuppressWarnings("deprecation")
 	public Map<String,Object> getAuthData(){
 		Map<String,Object> mubiaoMap = new HashMap<>();
 		String path = this.getClass().getResource("/").getPath();
@@ -245,16 +265,24 @@ public class ZixiaoCalcuteController extends AbstractController {
 		return null;
 	}
 	
+	
+	
 	/**
 	 * 获取下一个状态
 	 * @param currStatus
 	 * @param index
 	 * @return
 	 */
-	public String getNextStatus(String currStatus, String index){
-		
+	public String getNextStatus(String currStatus, String index, Map<String,Object> map){
+		SysUserEntity userEntity = getUserEntity();
+		String username = userEntity.getUsername();//当前登录帐号
+		Map<String, Object> params = new HashMap<>();
+		params.put("状态", currStatus);
+		R r = hasAuth(params);
+		boolean hasAuth = (boolean) r.get("hasAuth");
 		if(caiwu_index.equals(index)){
 			if("等待财务部录入".equals(currStatus)){
+				map.put("cancel", hasAuth);
 				return "等待运营部确认";
 			}else if("等待运营部确认".equals(currStatus)){
 				return "已完成";
@@ -263,6 +291,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 			}
 		}else if(yunying_curr_month_invest.equals(index) || yunying_curr_month_await.equals(index)){
 			if("等待运营部确认".equals(currStatus)){
+				map.put("cancel", hasAuth);
 				return "等待财务部确认";
 			}else if("等待财务部确认".equals(currStatus)){
 				return "已完成";
@@ -355,7 +384,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 					String currStatus = map2.get("status").toString();
 					String index_name = map2.get("index_name").toString();
 					if(map2.get("index_name").toString().equals(zhibiao)){
-						map.put("状态", getNextStatus(currStatus, index_name));
+						map.put("状态", getNextStatus(currStatus, index_name, map));
 						break;
 					}
 				}
@@ -374,7 +403,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 		if(taskMap == null){
 			map.put("状态", "等待财务部录入");
 		}else{
-			map.put("状态", getNextStatus(taskMap.get("status") + "", caiwu_index));
+			map.put("状态", getNextStatus(taskMap.get("status") + "", caiwu_index, map));
 			map.put("完成值", taskMap.get("complete_value"));
 			map.put("达成率", taskMap.get("complete_rate"));
 		}
@@ -464,6 +493,8 @@ public class ZixiaoCalcuteController extends AbstractController {
 			Thread t3 = new Thread(new QueryThread(channelYearInvestSql, dataSourceFactory, channelYearInvestList, null, null, null));
 			t1.start();t2.start();t3.start();
 			t1.join();t2.join();t3.join();
+			
+			Map<String, Object> shichangMubiaoMap = getShichangMubiao(month);
 			if(queryList.size() > 0){
 				Map<String, Object> map = queryList.get(0);
 				//本月注册人数
@@ -472,12 +503,18 @@ public class ZixiaoCalcuteController extends AbstractController {
 				reg_user_map.put("month", map.get("MONTH"));
 				reg_user_map.put("指标", shichang_reg_user_num);
 				reg_user_map.put("完成值", map.get(shichang_reg_user_num));
-				reg_user_map.put("目标", "");
-				reg_user_map.put("达成率", "");
+				reg_user_map.put("目标值", shichangMubiaoMap.get("本月注册人数目标_"+month+"月"));
+				double complete = Double.parseDouble(reg_user_map.get("完成值") + "");
+				Object mubiaoObj = reg_user_map.get("目标值");
+				double mubiao = 0;
+				if(mubiaoObj != null && !"".equals(mubiaoObj.toString().trim())){
+					mubiao = Double.parseDouble(mubiaoObj.toString());
+					reg_user_map.put("达成率", io.renren.util.NumberUtil.keepPrecision(complete*100/mubiao, 2) + "%");
+				}
 				if(reg_map == null){
 					reg_user_map.put("状态", "等待市场部确认");
 				}else{
-					reg_user_map.put("状态", getNextStatus(reg_map.get("status") + "", shichang_reg_user_num));
+					reg_user_map.put("状态", getNextStatus(reg_map.get("status") + "", shichang_reg_user_num, map));
 				}
 				retList.add(reg_user_map);
 				//本月首投人数
@@ -486,12 +523,18 @@ public class ZixiaoCalcuteController extends AbstractController {
 				first_invest_user_map.put("month", map.get("MONTH"));
 				first_invest_user_map.put("指标", shichang_first_invest_user_num);
 				first_invest_user_map.put("完成值", map.get(shichang_first_invest_user_num));
-				first_invest_user_map.put("目标", "");
-				first_invest_user_map.put("达成率", "");
+				first_invest_user_map.put("目标值", shichangMubiaoMap.get("本月首投人数目标_"+month+"月"));
+				double complete_st = Double.parseDouble(first_invest_user_map.get("完成值") + "");
+				Object mubiaoObj_st = first_invest_user_map.get("目标值");
+				double mubiao_ft = 0;
+				if(mubiaoObj_st != null && !"".equals(mubiaoObj_st.toString().trim())){
+					mubiao_ft = Double.parseDouble(mubiaoObj_st.toString());
+					first_invest_user_map.put("达成率", io.renren.util.NumberUtil.keepPrecision(complete_st*100/mubiao_ft, 2) + "%");
+				}
 				if(first_invest_map == null){
 					first_invest_user_map.put("状态", "等待市场部确认");
 				}else{
-					first_invest_user_map.put("状态", getNextStatus(first_invest_map.get("status") + "", shichang_first_invest_user_num));
+					first_invest_user_map.put("状态", getNextStatus(first_invest_map.get("status") + "", shichang_first_invest_user_num, map));
 				}
 				retList.add(first_invest_user_map);
 				//市场部红包成本
@@ -505,7 +548,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 				if(shichang_hongbao_cost_map == null){
 					hongbao_cost_map.put("状态", "等待市场部确认");
 				}else{
-					hongbao_cost_map.put("状态", getNextStatus(shichang_hongbao_cost_map.get("status") + "", shichang_hongbao_cost));
+					hongbao_cost_map.put("状态", getNextStatus(shichang_hongbao_cost_map.get("status") + "", shichang_hongbao_cost, map));
 				}
 				retList.add(hongbao_cost_map);
 				//市场部渠道成本
@@ -519,7 +562,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 				if(shichang_channel_cost_map == null){
 					channel_cost_map.put("状态", "等待市场部确认");
 				}else{
-					channel_cost_map.put("状态", getNextStatus(shichang_channel_cost_map.get("status") + "", shichang_channel_cost));
+					channel_cost_map.put("状态", getNextStatus(shichang_channel_cost_map.get("status") + "", shichang_channel_cost, map));
 				}
 				retList.add(channel_cost_map);
 				//市场部电销成本
@@ -531,7 +574,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 				if(queryMonthMaxBatch == null){
 					phone_cost_map.put("状态", "等待市场部录入");
 				}else{
-					phone_cost_map.put("状态", getNextStatus(queryMonthMaxBatch.get("status").toString(), shichang_phonesale_cost));
+					phone_cost_map.put("状态", getNextStatus(queryMonthMaxBatch.get("status").toString(), shichang_phonesale_cost, map));
 				}
 				retList.add(phone_cost_map);
 				//本月推广的渠道年化投资金额
@@ -545,7 +588,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 				if(tuiguagn_map == null){
 					curr_month_year_invest_map.put("状态", "等待市场部确认");
 				}else{
-					curr_month_year_invest_map.put("状态", getNextStatus(tuiguagn_map.get("status").toString(), shichang_curr_month_channel_year_invest));
+					curr_month_year_invest_map.put("状态", getNextStatus(tuiguagn_map.get("status").toString(), shichang_curr_month_channel_year_invest, map));
 				}
 				retList.add(curr_month_year_invest_map);
 			}
@@ -571,7 +614,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 		if(roi_map == null){
 			map.put("状态", "等待市场部确认");
 		}else{
-			map.put("状态", getNextStatus(roi_map.get("status").toString(), shichang_curr_month_roi));
+			map.put("状态", getNextStatus(roi_map.get("status").toString(), shichang_curr_month_roi, map));
 		}
 		retList.add(map);
 		PageUtils pageUtil = new PageUtils(retList, retList.size(), limit, page);

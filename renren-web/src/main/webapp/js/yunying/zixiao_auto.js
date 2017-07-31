@@ -284,17 +284,23 @@ function initYunyingTable(){
 			{ label: '操作', name: '操作', index: '$MONTH_TENDER_Y', width: 100 ,align:'right', formatter: function(value, options, row){
 				var queren = '<span onclick="checkAuth(\'yunying_queren\',\''+row.指标+'\',\''+options.rowId+'\',\''+row.状态+'\')" class="btn btn-primary btn-inverse btn-xs">&nbsp;确&nbsp;&nbsp;&nbsp;认&nbsp;</span>&nbsp;&nbsp;&nbsp;&nbsp;';
 				var luru = '<a onclick="checkAuth(\'caiwu_luru\',\''+row.指标+'\',\''+options.rowId+'\',\''+row.状态+'\')" class="btn btn-primary btn-inverse btn-xs">录入完成值</a> &nbsp;&nbsp;&nbsp;&nbsp;';
+				
+				var cancel = '';
+				
+//				if(row.cancel){
+//					cancel = '<a onclick="cancel(\'caiwu_luru\',\''+row.指标+'\',\''+options.rowId+'\',\''+row.状态+'\')" class="btn btn-primary btn-inverse btn-xs">撤销</a> &nbsp;&nbsp;&nbsp;&nbsp;';
+//				}
 				if(row.状态 == '已完成'){
 					return '';
 				}
 				if(row.指标 == '费用/年化比(17年累计)'){
 					if(row.状态 != '等待财务部录入'){
-						return queren;
+						return queren + cancel;
 					}else{
-						return luru;
+						return luru + cancel;
 					}
 				}else{
-					return queren;
+					return queren + cancel;
 				}
 			} } 			
         ],
@@ -320,6 +326,7 @@ function initYunyingTable(){
         },
         gridComplete:function(){
         	//隐藏grid底部滚动条
+        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
         },
         loadComplete:function(){
         	
@@ -341,7 +348,13 @@ function initShichangRegTable(){
 					return '';
 				} 
 			},
-			{ label: '目标值', name: '目标值', index: '$OWNER', width: 80 ,align:'right',editable: true }, 			
+			{ label: '目标值', name: '目标值', index: '$OWNER', width: 80 ,align:'right',editable: true,formatter: function(value, options, row){
+					if(value){
+						return formatNumber(value + '',2);
+					}
+					return '';
+				} 
+			}, 			
 			{ label: '达成率', name: '达成率', index: '$AVG_PERIOD', width: 100,align:'right' }, 			
 			{ label: '状态', name: '状态', index: '$MONTH_TENDER', width: 100,align:'right', formatter: function(value, options, row){
 					if(value.indexOf('等待') > -1){
@@ -395,6 +408,7 @@ function initShichangRegTable(){
         },
         gridComplete:function(){
         	//隐藏grid底部滚动条
+        	$("#shichang_reg").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
         },
         loadComplete:function(){
         	loaded();

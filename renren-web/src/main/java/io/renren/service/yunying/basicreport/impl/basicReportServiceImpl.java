@@ -40,7 +40,7 @@ public class basicReportServiceImpl implements BasicReportService {
 			"	u2.user_name 用户名, " +
 			"	u2.phone 手机号, " +
 			"	u.register_time 注册时间, " +
-			"	u.activity_tag 用户来源, " +
+			"	case when u.activity_tag is null or u.activity_tag = '' then u.channel_id else u.activity_tag end 用户来源, " +
 			"	case when u3.real_name is null then '否' else '是' end 实名认证, " +
 			"	u3.real_name 真实姓名, " +
 			"	'否' 是否投资, " +
@@ -61,6 +61,7 @@ public class basicReportServiceImpl implements BasicReportService {
 			"AND u.register_time >= ? " +
 			"AND u.register_time <= ? " +
 			"AND u2.is_borrower = 0  " +
+			"and u2.phone is not null " +
 			"group by u.user_id " +
 			"HAVING IFNULL(sum(c.pay_amount) + 	sum(l.tender_amount) + 	sum(p.tender_capital),0) = 0 ";
 
