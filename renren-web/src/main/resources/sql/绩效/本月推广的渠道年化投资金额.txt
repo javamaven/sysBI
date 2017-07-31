@@ -11,7 +11,7 @@ from mdtxbi.dm_trading_project_detail pd)  where ranks=1
 )
 
 select
-round(sum(td.tender_capital*td.borrow_period/360),2) as 本月推广渠道年化投资金额
+round(sum(td.tender_capital*td.borrow_period/360),2) as 渠道首投年化投资金额
 from
 td left join mdtxbi.edw_user_basic du
 on td.user_id=du.user_id

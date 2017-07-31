@@ -1,3 +1,3 @@
 运营部,admin
-市场部,test2
-财务部,test3
+市场部,admin
+财务部,admin

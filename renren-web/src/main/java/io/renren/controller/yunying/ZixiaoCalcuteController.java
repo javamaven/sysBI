@@ -58,7 +58,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 	private String shichang_hongbao_cost = "市场部本月红包成本";
 	private String shichang_channel_cost = "市场部本月渠道成本";
 	private String shichang_phonesale_cost = "市场部电销成本";
-	private String shichang_curr_month_channel_year_invest = "本月推广渠道年化投资金额";
+	private String shichang_curr_month_channel_year_invest = "渠道首投年化投资金额";
 
 	@Autowired
 	DataSourceFactory dataSourceFactory;
