@@ -26,10 +26,13 @@ public class DmReportDepSalesEntity implements Serializable {
 	//金额
 	private String eryue;
 	private String sanyue;
+	private String siyue;
+	private String wuyue;
 	private String liuyue;
 	private String bayue;
 	private String jiuyue;
 	private String shiyue;
+	private String shiyiyue;
 	private String shieryue;
 	private String shiwuyue;
 	private String shibayue;
@@ -44,6 +47,33 @@ public class DmReportDepSalesEntity implements Serializable {
 	
 	private String weekTongRate;//周同比
 	
+	
+	
+	
+	public String getSiyue() {
+		return siyue;
+	}
+
+	public void setSiyue(String siyue) {
+		this.siyue = siyue;
+	}
+
+	public String getWuyue() {
+		return wuyue;
+	}
+
+	public void setWuyue(String wuyue) {
+		this.wuyue = wuyue;
+	}
+
+	public String getShiyiyue() {
+		return shiyiyue;
+	}
+
+	public void setShiyiyue(String shiyiyue) {
+		this.shiyiyue = shiyiyue;
+	}
+
 	public void setWeekTongRate(String weekTongRate) {
 		this.weekTongRate = weekTongRate;
 	}

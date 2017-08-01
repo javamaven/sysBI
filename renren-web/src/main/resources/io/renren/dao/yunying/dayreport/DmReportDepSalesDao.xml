@@ -61,10 +61,13 @@
 			yiyue,
 			eryue,
 			sanyue,
+			siyue,
+			wuyue,
 			liuyue,
 			bayue,
 			jiuyue,
 			shiyue,
+			shiyiyue,
 			shieryue,
 			shiwuyue,
 			shibayue,	
@@ -74,7 +77,7 @@
 			sishibayue,
 			liushiyue,
 			jiushiliuyue,
-			shiwutian+yiyue+eryue+sanyue+liuyue+bayue+jiuyue+shiyue+shieryue+shiwuyue+
+			shiwutian+yiyue+eryue+sanyue+siyue+wuyue+liuyue+bayue+jiuyue+shiyue+shiyiyue+shieryue+shiwuyue+
 			shibayue+ershisiyue+sanshiwuyue+sanshiliuyue+sishibayue+liushiyue+jiushiliuyue as zongji,
 			1 as num
 			from
@@ -85,10 +88,13 @@
 			MAX(CASE period WHEN '1月' THEN sum ELSE 0 END ) yiyue,
 			MAX(CASE period WHEN '2月' THEN sum ELSE 0 END ) eryue,
 			MAX(CASE period WHEN '3月' THEN sum ELSE 0 END ) sanyue, 
+			MAX(CASE period WHEN '4月' THEN sum ELSE 0 END ) siyue, 
+			MAX(CASE period WHEN '5月' THEN sum ELSE 0 END ) wuyue, 
 			MAX(CASE period WHEN '6月' THEN sum ELSE 0 END ) liuyue,
 			MAX(CASE period WHEN '8月' THEN sum ELSE 0 END ) bayue,
 			MAX(CASE period WHEN '9月' THEN sum ELSE 0 END ) jiuyue,
 			MAX(CASE period WHEN '10月' THEN sum ELSE 0 END ) shiyue,
+			MAX(CASE period WHEN '11月' THEN sum ELSE 0 END ) shiyiyue,
 			MAX(CASE period WHEN '12月' THEN sum ELSE 0 END ) shieryue,
 			MAX(CASE period WHEN '15月' THEN sum ELSE 0 END ) shiwuyue,
 			MAX(CASE period WHEN '18月' THEN sum ELSE 0 END ) shibayue,
@@ -128,10 +134,13 @@
 			yiyue,
 			eryue,
 			sanyue,
+			siyue,
+			wuyue,
 			liuyue,
 			bayue,
 			jiuyue,
 			shiyue,
+			shiyiyue,
 			shieryue,
 			shiwuyue,
 			shibayue,	
@@ -156,10 +165,13 @@
 			sum(yiyue) as yiyue,
 			sum(eryue) as eryue ,
 			sum(sanyue) as sanyue,
+			sum(siyue) as siyue,
+			sum(wuyue) as wuyue,
 			sum(liuyue) as liuyue,
 			sum(bayue) as bayue,
 			sum(jiuyue) as jiuyue,
 			sum(shiyue) as shiyue,
+			sum(shiyiyue) as shiyiyue,
 			sum(shieryue) as shieryue,
 			sum(shiwuyue) as shiwuyue,
 			sum(shibayue) as shibayue,	
@@ -179,10 +191,13 @@
 			yiyue,
 			eryue,
 			sanyue,
+			siyue,
+			wuyue,
 			liuyue,
 			bayue,
 			jiuyue,
 			shiyue,
+			shiyiyue,
 			shieryue,
 			shiwuyue,
 			shibayue,	
@@ -209,10 +224,13 @@
 			concat(round(yiyue*100/zongji,2),'%'),
 			concat(round(eryue*100/zongji,2),'%'),
 			concat(round(sanyue*100/zongji,2),'%'),
+			concat(round(siyue*100/zongji,2),'%'),
+			concat(round(wuyue*100/zongji,2),'%'),
 			concat(round(liuyue*100/zongji,2),'%'),
 			concat(round(bayue*100/zongji,2),'%'),
 			concat(round(jiuyue*100/zongji,2),'%'),
 			concat(round(shiyue*100/zongji,2),'%'),
+			concat(round(shiyiyue*100/zongji,2),'%'),
 			concat(round(shieryue*100/zongji,2),'%'),
 			concat(round(shiwuyue*100/zongji,2),'%'),
 			concat(round(shibayue*100/zongji,2),'%'),
@@ -261,6 +279,14 @@
 			when sanyue='0.00%' then ''
 			else sanyue end as sanyue,
 			
+			case when siyue='0.00' then '' 
+			when siyue='0.00%' then ''
+			else siyue end as siyue,
+
+			case when wuyue='0.00' then '' 
+			when wuyue='0.00%' then ''
+			else wuyue end as wuyue,
+
 			case when liuyue='0.00' then ''
 			when liuyue='0.00%' then ''
 			else liuyue end as liuyue,
@@ -276,6 +302,10 @@
 			case when shiyue='0.00' then '' 
 			when shiyue='0.00%' then '' 
 			else shiyue end as shiyue,
+
+			case when shiyiyue='0.00' then '' 
+			when shiyiyue='0.00%' then ''
+			else shiyiyue end as shiyiyue,
 			
 			case when shieryue='0.00' then '' 
 			when shieryue='0.00%' then ''
@@ -334,7 +364,7 @@
 			GROUP  BY STAT_PERIOD desc,sales_type desc,PERIOD
 			;
 
-			DROP TABLE IF EXISTS TMPbbb;
+				DROP TABLE IF EXISTS TMPbbb;
 			CREATE TEMPORARY TABLE TMPbbb AS
 			select 
 			STAT_PERIOD,
@@ -343,10 +373,13 @@
 			yiyue,
 			eryue,
 			sanyue,
+			siyue,
+			wuyue,
 			liuyue,
 			bayue,
 			jiuyue,
 			shiyue,
+			shiyiyue,
 			shieryue,
 			shiwuyue,
 			shibayue,	
@@ -356,7 +389,7 @@
 			sishibayue,
 			liushiyue,
 			jiushiliuyue,
-			shiwutian+yiyue+eryue+sanyue+liuyue+bayue+jiuyue+shiyue+shieryue+shiwuyue+
+			shiwutian+yiyue+eryue+sanyue+siyue+wuyue+liuyue+bayue+jiuyue+shiyue+shiyiyue+shieryue+shiwuyue+
 			shibayue+ershisiyue+sanshiwuyue+sanshiliuyue+sishibayue+liushiyue+jiushiliuyue as zongji,
 			1 as num
 			from
@@ -367,10 +400,13 @@
 			MAX(CASE period WHEN '1月' THEN sum ELSE 0 END ) yiyue,
 			MAX(CASE period WHEN '2月' THEN sum ELSE 0 END ) eryue,
 			MAX(CASE period WHEN '3月' THEN sum ELSE 0 END ) sanyue, 
+			MAX(CASE period WHEN '4月' THEN sum ELSE 0 END ) siyue, 
+			MAX(CASE period WHEN '5月' THEN sum ELSE 0 END ) wuyue, 
 			MAX(CASE period WHEN '6月' THEN sum ELSE 0 END ) liuyue,
 			MAX(CASE period WHEN '8月' THEN sum ELSE 0 END ) bayue,
 			MAX(CASE period WHEN '9月' THEN sum ELSE 0 END ) jiuyue,
 			MAX(CASE period WHEN '10月' THEN sum ELSE 0 END ) shiyue,
+			MAX(CASE period WHEN '11月' THEN sum ELSE 0 END ) shiyiyue,
 			MAX(CASE period WHEN '12月' THEN sum ELSE 0 END ) shieryue,
 			MAX(CASE period WHEN '15月' THEN sum ELSE 0 END ) shiwuyue,
 			MAX(CASE period WHEN '18月' THEN sum ELSE 0 END ) shibayue,
@@ -410,10 +446,13 @@
 			yiyue,
 			eryue,
 			sanyue,
+			siyue,
+			wuyue,
 			liuyue,
 			bayue,
 			jiuyue,
 			shiyue,
+			shiyiyue,
 			shieryue,
 			shiwuyue,
 			shibayue,	
@@ -438,10 +477,13 @@
 			sum(yiyue) as yiyue,
 			sum(eryue) as eryue ,
 			sum(sanyue) as sanyue,
+			sum(siyue) as siyue,
+			sum(wuyue) as wuyue,
 			sum(liuyue) as liuyue,
 			sum(bayue) as bayue,
 			sum(jiuyue) as jiuyue,
 			sum(shiyue) as shiyue,
+			sum(shiyiyue) as shiyiyue,
 			sum(shieryue) as shieryue,
 			sum(shiwuyue) as shiwuyue,
 			sum(shibayue) as shibayue,	
@@ -461,10 +503,13 @@
 			yiyue,
 			eryue,
 			sanyue,
+			siyue,
+			wuyue,
 			liuyue,
 			bayue,
 			jiuyue,
 			shiyue,
+			shiyiyue,
 			shieryue,
 			shiwuyue,
 			shibayue,	
@@ -491,10 +536,13 @@
 			concat(round(yiyue*100/zongji,2),'%'),
 			concat(round(eryue*100/zongji,2),'%'),
 			concat(round(sanyue*100/zongji,2),'%'),
+			concat(round(siyue*100/zongji,2),'%'),
+			concat(round(wuyue*100/zongji,2),'%'),
 			concat(round(liuyue*100/zongji,2),'%'),
 			concat(round(bayue*100/zongji,2),'%'),
 			concat(round(jiuyue*100/zongji,2),'%'),
 			concat(round(shiyue*100/zongji,2),'%'),
+			concat(round(shiyiyue*100/zongji,2),'%'),
 			concat(round(shieryue*100/zongji,2),'%'),
 			concat(round(shiwuyue*100/zongji,2),'%'),
 			concat(round(shibayue*100/zongji,2),'%'),
@@ -521,7 +569,7 @@
 			) o
 			order BY STAT_PERIOD desc,num
 			;
-			   DROP TABLE IF EXISTS TMPhaha;
+			  DROP TABLE IF EXISTS TMPhaha;
 			CREATE TEMPORARY TABLE TMPhaha AS
 			select 
 			STAT_PERIOD,
@@ -543,6 +591,14 @@
 			when sanyue='0.00%' then ''
 			else sanyue end as sanyue,
 			
+			case when siyue='0.00' then '' 
+			when siyue='0.00%' then ''
+			else siyue end as siyue,
+
+			case when wuyue='0.00' then '' 
+			when wuyue='0.00%' then ''
+			else wuyue end as wuyue,
+
 			case when liuyue='0.00' then ''
 			when liuyue='0.00%' then ''
 			else liuyue end as liuyue,
@@ -558,6 +614,10 @@
 			case when shiyue='0.00' then '' 
 			when shiyue='0.00%' then '' 
 			else shiyue end as shiyue,
+
+			case when shiyiyue='0.00' then '' 
+			when shiyiyue='0.00%' then ''
+			else shiyiyue end as shiyiyue,
 			
 			case when shieryue='0.00' then '' 
 			when shieryue='0.00%' then ''
@@ -583,10 +643,6 @@
 			case when sanshiliuyue='0.00' then '' 
 			 when sanshiliuyue='0.00%' then '' 
 			else sanshiliuyue end as sanshiliuyue,
-			
-			case when sishibayue='0.00' then '' 
-			when sishibayue='0.00%' then '' 
-			else sishibayue end as sishibayue,
 			
 			case when liushiyue='0.00' then ''
 			when liushiyue='0.00%' then ''
@@ -623,7 +679,7 @@
 			GROUP  BY STAT_PERIOD desc,sales_type desc,PERIOD
 				;
 				
-				DROP TABLE IF EXISTS TMP112;
+			DROP TABLE IF EXISTS TMP112;
 				CREATE TEMPORARY TABLE TMP112 AS
 							select
 							STAT_PERIOD,
@@ -632,10 +688,13 @@
 							yiyue,
 							eryue,
 							sanyue,
+							siyue,
+							wuyue,
 							liuyue,
 							bayue,
 							jiuyue,
 							shiyue,
+							shiyiyue,
 							shieryue,
 							shiwuyue,
 							shibayue,	
@@ -645,7 +704,7 @@
 							sishibayue,
 							liushiyue,
 							jiushiliuyue,
-							shiwutian+yiyue+eryue+sanyue+liuyue+bayue+jiuyue+shiyue+shieryue+shiwuyue+
+							shiwutian+yiyue+eryue+sanyue+siyue+wuyue+liuyue+bayue+jiuyue+shiyue+shiyiyue+shieryue+shiwuyue+
 							shibayue+ershisiyue+sanshiwuyue+sanshiliuyue+sishibayue+liushiyue+jiushiliuyue as zongji
 				from 
 				(
@@ -656,10 +715,13 @@
 							MAX(CASE period WHEN '1月' THEN sum ELSE 0 END ) yiyue,
 							MAX(CASE period WHEN '2月' THEN sum ELSE 0 END ) eryue,
 							MAX(CASE period WHEN '3月' THEN sum ELSE 0 END ) sanyue, 
+							MAX(CASE period WHEN '4月' THEN sum ELSE 0 END ) siyue, 
+							MAX(CASE period WHEN '5月' THEN sum ELSE 0 END ) wuyue, 
 							MAX(CASE period WHEN '6月' THEN sum ELSE 0 END ) liuyue,
 							MAX(CASE period WHEN '8月' THEN sum ELSE 0 END ) bayue,
 							MAX(CASE period WHEN '9月' THEN sum ELSE 0 END ) jiuyue,
 							MAX(CASE period WHEN '10月' THEN sum ELSE 0 END ) shiyue,
+							MAX(CASE period WHEN '11月' THEN sum ELSE 0 END ) shiyiyue, 
 							MAX(CASE period WHEN '12月' THEN sum ELSE 0 END ) shieryue,
 							MAX(CASE period WHEN '15月' THEN sum ELSE 0 END ) shiwuyue,
 							MAX(CASE period WHEN '18月' THEN sum ELSE 0 END ) shibayue,
@@ -691,10 +753,13 @@
 							concat(round(yiyue*100/zongji,2),'%'),
 							concat(round(eryue*100/zongji,2),'%'),
 							concat(round(sanyue*100/zongji,2),'%'),
+							concat(round(siyue*100/zongji,2),'%'),
+							concat(round(wuyue*100/zongji,2),'%'),
 							concat(round(liuyue*100/zongji,2),'%'),
 							concat(round(bayue*100/zongji,2),'%'),
 							concat(round(jiuyue*100/zongji,2),'%'),
 							concat(round(shiyue*100/zongji,2),'%'),
+							concat(round(shiyiyue*100/zongji,2),'%'),
 							concat(round(shieryue*100/zongji,2),'%'),
 							concat(round(shiwuyue*100/zongji,2),'%'),
 							concat(round(shibayue*100/zongji,2),'%'),
@@ -729,6 +794,15 @@
 							when sanyue='0.00%' then ''
 							else sanyue end as sanyue,
 							
+							case when siyue='0.00' then '' 
+							when siyue='0.00%' then ''
+							else siyue end as siyue,
+
+
+							case when wuyue='0.00' then '' 
+							when wuyue='0.00%' then ''
+							else wuyue end as wuyue,
+
 							case when liuyue='0.00' then ''
 							when liuyue='0.00%' then ''
 							else liuyue end as liuyue,
@@ -744,6 +818,10 @@
 							case when shiyue='0.00' then '' 
 							when shiyue='0.00%' then '' 
 							else shiyue end as shiyue,
+
+							case when shiyiyue='0.00' then '' 
+							when shiyiyue='0.00%' then '' 
+							else shiyiyue end as shiyiyue,
 							
 							case when shieryue='0.00' then '' 
 							when shieryue='0.00%' then ''
@@ -818,10 +896,13 @@
 							yiyue,
 							eryue,
 							sanyue,
+							siyue,
+							wuyue,
 							liuyue,
 							bayue,
 							jiuyue,
 							shiyue,
+							shiyiyue,
 							shieryue,
 							shiwuyue,
 							shibayue,	
@@ -831,9 +912,8 @@
 							sishibayue,
 							liushiyue,
 							jiushiliuyue,
-							shiwutian+yiyue+eryue+sanyue+liuyue+bayue+jiuyue+shiyue+shieryue+shiwuyue+
-							shibayue+ershisiyue+sanshiwuyue+sanshiliuyue+sishibayue+liushiyue+jiushiliuyue as zongji,
-							1 as num
+							shiwutian+yiyue+eryue+sanyue+siyue+wuyue+liuyue+bayue+jiuyue+shiyue+shiyiyue+shieryue+shiwuyue+
+							shibayue+ershisiyue+sanshiwuyue+sanshiliuyue+sishibayue+liushiyue+jiushiliuyue as zongji
 				from 
 				(
 				SELECT 
@@ -843,10 +923,13 @@
 							MAX(CASE period WHEN '1月' THEN sum ELSE 0 END ) yiyue,
 							MAX(CASE period WHEN '2月' THEN sum ELSE 0 END ) eryue,
 							MAX(CASE period WHEN '3月' THEN sum ELSE 0 END ) sanyue, 
+							MAX(CASE period WHEN '4月' THEN sum ELSE 0 END ) siyue, 
+							MAX(CASE period WHEN '5月' THEN sum ELSE 0 END ) wuyue, 
 							MAX(CASE period WHEN '6月' THEN sum ELSE 0 END ) liuyue,
 							MAX(CASE period WHEN '8月' THEN sum ELSE 0 END ) bayue,
 							MAX(CASE period WHEN '9月' THEN sum ELSE 0 END ) jiuyue,
 							MAX(CASE period WHEN '10月' THEN sum ELSE 0 END ) shiyue,
+							MAX(CASE period WHEN '11月' THEN sum ELSE 0 END ) shiyiyue, 
 							MAX(CASE period WHEN '12月' THEN sum ELSE 0 END ) shieryue,
 							MAX(CASE period WHEN '15月' THEN sum ELSE 0 END ) shiwuyue,
 							MAX(CASE period WHEN '18月' THEN sum ELSE 0 END ) shibayue,
@@ -868,8 +951,7 @@
 						from tmp112;
 				
 						DROP TABLE IF EXISTS TMPhehe;
-						CREATE TEMPORARY TABLE TMPhehe AS		
-						select * from (
+						CREATE TEMPORARY TABLE TMPhehe AS				
 						select * from tmp113
 						union all
 						select 
@@ -879,10 +961,13 @@
 							concat(round(yiyue*100/zongji,2),'%'),
 							concat(round(eryue*100/zongji,2),'%'),
 							concat(round(sanyue*100/zongji,2),'%'),
+							concat(round(siyue*100/zongji,2),'%'),
+							concat(round(wuyue*100/zongji,2),'%'),
 							concat(round(liuyue*100/zongji,2),'%'),
 							concat(round(bayue*100/zongji,2),'%'),
 							concat(round(jiuyue*100/zongji,2),'%'),
 							concat(round(shiyue*100/zongji,2),'%'),
+							concat(round(shiyiyue*100/zongji,2),'%'),
 							concat(round(shieryue*100/zongji,2),'%'),
 							concat(round(shiwuyue*100/zongji,2),'%'),
 							concat(round(shibayue*100/zongji,2),'%'),
@@ -892,13 +977,10 @@
 							concat(round(sishibayue*100/zongji,2),'%'),
 							concat(round(liushiyue*100/zongji,2),'%'),
 							concat(round(jiushiliuyue*100/zongji,2),'%'),
-							concat(round(zongji*100/zongji,2),'%'),
-							2 as num
-							from tmp112) o
-							 GROUP BY STAT_PERIOD DESC,NUM
+							concat(round(zongji*100/zongji,2),'%')
+							from tmp112
 							;
-							
-							DROP TABLE IF EXISTS TMPhaha;
+							  DROP TABLE IF EXISTS TMPhaha;
 							CREATE TEMPORARY TABLE TMPhaha AS
 							select 
 							STAT_PERIOD,
@@ -920,6 +1002,15 @@
 							when sanyue='0.00%' then ''
 							else sanyue end as sanyue,
 							
+							case when siyue='0.00' then '' 
+							when siyue='0.00%' then ''
+							else siyue end as siyue,
+
+
+							case when wuyue='0.00' then '' 
+							when wuyue='0.00%' then ''
+							else wuyue end as wuyue,
+
 							case when liuyue='0.00' then ''
 							when liuyue='0.00%' then ''
 							else liuyue end as liuyue,
@@ -935,6 +1026,10 @@
 							case when shiyue='0.00' then '' 
 							when shiyue='0.00%' then '' 
 							else shiyue end as shiyue,
+
+							case when shiyiyue='0.00' then '' 
+							when shiyiyue='0.00%' then '' 
+							else shiyiyue end as shiyiyue,
 							
 							case when shieryue='0.00' then '' 
 							when shieryue='0.00%' then ''
@@ -983,6 +1078,8 @@
 	</select>
 	
 	<select id="queryListss" resultType="io.renren.entity.yunying.dayreport.DmReportDepSalesEntity">
+			DROP TABLE IF EXISTS TMPhaha;
+		CREATE TEMPORARY TABLE TMPhaha AS
 		select
 		STAT_PERIOD,
 		sales_type,
@@ -993,8 +1090,8 @@
 			AND STAT_PERIOD BETWEEN #{reg_begindate} AND #{reg_enddate}
 		</if> 
 		AND name='留存情况'
-		GROUP  BY STAT_PERIOD DESC,sales_type desc,PERIOD
-	
+		GROUP  BY STAT_PERIOD DESC,sales_type desc,PERIOD;
+	select * from TMPhaha
 	</select>
 		<select id="queryListhe" resultType="io.renren.entity.yunying.dayreport.DmReportDepSalesEntity">
 		DROP TABLE IF EXISTS TMPhaha;

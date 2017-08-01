@@ -160,6 +160,18 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 						newEntity.setSanyue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getSanyue())-Double.parseDouble(yesEntity.getSanyue()))/Double.parseDouble(yesEntity.getSanyue())*100, 2)+"%");
 					}
 					
+					if(StringUtils.isEmpty(todayEntity.getSiyue()) || StringUtils.isEmpty(yesEntity.getSiyue())){
+						newEntity.setSiyue("");
+					}else{
+						newEntity.setSiyue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getSiyue())-Double.parseDouble(yesEntity.getSiyue()))/Double.parseDouble(yesEntity.getSiyue())*100, 2)+"%");
+					}
+					
+					if(StringUtils.isEmpty(todayEntity.getWuyue()) || StringUtils.isEmpty(yesEntity.getWuyue())){
+						newEntity.setWuyue("");
+					}else{
+						newEntity.setWuyue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getWuyue())-Double.parseDouble(yesEntity.getWuyue()))/Double.parseDouble(yesEntity.getWuyue())*100, 2)+"%");
+					}
+					
 					if(StringUtils.isEmpty(todayEntity.getLiuyue()) || StringUtils.isEmpty(yesEntity.getLiuyue())){
 						newEntity.setLiuyue("");
 					}else{
@@ -182,6 +194,12 @@ public class DmReportDepSalesServiceImpl implements DmReportDepSalesService {
 						newEntity.setShiyue("");
 					}else{
 						newEntity.setShiyue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getShiyue())-Double.parseDouble(yesEntity.getShiyue()))/Double.parseDouble(yesEntity.getShiyue())*100, 2)+"%");
+					}
+					
+					if(StringUtils.isEmpty(todayEntity.getShiyiyue()) || StringUtils.isEmpty(yesEntity.getShiyiyue())){
+						newEntity.setShiyiyue("");
+					}else{
+						newEntity.setShiyiyue(""+NumberUtil.keepPrecision((Double.parseDouble(todayEntity.getShiyiyue())-Double.parseDouble(yesEntity.getShiyiyue()))/Double.parseDouble(yesEntity.getShiyiyue())*100, 2)+"%");
 					}
 					
 					if(StringUtils.isEmpty(todayEntity.getShieryue()) || StringUtils.isEmpty(yesEntity.getShieryue())){
