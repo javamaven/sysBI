@@ -349,6 +349,12 @@ function initShichangRegTable(){
 				} 
 			},
 			{ label: '目标值', name: '目标值', index: '$OWNER', width: 80 ,align:'right',editable: true,formatter: function(value, options, row){
+				console.info("++++++目标值+++++++")
+
+				console.info(row)
+					if(value == null || value == ''){
+						return '';
+					}
 					if(value){
 						return formatNumber(value + '',2);
 					}
@@ -369,7 +375,7 @@ function initShichangRegTable(){
 					var luru = '<a onclick="checkAuth(\'shichang_luru_phone_cost\',\''+row.指标+'\',\''+options.rowId+'\',\''+row.状态+'\')" class="btn btn-primary btn-inverse btn-xs">录入电销成本</a> &nbsp;&nbsp;&nbsp;&nbsp;';
 					var exportHtml = '<a onclick="exportDetail(\'' + row.指标 + '\',\'' + row.month + '\')" class="btn btn-primary btn-inverse btn-xs">导出明细</a> &nbsp;&nbsp;&nbsp;&nbsp;';
 					if(row.状态 == '已完成'){
-						if(row.指标 == '市场部本月红包成本' || row.指标 == '市场部本月渠道成本' || row.指标 == '渠道首投年化投资金额'){
+						if(row.指标 == '市场部本月红包成本' || row.指标 == '市场部本月渠道成本' || row.指标 == '当月首投用户本月累投金额'){
 							return exportHtml;
 						}else{
 							return '';
@@ -381,7 +387,7 @@ function initShichangRegTable(){
 						}else{
 							return queren;
 						}
-					}else if(row.指标 == '市场部本月红包成本' || row.指标 == '市场部本月渠道成本' || row.指标 == '渠道首投年化投资金额'){
+					}else if(row.指标 == '市场部本月红包成本' || row.指标 == '市场部本月渠道成本' || row.指标 == '当月首投用户本月累投金额'){
 						return queren + exportHtml;
 					}else{
 						return queren;

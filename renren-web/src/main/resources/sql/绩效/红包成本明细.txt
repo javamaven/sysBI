@@ -96,3 +96,4 @@ else nvl(ss.sum_vouche,0) end as "运营部费用(元)"
 from shiyong ss full join fafang ff on ss.prize_template_id=ff.prize_template_id
 left join guisu gg on  gg.id=nvl(ss.prize_template_id,ff.prize_template_id)
 where nvl(ff.prize_template_id,ss.prize_template_id) is not null
+and gg.attri_department in('归属市场部' ,'仅首投归市场')

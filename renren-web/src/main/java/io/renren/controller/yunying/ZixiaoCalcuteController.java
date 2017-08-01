@@ -54,11 +54,11 @@ public class ZixiaoCalcuteController extends AbstractController {
 	
 	private String shichang_reg_user_num = "本月注册人数";
 	private String shichang_first_invest_user_num = "本月首投人数";
-	private String shichang_curr_month_roi = "本月首投年化ROI";
+	private String shichang_curr_month_roi = "本月首投用户本月累投ROI";
 	private String shichang_hongbao_cost = "市场部本月红包成本";
 	private String shichang_channel_cost = "市场部本月渠道成本";
 	private String shichang_phonesale_cost = "市场部电销成本";
-	private String shichang_curr_month_channel_year_invest = "渠道首投年化投资金额";
+	private String shichang_curr_month_channel_year_invest = "当月首投用户本月累投金额";
 
 	@Autowired
 	DataSourceFactory dataSourceFactory;
@@ -191,16 +191,29 @@ public class ZixiaoCalcuteController extends AbstractController {
 		boolean hasAuth = false;
 		String status = params.get("状态") + "";
 		if(status.contains("市场")){
-			if(username.trim().equals(authData.get("市场部").toString().trim())){
-				hasAuth = true;
+			String name_list = authData.get("市场部").toString().trim();
+			String[] split = name_list.split("\\^");
+			for (int i = 0; i < split.length; i++) {
+				if(username.trim().equals(split[i])){
+					hasAuth = true;
+				}
 			}
+			
 		}else if(status.contains("运营")){
-			if(username.trim().equals(authData.get("运营部").toString().trim())){
-				hasAuth = true;
+			String name_list = authData.get("运营部").toString().trim();
+			String[] split = name_list.split("\\^");
+			for (int i = 0; i < split.length; i++) {
+				if(username.trim().equals(split[i])){
+					hasAuth = true;
+				}
 			}
 		}else if(status.contains("财务")){
-			if(username.trim().equals(authData.get("财务部").toString().trim())){
-				hasAuth = true;
+			String name_list = authData.get("财务部").toString().trim();
+			String[] split = name_list.split("\\^");
+			for (int i = 0; i < split.length; i++) {
+				if(username.trim().equals(split[i])){
+					hasAuth = true;
+				}
 			}
 		}
 		
@@ -283,7 +296,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 		if(caiwu_index.equals(index)){
 			if("等待财务部录入".equals(currStatus)){
 				map.put("cancel", hasAuth);
-				return "等待运营部确认";
+				return "已完成";
 			}else if("等待运营部确认".equals(currStatus)){
 				return "已完成";
 			}else{
@@ -306,7 +319,15 @@ public class ZixiaoCalcuteController extends AbstractController {
 			}else{
 				return "等待市场部录入";
 			}
-		}else if(shichang_reg_user_num.equals(index) || shichang_first_invest_user_num.equals(index)  || shichang_curr_month_roi.equals(index)
+		}else if(shichang_reg_user_num.equals(index) || shichang_first_invest_user_num.equals(index)){
+			if("等待市场部确认".equals(currStatus)){
+				return "已完成";
+			}else if("等待财务部确认".equals(currStatus)){
+				return "已完成";
+			}else{
+				return "等待市场部确认";
+			}
+		}else if(shichang_curr_month_roi.equals(index)
 				|| shichang_hongbao_cost.equals(index) || shichang_channel_cost.equals(index) || shichang_curr_month_channel_year_invest.equals(index)){
 			if("等待市场部确认".equals(currStatus)){
 				return "等待财务部确认";
@@ -374,8 +395,10 @@ public class ZixiaoCalcuteController extends AbstractController {
 				}else if(yunying_curr_month_await.equals(zhibiao)){
 					map.put("目标值", yunyingMubiao.get("本月销售新增年底待收目标_"+month+"月"));
 				}
-				
-				double complete = Double.parseDouble(completeStr);
+				double complete = 0;
+				if(!StringUtils.isEmpty(completeStr) && !"null".equals(completeStr)){
+					complete = Double.parseDouble(completeStr);
+				}
 				double mubiao = Double.parseDouble(map.get("目标值").toString());
 				map.put("达成率", io.renren.util.NumberUtil.keepPrecision(complete*100/mubiao, 2) + "%");
 				
@@ -484,10 +507,11 @@ public class ZixiaoCalcuteController extends AbstractController {
 			//本月推广的渠道年化投资金额
 			String channelYearInvestSql = FileUtil.readAsString(new File(path + File.separator + "sql/绩效/本月推广的渠道年化投资金额.txt"));
 			List<Map<String, Object>> channelYearInvestList = new ArrayList<>();
-			channelYearInvestSql = channelYearInvestSql.replace("${startTime}", "'" + statPeriod + "-01 00:00:00'");
-			channelYearInvestSql = channelYearInvestSql.replace("${endTime}", "'" + lastDayOfMonth + " 23:59:59'");
-			channelYearInvestSql = channelYearInvestSql.replace("${lastMonthFirstDay}", "'" + lastMonthFirstDay + "'");
-			channelYearInvestSql = channelYearInvestSql.replace("${currMonthEndDay}", "'" + lastDayOfMonth + "'");
+			channelYearInvestSql = channelYearInvestSql.replace("${month}", statPeriod.replace("-", ""));
+//			channelYearInvestSql = channelYearInvestSql.replace("${startTime}", "'" + statPeriod + "-01 00:00:00'");
+//			channelYearInvestSql = channelYearInvestSql.replace("${endTime}", "'" + lastDayOfMonth + " 23:59:59'");
+//			channelYearInvestSql = channelYearInvestSql.replace("${lastMonthFirstDay}", "'" + lastMonthFirstDay + "'");
+//			channelYearInvestSql = channelYearInvestSql.replace("${currMonthEndDay}", "'" + lastDayOfMonth + "'");
 			Thread t1 = new Thread(new QueryThread(queryCostSql, dataSourceFactory, hongbaoCostList, startDate, endDate, null));
 			Thread t2 = new Thread(new QueryThread(channelCostSql, dataSourceFactory, channelCostList, null, null, statPeriod));
 			Thread t3 = new Thread(new QueryThread(channelYearInvestSql, dataSourceFactory, channelYearInvestList, null, null, null));
@@ -503,7 +527,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 				reg_user_map.put("month", map.get("MONTH"));
 				reg_user_map.put("指标", shichang_reg_user_num);
 				reg_user_map.put("完成值", map.get(shichang_reg_user_num));
-				reg_user_map.put("目标值", shichangMubiaoMap.get("本月注册人数目标_"+month+"月"));
+				reg_user_map.put("目标值", shichangMubiaoMap.get("本月注册人数目标_"+month+"月").toString().trim());
 				double complete = Double.parseDouble(reg_user_map.get("完成值") + "");
 				Object mubiaoObj = reg_user_map.get("目标值");
 				double mubiao = 0;
@@ -523,7 +547,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 				first_invest_user_map.put("month", map.get("MONTH"));
 				first_invest_user_map.put("指标", shichang_first_invest_user_num);
 				first_invest_user_map.put("完成值", map.get(shichang_first_invest_user_num));
-				first_invest_user_map.put("目标值", shichangMubiaoMap.get("本月首投人数目标_"+month+"月"));
+				first_invest_user_map.put("目标值", shichangMubiaoMap.get("本月首投人数目标_"+month+"月").toString().trim());
 				double complete_st = Double.parseDouble(first_invest_user_map.get("完成值") + "");
 				Object mubiaoObj_st = first_invest_user_map.get("目标值");
 				double mubiao_ft = 0;
@@ -537,6 +561,44 @@ public class ZixiaoCalcuteController extends AbstractController {
 					first_invest_user_map.put("状态", getNextStatus(first_invest_map.get("status") + "", shichang_first_invest_user_num, map));
 				}
 				retList.add(first_invest_user_map);
+				
+				//本月首投用户本月累投ROI	
+				Map<String, Object> roi_map = queryMonthMaxBatch(month + "", shichang_curr_month_roi);
+				Map<String, Object> map__ = new HashMap<>();
+//				if(taskMap == null){
+//					map.put("状态", "等待财务部录入");
+//				}else{
+//					map.put("状态", getNextStatus(taskMap.get("status") + "", caiwu_index));
+//					map.put("完成值", taskMap.get("complete_value"));
+//					map.put("达成率", taskMap.get("complete_rate"));
+//				}
+				map__.put("指标", shichang_curr_month_roi);
+				map__.put("目标值", "");//写死
+				if(roi_map == null){
+					map__.put("状态", "等待市场部确认");
+				}else{
+					map__.put("状态", getNextStatus(roi_map.get("status").toString(), shichang_curr_month_roi, map__));
+				}
+				retList.add(map__);
+				
+				
+				
+				
+				
+				//本月首投用户本月累投ROI
+//				Map<String, Object> roi_max_map = queryMonthMaxBatch(month + "", "本月首投用户本月累投ROI");
+//				Map<String, Object> roi_map = new HashMap<>();
+//				roi_map.put("month", map.get("MONTH"));
+//				roi_map.put("指标", "本月首投用户本月累投ROI");
+//				roi_map.put("完成值", map.get("本月首投用户本月累投ROI"));
+//				roi_map.put("目标值", "");
+//				roi_map.put("达成率", "");
+//				if(roi_max_map == null){
+//					roi_map.put("状态", "等待市场部确认");
+//				}else{
+//					roi_map.put("状态", getNextStatus(first_invest_map.get("status") + "", "本月首投用户本月累投ROI", roi_map));
+//				}
+//				retList.add(roi_map);
 				//市场部红包成本
 				Map<String, Object> shichang_hongbao_cost_map = queryMonthMaxBatch(month + "", shichang_hongbao_cost);
 				Map<String, Object> hongbao_cost_map = new HashMap<>();
@@ -574,7 +636,8 @@ public class ZixiaoCalcuteController extends AbstractController {
 				if(queryMonthMaxBatch == null){
 					phone_cost_map.put("状态", "等待市场部录入");
 				}else{
-					phone_cost_map.put("状态", getNextStatus(queryMonthMaxBatch.get("status").toString(), shichang_phonesale_cost, map));
+					phone_cost_map.put("状态", getNextStatus(queryMonthMaxBatch.get("status").toString(), shichang_phonesale_cost, phone_cost_map));
+					phone_cost_map.put("完成值", queryMonthMaxBatch.get("complete_value"));
 				}
 				retList.add(phone_cost_map);
 				//本月推广的渠道年化投资金额
@@ -588,7 +651,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 				if(tuiguagn_map == null){
 					curr_month_year_invest_map.put("状态", "等待市场部确认");
 				}else{
-					curr_month_year_invest_map.put("状态", getNextStatus(tuiguagn_map.get("status").toString(), shichang_curr_month_channel_year_invest, map));
+					curr_month_year_invest_map.put("状态", getNextStatus(tuiguagn_map.get("status").toString(), shichang_curr_month_channel_year_invest, curr_month_year_invest_map));
 				}
 				retList.add(curr_month_year_invest_map);
 			}
@@ -599,26 +662,49 @@ public class ZixiaoCalcuteController extends AbstractController {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		//本月首投年化ROI
-		Map<String, Object> roi_map = queryMonthMaxBatch(month + "", shichang_curr_month_roi);
-		Map<String, Object> map = new HashMap<>();
-//		if(taskMap == null){
-//			map.put("状态", "等待财务部录入");
-//		}else{
-//			map.put("状态", getNextStatus(taskMap.get("status") + "", caiwu_index));
-//			map.put("完成值", taskMap.get("complete_value"));
-//			map.put("达成率", taskMap.get("complete_rate"));
-//		}
-		map.put("指标", shichang_curr_month_roi);
-		map.put("目标值", "");//写死
-		if(roi_map == null){
-			map.put("状态", "等待市场部确认");
-		}else{
-			map.put("状态", getNextStatus(roi_map.get("status").toString(), shichang_curr_month_roi, map));
-		}
-		retList.add(map);
+		//计算roi
+		setRoi(retList);
 		PageUtils pageUtil = new PageUtils(retList, retList.size(), limit, page);
 		return R.ok().put("page", pageUtil);
+	}
+
+	private void setRoi(List<Map<String, Object>> retList) {
+		double total_cost = 0;
+		double total_invest = 0;
+		double phone_cost = 0;
+		for (int i = 0; i < retList.size(); i++) {
+			Map<String, Object> map = retList.get(i);
+			String zhibiao = map.get("指标").toString();
+			Object value = map.get("完成值");
+			if(zhibiao.equals(shichang_hongbao_cost) || zhibiao.equals(shichang_channel_cost)){
+				if(value == null){
+					total_cost += 0;
+				}else{
+					total_cost += Double.parseDouble(value.toString());
+				}
+			}else if(zhibiao.equals(shichang_phonesale_cost)){
+				if(value != null && !"".equals(value) && !"null".equals(value)){
+					phone_cost = Double.parseDouble(value.toString());
+					total_cost += Double.parseDouble(value.toString());
+				}else{
+					total_cost += 0;
+				}
+			}else if(zhibiao.equals(shichang_curr_month_channel_year_invest)){
+				if(value != null && value.toString().trim().length() > 0){
+					total_invest = Double.parseDouble(value.toString());
+				}
+			}
+			
+		}
+		
+		for (int i = 0; i < retList.size(); i++) {
+			Map<String, Object> map = retList.get(i);
+			String zhibiao = map.get("指标").toString();
+			if(zhibiao.equals(shichang_curr_month_roi) && phone_cost > 0){
+				double value = total_invest/total_cost;
+				map.put("完成值", NumberUtil.keepPrecision(value, 2));
+			}
+		}
 	}
 	
 	@ResponseBody
@@ -648,11 +734,11 @@ public class ZixiaoCalcuteController extends AbstractController {
 			String sql = FileUtil.readAsString(new File(path + File.separator + "sql/绩效/渠道成本明细.txt"));
 			querySql = sql.replace("${month}", month);
 		}else if(shichang_curr_month_channel_year_invest.equals(indexName)){
-			excelTitle = "年化投资金额明细";
+			excelTitle = shichang_curr_month_channel_year_invest + "明细";
 			headMap = getYearInvestExcelFields();
 			String sql = FileUtil.readAsString(new File(path + File.separator + "sql/绩效/首投年化投资额明细.txt"));
 			querySql = sql.replace("${lastMonth}", lastMonth);
-			querySql = querySql.replace("${month}", month);
+			querySql = querySql.replace("${month}", month.replace("-", ""));
 		}
 		try {
 			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(querySql);
@@ -698,8 +784,9 @@ public class ZixiaoCalcuteController extends AbstractController {
 	
 	private Map<String, String> getYearInvestExcelFields() {
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
-		headMap.put("渠道名称", "渠道名称");
-		headMap.put("首投年化投资额", "首投年化投资额");
+		headMap.put("投资时间", "投资时间");
+		headMap.put("用户ID", "用户ID");
+		headMap.put("投资金额", "投资金额");
 		return headMap;
 	}
 	

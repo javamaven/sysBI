@@ -1,29 +1,20 @@
-with td as
+with duu as -- 当月首投用户本月累投金额
 (
-select * from (
-select
-pd.user_id,
-pd.addtime,
-pd.borrow_period,
-case when pd.tender_subject=2 then pd.tend_cash else pd.tender_capital end as tender_capital,
-row_number() over(partition by pd.user_id order by pd.addtime asc) ranks
-from mdtxbi.dm_trading_project_detail pd)  where ranks=1
+select -- 首投人数计算
+user_id, -- 用户唯一id
+REGISTER_TIME,--  注册时间
+IS_VALIDATE_IDCARD,
+case
+when nvl(NORMAL_FIRSTINVEST_TIME,to_date('2999-12-31','yyyy-mm-dd'))<nvl(DEPOSITORY_FIRSTINVEST_TIME,to_date('2999-12-31','yyyy-mm-dd')) then NORMAL_FIRSTINVEST_TIME
+when nvl(NORMAL_FIRSTINVEST_TIME,to_date('2999-12-31','yyyy-mm-dd'))>nvl(DEPOSITORY_FIRSTINVEST_TIME,to_date('2999-12-31','yyyy-mm-dd')) then DEPOSITORY_FIRSTINVEST_TIME
+end  as FIRSTINVEST_TIME --首投时间
+from mdtxbi.edw_user_basic
+where IS_BORROWER=0
 )
-
 select
-round(sum(td.tender_capital*td.borrow_period/360),2) as 渠道首投年化投资金额
-from
-td left join mdtxbi.edw_user_basic du
-on td.user_id=du.user_id
-where td.addtime between to_date(${startTime},'yyyy-MM-dd hh24:mi:ss') and to_date(${endTime},'yyyy-MM-dd hh24:mi:ss')
-and (du.activity_tag in
-(
-  select
-  distinct(dcc.channel_label)
-  from mdtxbi.dim_channel_cost dcc
-  where 1=1
-  and dcc.fee_time is not null
-  and dcc.fee_time between to_date(${lastMonthFirstDay},'yyyy-MM-dd') and to_date(${currMonthEndDay},'yyyy-MM-dd') -- 市场部提出会有补量情况，故本月和上月有渠道成本的都算
-  and dcc.actual_cost > 0
-) or du.activity_tag='invited') 
-
+sum(case when pd.tender_subject=2 then pd.tend_cash else pd.tender_capital end) as "当月首投用户本月累投金额"
+from mdtxbi.dm_trading_project_detail pd
+where pd.user_id in --  首投时间在本月的用户
+(select user_id from duu where to_char(duu.FIRSTINVEST_TIME,'yyyymm')= '${month}' )
+and pd.tender_account_status=1
+and to_char(pd.addtime,'yyyymm')='${month}'
