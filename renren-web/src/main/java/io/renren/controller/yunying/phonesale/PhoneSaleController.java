@@ -30,6 +30,7 @@ import com.alibaba.fastjson.JSONArray;
 
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
+import io.renren.util.DateUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
@@ -314,6 +315,13 @@ public class PhoneSaleController {
 		headMap.put("接通前-首次投资时间", "接通前-首次投资时间");
 
 		headMap.put("接通前-末次投资时间", "接通前-末次投资时间");
+		
+		headMap.put("当日投资次数", "当日投资次数");
+		headMap.put("当日投资金额", "当日投资金额");
+		headMap.put("当日年化金额", "当日年化金额");
+		headMap.put("当月投资次数", "当月投资次数");
+		headMap.put("当月投资金额", "当月投资金额");
+		headMap.put("当月年化金额", "当月年化金额");
 		return headMap;
 	}
 
@@ -447,12 +455,24 @@ public class PhoneSaleController {
 					detail_sql = detail_sql.replace("${investStartTime}", investEndTime.substring(0, 6) + "01");
 					detail_sql = detail_sql.replace("${month}", investEndTime.substring(0, 6));
 				} else if ("month".equals(reportType)) {
-					detail_sql = FileUtil
-							.readAsString(new File(path + File.separator + "phone_sale_month_detail_sql.txt"));
+					detail_sql = FileUtil.readAsString(new File(path + File.separator + "phone_sale_month_detail_sql.txt"));
+					String currDayStr = DateUtil.getCurrDayStr();
+					String monthsBefore = DateUtil.getMonthsBefore(currDayStr, 1);
+					int day = Integer.parseInt(currDayStr.substring(6, 8));
+					String startDate = null;
+					String endDate = null;
+					startDate = monthsBefore.substring(0, 6) + "01";
+					if(day >= 4){//大于等于4号
+						endDate = currDayStr.substring(0, 6) + "03";
+					}else{
+						endDate = DateUtil.getCurrDayBefore(1);
+					}
+					detail_sql = detail_sql.replace("${startDate}", startDate);
+					detail_sql = detail_sql.replace("${endDate}", endDate);
 				}
 				// 分页查询
 				detail_sql = detail_sql.replace("${selectSql}", "*");
-				detail_sql = detail_sql.replace("${pageStartSql}", "and RN >= " + start);
+				detail_sql = detail_sql.replace("${pageStartSql}", "and RN > " + start);
 				detail_sql = detail_sql.replace("${pageEndSql}", "and ROWNUM <= " + end);
 				detail_sql = detail_sql.replace("${investEndTime}", investEndTime);
 				List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);

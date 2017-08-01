@@ -208,7 +208,14 @@ function initMonthListTableGrid(){
 			{ label: '接通前-投资次数', name: '接通前-投资次数', index: '$BORROW_PERIOD', width: 140 ,align:'right'},	
 			
 			{ label: '接通前-首次投资时间', name: '接通前-首次投资时间', index: '$BORROW_PERIOD', width: 150 ,align:'right'},	
-			{ label: '接通前-末次投资时间', name: '接通前-末次投资时间', index: '$BORROW_PERIOD', width: 150 ,align:'right'}	
+			{ label: '接通前-末次投资时间', name: '接通前-末次投资时间', index: '$BORROW_PERIOD', width: 150 ,align:'right'},
+			
+			{ label: '当日投资次数', name: '当日投资次数', index: '$BORROW_PERIOD', width: 150 ,align:'right'}	,
+			{ label: '当日投资金额', name: '当日投资金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'}	,
+			{ label: '当日年化金额', name: '当日年化金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'}	,
+			{ label: '当月投资次数', name: '当月投资次数', index: '$BORROW_PERIOD', width: 150 ,align:'right'}	,
+			{ label: '当月投资金额', name: '当月投资金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'}	,
+			{ label: '当月年化金额', name: '当月年化金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'}	
 			
         ],
 		viewrecords: true,

@@ -88,7 +88,14 @@ ROWnum RN,
   "接通前-年化投资金额",
   "接通前-投资次数",
   CASE WHEN "接通前-首次投资时间" IS NOT NULL THEN SUBSTR("接通前-首次投资时间",1,4)||'/'||SUBSTR("接通前-首次投资时间",5,2)||'/'||SUBSTR("接通前-首次投资时间",7,2) ELSE "接通前-首次投资时间" END AS"接通前-首次投资时间",
-  CASE WHEN "接通前-末次投资时间" IS NOT NULL THEN SUBSTR("接通前-末次投资时间",1,4)||'/'||SUBSTR("接通前-末次投资时间",5,2)||'/'||SUBSTR("接通前-末次投资时间",7,2) ELSE "接通前-末次投资时间" END AS"接通前-末次投资时间"  
+  CASE WHEN "接通前-末次投资时间" IS NOT NULL THEN SUBSTR("接通前-末次投资时间",1,4)||'/'||SUBSTR("接通前-末次投资时间",5,2)||'/'||SUBSTR("接通前-末次投资时间",7,2) ELSE "接通前-末次投资时间" END AS"接通前-末次投资时间",
+    -- 新增当天，当月投资信息
+  "当日投资次数",
+  round("当日投资金额",2) "当日投资金额",
+  round("当日年化金额",2) "当日年化金额",
+  "当月投资次数",
+  round("当月投资金额",2) "当月投资金额",
+  round("当月年化金额",2) "当月年化金额"
 FROM (
 
 -- 接通数据
@@ -115,7 +122,14 @@ SELECT
   ROUND(SUM(CASE WHEN TIME_INVEST<CALL_DATE THEN MONEY_YEAR_INVSET ELSE 0 END),2) AS "接通前-年化投资金额",    
   SUM(CASE WHEN TIME_INVEST<CALL_DATE THEN 1 ELSE 0 END) AS "接通前-投资次数",  
   MIN(CASE WHEN TIME_INVEST<CALL_DATE THEN TIME_INVEST END) AS "接通前-首次投资时间",
-  MAX(CASE WHEN TIME_INVEST<CALL_DATE THEN TIME_INVEST END) AS "接通前-末次投资时间"
+  MAX(CASE WHEN TIME_INVEST<CALL_DATE THEN TIME_INVEST END) AS "接通前-末次投资时间",
+    -- 新增当天，当月投资信息
+  sum(case when time_invest = to_char(sysdate-1, 'yyyyMMdd') then 1 else 0 end) 当日投资次数,
+  sum(case when time_invest = to_char(sysdate-1, 'yyyyMMdd') then MONEY_INVEST else 0 end) 当日投资金额,
+  sum(case when time_invest = to_char(sysdate-1, 'yyyyMMdd') then MONEY_YEAR_INVSET else 0 end) 当日年化金额,
+  sum(case when time_invest between '${startDate}' and '${endDate}' then 1 else 0 end) 当月投资次数,
+  sum(case when time_invest between '${startDate}' and '${endDate}' then MONEY_INVEST else 0 end) 当月投资金额,
+  sum(case when time_invest between '${startDate}' and '${endDate}' then MONEY_YEAR_INVSET else 0 end) 当月年化金额
 FROM TMP_DETIAL TD 
 WHERE MARK=2 -- 1-内部,2-外包
  AND CALL_RESULT IN ('接通','成功沟通','无兴趣（通话中挂机、贷款）','有兴趣（资金已准备到位）')
@@ -151,7 +165,14 @@ SELECT
   ROUND(SUM(MONEY_YEAR_INVSET ),2) AS "接通前-年化投资金额", 
   COUNT(1) AS "接通前-投资次数",     
   MIN(TIME_INVEST) AS "接通前-首次投资时间",
-  MAX(TIME_INVEST) AS "接通前-末次投资时间"
+  MAX(TIME_INVEST) AS "接通前-末次投资时间",
+    -- 新增当天，当月投资信息
+  sum(case when time_invest = to_char(sysdate-1, 'yyyyMMdd') then 1 else 0 end) 当日投资次数,
+  sum(case when time_invest = to_char(sysdate-1, 'yyyyMMdd') then MONEY_INVEST else 0 end) 当日投资金额,
+  sum(case when time_invest = to_char(sysdate-1, 'yyyyMMdd') then MONEY_YEAR_INVSET else 0 end) 当日年化金额,
+  sum(case when time_invest between '${startDate}' and '${endDate}' then 1 else 0 end) 当月投资次数,
+  sum(case when time_invest between '${startDate}' and '${endDate}' then MONEY_INVEST else 0 end) 当月投资金额,
+  sum(case when time_invest between '${startDate}' and '${endDate}' then MONEY_YEAR_INVSET else 0 end) 当月年化金额
 FROM TMP_DETIAL TD 
 WHERE MARK=2 -- 1-内部,2-外包
 AND CALL_RESULT IN ('无人接听','无法联系（停机、空号、关机、忙音）')
