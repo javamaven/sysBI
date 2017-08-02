@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -16,7 +15,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.aspectj.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,7 +27,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
 import io.renren.controller.AbstractController;
-import io.renren.entity.ChannelStftInfoEntity;
 import io.renren.entity.SysUserEntity;
 import io.renren.service.UserBehaviorService;
 import io.renren.system.jdbc.DataSourceFactory;
@@ -316,7 +313,16 @@ public class ZixiaoCalcuteController extends AbstractController {
 			}else{
 				return "等待财务部录入";
 			}
-		}else if(yunying_curr_month_invest.equals(index) || yunying_curr_month_await.equals(index)){
+		}else if(yunying_curr_month_await.equals(index)){
+			if("等待运营部确认".equals(currStatus)){
+				map.put("cancel", hasAuth);
+				return "已完成";
+			}else if("等待财务部确认".equals(currStatus)){
+				return "已完成";
+			}else{
+				return "等待运营部确认";
+			}
+		}else if(yunying_curr_month_invest.equals(index)){
 			if("等待运营部确认".equals(currStatus)){
 				map.put("cancel", hasAuth);
 				return "等待财务部确认";
