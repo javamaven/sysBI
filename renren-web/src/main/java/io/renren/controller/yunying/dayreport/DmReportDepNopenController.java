@@ -55,6 +55,9 @@ public class DmReportDepNopenController {
 	@RequestMapping("/list")
 	@RequiresPermissions("dmreportdepnopen:list")
 	public R list(Integer page, Integer limit, String statPeriod) {
+		
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(), new Date(), "查看", reportType, " ");
 		Map<String, Object> map = new HashMap<>();
 		map.put("offset", (page - 1) * limit);
 		map.put("limit", limit);

@@ -55,8 +55,7 @@ function initExportFunction(){
 		}
 	});
 
-}
-
+}  
 function initDetailTableGrid(){
     $("#jqGrid").jqGrid({
 //        url: '../yunying/dmreportvipuser/list',
@@ -74,7 +73,7 @@ function initDetailTableGrid(){
 			{ label: '平均借款期限(天)', name: 'AVGS', index: '$AVGS', width: 90 ,align:'right'},		
 			{ label: '平均借款利率(万)', name: 'AVGLI', index: '$AVGLI', width: 90 ,align:'right'},
 			{ label: '逾期', name: 'YUQI', index: '$YUQI', width: 90 ,align:'right'}
-				
+					
         ],
 		viewrecords: true,
         height: $(window).height()-170,

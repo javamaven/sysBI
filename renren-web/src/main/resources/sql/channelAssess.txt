@@ -135,9 +135,6 @@ channel_all as(
     round(sum(ac.nor_balance+ ac.dep_balance)/10000,2) as balance, --账户余额
     sum(nor_balance+
         dep_balance+
-        nor_lock_amount+
-        dep_tender_lock_amount+
-        dep_financial_lock_amount+
         nor_ddz_amount+
         nor_recover_capital_wait+
         dep_recover_capital_wait) as total -- 总资产
@@ -354,9 +351,6 @@ channel_all as(
     round(sum(ac.nor_balance+ ac.dep_balance)/10000,2) as balance, --账户余额
     sum(nor_balance+
         dep_balance+
-        nor_lock_amount+
-        dep_tender_lock_amount+
-        dep_financial_lock_amount+
         nor_ddz_amount+
         nor_recover_capital_wait+
         dep_recover_capital_wait) as total -- 总资产

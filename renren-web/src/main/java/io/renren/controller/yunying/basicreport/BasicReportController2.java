@@ -1,9 +1,12 @@
 package io.renren.controller.yunying.basicreport;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -27,10 +30,12 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
+import io.renren.service.UserBehaviorService;
 import io.renren.service.yunying.basicreport.BasicReportService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
 import io.renren.util.DateUtil;
+import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
@@ -45,10 +50,19 @@ public class BasicReportController2 {
 	
 	@Autowired
 	DataSourceFactory dataSourceFactory;
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+
+
 	
 	@ResponseBody
 	@RequestMapping("/queryPhoneSaleCgUserList")
 	public R queryPhoneSaleCgUserList(Integer page, Integer limit, String date, String type,String isKaitongCg) {
+		String reportType="筛选存管版用户";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+		
+		
 		Map<String, Object> map = new HashMap<>();
 		map.put("offset", (page - 1) * limit);
 		map.put("limit", limit);
@@ -80,6 +94,10 @@ public class BasicReportController2 {
 	@RequestMapping("/phoneSaleCgUserListExport")
 	public void phoneSaleCgUserListExport(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		String reportType="筛选存管版用户";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
+		
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		
 		String type = map.get("type") + "";
@@ -208,6 +226,11 @@ public class BasicReportController2 {
 	@RequestMapping("/phoneSaleHistoryListExport")
 	public void phoneSaleHistoryListExport(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		String reportType="注册未投资";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
+		
+		
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		int limitNum = 100000;
 		String limitNumStr = map.get("limitNum") + "";
@@ -270,6 +293,11 @@ public class BasicReportController2 {
 	@ResponseBody
 	@RequestMapping("/phoneSaleHistoryList")
 	public R phoneSaleHistory(Integer page, Integer limit, String registerStartTime, String registerEndTime, String limitNum) {
+		String reportType="注册未投资";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+		
+		
 		int size = 0;
 		if(StringUtils.isNotEmpty(limitNum)){
 			size = Integer.parseInt(limitNum);
@@ -359,7 +387,10 @@ public class BasicReportController2 {
 	@ResponseBody
 	@RequestMapping("/registNotInvest")
 	public R registNotInvest(Integer page, Integer limit, String registerStartTime, String registerEndTime) {
-
+		String reportType="本月首投3天未复投用户";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+		
 		int start = (page - 1) * limit;
 		int end = start + limit;
 		PageUtils pageUtil = service.queryList(page, limit, registerStartTime, registerEndTime, start, end);
@@ -371,6 +402,9 @@ public class BasicReportController2 {
 	@ResponseBody
 	@RequestMapping("/firstInvestNotMulti")
 	public R firstInvestNotMulti(Integer page, Integer limit, String statPeriod) {
+		String reportType="本月首投3天未复投用户";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		Map<String, Object> map = new HashMap<>();
 		map.put("page", page);
 		map.put("limit", limit);
@@ -385,6 +419,9 @@ public class BasicReportController2 {
 	@RequestMapping("/exportFirstInvestNotMultiExcel")
 	public void exportFirstInvestNotMultiExcel(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		String reportType="本月首投3天未复投用户";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		PageUtils page = service.queryFirstInvestNotMultiList(map);
 		
@@ -412,7 +449,9 @@ public class BasicReportController2 {
 	@ResponseBody
 	@RequestMapping("/registThreeDaysNotInvest")
 	public R registThreeDaysNotInvest(Integer page, Integer limit, String registerStartTime, String registerEndTime) {
-
+		String reportType="注册三天未投资";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		int start = (page - 1) * limit;
 		int end = start + limit;
 		Map<String, Object> params = new HashMap<String, Object>();
@@ -443,6 +482,9 @@ public class BasicReportController2 {
 	@RequestMapping("/exportExcel")
 	public void exportExcel(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		String reportType="注册一小时未投资";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String registerStartTime = map.get("registerStartTime") + "";
 		String registerEndTime = map.get("registerEndTime") + "";
@@ -474,6 +516,10 @@ public class BasicReportController2 {
 	@RequestMapping("/exportRegisterThreeDaysExcel")
 	public void exportRegisterThreeDaysExcel(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		String reportType="注册三天未投资";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
+		
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String registerEndTime = map.get("registerEndTime") + "";
 		List<Map<String, Object>> dataList = service.queryRegisterThreeDaysNotInvestList(map);

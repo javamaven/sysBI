@@ -1,11 +1,14 @@
 package io.renren.controller.yunying.dayreport;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,8 +31,10 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
+import io.renren.service.UserBehaviorService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
+import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
@@ -42,6 +47,10 @@ public class ExitBehaviorController {
 
 	@Autowired
 	private DataSourceFactory dataSourceFactory;
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+
+	private  String reportType="退出理财计划当日行为";
 
 	/**
 	 * 上传文件
@@ -82,6 +91,9 @@ public class ExitBehaviorController {
 	@RequestMapping("/list")
 	@RequiresPermissions("phonesale:list")
 	public R daylist(Integer page, Integer limit, String exit_end_time,String exit_stat_time) {
+		
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		if (StringUtils.isNotEmpty(exit_end_time)) {
 			exit_end_time = exit_end_time.replace("-", "");
 		}if (StringUtils.isNotEmpty(exit_stat_time)) {
@@ -151,7 +163,8 @@ public class ExitBehaviorController {
 	@RequestMapping("/exportExcel")
 	public void exportMonthListExcel(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-		
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String exit_end_time = map.get("exit_end_time") + "";
 		String exit_stat_time = map.get("exit_stat_time") + "";
