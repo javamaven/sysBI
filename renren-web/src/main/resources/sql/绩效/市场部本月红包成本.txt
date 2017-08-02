@@ -16,7 +16,9 @@ hd as(
 select 
 vl.user_id, -- 用户名
 mv.prize_template_id, -- 红包模板id
-pd.tend_vouche, -- 该次购买使用的红包金额
+-- pd.tend_vouche, -- 该次购买使用的红包金额
+vl.use_money tend_vouche,
+vl.USE_TIME,
 pd.ranks,
 vl.create_time
 from mdtxbi.edw_reward_voucher_log vl 
@@ -28,7 +30,7 @@ left join pd
 on pd.id=vl.tender_id
 where 
 mv.from_sys=1
-and vl.use_status=1
+and vl.use_status in (0,1)
 ),
 fafang as 
 (
@@ -47,11 +49,12 @@ shiyong as
 select -- 按照红包分类的使用情况
 hd.prize_template_id,
 count(distinct(hd.user_id))  as v_num,-- 红包使用人数
-sum(nvl(hd.tend_vouche,0)) as sum_vouche,
+-- sum(nvl(hd.tend_vouche,0)) as sum_vouche,
+sum(nvl(hd.tend_vouche,0)) as sum_vouche, -- 改了这里
 sum(case when hd.ranks=1 then nvl(hd.tend_vouche,0)else 0 end ) as ft_vouche,  -- 首投的红包成本
 sum(case when hd.ranks>1 then nvl(hd.tend_vouche,0)else 0 end ) as sc_vouche  -- 复投的红包成
 from hd
-where  to_char(hd.create_time,'yyyy-mm-dd') between ${startDate} and ${endDate}
+where  to_char(hd.USE_TIME,'yyyy-mm-dd') between ${startDate} and ${endDate}
 group by 
 hd.prize_template_id
 order by 
@@ -63,6 +66,7 @@ SELECT
 pt.id,
 pt.name,
 pt.DESCRIPTION,
+pt.purpose,
 pt.APPLY_USER,
 case
   when pt.apply_user ='市场部' then '归属市场部'
@@ -83,7 +87,8 @@ nvl(ss.sum_vouche,0) as "使用总金额(元)",
 nvl(ss.ft_vouche,0) as "用户首投时使用金额(元)",
 '存管版' as "红包所属系统",
 '2017-06' as "数据统计周期",
-gg.DESCRIPTION as "用途",
+-- gg.DESCRIPTION as "用途",
+gg.purpose as "用途", -- 将字段名从DESCRIPTION改为purpose
 gg.APPLY_USER as "所属于部门",
 gg.attri_department as "成本分摊方式",
 --ss.sum_vouche,
