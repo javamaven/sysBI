@@ -165,7 +165,41 @@ function getCurrInvestOption(data){
 	};
 	 return option;
 }
-
+/**
+ * 大盘分析-待收表格
+ * @param data_list
+ * @returns
+ */
+function buildDaishouTable(data_list){
+	var html = '';
+	for (var i = 0; i < data_list.length; i++) {
+		var row = data_list[i];
+        html += '<tr>' +   
+			    '	 <td>'+row.日期+'</td>' +    
+			    '    <td>'+formatNumber( row.总投资用户待收资金,2 ) +'</td>' +    
+			    '    <td>'+formatNumber( row.总高净值用户待收资金,2 ) +'</td>' +  
+			    '    <td>'+ formatNumber( row.总高净值用户待收资金_占比*100,2 ) +'%</td>' +  
+			    
+			    '    <td>'+ formatNumber( row.沉默用户待收资金 ,2 )+'</td>' +    
+			    '    <td>'+ formatNumber( row.沉默用户_高净值待收资金 ,2 )+'</td>' +   
+			    '    <td>'+ formatNumber( row.成熟用户待收资金_占比*100,2 )+'%</td>' +   
+			    
+			    '    <td>'+ formatNumber( row.新用户待收资金,2 ) +'</td>' +    
+			    '    <td>'+ formatNumber( row.新用户_高净值待收资金,2 ) +'</td>' +   
+			    '    <td>'+ formatNumber( row.新用户待收资金_占比*100,2 )+'%</td>' +  
+			    
+			    '    <td>'+ formatNumber( row.成熟用户待收资金,2 )+'</td>' +    
+			    '    <td>'+ formatNumber( row.成熟用户_高净值待收资金,2 )+'</td>' +   
+			    '    <td>'+ formatNumber( row.成熟用户待收资金_占比*100,2)+'%</td>' +  
+			    
+			    '    <td>'+ formatNumber( row.自然用户待收资金,2 )+'</td>' +    
+			    '    <td>'+ formatNumber( row.自然用户_高净值待收资金,2 )+'</td>' +   
+			    '    <td>'+ formatNumber( row.自然用户待收资金_占比*100, 2) +'%</td>' +  
+			    '</tr>'; 
+	}
+	
+	$("#dapan_daishou_table").html( getDaishouTableHead() + html + getDaishouLastWeekHuanbi(data_list[0], data_list[1]));
+}
 function buildTable(data_list){
 	var html = '';
 	
@@ -193,6 +227,28 @@ function buildTable(data_list){
 	
 	$("#dapan_table").html( getTableHead() + html + getLastWeekHuanbi(data_list[0], data_list[1]));
 }
+function getDaishouLastWeekHuanbi(lastweek, curr){
+	var html = '';
+    html += '<tr>' +   
+    '	 <td>与上周环比</td>' +    
+    '    <td>'+ formatNumber((curr.总投资用户待收资金-lastweek.总投资用户待收资金)*100/lastweek.总投资用户待收资金,2) +'%</td>' +   
+    '    <td>'+ formatNumber((curr.总高净值用户待收资金-lastweek.总高净值用户待收资金)*100/lastweek.总高净值用户待收资金,2) +'%</td>' +   
+    '    <td></td>' +  
+    '    <td>'+ formatNumber((curr.沉默用户待收资金-lastweek.沉默用户待收资金)*100/lastweek.沉默用户待收资金,2) +'%</td>' +    
+    '    <td>'+ formatNumber((curr.沉默用户_高净值待收资金-lastweek.沉默用户_高净值待收资金)*100/lastweek.沉默用户_高净值待收资金,2) +'%</td>' +   
+    '    <td></td>' +    
+    '    <td>'+ formatNumber((curr.新用户待收资金-lastweek.新用户待收资金)*100/lastweek.新用户待收资金,2) +'%</td>' + 
+    '    <td>'+ formatNumber((curr.新用户_高净值待收资金-lastweek.新用户_高净值待收资金)*100/lastweek.新用户_高净值待收资金,2) +'%</td>' + 
+    '    <td></td>' +  
+    '    <td>'+ formatNumber((curr.成熟用户待收资金-lastweek.成熟用户待收资金)*100/lastweek.成熟用户待收资金,2) +'%</td>' + 
+    '    <td>'+ formatNumber((curr.成熟用户_高净值待收资金-lastweek.成熟用户_高净值待收资金)*100/lastweek.成熟用户_高净值待收资金,2) +'%</td>' + 
+    '    <td></td>' +  
+    '    <td>'+ formatNumber((curr.自然用户待收资金-lastweek.自然用户待收资金)*100/lastweek.自然用户待收资金,2) +'%</td>' + 
+    '    <td>'+ formatNumber((curr.自然用户_高净值待收资金-lastweek.自然用户_高净值待收资金)*100/lastweek.自然用户_高净值待收资金,2) +'%</td>' + 
+    '    <td></td>' +  
+    '</tr>'; 
+    return html;
+}
 function getLastWeekHuanbi(lastweek, curr){
 	var html = '';
     html += '<tr>' +   
@@ -215,19 +271,47 @@ function getLastWeekHuanbi(lastweek, curr){
     '</tr>'; 
     return html;
 }
-
+function getDaishouTableHead(){
+	var html = '';
+	html += ' <tr> ' +
+		' <td rowspan="2">日期</td> ' +
+		' <td rowspan="2">总投资用户待收资金</td> ' +
+		' <td colspan="2">总高净值用户待收资金</td> ' +
+		' <td colspan="3">沉默用户待收资金</td> ' +
+		' <td colspan="3">新用户待收资金</td> ' +
+		' <td colspan="3">成熟用户待收资金</td> ' +
+		' <td colspan="3">自然用户待收资金</td> ' +
+		' </tr> ' +
+		' <tr>   ' +
+		' <td>高净值用户</td> ' +  
+		' <td>占比</td>  ' +
+		' <td>沉默全量用户</td> ' +  
+		' <td>高净值用户</td>  ' +
+		' <td>占比</td>   ' +
+		' <td>全量新用户</td>   ' +
+		' <td>高净值用户</td>  ' +
+		' <td>占比</td> ' +
+		' <td>成熟全量用户</td> ' +  
+		' <td>高净值用户</td>  ' +
+		' <td>占比</td> ' +
+		' <td>自然全量用户</td> ' +  
+		' <td>高净值用户</td>  ' +
+		' <td>占比</td> ' +
+		' </tr> ';
+	return html;
+}
 function getTableHead(){
 	var html = '';
 	html += ' <tr> ' +
 		' <td rowspan="2">日期</td> ' +
-		' <td colspan="3">高净值用户</td> ' +
+		' <td rowspan="2">总投资用户</td> ' +
+		' <td colspan="2">高净值用户</td> ' +
 		' <td colspan="3">沉默用户</td> ' +
 		' <td colspan="3">新用户</td> ' +
 		' <td colspan="3">成熟用户</td> ' +
 		' <td colspan="3">自然用户</td> ' +
 		' </tr> ' +
 		' <tr>   ' +
-		' <td>总投资用户</td> ' +  
 		' <td>高净值用户</td>  ' +
 		' <td>占比</td> ' +
 		' <td>沉默全量用户</td> ' +  

@@ -1,4 +1,5 @@
 select 
+  min(a.stat_peroid) 日期,
   -- 总待收 
   sum(case when a.MONEY_INVEST_COUNT > 0 then a.money_wait else 0 end) 总投资用户待收资金,
   --高净值
@@ -29,4 +30,4 @@ select
 from
 MDTXBI.DM_REPORT_MDTX_ANALYZE a
 where 1=1
-and a.stat_peroid = '${statPeriod}'
+and a.stat_peroid = ?

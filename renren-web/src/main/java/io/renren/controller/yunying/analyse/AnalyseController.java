@@ -1599,8 +1599,10 @@ public class AnalyseController {
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 
 		R dapanAnalyseData = queryDapanAnalyse(map);
+		R daishouData = queryDapanDaishouAnalyse(map);
 
 		List<Map<String,Object>> dataList = (List<Map<String, Object>>) dapanAnalyseData.get("data_list");
+		List<Map<String,Object>> daishouDataList = (List<Map<String, Object>>) daishouData.get("data_list");
 		OutputStream os = null;
 		String excelName = "大盘分析-" + map.get("statPeriod");
 		try {
@@ -1632,146 +1634,9 @@ public class AnalyseController {
 //			headerStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
 			cellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
 	        
-	        //创建单元格  
-	        HSSFRow row = sheet.createRow(0); 
-	        sheet.autoSizeColumn(1, true);
-	        HSSFCell c0 = row.createCell(0);
-	        c0.setCellValue(new HSSFRichTextString("日期"));
-	        sheet.addMergedRegion(new CellRangeAddress(0, 1, 0, 0)); 
-	        
-	        HSSFCell c1 = row.createCell(1); 
-	        c1.setCellValue(new HSSFRichTextString("高净值用户"));  
-	        sheet.addMergedRegion(new CellRangeAddress(0, 0, 1, 3)); 
-	        HSSFCell c2 = row.createCell(4);   
-	        c2.setCellValue(new HSSFRichTextString("沉默用户"));
-	        sheet.addMergedRegion(new CellRangeAddress(0, 0, 4, 6)); 
-	        HSSFCell c3 = row.createCell(7);   
-	        c3.setCellValue(new HSSFRichTextString("新用户"));
-	        sheet.addMergedRegion(new CellRangeAddress(0, 0, 7, 9));
-	        
-	        HSSFCell c4 = row.createCell(10);   
-	        c4.setCellValue(new HSSFRichTextString("成熟用户"));
-	        sheet.addMergedRegion(new CellRangeAddress(0, 0, 10, 12));
-	        
-	        HSSFCell c5 = row.createCell(13);   
-	        c5.setCellValue(new HSSFRichTextString("自然用户"));
-	        sheet.addMergedRegion(new CellRangeAddress(0, 0, 13, 15));
-	        
-	        HSSFRow row2 = sheet.createRow(1); 
-	        HSSFCell c21 = row2.createCell(1);
-	        c21.setCellValue(new HSSFRichTextString("总投资用户	"));
-	        HSSFCell c22 = row2.createCell(2);
-	        c22.setCellValue(new HSSFRichTextString("高净值用户"));
-	        HSSFCell c23 = row2.createCell(3);
-	        c23.setCellValue(new HSSFRichTextString("占比"));
-	        
-	        HSSFCell c24 = row2.createCell(4);
-	        c24.setCellValue(new HSSFRichTextString("沉默全量用户"));
-	        HSSFCell c25 = row2.createCell(5);
-	        c25.setCellValue(new HSSFRichTextString("高净值用户"));
-	        HSSFCell c26 = row2.createCell(6);
-	        c26.setCellValue(new HSSFRichTextString("占比"));
-	        
-	        HSSFCell c27 = row2.createCell(7);
-	        c27.setCellValue(new HSSFRichTextString("全量新用户"));
-	        HSSFCell c28 = row2.createCell(8);
-	        c28.setCellValue(new HSSFRichTextString("高净值用户"));
-	        HSSFCell c29 = row2.createCell(9);
-	        c29.setCellValue(new HSSFRichTextString("占比"));
-	        
-	        HSSFCell c210 = row2.createCell(10);
-	        c210.setCellValue(new HSSFRichTextString("成熟全量用户"));
-	        HSSFCell c211 = row2.createCell(11);
-	        c211.setCellValue(new HSSFRichTextString("高净值用户"));
-	        HSSFCell c212 = row2.createCell(12);
-	        c212.setCellValue(new HSSFRichTextString("占比"));
-	        
-	        HSSFCell c213 = row2.createCell(13);
-	        c213.setCellValue(new HSSFRichTextString("自然全量用户"));
-	        HSSFCell c214 = row2.createCell(14);
-	        c214.setCellValue(new HSSFRichTextString("高净值用户"));
-	        HSSFCell c215 = row2.createCell(15);
-	        c215.setCellValue(new HSSFRichTextString("占比"));
-	        
-	        
-	        c0.setCellStyle(style);
-	        c1.setCellStyle(style);
-	        c2.setCellStyle(style);
-	        c3.setCellStyle(style);
-	        c4.setCellStyle(style);
-	        c5.setCellStyle(style);
-	        
-	        for (int i = 0; i < 16; i++) {
-	            sheet.setColumnWidth(i, 15 * 256);//调整列宽
-			}
-	        
-	        for (int i = 0; i < dataList.size(); i++) {
-	        	Map<String, Object> dataMap = dataList.get(i);
-	        	HSSFRow row_ = sheet.createRow(i + 2); 
-	        	row_.createCell(0).setCellValue(new HSSFRichTextString(dataMap.get("日期") + ""));
-	        	row_.createCell(1).setCellValue(new HSSFRichTextString(dataMap.get("总投资用户") + ""));
-	        	row_.createCell(2).setCellValue(new HSSFRichTextString(dataMap.get("总高净值用户") + ""));
-	        	row_.createCell(3).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(Double.parseDouble(dataMap.get("占比")+"")*100, 2) + "%"));
-	        	row_.createCell(4).setCellValue(new HSSFRichTextString(dataMap.get("沉默全量用户") + ""));
-	        	row_.createCell(5).setCellValue(new HSSFRichTextString(dataMap.get("沉默_高净值用户") + ""));
-	        	row_.createCell(6).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(Double.parseDouble(dataMap.get("沉默_占比")+"")*100, 2) + "%"));
-	        	row_.createCell(7).setCellValue(new HSSFRichTextString(dataMap.get("全量新用户") + ""));
-	        	row_.createCell(8).setCellValue(new HSSFRichTextString(dataMap.get("新用户_高净值用户") + ""));
-	        	row_.createCell(9).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(Double.parseDouble(dataMap.get("新用户_占比")+"")*100, 2) + "%"));
-	        	row_.createCell(10).setCellValue(new HSSFRichTextString(dataMap.get("成熟全量用户") + ""));
-	        	row_.createCell(11).setCellValue(new HSSFRichTextString(dataMap.get("成熟_高净值用户") + ""));
-	        	row_.createCell(12).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(Double.parseDouble(dataMap.get("成熟_占比")+"")*100, 2) + "%"));
-	        	row_.createCell(13).setCellValue(new HSSFRichTextString(dataMap.get("自然全量用户") + ""));
-	        	row_.createCell(14).setCellValue(new HSSFRichTextString(dataMap.get("自然_高净值用户") + ""));
-	        	row_.createCell(15).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(Double.parseDouble(dataMap.get("自然_占比")+"")*100, 2) + "%"));
-			}
-	        Map<String, Object> weekAgo = dataList.get(0);
-	        Map<String, Object> curr = dataList.get(1);
-        	HSSFRow row_ = sheet.createRow(4); 
-        	row_.createCell(0).setCellValue(new HSSFRichTextString("与上周环比"));
-        	double totalInvestUser_curr = Double.parseDouble(curr.get("总投资用户")+"");
-        	double totalInvestUser_week = Double.parseDouble(weekAgo.get("总投资用户")+"");
-        	row_.createCell(1).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision((totalInvestUser_curr-totalInvestUser_week)*100/totalInvestUser_week, 2) + "%"));
+	        buildDapanTable(dataList, sheet, style);
+	        buildDapanDaishouTable(daishouDataList, sheet, style);
         	
-        	double gjz_curr = Double.parseDouble(curr.get("总高净值用户")+"");
-        	double gjz_week = Double.parseDouble(weekAgo.get("总高净值用户")+"");
-        	row_.createCell(2).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision((gjz_curr-gjz_week)*100/gjz_week, 2) + "%"));
-        	row_.createCell(3).setCellValue(new HSSFRichTextString(""));
-        	
-        	
-        	row_.createCell(4).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
-        			(Double.parseDouble(curr.get("沉默全量用户")+"")-Double.parseDouble(weekAgo.get("沉默全量用户")+""))*100/
-        			Double.parseDouble(weekAgo.get("沉默全量用户")+""), 2) + "%"));
-        	row_.createCell(5).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
-        			(Double.parseDouble(curr.get("沉默_高净值用户")+"")-Double.parseDouble(weekAgo.get("沉默_高净值用户")+""))*100/
-        			Double.parseDouble(weekAgo.get("沉默_高净值用户")+""), 2) + "%"));
-        	row_.createCell(6).setCellValue(new HSSFRichTextString(""));
-        	
-        	row_.createCell(7).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
-        			(Double.parseDouble(curr.get("全量新用户")+"")-Double.parseDouble(weekAgo.get("全量新用户")+""))*100/
-        			Double.parseDouble(weekAgo.get("全量新用户")+""), 2) + "%"));
-        	row_.createCell(8).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
-        			(Double.parseDouble(curr.get("新用户_高净值用户")+"")-Double.parseDouble(weekAgo.get("新用户_高净值用户")+""))*100/
-        			Double.parseDouble(weekAgo.get("新用户_高净值用户")+""), 2) + "%"));
-        	row_.createCell(9).setCellValue(new HSSFRichTextString(""));
-        	
-        	row_.createCell(10).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
-        			(Double.parseDouble(curr.get("成熟全量用户")+"")-Double.parseDouble(weekAgo.get("成熟全量用户")+""))*100/
-        			Double.parseDouble(weekAgo.get("成熟全量用户")+""), 2) + "%"));
-        	row_.createCell(11).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
-        			(Double.parseDouble(curr.get("成熟_高净值用户")+"")-Double.parseDouble(weekAgo.get("成熟_高净值用户")+""))*100/
-        			Double.parseDouble(weekAgo.get("成熟_高净值用户")+""), 2) + "%"));
-        	row_.createCell(12).setCellValue(new HSSFRichTextString(""));
-        	
-        	row_.createCell(13).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
-        			(Double.parseDouble(curr.get("自然全量用户")+"")-Double.parseDouble(weekAgo.get("自然全量用户")+""))*100/
-        			Double.parseDouble(weekAgo.get("自然全量用户")+""), 2) + "%"));
-        	row_.createCell(14).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
-        			(Double.parseDouble(curr.get("自然_高净值用户")+"")-Double.parseDouble(weekAgo.get("自然_高净值用户")+""))*100/
-        			Double.parseDouble(weekAgo.get("自然_高净值用户")+""), 2) + "%"));
-        	row_.createCell(15).setCellValue(new HSSFRichTextString(""));
-	        
-	        
 			response.reset();
 			response.setContentType("application/vnd.ms-excel;charset=utf-8");
 			response.setHeader("Content-Disposition",
@@ -1785,6 +1650,297 @@ public class AnalyseController {
 				os.close();
 			}
 		}
+	}
+
+	private void buildDapanTable(List<Map<String, Object>> dataList, HSSFSheet sheet, HSSFCellStyle style) {
+		//创建单元格  
+		HSSFRow row = sheet.createRow(0); 
+		sheet.autoSizeColumn(1, true);
+		HSSFCell c0 = row.createCell(0);
+		c0.setCellValue(new HSSFRichTextString("日期"));
+		sheet.addMergedRegion(new CellRangeAddress(0, 1, 0, 0)); 
+		
+		HSSFCell c1 = row.createCell(1); 
+		c1.setCellValue(new HSSFRichTextString("总投资用户"));  
+		sheet.addMergedRegion(new CellRangeAddress(0, 1, 1, 1)); 
+		HSSFCell c2 = row.createCell(2);   
+		c2.setCellValue(new HSSFRichTextString("高净值用户"));
+		sheet.addMergedRegion(new CellRangeAddress(0, 0, 2, 3)); 
+		HSSFCell c3 = row.createCell(4);   
+		c3.setCellValue(new HSSFRichTextString("沉默用户"));
+		sheet.addMergedRegion(new CellRangeAddress(0, 0, 4, 6));
+		
+		HSSFCell c4 = row.createCell(7);   
+		c4.setCellValue(new HSSFRichTextString("新用户"));
+		sheet.addMergedRegion(new CellRangeAddress(0, 0, 7, 9));
+		
+		HSSFCell c5 = row.createCell(10);   
+		c5.setCellValue(new HSSFRichTextString("成熟用户"));
+		sheet.addMergedRegion(new CellRangeAddress(0, 0, 10, 12));
+		
+		HSSFCell c6 = row.createCell(13);   
+		c6.setCellValue(new HSSFRichTextString("自然用户"));
+		sheet.addMergedRegion(new CellRangeAddress(0, 0, 13, 15));
+		
+		HSSFRow row2 = sheet.createRow(1); 
+//	        HSSFCell c21 = row2.createCell(1);
+//	        c21.setCellValue(new HSSFRichTextString("总投资用户	"));
+		HSSFCell c22 = row2.createCell(2);
+		c22.setCellValue(new HSSFRichTextString("高净值用户"));
+		HSSFCell c23 = row2.createCell(3);
+		c23.setCellValue(new HSSFRichTextString("占比"));
+		
+		HSSFCell c24 = row2.createCell(4);
+		c24.setCellValue(new HSSFRichTextString("沉默全量用户"));
+		HSSFCell c25 = row2.createCell(5);
+		c25.setCellValue(new HSSFRichTextString("高净值用户"));
+		HSSFCell c26 = row2.createCell(6);
+		c26.setCellValue(new HSSFRichTextString("占比"));
+		
+		HSSFCell c27 = row2.createCell(7);
+		c27.setCellValue(new HSSFRichTextString("全量新用户"));
+		HSSFCell c28 = row2.createCell(8);
+		c28.setCellValue(new HSSFRichTextString("高净值用户"));
+		HSSFCell c29 = row2.createCell(9);
+		c29.setCellValue(new HSSFRichTextString("占比"));
+		
+		HSSFCell c210 = row2.createCell(10);
+		c210.setCellValue(new HSSFRichTextString("成熟全量用户"));
+		HSSFCell c211 = row2.createCell(11);
+		c211.setCellValue(new HSSFRichTextString("高净值用户"));
+		HSSFCell c212 = row2.createCell(12);
+		c212.setCellValue(new HSSFRichTextString("占比"));
+		
+		HSSFCell c213 = row2.createCell(13);
+		c213.setCellValue(new HSSFRichTextString("自然全量用户"));
+		HSSFCell c214 = row2.createCell(14);
+		c214.setCellValue(new HSSFRichTextString("高净值用户"));
+		HSSFCell c215 = row2.createCell(15);
+		c215.setCellValue(new HSSFRichTextString("占比"));
+		
+		
+		c0.setCellStyle(style);
+		c1.setCellStyle(style);
+		c2.setCellStyle(style);
+		c3.setCellStyle(style);
+		c4.setCellStyle(style);
+		c5.setCellStyle(style);
+		c6.setCellStyle(style);
+		for (int i = 0; i < 16; i++) {
+		    sheet.setColumnWidth(i, 15 * 256);//调整列宽
+		}
+		
+		for (int i = 0; i < dataList.size(); i++) {
+			Map<String, Object> dataMap = dataList.get(i);
+			HSSFRow row_ = sheet.createRow(i + 2); 
+			row_.createCell(0).setCellValue(new HSSFRichTextString(dataMap.get("日期") + ""));
+			row_.createCell(1).setCellValue(new HSSFRichTextString(dataMap.get("总投资用户") + ""));
+			row_.createCell(2).setCellValue(new HSSFRichTextString(dataMap.get("总高净值用户") + ""));
+			row_.createCell(3).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(Double.parseDouble(dataMap.get("占比")+"")*100, 2) + "%"));
+			row_.createCell(4).setCellValue(new HSSFRichTextString(dataMap.get("沉默全量用户") + ""));
+			row_.createCell(5).setCellValue(new HSSFRichTextString(dataMap.get("沉默_高净值用户") + ""));
+			row_.createCell(6).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(Double.parseDouble(dataMap.get("沉默_占比")+"")*100, 2) + "%"));
+			row_.createCell(7).setCellValue(new HSSFRichTextString(dataMap.get("全量新用户") + ""));
+			row_.createCell(8).setCellValue(new HSSFRichTextString(dataMap.get("新用户_高净值用户") + ""));
+			row_.createCell(9).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(Double.parseDouble(dataMap.get("新用户_占比")+"")*100, 2) + "%"));
+			row_.createCell(10).setCellValue(new HSSFRichTextString(dataMap.get("成熟全量用户") + ""));
+			row_.createCell(11).setCellValue(new HSSFRichTextString(dataMap.get("成熟_高净值用户") + ""));
+			row_.createCell(12).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(Double.parseDouble(dataMap.get("成熟_占比")+"")*100, 2) + "%"));
+			row_.createCell(13).setCellValue(new HSSFRichTextString(dataMap.get("自然全量用户") + ""));
+			row_.createCell(14).setCellValue(new HSSFRichTextString(dataMap.get("自然_高净值用户") + ""));
+			row_.createCell(15).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(Double.parseDouble(dataMap.get("自然_占比")+"")*100, 2) + "%"));
+		}
+		Map<String, Object> weekAgo = dataList.get(0);
+		Map<String, Object> curr = dataList.get(1);
+		HSSFRow row_ = sheet.createRow(4); 
+		row_.createCell(0).setCellValue(new HSSFRichTextString("与上周环比"));
+		double totalInvestUser_curr = Double.parseDouble(curr.get("总投资用户")+"");
+		double totalInvestUser_week = Double.parseDouble(weekAgo.get("总投资用户")+"");
+		row_.createCell(1).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision((totalInvestUser_curr-totalInvestUser_week)*100/totalInvestUser_week, 2) + "%"));
+		
+		double gjz_curr = Double.parseDouble(curr.get("总高净值用户")+"");
+		double gjz_week = Double.parseDouble(weekAgo.get("总高净值用户")+"");
+		row_.createCell(2).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision((gjz_curr-gjz_week)*100/gjz_week, 2) + "%"));
+		row_.createCell(3).setCellValue(new HSSFRichTextString(""));
+		
+		
+		row_.createCell(4).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
+				(Double.parseDouble(curr.get("沉默全量用户")+"")-Double.parseDouble(weekAgo.get("沉默全量用户")+""))*100/
+				Double.parseDouble(weekAgo.get("沉默全量用户")+""), 2) + "%"));
+		row_.createCell(5).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
+				(Double.parseDouble(curr.get("沉默_高净值用户")+"")-Double.parseDouble(weekAgo.get("沉默_高净值用户")+""))*100/
+				Double.parseDouble(weekAgo.get("沉默_高净值用户")+""), 2) + "%"));
+		row_.createCell(6).setCellValue(new HSSFRichTextString(""));
+		
+		row_.createCell(7).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
+				(Double.parseDouble(curr.get("全量新用户")+"")-Double.parseDouble(weekAgo.get("全量新用户")+""))*100/
+				Double.parseDouble(weekAgo.get("全量新用户")+""), 2) + "%"));
+		row_.createCell(8).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
+				(Double.parseDouble(curr.get("新用户_高净值用户")+"")-Double.parseDouble(weekAgo.get("新用户_高净值用户")+""))*100/
+				Double.parseDouble(weekAgo.get("新用户_高净值用户")+""), 2) + "%"));
+		row_.createCell(9).setCellValue(new HSSFRichTextString(""));
+		
+		row_.createCell(10).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
+				(Double.parseDouble(curr.get("成熟全量用户")+"")-Double.parseDouble(weekAgo.get("成熟全量用户")+""))*100/
+				Double.parseDouble(weekAgo.get("成熟全量用户")+""), 2) + "%"));
+		row_.createCell(11).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
+				(Double.parseDouble(curr.get("成熟_高净值用户")+"")-Double.parseDouble(weekAgo.get("成熟_高净值用户")+""))*100/
+				Double.parseDouble(weekAgo.get("成熟_高净值用户")+""), 2) + "%"));
+		row_.createCell(12).setCellValue(new HSSFRichTextString(""));
+		
+		row_.createCell(13).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
+				(Double.parseDouble(curr.get("自然全量用户")+"")-Double.parseDouble(weekAgo.get("自然全量用户")+""))*100/
+				Double.parseDouble(weekAgo.get("自然全量用户")+""), 2) + "%"));
+		row_.createCell(14).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
+				(Double.parseDouble(curr.get("自然_高净值用户")+"")-Double.parseDouble(weekAgo.get("自然_高净值用户")+""))*100/
+				Double.parseDouble(weekAgo.get("自然_高净值用户")+""), 2) + "%"));
+		row_.createCell(15).setCellValue(new HSSFRichTextString(""));
+	}
+	
+	private void buildDapanDaishouTable(List<Map<String, Object>> dataList, HSSFSheet sheet, HSSFCellStyle style) {
+		int rowIndex = 7;
+		//创建单元格  
+		HSSFRow row = sheet.createRow(rowIndex); 
+		sheet.autoSizeColumn(1, true);
+		HSSFCell c0 = row.createCell(0);
+		c0.setCellValue(new HSSFRichTextString("日期"));
+		sheet.addMergedRegion(new CellRangeAddress(rowIndex + 0, rowIndex + 1, 0, 0)); 
+		
+		HSSFCell c1 = row.createCell(1); 
+		c1.setCellValue(new HSSFRichTextString("总投资用户待收资金"));  
+		sheet.addMergedRegion(new CellRangeAddress(rowIndex + 0, rowIndex + 1, 1, 1)); 
+		HSSFCell c2 = row.createCell(2);   
+		c2.setCellValue(new HSSFRichTextString("总高净值用户待收资金"));
+		sheet.addMergedRegion(new CellRangeAddress(rowIndex + 0, rowIndex + 0, 2, 3)); 
+		HSSFCell c3 = row.createCell(4);   
+		c3.setCellValue(new HSSFRichTextString("沉默用户待收资金"));
+		sheet.addMergedRegion(new CellRangeAddress(rowIndex + 0, rowIndex + 0, 4, 6));
+		
+		HSSFCell c4 = row.createCell(7);   
+		c4.setCellValue(new HSSFRichTextString("新用户待收资金"));
+		sheet.addMergedRegion(new CellRangeAddress(rowIndex + 0, rowIndex + 0, 7, 9));
+		
+		HSSFCell c5 = row.createCell(10);   
+		c5.setCellValue(new HSSFRichTextString("成熟用户待收资金"));
+		sheet.addMergedRegion(new CellRangeAddress(rowIndex + 0, rowIndex + 0, 10, 12));
+		
+		HSSFCell c6 = row.createCell(13);   
+		c6.setCellValue(new HSSFRichTextString("自然用户待收资金"));
+		sheet.addMergedRegion(new CellRangeAddress(rowIndex + 0, rowIndex + 0, 13, 15));
+		
+		HSSFRow row2 = sheet.createRow(rowIndex+1); 
+//	        HSSFCell c21 = row2.createCell(1);
+//	        c21.setCellValue(new HSSFRichTextString("总投资用户	"));
+		HSSFCell c22 = row2.createCell(2);
+		c22.setCellValue(new HSSFRichTextString("高净值用户"));
+		HSSFCell c23 = row2.createCell(3);
+		c23.setCellValue(new HSSFRichTextString("占比"));
+		
+		HSSFCell c24 = row2.createCell(4);
+		c24.setCellValue(new HSSFRichTextString("沉默全量用户"));
+		HSSFCell c25 = row2.createCell(5);
+		c25.setCellValue(new HSSFRichTextString("高净值用户"));
+		HSSFCell c26 = row2.createCell(6);
+		c26.setCellValue(new HSSFRichTextString("占比"));
+		
+		HSSFCell c27 = row2.createCell(7);
+		c27.setCellValue(new HSSFRichTextString("全量新用户"));
+		HSSFCell c28 = row2.createCell(8);
+		c28.setCellValue(new HSSFRichTextString("高净值用户"));
+		HSSFCell c29 = row2.createCell(9);
+		c29.setCellValue(new HSSFRichTextString("占比"));
+		
+		HSSFCell c210 = row2.createCell(10);
+		c210.setCellValue(new HSSFRichTextString("成熟全量用户"));
+		HSSFCell c211 = row2.createCell(11);
+		c211.setCellValue(new HSSFRichTextString("高净值用户"));
+		HSSFCell c212 = row2.createCell(12);
+		c212.setCellValue(new HSSFRichTextString("占比"));
+		
+		HSSFCell c213 = row2.createCell(13);
+		c213.setCellValue(new HSSFRichTextString("自然全量用户"));
+		HSSFCell c214 = row2.createCell(14);
+		c214.setCellValue(new HSSFRichTextString("高净值用户"));
+		HSSFCell c215 = row2.createCell(15);
+		c215.setCellValue(new HSSFRichTextString("占比"));
+		
+		
+		c0.setCellStyle(style);
+		c1.setCellStyle(style);
+		c2.setCellStyle(style);
+		c3.setCellStyle(style);
+		c4.setCellStyle(style);
+		c5.setCellStyle(style);
+		c6.setCellStyle(style);
+		for (int i = 0; i < 16; i++) {
+		    sheet.setColumnWidth(i, 18 * 256);//调整列宽
+		}
+		
+		for (int i = 0; i < dataList.size(); i++) {
+			Map<String, Object> dataMap = dataList.get(i);
+			HSSFRow row_ = sheet.createRow(rowIndex + i + 2); 
+			row_.createCell(0).setCellValue(new HSSFRichTextString(dataMap.get("日期") + ""));
+			row_.createCell(1).setCellValue(new HSSFRichTextString(dataMap.get("总投资用户待收资金") + ""));
+			row_.createCell(2).setCellValue(new HSSFRichTextString(dataMap.get("总高净值用户待收资金") + ""));
+			row_.createCell(3).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(Double.parseDouble(dataMap.get("总高净值用户待收资金_占比")+"")*100, 2) + "%"));
+			row_.createCell(4).setCellValue(new HSSFRichTextString(dataMap.get("沉默用户待收资金") + ""));
+			row_.createCell(5).setCellValue(new HSSFRichTextString(dataMap.get("沉默用户_高净值待收资金") + ""));
+			row_.createCell(6).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(Double.parseDouble(dataMap.get("沉默用户待收资金_占比")+"")*100, 2) + "%"));
+			row_.createCell(7).setCellValue(new HSSFRichTextString(dataMap.get("新用户待收资金") + ""));
+			row_.createCell(8).setCellValue(new HSSFRichTextString(dataMap.get("新用户_高净值待收资金") + ""));
+			row_.createCell(9).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(Double.parseDouble(dataMap.get("新用户待收资金_占比")+"")*100, 2) + "%"));
+			row_.createCell(10).setCellValue(new HSSFRichTextString(dataMap.get("成熟用户待收资金") + ""));
+			row_.createCell(11).setCellValue(new HSSFRichTextString(dataMap.get("成熟用户_高净值待收资金") + ""));
+			row_.createCell(12).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(Double.parseDouble(dataMap.get("成熟用户待收资金_占比")+"")*100, 2) + "%"));
+			row_.createCell(13).setCellValue(new HSSFRichTextString(dataMap.get("自然用户待收资金") + ""));
+			row_.createCell(14).setCellValue(new HSSFRichTextString(dataMap.get("自然用户_高净值待收资金") + ""));
+			row_.createCell(15).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(Double.parseDouble(dataMap.get("自然用户待收资金_占比")+"")*100, 2) + "%"));
+		}
+		Map<String, Object> weekAgo = dataList.get(0);
+		Map<String, Object> curr = dataList.get(1);
+		HSSFRow row_ = sheet.createRow(rowIndex + 4); 
+		row_.createCell(0).setCellValue(new HSSFRichTextString("与上周环比"));
+		double totalInvestUser_curr = Double.parseDouble(curr.get("总投资用户待收资金")+"");
+		double totalInvestUser_week = Double.parseDouble(weekAgo.get("总投资用户待收资金")+"");
+		row_.createCell(1).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision((totalInvestUser_curr-totalInvestUser_week)*100/totalInvestUser_week, 2) + "%"));
+		
+		double gjz_curr = Double.parseDouble(curr.get("总高净值用户待收资金")+"");
+		double gjz_week = Double.parseDouble(weekAgo.get("总高净值用户待收资金")+"");
+		row_.createCell(2).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision((gjz_curr-gjz_week)*100/gjz_week, 2) + "%"));
+		row_.createCell(3).setCellValue(new HSSFRichTextString(""));
+		
+		
+		row_.createCell(4).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
+				(Double.parseDouble(curr.get("沉默用户待收资金")+"")-Double.parseDouble(weekAgo.get("沉默用户待收资金")+""))*100/
+				Double.parseDouble(weekAgo.get("沉默用户待收资金")+""), 2) + "%"));
+		row_.createCell(5).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
+				(Double.parseDouble(curr.get("沉默用户_高净值待收资金")+"")-Double.parseDouble(weekAgo.get("沉默用户_高净值待收资金")+""))*100/
+				Double.parseDouble(weekAgo.get("沉默用户_高净值待收资金")+""), 2) + "%"));
+		row_.createCell(6).setCellValue(new HSSFRichTextString(""));
+		
+		row_.createCell(7).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
+				(Double.parseDouble(curr.get("新用户待收资金")+"")-Double.parseDouble(weekAgo.get("新用户待收资金")+""))*100/
+				Double.parseDouble(weekAgo.get("新用户待收资金")+""), 2) + "%"));
+		row_.createCell(8).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
+				(Double.parseDouble(curr.get("新用户_高净值待收资金")+"")-Double.parseDouble(weekAgo.get("新用户_高净值待收资金")+""))*100/
+				Double.parseDouble(weekAgo.get("新用户_高净值待收资金")+""), 2) + "%"));
+		row_.createCell(9).setCellValue(new HSSFRichTextString(""));
+		
+		row_.createCell(10).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
+				(Double.parseDouble(curr.get("成熟用户待收资金")+"")-Double.parseDouble(weekAgo.get("成熟用户待收资金")+""))*100/
+				Double.parseDouble(weekAgo.get("成熟用户待收资金")+""), 2) + "%"));
+		row_.createCell(11).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
+				(Double.parseDouble(curr.get("成熟用户_高净值待收资金")+"")-Double.parseDouble(weekAgo.get("成熟用户_高净值待收资金")+""))*100/
+				Double.parseDouble(weekAgo.get("成熟用户_高净值待收资金")+""), 2) + "%"));
+		row_.createCell(12).setCellValue(new HSSFRichTextString(""));
+		
+		row_.createCell(13).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
+				(Double.parseDouble(curr.get("自然用户待收资金")+"")-Double.parseDouble(weekAgo.get("自然用户待收资金")+""))*100/
+				Double.parseDouble(weekAgo.get("自然用户待收资金")+""), 2) + "%"));
+		row_.createCell(14).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision(
+				(Double.parseDouble(curr.get("自然用户_高净值待收资金")+"")-Double.parseDouble(weekAgo.get("自然用户_高净值待收资金")+""))*100/
+				Double.parseDouble(weekAgo.get("自然用户_高净值待收资金")+""), 2) + "%"));
+		row_.createCell(15).setCellValue(new HSSFRichTextString(""));
 	}
 	
 	@SuppressWarnings("unchecked")
