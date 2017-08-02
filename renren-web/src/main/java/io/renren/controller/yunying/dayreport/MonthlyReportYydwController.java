@@ -1,5 +1,7 @@
 package io.renren.controller.yunying.dayreport;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -29,9 +31,11 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
+import io.renren.service.UserBehaviorService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
 import io.renren.util.DateUtil;
+import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
@@ -44,7 +48,10 @@ public class MonthlyReportYydwController {
 
 	@Autowired
 	private DataSourceFactory dataSourceFactory;
+	@Autowired
+	private UserBehaviorService userBehaviorService;
 
+	private  String reportType="对外运营报告";
 	/**
 	 * 上传文件
 	 */
@@ -84,7 +91,8 @@ public class MonthlyReportYydwController {
 	@RequestMapping("/list")
 	@RequiresPermissions("phonesale:list")
 	public R daylist(Integer page, Integer limit, String invest_end_time) {
-		
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		String endtime="";
 		String monthtime="";
 		String lastMonthTimeString="";
@@ -161,7 +169,8 @@ public class MonthlyReportYydwController {
 	@RequestMapping("/exportExcel")
 	public void exportMonthListExcel(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-		
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String invest_end_time = map.get("invest_end_time") + "";
 

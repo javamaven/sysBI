@@ -7,6 +7,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
+import io.renren.entity.yunying.dayreport.DmReportDepSalesEntity;
 import io.renren.service.UserBehaviorService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
@@ -132,6 +134,7 @@ public class ChannelAssessController {
 //			detail_sql = detail_sql.replace("${investMonthTime}", invest_month_time);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
+	
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

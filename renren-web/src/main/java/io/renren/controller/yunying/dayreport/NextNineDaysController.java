@@ -1,11 +1,14 @@
 package io.renren.controller.yunying.dayreport;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,9 +31,11 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
+import io.renren.service.UserBehaviorService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
 import io.renren.util.DateUtil;
+import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
@@ -43,7 +48,10 @@ public class NextNineDaysController {
 
 	@Autowired
 	private DataSourceFactory dataSourceFactory;
+	@Autowired
+	private UserBehaviorService userBehaviorService;
 
+	private  String reportType="未来回款与理财计划解锁情况";
 	/**
 	 * 上传文件
 	 */
@@ -83,6 +91,8 @@ public class NextNineDaysController {
 	@RequestMapping("/list")
 	@RequiresPermissions("phonesale:list")
 	public R daylist(Integer page, Integer limit, String end_time,String begin_time) {
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		
 		String beforeDay="";
 		String beforeNineDay="";
@@ -138,6 +148,9 @@ public class NextNineDaysController {
 	@RequestMapping("/ddylist")
 	@RequiresPermissions("phonesale:list")
 	public R daylist1(Integer page, Integer limit,  String end_time,String begin_time) {
+		
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		long l1 = System.currentTimeMillis();
 		int start = (page - 1) * limit;
 		int end = start + limit;
@@ -172,6 +185,8 @@ public class NextNineDaysController {
 	@RequestMapping("/exportExcel")
 	public void exportMonthListExcel(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String begin_time = map.get("begin_time") + "";
 		String end_time = map.get("end_time") + "";
@@ -243,6 +258,9 @@ public class NextNineDaysController {
 	@RequestMapping("/exportExcel2")
 	public void exportMonthListExcel2(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String begin_time = map.get("begin_time") + "";
 		String end_time = map.get("end_time") + "";

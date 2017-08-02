@@ -31,6 +31,7 @@ import com.alibaba.fastjson.JSONArray;
 import io.renren.controller.AbstractController;
 import io.renren.entity.ChannelStftInfoEntity;
 import io.renren.entity.SysUserEntity;
+import io.renren.service.UserBehaviorService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcHelper;
 import io.renren.system.jdbc.JdbcUtil;
@@ -42,6 +43,7 @@ import io.renren.utils.PageUtils;
 import io.renren.utils.R;
 
 import static io.renren.utils.ShiroUtils.getUserEntity;
+import static io.renren.utils.ShiroUtils.getUserId;
 
 @RestController
 @RequestMapping("/yunying/zixiao")
@@ -65,8 +67,16 @@ public class ZixiaoCalcuteController extends AbstractController {
 	@Autowired
 	DruidDataSource dataSource;
 	
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+
+	private  String reportType="绩效核算表";
+	
 	@SuppressWarnings("deprecation")
 	public Map<String,Object> getYunyingMubiao(int month){
+		
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		Map<String,Object> mubiaoMap = new HashMap<>();
 		String path = this.getClass().getResource("/").getPath();
 		try {
@@ -87,6 +97,8 @@ public class ZixiaoCalcuteController extends AbstractController {
 	
 	@SuppressWarnings("deprecation")
 	public Map<String,Object> getShichangMubiao(int month){
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		Map<String,Object> mubiaoMap = new HashMap<>();
 		String path = this.getClass().getResource("/").getPath();
 		try {
@@ -107,6 +119,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 	
 	@SuppressWarnings("deprecation")
 	public Map<String,Object> getAuthData(){
+		
 		Map<String,Object> mubiaoMap = new HashMap<>();
 		String path = this.getClass().getResource("/").getPath();
 		try {
@@ -374,6 +387,8 @@ public class ZixiaoCalcuteController extends AbstractController {
 	@ResponseBody
 	@RequestMapping("/list")
 	public R list(Integer page, Integer limit, String statPeriod){
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		String detail_sql = "";
 		List<Map<String, Object>> retList = null;
 		int month = Integer.parseInt(statPeriod.substring(5, 7));
@@ -710,6 +725,8 @@ public class ZixiaoCalcuteController extends AbstractController {
 	@ResponseBody
 	@RequestMapping("/exportExcel")
 	public void partExport(String data, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String,Object> dataMap = JSON.parseObject(data, Map.class);
 		String path = this.getClass().getResource("/").getPath();
 		String indexName = dataMap.get("indexName") + "";

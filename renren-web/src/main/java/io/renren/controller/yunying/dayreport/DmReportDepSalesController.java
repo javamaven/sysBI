@@ -1,8 +1,11 @@
 package io.renren.controller.yunying.dayreport;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,9 +25,11 @@ import com.alibaba.fastjson.JSONArray;
 import com.qiniu.streaming.model.StreamListing;
 
 import io.renren.entity.yunying.dayreport.DmReportDepSalesEntity;
+import io.renren.service.UserBehaviorService;
 import io.renren.service.yunying.dayreport.DmReportDepSalesService;
 import io.renren.util.DateUtil;
 import io.renren.util.NumberUtil;
+import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
@@ -47,6 +52,11 @@ public class DmReportDepSalesController {
 	SimpleDateFormat dateFm = new SimpleDateFormat("EEEE");
 	SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 	
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+
+	private  String reportType="每日报表数据";
+	
 	/**
 	 * 列表
 	 */
@@ -54,6 +64,9 @@ public class DmReportDepSalesController {
 	@RequestMapping("/list")
 	@RequiresPermissions("dmreportdepsales:list")
 	public R list(Integer page, Integer limit,String reg_begindate,String reg_enddate){
+		
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		
 		if (StringUtils.isNotEmpty(reg_begindate)) {
 			reg_begindate = reg_begindate.replace("-", "");
@@ -96,6 +109,8 @@ public class DmReportDepSalesController {
 	@RequestMapping("/list2")
 	@RequiresPermissions("dmreportdepsales:list")
 	public R list2(Integer page, Integer limit,String reg_begindate,String reg_enddate){
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		if (StringUtils.isNotEmpty(reg_begindate)) {
 			reg_begindate = reg_begindate.replace("-", "");
 		}
@@ -133,6 +148,8 @@ public class DmReportDepSalesController {
 	@RequestMapping("/list3")
 	@RequiresPermissions("dmreportdepsales:list")
 	public R list3(Integer page, Integer limit,String reg_begindate,String reg_enddate){
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		if (StringUtils.isNotEmpty(reg_begindate)) {
 			reg_begindate = reg_begindate.replace("-", "");
 		}
@@ -173,6 +190,8 @@ public class DmReportDepSalesController {
 	@ResponseBody
 	@RequestMapping("/exportExcel")
 	public void partExport(String params, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String reg_begindate = map.get("reg_begindate") + "";
 		String reg_enddate = map.get("reg_enddate") + "";
@@ -297,6 +316,8 @@ public class DmReportDepSalesController {
 	@RequestMapping("/exportExcel2")
 	public void partExport2(String params, HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		String reg_begindate = map.get("reg_begindate") + "";
 		String reg_enddate = map.get("reg_enddate") + "";
 		if (StringUtils.isNotEmpty(reg_begindate)) {

@@ -1,10 +1,13 @@
 package io.renren.controller.yunying.analyse;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,10 +34,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
+import io.renren.service.UserBehaviorService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
 import io.renren.util.DateUtil;
 import io.renren.util.NumberUtil;
+import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
@@ -45,6 +50,8 @@ public class AnalyseController {
 	
 	@Autowired
 	DataSourceFactory dataSourceFactory;
+	@Autowired
+	private UserBehaviorService userBehaviorService;
 	
 	/**
 	 * 净资金待收异动
@@ -54,6 +61,10 @@ public class AnalyseController {
 	@ResponseBody
 	@RequestMapping("/queryDaishouYidong")
 	public R queryDaishouYidong(@RequestBody Map<String, Object> params) {
+		String reportType="当周待收用户分布";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+		
 		String query_sql = null;
 		List<Map<String, Object>> dataList = null;
 		String statPeriod = params.get("statPeriod") + "";
@@ -82,6 +93,10 @@ public class AnalyseController {
 	@ResponseBody
 	@RequestMapping("/queryWithdrawuser")
 	public R queryWithdrawuser(@RequestBody Map<String, Object> params) {
+		String reportType="大额提现用户分析";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+		
 		String query_sql = null;
 		List<Map<String, Object>> dataList = null;
 		String statPeriod = params.get("statPeriod") + "";
@@ -110,6 +125,10 @@ public class AnalyseController {
 	@ResponseBody
 	@RequestMapping("/queryBusinessAlarmList")
 	public R queryBusinessAlarmList(Integer page, Integer limit, Map<String, Object> params, String statPeriod, String statType) {
+		String reportType="业务预警分析";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+		
 		int start = (page - 1) * limit;
 		int end = start + limit;
 		String query_sql = "";
@@ -182,6 +201,11 @@ public class AnalyseController {
 	@ResponseBody
 	@RequestMapping("/queryZiranUserAnalyse")
 	public R queryZiranUserAnalyse(@RequestBody Map<String, Object> params) {
+		
+		String reportType="自然用户分析";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+		
 		String query_sql = null;
 		List<Map<String, Object>> dataList = null;
 		String statPeriod = params.get("statPeriod") + "";
@@ -210,6 +234,11 @@ public class AnalyseController {
 	@ResponseBody
 	@RequestMapping("/queryChengshuUserAnalyse")
 	public R queryChengshuUserAnalyse(@RequestBody Map<String, Object> params) {
+		
+		String reportType="成熟用户分析";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+		
 		String query_sql = null;
 		List<Map<String, Object>> dataList = null;
 		String statPeriod = params.get("statPeriod") + "";
@@ -238,6 +267,11 @@ public class AnalyseController {
 	@ResponseBody
 	@RequestMapping("/queryNewUserAnalyse")
 	public R queryNewUserAnalyse(@RequestBody Map<String, Object> params) {
+		
+		String reportType="新用户分析";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+		
 		String query_sql = null;
 		List<Map<String, Object>> dataList = null;
 		String statPeriod = params.get("statPeriod") + "";
@@ -266,6 +300,10 @@ public class AnalyseController {
 	@ResponseBody
 	@RequestMapping("/queryChenmoUserAnalyse")
 	public R queryChenmoUserAnalyse(@RequestBody Map<String, Object> params) {
+		String reportType="沉默用户分析";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+		
 		String query_sql = null;
 		List<Map<String, Object>> dataList = null;
 		String statPeriod = params.get("statPeriod") + "";
@@ -294,6 +332,10 @@ public class AnalyseController {
 	@ResponseBody
 	@RequestMapping("/queryHighUserAnalyse")
 	public R queryHighUserAnalyse(@RequestBody Map<String, Object> params) {
+		String reportType="高净值用户分析";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+		
 		String query_sql = null;
 		List<Map<String, Object>> dataList = null;
 		String statPeriod = params.get("statPeriod") + "";
@@ -322,6 +364,10 @@ public class AnalyseController {
 	@ResponseBody
 	@RequestMapping("/queryDapanAnalyse")
 	public R queryDapanAnalyse(@RequestBody Map<String, Object> params) {
+		String reportType="大盘分析";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+		
 		String query_sql = null;
 		List<Map<String, Object>> dataList = null;
 		String statPeriod = params.get("statPeriod") + "";
@@ -354,6 +400,11 @@ public class AnalyseController {
 	@RequestMapping("/exportZiranUser")
 	public void exportZiranUser(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		String reportType="自然用户分析";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
+		
+		
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 
 		R ziranUserData = queryZiranUserAnalyse(map);
@@ -507,6 +558,9 @@ public class AnalyseController {
 	@RequestMapping("/exportHighUser")
 	public void exportHighUser(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		String reportType="高净值用户分析";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 
 		R highUserData = queryHighUserAnalyse(map);
@@ -682,6 +736,10 @@ public class AnalyseController {
 	@RequestMapping("/exportChenshuUser")
 	public void exportChenshuUser(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		
+		String reportType="成熟用户分析";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 
 		R chenshuUserData = queryChengshuUserAnalyse(map);
@@ -892,6 +950,10 @@ public class AnalyseController {
 	@RequestMapping("/exportNewUser")
 	public void exportNewUser(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		
+		String reportType="新用户分析";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 
 		R newUserData = queryNewUserAnalyse(map);
@@ -1031,6 +1093,9 @@ public class AnalyseController {
 	@RequestMapping("/exportChenmoUser")
 	public void exportChenmoUser(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		String reportType="沉默用户分析";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 
 		R chenmoData = queryChenmoUserAnalyse(map);
@@ -1221,6 +1286,10 @@ public class AnalyseController {
 	@RequestMapping("/exportWithdrawUser")
 	public void exportWithdrawUser(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		
+		String reportType="大额提现用户分析";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 
 		R withdrawData = queryWithdrawuser(map);
@@ -1355,6 +1424,10 @@ public class AnalyseController {
 	@RequestMapping("/exportDaishouYidong")
 	public void exportDaishouYidong(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		
+		String reportType="当周待收用户分布";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 
 		R daishouData = queryDaishouYidong(map);
@@ -1491,6 +1564,10 @@ public class AnalyseController {
 	@RequestMapping("/exportDapanAnalyse")
 	public void exportExcel(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		
+		String reportType="大盘分析";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 
 		R dapanAnalyseData = queryDapanAnalyse(map);
@@ -1687,6 +1764,10 @@ public class AnalyseController {
 	@RequestMapping("/exportBusinessAlarm")
 	public void exportBusinessAlarm(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
+		
+		String reportType="业务预警分析";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		
 		String statPeriod = map.get("statPeriod") + "";

@@ -1,6 +1,9 @@
 package io.renren.controller.yunying.dayreport;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +21,9 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
 import io.renren.entity.yunying.dayreport.DmReportVipUserEntity;
+import io.renren.service.UserBehaviorService;
 import io.renren.service.yunying.dayreport.DmReportVipUserService;
+import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
@@ -37,12 +42,21 @@ public class DmReportVipUserController {
 	@Autowired
 	private DmReportVipUserService service;
 	
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+
+	private  String reportType="VIP用户明细信息";
+	
 	/**
 	 * 列表
 	 */
 	@ResponseBody
 	@RequestMapping("/list")
 	public R list(Integer page, Integer limit,String statPeriod){
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+		
+		
 		Map<String, Object> map = new HashMap<>();
 		map.put("offset", (page - 1) * limit);
 		map.put("limit", limit);
@@ -62,6 +76,9 @@ public class DmReportVipUserController {
 	@ResponseBody
 	@RequestMapping("/exportExcel")
 	public void partExport(String params, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
+		
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String statPeriod = map.get("statPeriod") + "";
 		if (StringUtils.isNotEmpty(statPeriod)) {

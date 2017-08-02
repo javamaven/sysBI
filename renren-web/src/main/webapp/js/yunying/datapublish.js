@@ -429,7 +429,6 @@ function getOption4(rows) {
 		        text: '按还款方式',
 		        x:'center'
 		    },
-	
 		    tooltip : {
 		        trigger: 'axis',
 		        axisPointer : {            // 坐标轴指示器，坐标轴触发有效
@@ -467,6 +466,7 @@ function getOption4(rows) {
 		        {
 		            name:'按天付息：￥'+tian_total,
 		            color: ['#31859C'],
+			        formatter: "{a} <br/>{b} : {c}",
 		            type:'bar',
 		            stack: '总量',
 //		            itemStyle : { normal: {label : {show: true, position: 'insideRight'}}},
