@@ -391,7 +391,7 @@ select
   re_num as CZNUM, --充值人数
   re_amount as CZMONEY, --充值金额
   wi_amount as TXMONEY, --提现金额
-  re_amount-wi_amount as CTMONEY, --充提差
+  nvl(re_amount,0)-nvl(wi_amount,0)  as CTMONEY, --充提差
   
   first_inv_num  AS SHOUTOU, --首投人数      -0731新增
   
@@ -421,7 +421,7 @@ from dim_channel dc
   left join max_total mt on (dc.channel_label = mt.activity_tag)
   left join channel_all ca on (dc.channel_label = ca.activity_tag)
   left join last_reg lr on (dc.channel_label = lr.activity_tag)
-order by  CZNUM asc,TIMER desc
+order by nvl(REGISTERED,0) desc, TIMER asc 
   )
   where 1=1
 ${channelName}

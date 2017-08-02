@@ -126,7 +126,7 @@ function initDetailTableGrid(){
 					}
 				} 
 			},
-			{ label: '注册天数', name: 'TIMER', index: '$CHONGZHI', width: 120 ,align:'right'}
+			{ label: '最近注册天数', name: 'TIMER', index: '$CHONGZHI', width: 120 ,align:'right'}
 				
         ],
 		viewrecords: true,
