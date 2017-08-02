@@ -31,6 +31,7 @@ import com.alibaba.fastjson.JSONArray;
 import io.renren.controller.AbstractController;
 import io.renren.entity.ChannelStftInfoEntity;
 import io.renren.entity.SysUserEntity;
+import io.renren.service.UserBehaviorService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcHelper;
 import io.renren.system.jdbc.JdbcUtil;
@@ -42,6 +43,7 @@ import io.renren.utils.PageUtils;
 import io.renren.utils.R;
 
 import static io.renren.utils.ShiroUtils.getUserEntity;
+import static io.renren.utils.ShiroUtils.getUserId;
 
 @RestController
 @RequestMapping("/yunying/zixiao")
@@ -65,8 +67,16 @@ public class ZixiaoCalcuteController extends AbstractController {
 	@Autowired
 	DruidDataSource dataSource;
 	
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+
+	private  String reportType="绩效核算表";
+	
 	@SuppressWarnings("deprecation")
 	public Map<String,Object> getYunyingMubiao(int month){
+		
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		Map<String,Object> mubiaoMap = new HashMap<>();
 		String path = this.getClass().getResource("/").getPath();
 		try {
@@ -87,6 +97,8 @@ public class ZixiaoCalcuteController extends AbstractController {
 	
 	@SuppressWarnings("deprecation")
 	public Map<String,Object> getShichangMubiao(int month){
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		Map<String,Object> mubiaoMap = new HashMap<>();
 		String path = this.getClass().getResource("/").getPath();
 		try {
@@ -107,6 +119,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 	
 	@SuppressWarnings("deprecation")
 	public Map<String,Object> getAuthData(){
+		
 		Map<String,Object> mubiaoMap = new HashMap<>();
 		String path = this.getClass().getResource("/").getPath();
 		try {
@@ -171,6 +184,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 		String status = params.get("状态") + "";
 		status = status.substring( status.indexOf("等待"),  status.indexOf("</"));
 		String completeValue = params.get("完成值") + "";
+		completeValue = completeValue.replace(",", "");
 		String month = params.get("month") + "";
 		String desc = params.get("description") + "";
 		boolean flag = addTask(month, index, completeValue, destination_value, complete_rate, status, desc);
@@ -311,7 +325,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 			}else{
 				return "等待运营部确认";
 			}
-		}else if(shichang_phonesale_cost.equals(index)){
+		}else if(shichang_phonesale_cost.equals(index) || shichang_channel_cost.equals(index)){//电销成本
 			if("等待市场部录入".equals(currStatus)){
 				return "等待财务部确认";
 			}else if("等待财务部确认".equals(currStatus)){
@@ -328,7 +342,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 				return "等待市场部确认";
 			}
 		}else if(shichang_curr_month_roi.equals(index)
-				|| shichang_hongbao_cost.equals(index) || shichang_channel_cost.equals(index) || shichang_curr_month_channel_year_invest.equals(index)){
+				|| shichang_hongbao_cost.equals(index) || shichang_curr_month_channel_year_invest.equals(index)){
 			if("等待市场部确认".equals(currStatus)){
 				return "等待财务部确认";
 			}else if("等待财务部确认".equals(currStatus)){
@@ -374,6 +388,8 @@ public class ZixiaoCalcuteController extends AbstractController {
 	@ResponseBody
 	@RequestMapping("/list")
 	public R list(Integer page, Integer limit, String statPeriod){
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		String detail_sql = "";
 		List<Map<String, Object>> retList = null;
 		int month = Integer.parseInt(statPeriod.substring(5, 7));
@@ -502,7 +518,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 			String startDate = statPeriod + "-01";
 			String endDate = lastDayOfMonth;
 			//市场部渠道成本
-			String channelCostSql = FileUtil.readAsString(new File(path + File.separator + "sql/绩效/市场部本月渠道成本.txt"));
+//			String channelCostSql = FileUtil.readAsString(new File(path + File.separator + "sql/绩效/市场部本月渠道成本.txt"));
 			List<Map<String, Object>> channelCostList = new ArrayList<>();
 			//本月推广的渠道年化投资金额
 			String channelYearInvestSql = FileUtil.readAsString(new File(path + File.separator + "sql/绩效/本月推广的渠道年化投资金额.txt"));
@@ -513,10 +529,14 @@ public class ZixiaoCalcuteController extends AbstractController {
 //			channelYearInvestSql = channelYearInvestSql.replace("${lastMonthFirstDay}", "'" + lastMonthFirstDay + "'");
 //			channelYearInvestSql = channelYearInvestSql.replace("${currMonthEndDay}", "'" + lastDayOfMonth + "'");
 			Thread t1 = new Thread(new QueryThread(queryCostSql, dataSourceFactory, hongbaoCostList, startDate, endDate, null));
-			Thread t2 = new Thread(new QueryThread(channelCostSql, dataSourceFactory, channelCostList, null, null, statPeriod));
+//			Thread t2 = new Thread(new QueryThread(channelCostSql, dataSourceFactory, channelCostList, null, null, statPeriod));
 			Thread t3 = new Thread(new QueryThread(channelYearInvestSql, dataSourceFactory, channelYearInvestList, null, null, null));
-			t1.start();t2.start();t3.start();
-			t1.join();t2.join();t3.join();
+			t1.start();
+//			t2.start();
+			t3.start();
+			t1.join();
+//			t2.join();
+			t3.join();
 			
 			Map<String, Object> shichangMubiaoMap = getShichangMubiao(month);
 			if(queryList.size() > 0){
@@ -581,24 +601,6 @@ public class ZixiaoCalcuteController extends AbstractController {
 				}
 				retList.add(map__);
 				
-				
-				
-				
-				
-				//本月首投用户本月累投ROI
-//				Map<String, Object> roi_max_map = queryMonthMaxBatch(month + "", "本月首投用户本月累投ROI");
-//				Map<String, Object> roi_map = new HashMap<>();
-//				roi_map.put("month", map.get("MONTH"));
-//				roi_map.put("指标", "本月首投用户本月累投ROI");
-//				roi_map.put("完成值", map.get("本月首投用户本月累投ROI"));
-//				roi_map.put("目标值", "");
-//				roi_map.put("达成率", "");
-//				if(roi_max_map == null){
-//					roi_map.put("状态", "等待市场部确认");
-//				}else{
-//					roi_map.put("状态", getNextStatus(first_invest_map.get("status") + "", "本月首投用户本月累投ROI", roi_map));
-//				}
-//				retList.add(roi_map);
 				//市场部红包成本
 				Map<String, Object> shichang_hongbao_cost_map = queryMonthMaxBatch(month + "", shichang_hongbao_cost);
 				Map<String, Object> hongbao_cost_map = new HashMap<>();
@@ -618,11 +620,13 @@ public class ZixiaoCalcuteController extends AbstractController {
 				Map<String, Object> channel_cost_map = new HashMap<>();
 				channel_cost_map.put("month", map.get("MONTH"));
 				channel_cost_map.put("指标", shichang_channel_cost);
-				if(channelCostList.size() > 0){
-					channel_cost_map.put("完成值", channelCostList.get(0).get(shichang_channel_cost));
+				if(shichang_channel_cost_map == null){
+					channel_cost_map.put("完成值", "");
+				}else{
+					channel_cost_map.put("完成值", shichang_channel_cost_map.get("complete_value"));
 				}
 				if(shichang_channel_cost_map == null){
-					channel_cost_map.put("状态", "等待市场部确认");
+					channel_cost_map.put("状态", "等待市场部录入");
 				}else{
 					channel_cost_map.put("状态", getNextStatus(shichang_channel_cost_map.get("status") + "", shichang_channel_cost, map));
 				}
@@ -677,7 +681,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 			String zhibiao = map.get("指标").toString();
 			Object value = map.get("完成值");
 			if(zhibiao.equals(shichang_hongbao_cost) || zhibiao.equals(shichang_channel_cost)){
-				if(value == null){
+				if(value == null || "".equals(value.toString())){
 					total_cost += 0;
 				}else{
 					total_cost += Double.parseDouble(value.toString());
@@ -710,6 +714,8 @@ public class ZixiaoCalcuteController extends AbstractController {
 	@ResponseBody
 	@RequestMapping("/exportExcel")
 	public void partExport(String data, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String,Object> dataMap = JSON.parseObject(data, Map.class);
 		String path = this.getClass().getResource("/").getPath();
 		String indexName = dataMap.get("indexName") + "";

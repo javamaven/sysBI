@@ -58,7 +58,21 @@ function queryDapanAnalyse(){
 		    	}
 		    }
 	 });
-
+	$.ajax({
+	    type: "POST",
+	    url: "../analyse/queryDapanDaishouAnalyse",
+	    data: JSON.stringify(getParams()),
+	    contentType: "application/json;charset=utf-8",
+	    success : function(msg) {
+	    	loaded();
+	    	if(msg.data_list == null || msg.data_list && msg.data_list.length < 2){
+	    		alert('没有数据');
+	    	}else{
+	    		buildDaishouTable(msg.data_list);
+//	    		CurrInvest_Chart.setOption(getCurrInvestOption(msg.data_list));
+	    	}
+	    }
+ });
 }
 var colorList = [
 	  '#ff7f50','#87cefa','#da70d6','#32cd32','#6495ed',

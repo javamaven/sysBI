@@ -8,6 +8,7 @@ $(function () {
 });
 
 function initSelectEvent(){
+	var currdate = getCurrDate();
 	$("#list_select").change(function(){
 		var select = $(this).children('option:selected').val();
 		if(select == '1'){//首投后3天未复投
@@ -15,7 +16,7 @@ function initSelectEvent(){
 			$("#stat_period").val(addDate(getCurrDate(), -3));
 			$("#upload").hide();
 		}else{
-			$("#stat_period").val('');
+			$("#stat_period").val(currdate.substring(0,8) + '01');
 			$("#upload").show();
 			$("#date_text").html("电销开始日期：");
 		}

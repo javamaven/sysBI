@@ -181,7 +181,7 @@
 	<select id="queryRegisterThreeDaysNotInvestList" resultType="java.util.HashMap">
 	
 		SELECT
-			u.user_id 用户ID,
+			case when u.CG_USER_ID is null then u.USER_ID else u.CG_USER_ID end 用户ID,
 			u.USERNAME 用户名,
 			u.PHONE 手机号,
 			u.REGISTER_TIME 注册时间,
