@@ -234,10 +234,12 @@ CGNUM, --存管实名人数
  ZHMONEY, --账户余额
  DSMONEY, -- 待收金额
  DSLSNUM, -- 待收流失人数
-  
- case when INVESTLS is null then '' else INVESTLS*100||'%' end as INVESTLS, 
-  case when ZICHAN is null then '' else ZICHAN*100||'%' end as ZICHAN,
-  case when CHONGZHI is null then '' else CHONGZHI*100||'%' end as CHONGZHI,
+  INVESTLS,
+  ZICHAN,
+  CHONGZHI,
+-- case when INVESTLS is null then '' else INVESTLS*100||'%' end as INVESTLS, 
+--  case when ZICHAN is null then '' else ZICHAN*100||'%' end as ZICHAN,
+--  case when CHONGZHI is null then '' else CHONGZHI*100||'%' end as CHONGZHI,
  
  TIMER -- 有注册天数  --0731新增
 from

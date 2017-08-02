@@ -93,9 +93,39 @@ function initDetailTableGrid(){
 			{ label: '账户余额(万)', name: 'ZHMONEY', index: '$ZHMONEY', width: 100 ,align:'right'},		
 			{ label: '待收金额(万)', name: 'DSMONEY', index: '$DSMONEY', width: 100 ,align:'right'},
 			{ label: '待收流失人数', name: 'DSLSNUM', index: '$DSLSNUM', width: 110 ,align:'right'},
-			{ label: '投资用户流失率', name: 'INVESTLS', index: '$INVESTLS', width: 120 ,align:'right'},		
-			{ label: '资产留存率', name: 'ZICHAN', index: '$ZICHAN', width: 110 ,align:'right'},
-			{ label: '充值金额留存率', name: 'CHONGZHI', index: '$CHONGZHI', width: 120 ,align:'right'},
+			{ label: '投资用户流失率', name: 'INVESTLS', index: '$INVESTLS', width: 120 ,align:'right'
+				,formatter: function(value, options, row){
+					if(row.负责人 == '汇总'){
+						return value;
+					}else if(value == null || value == ''){
+						return '';
+					}else{
+						return formatNumber(value*100,2) + '%';
+					}
+				} 
+			},
+			{ label: '资产留存率', name: 'ZICHAN', index: '$ZICHAN', width: 110 ,align:'right'
+				,formatter: function(value, options, row){
+					if(row.负责人 == '汇总'){
+						return value;
+					}else if(value == null || value == ''){
+						return '';
+					}else{
+						return formatNumber(value*100,2) + '%';
+					}
+				} 
+			},
+			{ label: '充值金额留存率', name: 'CHONGZHI', index: '$CHONGZHI', width: 120 ,align:'right'
+				,formatter: function(value, options, row){
+					if(row.负责人 == '汇总'){
+						return value;
+					}else if(value == null || value == ''){
+						return '';
+					}else{
+						return formatNumber(value*100,2) + '%';
+					}
+				} 
+			},
 			{ label: '注册天数', name: 'TIMER', index: '$CHONGZHI', width: 120 ,align:'right'}
 				
         ],
