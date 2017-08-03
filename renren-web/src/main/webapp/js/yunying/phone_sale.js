@@ -138,7 +138,7 @@ function initDayListTableGrid(){
 			
 			{ label: '当月是否投资', name: '当月是否投资', index: '$BORROW_PERIOD', width: 110 ,align:'right'},	
 			{ label: '当月投资次数', name: '当月投资次数', index: '$BORROW_PERIOD', width: 110 ,align:'right'},
-			{ label: '当月实际投资金额', name: '当月投资次数', index: '$BORROW_PERIOD', width: 130 ,align:'right'},	
+			{ label: '当月实际投资金额', name: '当月实际投资金额', index: '$BORROW_PERIOD', width: 130 ,align:'right'},	
 			{ label: '当月销售奖励金额', name: '当月销售奖励金额', index: '$BORROW_PERIOD', width: 130 ,align:'right'},	
 
 			{ label: '当月年化投资金额', name: '当月年化投资金额', index: '$BORROW_PERIOD', width: 130 ,align:'right'},
