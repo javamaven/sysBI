@@ -77,7 +77,7 @@ function initDetailTableGrid(){
 //        url: '../yunying/dmreportvipuser/list',
         datatype: "json",
         colModel: [
-			{ label: '负责人1', name: 'CHANNELHEAD', index: '$CHANNELHEAD', width: 70,align:'right',sortable:false },
+			{ label: '负责人', name: 'CHANNELHEAD', index: '$CHANNELHEAD', width: 70,align:'right',sortable:false },
 			{ label: '渠道名称', name: 'CHANNELNAME', index: '$CHANNELNAME', width: 70 ,align:'right',sortable:false }, 			
 			{ label: '渠道标签', name: 'CHANNELLABEL', index: '$CHANNELLABEL', width: 70 ,align:'right',sortable:false }, 
 			{ label: '注册人数', name: 'REGISTERED', index: '$REGISTERED', width: 70 ,align:'right',sortable:false }, 			
