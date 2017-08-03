@@ -19,7 +19,6 @@ function queryCurrInvestData(){
 		data: {},
 		contentType: "application/json;charset=utf-8",
 		success : function(data) {
-			console.info(data)
 			if(data.day > 100000000){
 				$("#day_invest").html(formatNumber( data.day/100000000, 2) + "亿元");
         	}else{
@@ -34,7 +33,7 @@ function queryCurrInvestData(){
 			var yesterday_total_invest_amount = data.yesterday_total_invest_amount;
 			var last_month_total_invest_amount = data.last_month_total_invest_amount;
 			//当天与昨天投资额百分比
-			if(data.day > yesterday_total_invest_amount){
+			if(parseFloat(data.day) > parseFloat(yesterday_total_invest_amount)){
 				$("#last_day_rate").css("width", "100%")
 			}else{
 				var rate = data.day*100/yesterday_total_invest_amount;
@@ -42,7 +41,7 @@ function queryCurrInvestData(){
 				$("#last_day_rate").css("width", rate + "%")
 			}
 			//当月与上月投资额百分比
-			if(data.month > last_month_total_invest_amount){
+			if(parseFloat(data.month) > parseFloat(last_month_total_invest_amount)){
 				$("#last_month_rate").css("width", "100%")
 			}else{
 				var rate = data.month*100/last_month_total_invest_amount;

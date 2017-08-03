@@ -511,10 +511,6 @@ public class MainController {
 			List<Map<String, Object>> pt_invest_list = queryPutongTotalInvestAmountList();
 			List<Map<String, Object>> pt_change_list = queryChangeTotalInvestAmountList();
 			List<Map<String, Object>> cg_invest_list = queryCgTotalInvestAmountList();
-			System.err.println("pt_invest_list++++++++" + pt_invest_list);
-			System.err.println("pt_change_list++++++++" + pt_change_list);
-			System.err.println("cg_invest_list++++++++" + cg_invest_list);
-			System.err.println("++++++++++++++++++++++++++");
 			ret = buildData(pt_invest_list, pt_change_list, cg_invest_list);
 		} catch (Exception e) {
 			dataSourceFactory.reInitConnectionPoll();
@@ -656,6 +652,8 @@ public class MainController {
 	
 	double yesterday_total_invest_amount = 0;//昨天投资总额
 	double last_month_total_invest_amount = 0;//上月投资总额
+	double curr_month_invest = 0;//当月投资总额 ，截止到昨天为止
+	double curr_month_invest_times = 0;//当月投资笔数，截止到昨天为止
 	/**
 	 * 上月投资总额查询
 	 * @throws SQLException 
@@ -709,38 +707,36 @@ public class MainController {
 	 */
 	@RequestMapping(value = "/queryCurrInvestAmount")
 	public R queryCurrInvestAmount() {
-		List<Map<String, Object>> list_month_cg = null;
-		List<Map<String, Object>> list_month_pt = null;
 		List<Map<String, Object>> list_day_cg = null;
 		List<Map<String, Object>> list_day_pt = null;
+		String currDayBefore = DateUtil.getCurrDayBefore(1);
+		String yesterday = currDayBefore.substring(0 , 4) + "-" + currDayBefore.substring(4 , 6) + "-" + currDayBefore.substring(6, 8);
+		String yesEndDate = yesterday + " 23:59:59";
+		String currDayStr = DateUtil.getCurrDayStr();//'2017-06-27 00:00:00'
+		String monthStartDate = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6)  + "-" +  "01 00:00:00";
 		double total_month = 0;
 		double total_day = 0;
 		try {
 			if(last_month_total_invest_amount == 0){
 				queryLastMonthTotalInvestAmont();
 			}
+			if(curr_month_invest == 0 || isNextDay()){
+				//存管版当月投资额
+				queryCgCurrMonthInvest(monthStartDate, yesEndDate);
+				//普通版当月投资额
+				queryPtCurrMonthInvest(monthStartDate, yesEndDate);
+			}
 			
-			JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
-			String currDayStr = DateUtil.getCurrDayStr();//'2017-06-27 00:00:00'
-			String month = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6)  + "-" +  "01 00:00:00";
-			//当月存管版投资额
-			list_month_cg = util.query(SqlConstants.curr_cg_invest_sql, month, month);
-			total_month += Double.parseDouble(list_month_cg.get(0).get("MONEY") + "");
-			
-			JdbcUtil util2 = new JdbcUtil(dataSourceFactory, "oracle");
-			//当月普通版投资额
-			list_month_pt = util2.query(SqlConstants.curr_invest_sql, month);
-			total_month += Double.parseDouble(list_month_pt.get(0).get("MONEY") + "");
-			
+			//当天存管版投资额
 			JdbcUtil util_day = new JdbcUtil(dataSourceFactory, "mysql");
 			String addTime_day = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6)  + "-" + currDayStr.substring(6, 8) + " 00:00:00";
-			//当天存管版投资额
-			list_day_cg = util_day.query(SqlConstants.curr_cg_invest_sql, addTime_day, addTime_day);
+			String addTime_EndDay = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6)  + "-" + currDayStr.substring(6, 8) + " 23:59:59";
+			list_day_cg = util_day.query(SqlConstants.curr_cg_invest_sql, addTime_day,addTime_EndDay, addTime_day, addTime_EndDay);
 			
 			
-			JdbcUtil util2_day = new JdbcUtil(dataSourceFactory, "oracle");
 			//当天普通版投资额
-			list_day_pt = util2_day.query(SqlConstants.curr_invest_sql, addTime_day);
+			JdbcUtil util2_day = new JdbcUtil(dataSourceFactory, "oracle");
+			list_day_pt = util2_day.query(SqlConstants.curr_invest_sql, addTime_day, addTime_EndDay);
 			
 			
 			total_day += Double.parseDouble(list_day_cg.get(0).get("MONEY") + "");
@@ -761,7 +757,9 @@ public class MainController {
 			total_day += 20000000/24 * hours;
 			int days = Integer.parseInt(currDayStr.substring(6, 8))-1;//1号为0
 			
-			total_month += days*20000000 + 20000000/24 * hours;
+//			total_month += days*20000000 + 20000000/24 * hours;
+			total_month += days*20000000;
+			total_month += curr_month_invest + total_day;
 			
 			numberFormat.setGroupingUsed(false);
 //			System.err.println("++++++当月投资总额+++++" + numberFormat.format((int)total_month));
@@ -776,6 +774,56 @@ public class MainController {
 				.put("yesterday_total_invest_amount", numberFormat.format(yesterday_total_invest_amount));
 	}
 	
+	/**
+	 * 普通版当月投资额，时间截止到昨天为止
+	 * @param yesEndDate 
+	 */
+	private void queryPtCurrMonthInvest(String monthStartDate, String yesEndDate) {
+		// TODO Auto-generated method stub
+		try {
+			JdbcUtil util2 = new JdbcUtil(dataSourceFactory, "oracle");
+			//当月普通版投资额
+			List<Map<String, Object>> list_month_pt = util2.query(SqlConstants.curr_invest_sql, monthStartDate, yesEndDate);
+			curr_month_invest += Double.parseDouble(list_month_pt.get(0).get("MONEY") + "");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 存管版当月投资额，时间截止到昨天为止
+	 * @param yesEndDate 
+	 */
+	private void queryCgCurrMonthInvest(String startDate, String yesEndDate) {
+		// TODO Auto-generated method stub
+		JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
+		List<Map<String, Object>> list_month_cg;
+		try {
+			list_month_cg = util.query(SqlConstants.curr_cg_invest_sql, startDate, yesEndDate, startDate, yesEndDate);
+			curr_month_invest += Double.parseDouble(list_month_cg.get(0).get("MONEY") + "");
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 判断当前时间，是否跨入第二天了，是的话则返回true
+	 * @return
+	 */
+	private boolean isNextDay(){
+		String currDayStr = DateUtil.getCurrDayStr();//'2017-06-27 00:00:00'
+		if(StringUtils.isEmpty(SqlConstants.currDay)){
+			SqlConstants.currDay = DateUtil.getCurrDayStr();
+			return false;
+		}else{
+			if(SqlConstants.currDay.equals(currDayStr)){
+				return false;
+			}else{
+				SqlConstants.currDay = currDayStr;
+				return true;
+			}
+		}
+	}
 
 	/**
 	 * 当天，当月投资笔数
@@ -785,46 +833,38 @@ public class MainController {
 	 */
 	@RequestMapping(value = "/queryCurrInvestTimes")
 	public R queryCurrInvestTimes() {
-		List<Map<String, Object>> list_month_cg = null;
-		List<Map<String, Object>> list_month_pt = null;
 		List<Map<String, Object>> list_day_cg = null;
 		List<Map<String, Object>> list_day_pt = null;
+		String currDayStr = DateUtil.getCurrDayStr();//'2017-06-27 00:00:00'
+		String currDayBefore = DateUtil.getCurrDayBefore(1);
+		String yesterday = currDayBefore.substring(0 , 4) + "-" + currDayBefore.substring(4 , 6) + "-" + currDayBefore.substring(6, 8);
+		String yesEndDate = yesterday + " 23:59:59";
+		String monthStartDate = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6)  + "-" +  "01 00:00:00";
 		double total_month = 0;
 		double total_day = 0;
 		try {
-			JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
-			String currDayStr = DateUtil.getCurrDayStr();//'2017-06-27 00:00:00'
-			String month = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6)  + "-" +  "01 00:00:00";
-			//存管版当月交易笔数
-			list_month_cg = util.query(SqlConstants.curr_cg_invest_times_sql, month, month);
-			total_month += Double.parseDouble(list_month_cg.get(0).get("invest_times") + "");
-			
-			JdbcUtil util2 = new JdbcUtil(dataSourceFactory, "oracle");
-			//普通版当月交易笔数
-			list_month_pt = util2.query(SqlConstants.curr_invest_times_sql, month, month);
-			total_month += Double.parseDouble(list_month_pt.get(0).get("INVEST_TIMES") + "");
+			if(curr_month_invest_times == 0 || isNextDay()){
+				//存管版当月投资次数
+				queryCgCurrMonthInvestTimes(monthStartDate, yesEndDate);
+				//普通版当月投资次数
+				queryPtCurrMonthInvestTimes(monthStartDate, yesEndDate);
+			}
 			
 			JdbcUtil util_day = new JdbcUtil(dataSourceFactory, "mysql");
 			String addTime_day = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6)  + "-" + currDayStr.substring(6, 8) + " 00:00:00";
+			String addTime_endday = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6)  + "-" + currDayStr.substring(6, 8) + " 23:59:59";
 			//存管版当天交易笔数
-			list_day_cg = util_day.query(SqlConstants.curr_cg_invest_times_sql, addTime_day, addTime_day);
+			list_day_cg = util_day.query(SqlConstants.curr_cg_invest_times_sql, addTime_day, addTime_endday, addTime_day, addTime_endday);
 			
 			
 			JdbcUtil util2_day = new JdbcUtil(dataSourceFactory, "oracle");
 			//普通版当天交易笔数
-			list_day_pt = util2_day.query(SqlConstants.curr_invest_times_sql, addTime_day, addTime_day);
+			list_day_pt = util2_day.query(SqlConstants.curr_invest_times_sql, addTime_day,addTime_endday, addTime_day, addTime_endday);
 			
 			
 			total_day += Double.parseDouble(list_day_cg.get(0).get("invest_times") + "");
 			total_day += Double.parseDouble(list_day_pt.get(0).get("INVEST_TIMES") + "");
-//			JdbcUtil util = new JdbcUtil(dataSourceFactory, "oracle26");
-//			list = util.query(SqlConstants.curr_invest_sql);
-//			for (int i = 0; i < list2.size(); i++) {
-//				Map<String, Object> map2 = list2.get(i);
-//				int money = (int) Double.parseDouble(map2.get("MONEY")+"");
-//				dataList.add(money/10000);
-//			}
-			//直接增加2400w
+			total_month = curr_month_invest_times + total_day;
 			System.err.println("++++++当月投资总额+++++" + total_month);
 			System.err.println("++++++当天投资总额+++++" + total_day);
 			
@@ -835,6 +875,38 @@ public class MainController {
 		return R.ok().put("day", total_day).put("month", total_month);
 	}
 	
+	/**
+	 * 普通版当月投资笔数，截止到昨天为止
+	 * @param monthStartDate
+	 * @param yesEndDate
+	 */
+	private void queryPtCurrMonthInvestTimes(String monthStartDate, String yesEndDate) {
+		try {
+			//普通版当月交易笔数
+			JdbcUtil util2 = new JdbcUtil(dataSourceFactory, "oracle");
+			List<Map<String, Object>> list_month_pt = util2.query(SqlConstants.curr_invest_times_sql, monthStartDate, yesEndDate, monthStartDate, yesEndDate);
+			curr_month_invest_times += Double.parseDouble(list_month_pt.get(0).get("INVEST_TIMES") + "");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 存管版当月投资笔数，截止到昨天为止
+	 * @param monthStartDate
+	 * @param yesEndDate
+	 */
+	private void queryCgCurrMonthInvestTimes(String monthStartDate, String yesEndDate) {
+		try {
+			//存管版当月交易笔数
+			JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
+			List<Map<String, Object>> list_month_cg = util.query(SqlConstants.curr_cg_invest_times_sql, monthStartDate,yesEndDate , monthStartDate, yesEndDate);
+			curr_month_invest_times += Double.parseDouble(list_month_cg.get(0).get("invest_times") + "");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * 累计投资笔数
 	 * 

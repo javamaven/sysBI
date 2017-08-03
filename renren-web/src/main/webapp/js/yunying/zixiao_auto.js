@@ -81,6 +81,7 @@ function hideDiv(){
 	$("#yunying_queren_btn").hide();
 	$("#shichang_queren_btn").hide();
 	$("#shichang_luru_channel_cost_div").hide();
+	$("#shichang_luru_hongbao_cost_div").hide();
 	
 }
 /**
@@ -129,6 +130,12 @@ function openWindow( type , indexName, rowId, status){
 		shichang_curr_operation = '录入渠道成本';
 		$("#window_title").html('录入渠道成本');
 		$("#shichang_luru_channel_cost_div").show();
+		$("#shichang_queren_btn").show();
+		$("#window_body").css('height', '70px');
+		curr_select_row = $("#shichang_reg").jqGrid('getRowData',rowId);
+	}else if(type == 'shichang_luru_hongbao_cost'){
+		shichang_curr_operation = '录入红包成本';
+		$("#shichang_luru_hongbao_cost_div").show();
 		$("#shichang_queren_btn").show();
 		$("#window_body").css('height', '70px');
 		curr_select_row = $("#shichang_reg").jqGrid('getRowData',rowId);
@@ -248,6 +255,17 @@ function shichangQueren(){
 			return;
 		}
 	}
+	var hongbao_cost_value = $("#hongbao_cost_value").val();
+	if(shichang_curr_operation == '录入红包成本'){
+		if(!hongbao_cost_value){
+			alert('请输入红包成本');
+			return;
+		}
+		if(!isIntOrDoubleValue(hongbao_cost_value)){
+			alert('请输入正确的数字');
+			return;
+		}
+	}
 	var select_time = $("#list_select").val();
 	var month = select_time.substring(5, 7);
 	month = parseInt(month);
@@ -256,7 +274,11 @@ function shichangQueren(){
 		curr_select_row.完成值 = phone_sale_cost;
 	}else if(shichang_curr_operation == '录入渠道成本'){
 		curr_select_row.完成值 = channel_cost_value;
+	}else if(shichang_curr_operation == '录入红包成本'){
+		curr_select_row.完成值 = hongbao_cost_value;
 	}
+	
+	curr_select_row.description = $("#description").val();
     $.ajax({
         type: "POST",
         url: "../yunying/zixiao/shichangQueren",
@@ -398,9 +420,10 @@ function initShichangRegTable(){
 					var queren = '<span onclick="checkAuth(\'shichang_queren\',\''+row.指标+'\',\''+options.rowId+'\',\''+row.状态+'\')" class="btn btn-primary btn-inverse btn-xs">&nbsp;确&nbsp;&nbsp;&nbsp;认&nbsp;</span>&nbsp;&nbsp;&nbsp;&nbsp;';
 					var luru = '<a onclick="checkAuth(\'shichang_luru_phone_cost\',\''+row.指标+'\',\''+options.rowId+'\',\''+row.状态+'\')" class="btn btn-primary btn-inverse btn-xs">录入电销成本</a> &nbsp;&nbsp;&nbsp;&nbsp;';
 					var luru_channel = '<a onclick="checkAuth(\'shichang_luru_channel_cost\',\''+row.指标+'\',\''+options.rowId+'\',\''+row.状态+'\')" class="btn btn-primary btn-inverse btn-xs">录入渠道成本</a> &nbsp;&nbsp;&nbsp;&nbsp;';
+					var luru_hongbao= '<a onclick="checkAuth(\'shichang_luru_hongbao_cost\',\''+row.指标+'\',\''+options.rowId+'\',\''+row.状态+'\')" class="btn btn-primary btn-inverse btn-xs">录入红包成本</a> &nbsp;&nbsp;&nbsp;&nbsp;';
 					var exportHtml = '<a onclick="exportDetail(\'' + row.指标 + '\',\'' + row.month + '\')" class="btn btn-primary btn-inverse btn-xs">导出明细</a> &nbsp;&nbsp;&nbsp;&nbsp;';
 					if(row.状态 == '已完成'){
-						if(row.指标 == '市场部本月红包成本' || row.指标 == '市场部本月渠道成本' || row.指标 == '当月首投用户本月累投金额'){
+						if( row.指标 == '市场部本月渠道成本' || row.指标 == '当月首投用户本月累投金额'){
 							return exportHtml;
 						}else{
 							return '';
@@ -418,7 +441,13 @@ function initShichangRegTable(){
 						}else{
 							return queren + exportHtml;
 						}
-					}else if(row.指标 == '市场部本月红包成本' || row.指标 == '当月首投用户本月累投金额'){
+					}else if(row.指标 == '市场部本月红包成本'){
+						if(row.状态 == '等待市场部录入'){
+							return luru_hongbao ;
+						}else{
+							return queren ;
+						}
+					}else if(row.指标 == '当月首投用户本月累投金额'){
 						return queren + exportHtml;
 					}else{
 						return queren;

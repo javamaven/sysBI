@@ -331,7 +331,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 			}else{
 				return "等待运营部确认";
 			}
-		}else if(shichang_phonesale_cost.equals(index) || shichang_channel_cost.equals(index)){//电销成本
+		}else if(shichang_phonesale_cost.equals(index) || shichang_channel_cost.equals(index) || shichang_hongbao_cost.equals(index)){//电销成本
 			if("等待市场部录入".equals(currStatus)){
 				return "等待财务部确认";
 			}else if("等待财务部确认".equals(currStatus)){
@@ -347,8 +347,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 			}else{
 				return "等待市场部确认";
 			}
-		}else if(shichang_curr_month_roi.equals(index)
-				|| shichang_hongbao_cost.equals(index) || shichang_curr_month_channel_year_invest.equals(index)){
+		}else if(shichang_curr_month_roi.equals(index) || shichang_curr_month_channel_year_invest.equals(index)){
 			if("等待市场部确认".equals(currStatus)){
 				return "等待财务部确认";
 			}else if("等待财务部确认".equals(currStatus)){
@@ -519,7 +518,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 //			List<Map<String, Object>> queryList2 = new JdbcUtil(dataSourceFactory, "oracle26")
 //					.query(FileUtil.readAsString(new File(path + File.separator + "sql/绩效/test.txt")));
 			//市场部红包成本
-			String queryCostSql = FileUtil.readAsString(new File(path + File.separator + "sql/绩效/市场部本月红包成本.txt"));
+//			String queryCostSql = FileUtil.readAsString(new File(path + File.separator + "sql/绩效/市场部本月红包成本.txt"));
 			List<Map<String, Object>> hongbaoCostList = new ArrayList<>();
 			String startDate = statPeriod + "-01";
 			String endDate = lastDayOfMonth;
@@ -534,13 +533,13 @@ public class ZixiaoCalcuteController extends AbstractController {
 //			channelYearInvestSql = channelYearInvestSql.replace("${endTime}", "'" + lastDayOfMonth + " 23:59:59'");
 //			channelYearInvestSql = channelYearInvestSql.replace("${lastMonthFirstDay}", "'" + lastMonthFirstDay + "'");
 //			channelYearInvestSql = channelYearInvestSql.replace("${currMonthEndDay}", "'" + lastDayOfMonth + "'");
-			Thread t1 = new Thread(new QueryThread(queryCostSql, dataSourceFactory, hongbaoCostList, startDate, endDate, null));
+//			Thread t1 = new Thread(new QueryThread(queryCostSql, dataSourceFactory, hongbaoCostList, startDate, endDate, null));
 //			Thread t2 = new Thread(new QueryThread(channelCostSql, dataSourceFactory, channelCostList, null, null, statPeriod));
 			Thread t3 = new Thread(new QueryThread(channelYearInvestSql, dataSourceFactory, channelYearInvestList, null, null, null));
-			t1.start();
+//			t1.start();
 //			t2.start();
 			t3.start();
-			t1.join();
+//			t1.join();
 //			t2.join();
 			t3.join();
 			
@@ -612,13 +611,12 @@ public class ZixiaoCalcuteController extends AbstractController {
 				Map<String, Object> hongbao_cost_map = new HashMap<>();
 				hongbao_cost_map.put("month", map.get("MONTH"));
 				hongbao_cost_map.put("指标", shichang_hongbao_cost);
-				if(hongbaoCostList.size() > 0){
-					hongbao_cost_map.put("完成值", hongbaoCostList.get(0).get(shichang_hongbao_cost));
-				}
 				if(shichang_hongbao_cost_map == null){
-					hongbao_cost_map.put("状态", "等待市场部确认");
+					hongbao_cost_map.put("状态", "等待市场部录入");
+					hongbao_cost_map.put("完成值", "");
 				}else{
-					hongbao_cost_map.put("状态", getNextStatus(shichang_hongbao_cost_map.get("status") + "", shichang_hongbao_cost, map));
+					hongbao_cost_map.put("完成值", shichang_hongbao_cost_map.get("complete_value"));
+					hongbao_cost_map.put("状态", getNextStatus(shichang_hongbao_cost_map.get("status") + "", shichang_hongbao_cost, hongbao_cost_map));
 				}
 				retList.add(hongbao_cost_map);
 				//市场部渠道成本
@@ -628,13 +626,10 @@ public class ZixiaoCalcuteController extends AbstractController {
 				channel_cost_map.put("指标", shichang_channel_cost);
 				if(shichang_channel_cost_map == null){
 					channel_cost_map.put("完成值", "");
-				}else{
-					channel_cost_map.put("完成值", shichang_channel_cost_map.get("complete_value"));
-				}
-				if(shichang_channel_cost_map == null){
 					channel_cost_map.put("状态", "等待市场部录入");
 				}else{
-					channel_cost_map.put("状态", getNextStatus(shichang_channel_cost_map.get("status") + "", shichang_channel_cost, map));
+					channel_cost_map.put("完成值", shichang_channel_cost_map.get("complete_value"));
+					channel_cost_map.put("状态", getNextStatus(shichang_channel_cost_map.get("status") + "", shichang_channel_cost, channel_cost_map));
 				}
 				retList.add(channel_cost_map);
 				//市场部电销成本

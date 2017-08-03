@@ -271,16 +271,23 @@ function getLastWeekHuanbi(lastweek, curr){
     '</tr>'; 
     return html;
 }
+function getNbsp(num){
+	var html = '';
+	for (var i = 0; i < num; i++) {
+		html += '&nbsp;';
+	}
+	return html;
+}
 function getDaishouTableHead(){
 	var html = '';
 	html += ' <tr> ' +
-		' <td rowspan="2">日期</td> ' +
-		' <td rowspan="2">总投资用户待收资金</td> ' +
-		' <td colspan="2">总高净值用户待收资金</td> ' +
-		' <td colspan="3">沉默用户待收资金</td> ' +
-		' <td colspan="3">新用户待收资金</td> ' +
-		' <td colspan="3">成熟用户待收资金</td> ' +
-		' <td colspan="3">自然用户待收资金</td> ' +
+		' <td rowspan="2"  >'+getNbsp(6)+'日&nbsp;期'+getNbsp(6)+'</td> ' +
+		' <td rowspan="2"  >'+getNbsp(6)+'总投资用户待收资金</td>'+getNbsp(6)+' ' +
+		' <td colspan="2"  >'+getNbsp(6)+'总高净值用户待收资金</td>'+getNbsp(6)+' ' +
+		' <td colspan="3" >沉默用户待收资金</td> ' +
+		' <td colspan="3"  >新用户待收资金</td> ' +
+		' <td colspan="3"  >成熟用户待收资金</td> ' +
+		' <td colspan="3"  >自然用户待收资金</td> ' +
 		' </tr> ' +
 		' <tr>   ' +
 		' <td>高净值用户</td> ' +  

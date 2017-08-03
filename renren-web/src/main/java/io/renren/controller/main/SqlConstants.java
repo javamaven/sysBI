@@ -2,6 +2,8 @@ package io.renren.controller.main;
 
 public class SqlConstants {
 	
+	public static String currDay = "";
+	
 	static String city_string = "'上海','东莞','东营','中山','临汾','临沂','丹东','丽水','乌鲁木齐','佛山','保定','兰州','包头','北京','北海','南京','南宁','南昌','南通','厦门','台州','合肥','呼和浩特','咸阳','哈尔滨','唐山','嘉兴','大同','大连','天津','太原','威海','宁波','宝鸡','宿迁','常州','广州','廊坊','延安','张家口','徐州','德州','惠州','成都','扬州','承德','拉萨','无锡','日照','昆明','杭州','枣庄','柳州','株洲','武汉','汕头','江门','沈阳','沧州','河源','泉州','泰安','泰州','济南','济宁','海口','淄博','淮安','深圳','清远','温州','渭南','湖州','湘潭','滨州','潍坊','烟台','玉溪','珠海','盐城','盘锦','石家庄','福州','秦皇岛','绍兴','聊城','肇庆','舟山','苏州','莱芜','菏泽','营口','葫芦岛','衡水','衢州','西宁','西安','贵阳','连云港','邢台','邯郸','郑州','鄂尔多斯','重庆','金华','铜川','银川','镇江','长春','长沙','长治','阳泉','青岛','韶关'";
 	
 	/**
@@ -186,9 +188,10 @@ public class SqlConstants {
 					"   and p.addtime >= " +
 					"       (to_date(?, 'yyyy-mm-dd hh24:mi:ss') - " +
 					"       to_date('1970-01-01', 'yyyy-mm-dd')) * 24 * 60 * 60 * 1000 " +
+					" and p.ADDTIME <= (TO_DATE (?, 'yyyy-mm-dd hh24:mi:ss') - TO_DATE ('1970-01-01', 'yyyy-mm-dd')) * 24 * 60 * 60 * 1000 " +
 					"   and p.status = 1 ";
 	//存管版投资 调用 sqlcg_invest_amount_list
-	public static String curr_cg_invest_sql = "SELECT round(sum(tender_capital), 0) MONEY FROM ( SELECT IFNULL( CASE a.tender_subject WHEN 1 THEN a.tender_capital / 100 WHEN 2 THEN b.pay_amount / 100 END, 0 ) tender_capital, a.addtime TIME FROM project_tender_detail a LEFT JOIN creditor_purchase_order b ON a.id = b.relate_tender_detail_id WHERE a.tender_account_status IN (0, 1) AND a.id NOT IN ( SELECT tender_detail_id FROM financial_plan_order_detail ) AND a.addtime >= ? UNION ALL SELECT IFNULL(tender_amount / 100, 0), tender_time TIME FROM financial_plan_order WHERE 1 = 1 AND tender_time >= ? ) S";
+	public static String curr_cg_invest_sql = "SELECT round(sum(tender_capital), 0) MONEY FROM ( SELECT IFNULL( CASE a.tender_subject WHEN 1 THEN a.tender_capital / 100 WHEN 2 THEN b.pay_amount / 100 END, 0 ) tender_capital, a.addtime TIME FROM project_tender_detail a LEFT JOIN creditor_purchase_order b ON a.id = b.relate_tender_detail_id WHERE a.tender_account_status IN (0, 1) AND a.id NOT IN ( SELECT tender_detail_id FROM financial_plan_order_detail ) AND a.addtime >= ? and a.addtime <= ? UNION ALL SELECT IFNULL(tender_amount / 100, 0), tender_time TIME FROM financial_plan_order WHERE 1 = 1 AND tender_time >= ? and tender_time <= ? ) S";
 	
 	/******当月投资笔数，当天投资笔数***************************************************************************************************/
 
@@ -212,15 +215,17 @@ public class SqlConstants {
 	public static String curr_invest_times_sql = 
 					"select sum(s.times) invest_times from ( " +
 					"	select count(1) times from diyou_borrow_tender p  " +
-					"	where 1=1 and p.addtime >  " +
+					"	where 1=1 and p.addtime >=  " +
 					"	(to_date(?, 'yyyy-mm-dd hh24:mi:ss')-to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))* 24*60*60*1000 " +
+					"	and p.addtime <= (to_date(?, 'yyyy-mm-dd hh24:mi:ss')-to_date('1970-01-01 08:00:00','yyyy-mm-dd hh24:mi:ss'))* 24*60*60*1000 " +
 					"	union all " +
 					"	select count(1) times from  mjkf_ddz.mjkf_ddz_investor_account_log l " + 
 					"	where 1=1 and l.type_ in ('B','RP')  " +
-					"	and l.created_time_ > to_date(?, 'yyyy-mm-dd hh24:mi:ss') " +
+					"	and l.created_time_ >= to_date(?, 'yyyy-mm-dd hh24:mi:ss') " +
+					"	and l.created_time_ <= to_date(?, 'yyyy-mm-dd hh24:mi:ss') " +
 					" ) s ";
 	//存管版投资 调用 sqlcg_invest_amount_list
-	public static String curr_cg_invest_times_sql = "SELECT  count(1) invest_times  FROM ( SELECT IFNULL( CASE a.tender_subject WHEN 1 THEN a.tender_capital / 100 WHEN 2 THEN b.pay_amount / 100 END, 0 ) tender_capital, a.addtime TIME FROM project_tender_detail a LEFT JOIN creditor_purchase_order b ON a.id = b.relate_tender_detail_id WHERE a.tender_account_status IN (0, 1) AND a.id NOT IN ( SELECT tender_detail_id FROM financial_plan_order_detail ) AND a.addtime >= ? UNION ALL SELECT IFNULL(tender_amount / 100, 0), tender_time TIME FROM financial_plan_order WHERE 1 = 1 AND tender_time >= ? ) S";
+	public static String curr_cg_invest_times_sql = "SELECT  count(1) invest_times  FROM ( SELECT IFNULL( CASE a.tender_subject WHEN 1 THEN a.tender_capital / 100 WHEN 2 THEN b.pay_amount / 100 END, 0 ) tender_capital, a.addtime TIME FROM project_tender_detail a LEFT JOIN creditor_purchase_order b ON a.id = b.relate_tender_detail_id WHERE a.tender_account_status IN (0, 1) AND a.id NOT IN ( SELECT tender_detail_id FROM financial_plan_order_detail ) AND a.addtime >= ? and a.addtime <= ? UNION ALL SELECT IFNULL(tender_amount / 100, 0), tender_time TIME FROM financial_plan_order WHERE 1 = 1 AND tender_time >= ? and tender_time <= ? ) S";
 
 	
 	//普通版累计投资笔数（普通版）
