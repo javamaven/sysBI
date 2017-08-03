@@ -166,10 +166,24 @@ function getOption(rows){
 //	console.info(rows)
 	var date_list = [];
 	var data_list = [];
+	var currDate = getCurrDate();
+	var day = currDate.substring(8, 10);
+	var month = currDate.substring(5, 7);
+	month = parseInt(month);
+	day = parseInt(day);
 	for (var i = 0; i < rows.length; i++) {
 		var row = rows[i];
-		date_list.push(row.YEAR+row.MONTH);
-		data_list.push(row.SUM);
+		if(day <= 20){//不要改月数据
+			if(month + '月' == row.MONTH){
+				continue;
+			}
+			date_list.push(row.YEAR+row.MONTH);
+			data_list.push(row.SUM);
+		}else {
+			date_list.push(row.YEAR+row.MONTH);
+			data_list.push(row.SUM);
+		}
+		
 	}
 	var option = {
 			 title : {
@@ -408,14 +422,20 @@ function getOption4(rows) {
 	var tian_total=0;
 	var benxi_total=0;
 	var daoqi_total=0;
+	var currDate = getCurrDate();
+	var day = currDate.substring(8, 10);
+	var month = currDate.substring(5, 7);
+	month = parseInt(month);
+	day = parseInt(day);
 	for (var i = 0; i < rows.length; i++) {
-		
 		var row = rows[i];
-
+		if(day <= 20){//不要改月数据
+			if(month + '月' == row.MONTH){
+				continue;
+			}
 		data_list.push(row.BENXI);	
 		data_list2.push(row.DAOQI);
 		data_list3.push(row.DMONTH+row.MONTH);
-//		console.info(data_list3)
 		data_list4.push(row.MONTH);
 		data_list5.push(row.TIAN);
 		data_list6.push(row.YUE);
@@ -423,6 +443,18 @@ function getOption4(rows) {
 		tian_total+=row.TIAN;
 		benxi_total+=row.BENXI;
 		daoqi_total+=row.DAOQI;
+	}else{
+		data_list.push(row.BENXI);	
+		data_list2.push(row.DAOQI);
+		data_list3.push(row.DMONTH+row.MONTH);
+		data_list4.push(row.MONTH);
+		data_list5.push(row.TIAN);
+		data_list6.push(row.YUE);
+		yue_total += row.YUE;
+		tian_total+=row.TIAN;
+		benxi_total+=row.BENXI;
+		daoqi_total+=row.DAOQI;
+		}
 	}
 	option4 = {
 			title : {
