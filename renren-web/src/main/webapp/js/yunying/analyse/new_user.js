@@ -205,44 +205,44 @@ function getLastWeekHuanbi(lastweek, curr){
 function getTableHead(){
 	var html = '';
 	html += ' <tr> ' +
-		' <td rowspan="2">日期</td> ' +
-		' <td colspan="5">全量（≤5）</td> ' +
-		' <td colspan="5">投资次数：1</td> ' +
-		' <td colspan="5">投资次数：2</td> ' +
-		' <td colspan="5">投资次数：3</td> ' +
-		' <td colspan="5">投资次数：[4,5]</td> ' +
-		' </tr> ' +
-		' <tr>   ' +
-		
-		' <td>用户数</td> ' +  
-		' <td>高净值用户</td>  ' +
-		' <td>总投资金额</td> ' +
-		' <td>总待收</td> ' +  
-		' <td>平均红包金额</td>  ' +
-		
-		' <td>用户数</td> ' +  
-		' <td>高净值用户</td>  ' +
-		' <td>总投资金额</td> ' +
-		' <td>总待收</td> ' +  
-		' <td>平均红包金额</td>  ' +
-		
-		' <td>用户数</td> ' +  
-		' <td>高净值用户</td>  ' +
-		' <td>总投资金额</td> ' +
-		' <td>总待收</td> ' +  
-		' <td>平均红包金额</td>  ' +
-		
-		' <td>用户数</td> ' +  
-		' <td>高净值用户</td>  ' +
-		' <td>总投资金额</td> ' +
-		' <td>总待收</td> ' +  
-		' <td>平均红包金额</td>  ' +
-		
-		' <td>用户数</td> ' +  
-		' <td>高净值用户</td>  ' +
-		' <td>总投资金额</td> ' +
-		' <td>总待收</td> ' +  
-		' <td>平均红包金额</td>  ' +
+	' <th rowspan="2">日期</th> ' +
+	' <th colspan="5">全量（≤5）</th> ' +
+	' <th colspan="5">投资次数：1</th> ' +
+	' <th colspan="5">投资次数：2</th> ' +
+	' <th colspan="5">投资次数：3</th> ' +
+	' <th colspan="5">投资次数：[4,5]</th> ' +
+	' </tr> ' +
+	' <tr>   ' +
+	
+	' <th>用户数</th> ' +  
+	' <th>高净值用户</th>  ' +
+	' <th>总投资金额</th> ' +
+	' <th>总待收</th> ' +  
+	' <th>平均红包金额</th>  ' +
+	
+	' <th>用户数</th> ' +  
+	' <th>高净值用户</th>  ' +
+	' <th>总投资金额</th> ' +
+	' <th>总待收</th> ' +  
+	' <th>平均红包金额</th>  ' +
+	
+	' <th>用户数</th> ' +  
+	' <th>高净值用户</th>  ' +
+	' <th>总投资金额</th> ' +
+	' <th>总待收</th> ' +  
+	' <th>平均红包金额</th>  ' +
+	
+	' <th>用户数</th> ' +  
+	' <th>高净值用户</th>  ' +
+	' <th>总投资金额</th> ' +
+	' <th>总待收</th> ' +  
+	' <th>平均红包金额</th>  ' +
+	
+	' <th>用户数</th> ' +  
+	' <th>高净值用户</th>  ' +
+	' <th>总投资金额</th> ' +
+	' <th>总待收</th> ' +  
+	' <th>平均红包金额</th>  ' +
 
 		' </tr> ';
 	return html;

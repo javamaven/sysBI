@@ -6,6 +6,38 @@
 <script type="text/javascript">
 var ctx = "${rc.contextPath}";
 </script>
+<style>
+table{  
+     
+    table-layout:fixed;/* 只有定义了表格的布局算法为fixed，下面td的定义才能起作用。 */  
+}  
+#dapan_table th{  
+	margin:20px;
+	text-align: center;
+	font-size:12px;
+/* 	font-weight: bold; */
+	background-color: rgb(226,223,224);
+	font-family: verdana,arial,sans-serif;
+    width:100%;
+    word-break:keep-all;/* 不换行 */  
+    white-space:nowrap;/* 不换行 */  
+    overflow:hidden;/* 内容超出宽度时隐藏超出部分的内容 */  
+    text-overflow:ellipsis;/* 当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/  
+}
+#dapan_table td{  
+	font-size:12px;
+	padding-left: 8px;
+	padding-right: 8px;
+	padding-top: 3px;
+	padding-bottom: 3px;
+	font-family: verdana,arial,sans-serif;
+    width:100%;
+    word-break:keep-all;/* 不换行 */  
+    white-space:nowrap;/* 不换行 */  
+    overflow:hidden;/* 内容超出宽度时隐藏超出部分的内容 */  
+    text-overflow:ellipsis;/* 当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/  
+}
+</style>
 </head>
 <body>
 
@@ -35,7 +67,7 @@ var ctx = "${rc.contextPath}";
 	</div>
 <!--     <hr style="margin:1px;height:1px;border:1px;background-color:#D5D5D5;color:#D5D5D5;"/> -->
    	<div style="width: 100%;overflow: auto;">
-		<table style="text-align: center;" id="dapan_table" border="1" bordercolor="black" width="100%" cellspacing="5" cellpadding="5">
+		<table style="text-align: center;" id="dapan_table" border="1" bordercolor="#D5D5D5" cellspacing="5" cellpadding="5">
  
 		</table>
 	</div>

@@ -211,37 +211,37 @@ function getLastWeekHuanbi(lastweek, curr){
 function getTableHead(){
 	var html = '';
 	html += ' <tr> ' +
-		' <td rowspan="2">日期</td> ' +
-		' <td colspan="3">全量</td> ' +
-		' <td colspan="3">=30</td> ' +
-		' <td colspan="3">(30,90)</td> ' +
-		' <td colspan="3">=90</td> ' +
-		' <td colspan="3">(90,180)</td> ' +
-		' <td colspan="3">=180</td> ' +
-		' <td colspan="3">>180</td> ' +
-		' </tr> ' +
-		' <tr>   ' +
-		' <td>人数</td> ' +  
-		' <td>高净值用户数</td>  ' +
-		' <td>平均投资金额</td> ' +
-		' <td>=30人数</td> ' +  
-		' <td>高净值用户数</td>  ' +
-		' <td>平均投资金额</td>   ' +
-		' <td>(30,90)人数</td>   ' +
-		' <td>高净值用户数</td>  ' +
-		' <td>平均投资金额</td> ' +
-		' <td>=90人数</td> ' +  
-		' <td>高净值用户数</td>  ' +
-		' <td>平均投资金额</td> ' +
-		' <td>(90,180)人数</td> ' +  
-		' <td>高净值用户数</td>  ' +
-		' <td>平均投资金额</td> ' +
-		' <td>=180人数</td> ' +  
-		' <td>高净值用户数</td>  ' +
-		' <td>平均投资金额</td> ' +
-		' <td>>180人数</td> ' +  
-		' <td>高净值用户数</td>  ' +
-		' <td>平均投资金额</td> ' +
+	' <th rowspan="2">日期</th> ' +
+	' <th colspan="3">全量</th> ' +
+	' <th colspan="3">=30</th> ' +
+	' <th colspan="3">(30,90)</th> ' +
+	' <th colspan="3">=90</th> ' +
+	' <th colspan="3">(90,180)</th> ' +
+	' <th colspan="3">=180</th> ' +
+	' <th colspan="3">>180</th> ' +
+	' </tr> ' +
+	' <tr>   ' +
+	' <th>人数</th> ' +  
+	' <th>高净值用户数</th>  ' +
+	' <th>平均投资金额</th> ' +
+	' <th>=30人数</th> ' +  
+	' <th>高净值用户数</th>  ' +
+	' <th>平均投资金额</th>   ' +
+	' <th>(30,90)人数</th>   ' +
+	' <th>高净值用户数</th>  ' +
+	' <th>平均投资金额</th> ' +
+	' <th>=90人数</th> ' +  
+	' <th>高净值用户数</th>  ' +
+	' <th>平均投资金额</th> ' +
+	' <th>(90,180)人数</th> ' +  
+	' <th>高净值用户数</th>  ' +
+	' <th>平均投资金额</th> ' +
+	' <th>=180人数</th> ' +  
+	' <th>高净值用户数</th>  ' +
+	' <th>平均投资金额</th> ' +
+	' <th>>180人数</th> ' +  
+	' <th>高净值用户数</th>  ' +
+	' <th>平均投资金额</th> ' +
 		' </tr> ';
 	return html;
 }

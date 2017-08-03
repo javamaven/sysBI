@@ -193,33 +193,33 @@ function getLastWeekHuanbi(lastweek, curr){
 function getTableHead(){
 	var html = '';
 	html += ' <tr> ' +
-		' <td rowspan="2">日期</td> ' +
-		' <td colspan="3">全量</td> ' +
-		' <td colspan="3">[10W,20W)</td> ' +
-		' <td colspan="3">[20W,50W)</td> ' +
-		' <td colspan="3">[50W,100W)</td> ' +
-		' <td colspan="3">[100W,200W)</td> ' +
-		' <td colspan="3">≥200W</td> ' +
+		' <th rowspan="2">日期</th> ' +
+		' <th colspan="3">全量</th> ' +
+		' <th colspan="3">[10W,20W)</th> ' +
+		' <th colspan="3">[20W,50W)</th> ' +
+		' <th colspan="3">[50W,100W)</th> ' +
+		' <th colspan="3">[100W,200W)</th> ' +
+		' <th colspan="3">≥200W</th> ' +
 		' </tr> ' +
 		' <tr>   ' +
-		' <td>人数</td> ' +  
-		' <td>总投资金额</td>  ' +
-		' <td>人均笔均红包使用</td> ' +
-		' <td>[10,20)人数</td> ' +  
-		' <td>总投资金额</td>  ' +
-		' <td>人均笔均红包使用</td>   ' +
-		' <td>[20,50)人数</td>   ' +
-		' <td>总投资金额</td>  ' +
-		' <td>人均笔均红包使用</td> ' +
-		' <td>[50,100)人数</td> ' +  
-		' <td>总投资金额</td>  ' +
-		' <td>人均笔均红包使用</td> ' +
-		' <td>[100,200)人数</td> ' +  
-		' <td>总投资金额</td>  ' +
-		' <td>人均笔均红包使用</td> ' +
-		' <td>≥200人数</td> ' +  
-		' <td>总投资金额</td>  ' +
-		' <td>人均笔均红包使用</td> ' +
+		' <th>人数</th> ' +  
+		' <th>总投资金额</th>  ' +
+		' <th>人均笔均红包使用</th> ' +
+		' <th>[10,20)人数</th> ' +  
+		' <th>总投资金额</th>  ' +
+		' <th>人均笔均红包使用</th>   ' +
+		' <th>[20,50)人数</th>   ' +
+		' <th>总投资金额</th>  ' +
+		' <th>人均笔均红包使用</th> ' +
+		' <th>[50,100)人数</th> ' +  
+		' <th>总投资金额</th>  ' +
+		' <th>人均笔均红包使用</th> ' +
+		' <th>[100,200)人数</th> ' +  
+		' <th>总投资金额</th>  ' +
+		' <th>人均笔均红包使用</th> ' +
+		' <th>≥200人数</th> ' +  
+		' <th>总投资金额</th>  ' +
+		' <th>人均笔均红包使用</th> ' +
 		' </tr> ';
 	return html;
 }

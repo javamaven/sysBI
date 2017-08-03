@@ -34,7 +34,9 @@ function initTimeCond(){
     });
 }
 
+var table_html = '';
 function queryDapanAnalyse(){
+	table_html = '';
 	var day =  $("#stat_period").val();
 	if(!day){
 		alert('请先选择查询日期');
@@ -44,6 +46,7 @@ function queryDapanAnalyse(){
 	loading();
 	$.ajax({
 		    type: "POST",
+//		    async: false,
 		    url: "../analyse/queryDapanAnalyse",
 		    data: JSON.stringify(getParams()),
 		    contentType: "application/json;charset=utf-8",
@@ -53,26 +56,31 @@ function queryDapanAnalyse(){
 		    	if(msg.data_list == null || msg.data_list && msg.data_list.length < 2){
 		    		alert('没有数据');
 		    	}else{
-		    		buildTable(msg.data_list);
+		    		var html = buildTable(msg.data_list);
+		    		if(table_html == ''){
+		    			table_html += html;
+		    		}
 		    		CurrInvest_Chart.setOption(getCurrInvestOption(msg.data_list));
+		    		$.ajax({
+		    		    type: "POST",
+//		    		    async: false,
+		    		    url: "../analyse/queryDapanDaishouAnalyse",
+		    		    data: JSON.stringify(getParams()),
+		    		    contentType: "application/json;charset=utf-8",
+		    		    success : function(msg) {
+		    		    	loaded();
+		    		    	if(msg.data_list == null || msg.data_list && msg.data_list.length < 2){
+		    		    		alert('没有数据');
+		    		    	}else{
+		    		    		buildDaishouTable(msg.data_list);
+//		    		    		CurrInvest_Chart.setOption(getCurrInvestOption(msg.data_list));
+		    		    	}
+		    		    }
+		    		});
 		    	}
 		    }
 	 });
-	$.ajax({
-	    type: "POST",
-	    url: "../analyse/queryDapanDaishouAnalyse",
-	    data: JSON.stringify(getParams()),
-	    contentType: "application/json;charset=utf-8",
-	    success : function(msg) {
-	    	loaded();
-	    	if(msg.data_list == null || msg.data_list && msg.data_list.length < 2){
-	    		alert('没有数据');
-	    	}else{
-	    		buildDaishouTable(msg.data_list);
-//	    		CurrInvest_Chart.setOption(getCurrInvestOption(msg.data_list));
-	    	}
-	    }
- });
+
 }
 var colorList = [
 	  '#ff7f50','#87cefa','#da70d6','#32cd32','#6495ed',
@@ -182,7 +190,7 @@ function buildDaishouTable(data_list){
 			    
 			    '    <td>'+ formatNumber( row.沉默用户待收资金 ,2 )+'</td>' +    
 			    '    <td>'+ formatNumber( row.沉默用户_高净值待收资金 ,2 )+'</td>' +   
-			    '    <td>'+ formatNumber( row.成熟用户待收资金_占比*100,2 )+'%</td>' +   
+			    '    <td>'+ formatNumber( row.沉默用户待收资金_占比*100,2 )+'%</td>' +   
 			    
 			    '    <td>'+ formatNumber( row.新用户待收资金,2 ) +'</td>' +    
 			    '    <td>'+ formatNumber( row.新用户_高净值待收资金,2 ) +'</td>' +   
@@ -198,7 +206,8 @@ function buildDaishouTable(data_list){
 			    '</tr>'; 
 	}
 	
-	$("#dapan_daishou_table").html( getDaishouTableHead() + html + getDaishouLastWeekHuanbi(data_list[0], data_list[1]));
+	$("#dapan_table").html(table_html + getDaishouTableHead() + html + getDaishouLastWeekHuanbi(data_list[0], data_list[1]));
+//	$("#dapan_daishou_table").html( getDaishouTableHead() + html + getDaishouLastWeekHuanbi(data_list[0], data_list[1]));
 }
 function buildTable(data_list){
 	var html = '';
@@ -225,7 +234,8 @@ function buildTable(data_list){
 			    '</tr>'; 
 	}
 	
-	$("#dapan_table").html( getTableHead() + html + getLastWeekHuanbi(data_list[0], data_list[1]));
+	return  getTableHead() + html + getLastWeekHuanbi(data_list[0], data_list[1]);
+//	$("#dapan_table").html( getTableHead() + html + getLastWeekHuanbi(data_list[0], data_list[1]));
 }
 function getDaishouLastWeekHuanbi(lastweek, curr){
 	var html = '';
@@ -274,66 +284,66 @@ function getLastWeekHuanbi(lastweek, curr){
 function getNbsp(num){
 	var html = '';
 	for (var i = 0; i < num; i++) {
-		html += '&nbsp;';
+//		html += '&nbsp;';
 	}
 	return html;
 }
 function getDaishouTableHead(){
 	var html = '';
 	html += ' <tr> ' +
-		' <td rowspan="2"  >'+getNbsp(6)+'日&nbsp;期'+getNbsp(6)+'</td> ' +
-		' <td rowspan="2"  >'+getNbsp(6)+'总投资用户待收资金</td>'+getNbsp(6)+' ' +
-		' <td colspan="2"  >'+getNbsp(6)+'总高净值用户待收资金</td>'+getNbsp(6)+' ' +
-		' <td colspan="3" >沉默用户待收资金</td> ' +
-		' <td colspan="3"  >新用户待收资金</td> ' +
-		' <td colspan="3"  >成熟用户待收资金</td> ' +
-		' <td colspan="3"  >自然用户待收资金</td> ' +
-		' </tr> ' +
-		' <tr>   ' +
-		' <td>高净值用户</td> ' +  
-		' <td>占比</td>  ' +
-		' <td>沉默全量用户</td> ' +  
-		' <td>高净值用户</td>  ' +
-		' <td>占比</td>   ' +
-		' <td>全量新用户</td>   ' +
-		' <td>高净值用户</td>  ' +
-		' <td>占比</td> ' +
-		' <td>成熟全量用户</td> ' +  
-		' <td>高净值用户</td>  ' +
-		' <td>占比</td> ' +
-		' <td>自然全量用户</td> ' +  
-		' <td>高净值用户</td>  ' +
-		' <td>占比</td> ' +
+	' <th rowspan="2"  >'+getNbsp(6)+'日&nbsp;期'+getNbsp(6)+'</th> ' +
+	' <th rowspan="2"  >'+getNbsp(6)+'总投资用户待收资金</th>'+getNbsp(6)+' ' +
+	' <th colspan="2"  >'+getNbsp(6)+'总高净值用户待收资金</th>'+getNbsp(6)+' ' +
+	' <th colspan="3" >沉默用户待收资金</th> ' +
+	' <th colspan="3"  >新用户待收资金</th> ' +
+	' <th colspan="3"  >成熟用户待收资金</th> ' +
+	' <th colspan="3"  >自然用户待收资金</th> ' +
+	' </tr> ' +
+	' <tr>   ' +
+	' <th>高净值用户</th> ' +  
+	' <th>占比</th>  ' +
+	' <th>沉默全量用户</th> ' +  
+	' <th>高净值用户</th>  ' +
+	' <th>占比</th>   ' +
+	' <th>全量新用户</th>   ' +
+	' <th>高净值用户</th>  ' +
+	' <th>占比</th> ' +
+	' <th>成熟全量用户</th> ' +  
+	' <th>高净值用户</th>  ' +
+	' <th>占比</th> ' +
+	' <th>自然全量用户</th> ' +  
+	' <th>高净值用户</th>  ' +
+	' <th>占比</th> ' +
 		' </tr> ';
 	return html;
 }
 function getTableHead(){
 	var html = '';
 	html += ' <tr> ' +
-		' <td rowspan="2">日期</td> ' +
-		' <td rowspan="2">总投资用户</td> ' +
-		' <td colspan="2">高净值用户</td> ' +
-		' <td colspan="3">沉默用户</td> ' +
-		' <td colspan="3">新用户</td> ' +
-		' <td colspan="3">成熟用户</td> ' +
-		' <td colspan="3">自然用户</td> ' +
-		' </tr> ' +
-		' <tr>   ' +
-		' <td>高净值用户</td>  ' +
-		' <td>占比</td> ' +
-		' <td>沉默全量用户</td> ' +  
-		' <td>高净值用户</td>  ' +
-		' <td>占比</td>   ' +
-		' <td>全量新用户</td>   ' +
-		' <td>高净值用户</td>  ' +
-		' <td>占比</td> ' +
-		' <td>成熟全量用户</td> ' +  
-		' <td>高净值用户</td>  ' +
-		' <td>占比</td> ' +
-		' <td>自然全量用户</td> ' +  
-		' <td>高净值用户</td>  ' +
-		' <td>占比</td> ' +
-		' </tr> ';
+	' <th rowspan="2">日期</th> ' +
+	' <th rowspan="2">总投资用户</th> ' +
+	' <th colspan="2">高净值用户</th> ' +
+	' <th colspan="3">沉默用户</th> ' +
+	' <th colspan="3">新用户</th> ' +
+	' <th colspan="3">成熟用户</th> ' +
+	' <th colspan="3">自然用户</th> ' +
+	' </tr> ' +
+	' <tr>   ' +
+	' <th>高净值用户</th>  ' +
+	' <th>占比</th> ' +
+	' <th>沉默全量用户</th> ' +  
+	' <th>高净值用户</th>  ' +
+	' <th>占比</th>   ' +
+	' <th>全量新用户</th>   ' +
+	' <th>高净值用户</th>  ' +
+	' <th>占比</th> ' +
+	' <th>成熟全量用户</th> ' +  
+	' <th>高净值用户</th>  ' +
+	' <th>占比</th> ' +
+	' <th>自然全量用户</th> ' +  
+	' <th>高净值用户</th>  ' +
+	' <th>占比</th> ' +
+	' </tr> ';
 	return html;
 }
 

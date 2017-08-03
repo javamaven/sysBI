@@ -100,22 +100,22 @@ function getLastWeekHuanbi(lastweek, curr){
 function getTableHead(){
 	var html = '';
 	html += ' <tr> ' +
-		' <td rowspan="2">日期</td> ' +
-		' <td rowspan="2">平台总投资用户</td> ' +
-		' <td rowspan="2">平台总待收金额</td> ' +
-		' <td rowspan="2">平台红包使用总金额</td> ' +
-		' <td colspan="2">自然用户数</td> ' +
-		' <td colspan="2">自然用户待收</td> ' +
-		' <td colspan="2">自然用户红包使用</td> ' +
-		' <td rowspan="2">自然用户项目平均投资期限</td> ' +
-		' </tr> ' +
-		' <tr>   ' +
-		' <td>自然用户数</td> ' +  
-		' <td>占比</td>  ' +
-		' <td>自然用户待收</td> ' +
-		' <td>占比</td> ' +  
-		' <td>自然用户红包使用</td>  ' +
-		' <td>占比</td>   ' +
+	' <th rowspan="2">日期</th> ' +
+	' <th rowspan="2">平台总投资用户</th> ' +
+	' <th rowspan="2">平台总待收金额</th> ' +
+	' <th rowspan="2">平台红包使用总金额</th> ' +
+	' <th colspan="2">自然用户数</th> ' +
+	' <th colspan="2">自然用户待收</th> ' +
+	' <th colspan="2">自然用户红包使用</th> ' +
+	' <th rowspan="2">自然用户项目平均投资期限</th> ' +
+	' </tr> ' +
+	' <tr>   ' +
+	' <th>自然用户数</th> ' +  
+	' <th>占比</th>  ' +
+	' <th>自然用户待收</th> ' +
+	' <th>占比</th> ' +  
+	' <th>自然用户红包使用</th>  ' +
+	' <th>占比</th>   ' +
 		
 		' </tr> ';
 	return html;

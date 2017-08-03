@@ -467,8 +467,8 @@ function buildTable(data_list){
 		    '<tr>' +  
 		    '    <td rowspan="8">'+row2.日期+'</td>' +    
 		    '    <td>(0,1千)</td>' +    
-		    '    <td>'+ row2.全量用户 +'</td>' +  
-		    '    <td>'+ formatNumber( row2.占比_全量*100,2 ) +'%</td>' +    
+		    '    <td>'+ row2.平均投资金额_0_1000 +'</td>' +  
+		    '    <td>'+ formatNumber( row2.占比_平均投资金额_0_1000*100,2 ) +'%</td>' +    
 		    '    <td> - </td>' +  
 		    '</tr>' + 
 		    getAvgInvestTableRow2(row2);
@@ -480,12 +480,12 @@ function buildTable(data_list){
 function getTableHead(){
 	var html = '';
 	html += ' <tr> ' +
-		' <td>类别</td> ' +
-		' <td>日期</td> ' +
-		' <td>区间</td> ' +
-		' <td>人数</td> ' +
-		' <td>占比</td> ' +
-		' <td>环比</td> ' +
+		' <th>类别</th> ' +
+		' <th>日期</th> ' +
+		' <th>区间</th> ' +
+		' <th>人数</th> ' +
+		' <th>占比</th> ' +
+		' <th>环比</th> ' +
 		' </tr> ';
 	return html;
 }

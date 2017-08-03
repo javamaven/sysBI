@@ -8,23 +8,23 @@ select
   /sum(case when a.MONEY_INVEST_COUNT > 0 then a.money_wait else 0 end),4)  总高净值用户待收资金_占比,
   -- 沉默
   sum(case when a.day_no_invest >= 30 then a.money_wait else 0 end) 沉默用户待收资金,
-  round(sum(case when a.day_no_invest >= 30 then a.money_wait else 0 end)
-  /sum(case when a.MONEY_INVEST_COUNT > 0 then a.money_wait else 0 end),4) 沉默用户待收资金_占比,
+  round(sum(case when a.day_no_invest >= 30 and a.money_wait >= 100000 then a.money_wait else 0 end)
+  /sum(case when a.day_no_invest >= 30 then a.money_wait else 0 end),4) 沉默用户待收资金_占比,
   sum(case when a.day_no_invest >= 30 and a.money_wait >= 100000 then a.money_wait else 0 end) 沉默用户_高净值待收资金,
   -- 新用户
   sum(case when a.money_invest_count <= 5 then a.money_wait else 0 end) 新用户待收资金,
-  round(sum(case when a.money_invest_count <= 5 then a.money_wait else 0 end)
-  /sum(case when a.MONEY_INVEST_COUNT > 0 then a.money_wait else 0 end),4) 新用户待收资金_占比,
+  round(sum(case when a.money_invest_count <= 5 and a.money_wait >= 100000 then a.money_wait else 0 end)
+  /sum(case when a.money_invest_count <= 5 then a.money_wait else 0 end),4) 新用户待收资金_占比,
   sum(case when a.money_invest_count <= 5 and a.money_wait >= 100000 then a.money_wait else 0 end) 新用户_高净值待收资金,
   -- 成熟用户
   sum(case when a.money_invest_count > 5 then a.money_wait else 0 end) 成熟用户待收资金,
-  round(sum(case when a.money_invest_count > 5 then a.money_wait else 0 end)
-  /sum(case when a.MONEY_INVEST_COUNT > 0 then a.money_wait else 0 end),4) 成熟用户待收资金_占比,
+  round( sum(case when a.money_invest_count > 5 and a.money_wait >= 100000 then a.money_wait else 0 end)
+  /sum(case when a.money_invest_count > 5 then a.money_wait else 0 end),4) 成熟用户待收资金_占比,
   sum(case when a.money_invest_count > 5 and a.money_wait >= 100000 then a.money_wait else 0 end) 成熟用户_高净值待收资金,
   -- 自然用户
   sum(case when a.IS_SPREADS=0 and a.IS_STAFF=0 and a.CHANNEL_NAME='-1' then a.money_wait else 0 end) 自然用户待收资金,
-  round(sum(case when a.IS_SPREADS=0 and a.IS_STAFF=0 and a.CHANNEL_NAME='-1' then a.money_wait else 0 end)
-  /sum(case when a.MONEY_INVEST_COUNT > 0 then a.money_wait else 0 end),4) 自然用户待收资金_占比,
+  round(sum(case when a.IS_SPREADS=0 and a.IS_STAFF=0 and a.CHANNEL_NAME='-1' and a.money_wait >= 100000 then a.money_wait else 0 end)
+  /sum(case when a.IS_SPREADS=0 and a.IS_STAFF=0 and a.CHANNEL_NAME='-1' then a.money_wait else 0 end),4) 自然用户待收资金_占比,
   sum(case when a.IS_SPREADS=0 and a.IS_STAFF=0 and a.CHANNEL_NAME='-1' and a.money_wait >= 100000 then a.money_wait else 0 end) 自然用户_高净值待收资金 
 
 from
