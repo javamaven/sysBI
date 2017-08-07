@@ -291,6 +291,8 @@ public class UserRedPacketController {
 
 		System.err.println("++++++++asdsad查询耗时：" + (l2 - l1));
 		return R.ok().put("page", pageUtil);
+		
+		
 	}
 
 	
@@ -382,16 +384,119 @@ public class UserRedPacketController {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		
+		
+		String hongbao_begin = map.get("hongbao_begin") + "";
+		String hongbao_end = map.get("hongbao_end") + "";
+		String yingxiao_begin = map.get("yingxiao_begin") + "";
+		String yingxiao_end = map.get("yingxiao_end") + "";
+		String touzi_begin = map.get("touzi_begin") + "";
+		String channelName1 = map.get("channelName1") + "";
+		String userType = map.get("userType") + "";
+		String userId1 = map.get("userId1") + "";
+		String userName1 = map.get("userName1") + "";
+		String touzi_end = map.get("touzi_end") + "";
+		
+	
+		
+		if (StringUtils.isNotEmpty(touzi_begin)) {
+			touzi_begin=" AND to_char(a.addtime,'yyyy-mm-dd') between '"+touzi_begin+"' and '"+touzi_end+"'";
+		}else{
+			touzi_begin="";
+		}
+		
+		if (StringUtils.isNotEmpty(hongbao_begin)) {
+			hongbao_begin=" AND USEABLEMONEY >='  "+hongbao_begin+"'";
+		}else{
+			hongbao_begin="";
+		}
+		
+		if (StringUtils.isNotEmpty(hongbao_end)) {
+			hongbao_end=" AND USEABLEMONEY <='  "+hongbao_end+"'";
+		}else{
+			hongbao_end="";
+		}
+		
+		if (StringUtils.isNotEmpty(channelName1)) {
+			channelName1=" AND channelName like '%"+channelName1+"%'";
+		}else{
+			channelName1="";
+		}
+
+		if (StringUtils.isNotEmpty(userName1)) {
+			userName1=" AND userName like '%"+userName1+"%'";
+		}else{
+			userName1="";
+		}
+		
+		if (StringUtils.isNotEmpty(userType)) {
+			userType=" AND userType like '%"+userType+"%'";
+		}else{
+			userType="";
+		}
+		
+		if (StringUtils.isNotEmpty(userId1)) {
+			userId1=" AND ID like '%"+userId1+"%'";
+		}else{
+			userId1="";
+		}
+		
+		
+		List<Map<String, Object>> resultList2 = new ArrayList<Map<String, Object>>();
+		try {
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/user_red_packer_qk.txt"));
+			detail_sql = detail_sql.replace("${hongbao_begin}",hongbao_begin );
+			detail_sql = detail_sql.replace("${hongbao_end}",hongbao_end );
+			detail_sql = detail_sql.replace("${yingxiao_begin}",yingxiao_begin );
+			detail_sql = detail_sql.replace("${yingxiao_end}",yingxiao_end );
+			detail_sql = detail_sql.replace("${touzi_begin}",touzi_begin );
+			detail_sql = detail_sql.replace("${channelName1}",channelName1 );
+			detail_sql = detail_sql.replace("${userType}",userType );
+			detail_sql = detail_sql.replace("${userId1}",userId1 );
+			detail_sql = detail_sql.replace("${userName1}",userName1 );
+			detail_sql = detail_sql.replace("${pageStartSql}", "");
+			detail_sql = detail_sql.replace("${pageEndSql}", "");
+			detail_sql = detail_sql.replace("${selectSql}", " a.* ");
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			resultList2.addAll(list);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		// 查询列表数据
 		JSONArray va = new JSONArray();
 		for (int i = 0; i < resultList.size(); i++) {
 			va.add(resultList.get(i));
 		}
-		Map<String, String> headMap = null;
+		Map<String, String> headMap = getDayListExcelFields();
 		String title = "用户收到红包明细";
-		headMap = getDayListExcelFields();
+		
+		// 查询列表数据
+		JSONArray va2 = new JSONArray();
+		for (int i = 0; i < resultList2.size(); i++) {
+			va2.add(resultList2.get(i));
+		}
+		Map<String, String> headMap2 = getDayListExcelFields2();
+		String title2 = "用户获得红包累计情况";
 
-		ExcelUtil.downloadExcelFile(title, headMap, va, response);
+		List<String> titleList = new ArrayList<>();
+		titleList.add(title);
+		titleList.add(title2);
+
+		List<Map<String, String>> headMapList = new ArrayList<Map<String,String>>();
+		headMapList.add(headMap);
+		headMapList.add(headMap2);
+
+		
+		List<JSONArray> ja = new ArrayList<JSONArray>();
+		ja.add(va);
+		ja.add(va2);
+
+		ExcelUtil.downloadExcelFile(titleList , headMapList, ja , response);
+		
 	}
 
 	

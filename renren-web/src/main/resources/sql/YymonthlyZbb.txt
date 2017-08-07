@@ -182,7 +182,7 @@ from dual
 union all
 select * from (
 select
-'${firstday2}',
+to_char(pd.addtime,'yyyymm'),
 round(sum(case when pd.tender_subject<>2 then pd.tender_capital*BORROW_PERIOD/360 else 
 pd.tend_cash*BORROW_PERIOD/360 end)/10000,2) as sum_tender, -- 本月销售年化交易额（万元）
 -1 as nul1,-1 as nul2,-1 as nul3,null as nul4,null as nul5,null as nul6,null as nul7,null as unl8,null as nul9

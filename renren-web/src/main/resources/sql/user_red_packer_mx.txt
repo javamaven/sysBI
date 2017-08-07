@@ -130,7 +130,7 @@ from hongbao_detail hd left join ub on ub.user_id=hd.user_id
 left join uaw on uaw.user_id=hd.user_id 
 where 
 hd.purpose not like '%生日%' and hd.purpose not like '%注册%' -- 业务需求，红包申请目的中含有“注册”和“生日”的不算活动红包
-and hd.ati_time between '2017-06-30' and '2017-07-31' -- 最近一次营销日期
+and hd.ati_time between '${begin_time}' and '${end_time}' -- 最近一次营销日期
 )e
 where 1=1
 ${huodong_name}

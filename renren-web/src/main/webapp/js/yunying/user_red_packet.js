@@ -118,7 +118,7 @@ function initDetailTableGrid(){
 //        url: '../yunying/dmreportvipuser/list',
         datatype: "json",
         colModel: [
-			{ label: '查询日期', name: 'D_DATE', index: '$TYPE', width: 90,align:'right' },
+			{ label: '查询日期', name: 'D_DATE', index: '$TYPE', width: 90,align:'right'},
 			{ label: '用户id', name: 'ID', index: '$NUM', width: 90 ,align:'right'}, 			
 			{ label: '用户名', name: 'USERNAME', index: '$SUM', width: 90 ,align:'right'}, 
 			{ label: '用户姓名', name: 'REALNAME', index: '$BORROW_USER', width: 90 ,align:'right'}, 			
@@ -145,7 +145,7 @@ function initDetailTableGrid(){
 			{ label: '渠道名称', name: 'CHANNELNAME', index: '$YUQI', width: 90 ,align:'right'}
 					
         ],
-		viewrecords: true,
+		viewrecords: true,  //页面的 页码和页数和总数的显示
         height: $(window).height()-170,
         rowNum: 20,
         rownumbers: true, 
