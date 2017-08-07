@@ -93,18 +93,18 @@ function getLastWeekHuanbi(lastweek, curr){
 function getTableHead(){
 	var html = '';
 	html += ' <tr> ' +
-		' <td rowspan="2">日期</td> ' +
-		' <td rowspan="2">当期提现总用户数</td> ' +
-		' <td colspan="7">大额提现用户数</td> ' +
+		' <th rowspan="2">日期</th> ' +
+		' <th rowspan="2">当期提现总用户数</th> ' +
+		' <th colspan="7">大额提现用户数</th> ' +
 		' </tr> ' +
 		' <tr>   ' +
-		' <td>当期总用户数</td> ' +  
-		' <td>占当期提现用户比例</td>  ' +
-		' <td>高净值用户</td> ' +
-		' <td>沉默用户</td> ' +  
-		' <td>新用户</td>  ' +
-		' <td>成熟用户</td>   ' +
-		' <td>自然用户</td>   ' +		
+		' <th>当期总用户数</th> ' +  
+		' <th>占当期提现用户比例</th>  ' +
+		' <th>高净值用户</th> ' +
+		' <th>沉默用户</th> ' +  
+		' <th>新用户</th>  ' +
+		' <th>成熟用户</th>   ' +
+		' <th>自然用户</th>   ' +		
 		
 		' </tr> ';
 	return html;

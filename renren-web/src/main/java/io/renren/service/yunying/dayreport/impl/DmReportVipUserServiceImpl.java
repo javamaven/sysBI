@@ -86,7 +86,8 @@ public class DmReportVipUserServiceImpl implements DmReportVipUserService {
 
 		headMap.put("dayTenderCou", "当天投资次数");
 		
-		headMap.put("isHighValue", "是否高净值挽留客户");
+//		headMap.put("isHighValue", "是否高净值挽留客户");
+		headMap.put("old200wAwait", "200万以上客户分配时待收");
 
 		return headMap;
 	}

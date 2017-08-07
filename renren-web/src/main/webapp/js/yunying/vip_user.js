@@ -4,6 +4,7 @@ $(function () {
 	initTimeCond();
 	initExportFunction();
 	initEvent();
+	initUpload();
 	initSelectEvent();
 });
 
@@ -21,6 +22,24 @@ function initSelectEvent(){
 			$("#vip_count_div").show();
 		}
 	});
+}
+
+function initUpload(){
+    new AjaxUpload('#upload', {
+        action: '../yunying/dmreportvipuser/upload',
+        name: 'file',
+        autoSubmit:true,
+        responseType:"json",
+        onSubmit:function(file, extension){
+        },
+        onComplete : function(file, r){
+            if(r.code == 0){
+                alert('数据导入成功');
+            }else{
+                alert(r.msg);
+            }
+        }
+    });
 }
 
 function initTimeCond(){
@@ -56,14 +75,14 @@ function initDetailTableGrid(){
 			{ label: '时间', name: 'statPeriod', index: '$STAT_PERIOD', width: 90,align:'right' },
 			{ label: '用户ID', name: 'oldUserId', index: '$OLD_USER_ID', width: 90 ,align:'right'}, 			
 			{ label: '存管ID', name: 'cgUserId', index: '$CG_USER_ID', width: 90 ,align:'right'}, 			
-			{ label: '名单用户名', name: 'oldUsername', index: '$OLD_USERNAME', width: 90,align:'right' }, 			
+			{ label: '名单用户名', name: 'oldUsername', index: '$OLD_USERNAME', width: 110,align:'right' }, 			
 			{ label: '用户名', name: 'username', index: '$USERNAME', width: 90,align:'right' }, 			
 			{ label: '姓名', name: 'realname', index: '$REALNAME', width: 90,align:'right' }, 	
 			{ label: '性别', name: 'sex', index: '$SEX', width: 90,align:'right' }, 
-			{ label: '名单电话号码', name: 'oldPhone', index: '$OLD_PHONE', width: 100,align:'right' }, 			
+			{ label: '名单电话号码', name: 'oldPhone', index: '$OLD_PHONE', width: 110,align:'right' }, 			
 			{ label: '电话号码', name: 'phone', index: '$PHONE', width: 100,align:'right' }, 			
 			{ label: '名单总待收', name: 'await', index: '$AWAIT', width: 90 ,align:'right'}, 	
-			{ label: '当前总待收', name: 'totalReceipt', index: '$TOTAL_RECEIPT', width: 80 ,align:'right'}	,
+			{ label: '当前总待收', name: 'totalReceipt', index: '$TOTAL_RECEIPT', width: 90 ,align:'right'}	,
 			{ label: '等级划分', name: 'lv', index: '$LV', width: 80 ,align:'right'}, 			
 			{ label: '所属人', name: 'owner', index: '$OWNER', width: 80 ,align:'right'}, 			
 			{ label: '账户余额', name: 'balance', index: '$BALANCE', width: 90,align:'right' }, 			
@@ -86,7 +105,8 @@ function initDetailTableGrid(){
 			{ label: '当天投资金额', name: 'dayTender', index: '$DAY_TENDER', width: 100 ,align:'right'}, 			
 			{ label: '当天年化金额', name: 'dayTenderY', index: '$DAY_TENDER_Y', width: 100 ,align:'right'}, 			
 			{ label: '当天投资次数', name: 'dayTenderCou', index: '$DAY_TENDER_COU', width: 100 ,align:'right'} ,	
-			{ label: '是否高净值挽留客户', name: 'isHighValue', index: '$DAY_TENDER_COU', width: 100 ,align:'right'}
+//			{ label: '是否高净值挽留客户', name: 'isHighValue', index: '$DAY_TENDER_COU', width: 100 ,align:'right'}
+			{ label: '200万以上客户分配时待收', name: 'old200wAwait', index: '$DAY_TENDER_COU', width: 180 ,align:'right'}
 			
         ],
 		viewrecords: true,

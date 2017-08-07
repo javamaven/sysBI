@@ -42,6 +42,7 @@
 					<td>
 						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
 						<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+						<a class="btn btn-primary" id="upload"><i class="fa fa-plus"></i>&nbsp;Excel导入</a>
 						#if($shiro.hasPermission("schedulereporttask:addtask"))
 						<button class="btn btn-primary" data-toggle="modal" onclick="openTaskWin();" data-target="#schedule_add_task">添加定时任务</button>
 						#end

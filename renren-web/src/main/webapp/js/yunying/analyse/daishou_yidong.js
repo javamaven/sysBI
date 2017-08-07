@@ -103,18 +103,18 @@ function getLastWeekHuanbi(lastweek, curr){
 function getTableHead(){
 	var html = '';
 	html += ' <tr> ' +
-		' <td rowspan="2">日期</td> ' +
-		' <td rowspan="2">待收金额</td> ' +
-		' <td colspan="7">待收资金用户分布(待收资金>0)</td> ' +
+		' <th rowspan="2">日期</th> ' +
+		' <th rowspan="2">待收金额</th> ' +
+		' <th colspan="7">待收资金用户分布(待收资金>0)</th> ' +
 		' </tr> ' +
 		' <tr>   ' +
-		' <td>用户总数</td> ' +  
-		' <td>高净值用户</td> ' +
-		' <td>沉默用户</td> ' +  
-		' <td>新用户</td>  ' +
-		' <td>成熟用户</td>   ' +
-		' <td>自然用户</td>   ' +		
-		' <td>其他</td>   ' +			
+		' <th>用户总数</th> ' +  
+		' <th>高净值用户</th> ' +
+		' <th>沉默用户</th> ' +  
+		' <th>新用户</th>  ' +
+		' <th>成熟用户</th>   ' +
+		' <th>自然用户</th>   ' +		
+		' <th>其他</th>   ' +			
 		' </tr> ';
 	return html;
 }

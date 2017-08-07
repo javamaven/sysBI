@@ -81,6 +81,16 @@ public class DmReportVipUserEntity implements Serializable {
 	private String isHighValue;
 
 	private String sex;
+	//200万以上客户分配时待收
+	private String old200wAwait;
+	
+	public void setOld200wAwait(String old200wAwait) {
+		this.old200wAwait = old200wAwait;
+	}
+	
+	public String getOld200wAwait() {
+		return old200wAwait;
+	}
 
 	public void setSex(String sex) {
 		this.sex = sex;

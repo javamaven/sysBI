@@ -81,7 +81,8 @@
 			LV, 
 			OWNER, 
 			TOTAL_RECEIPT,
-			IS_HIGH_VALUE
+			IS_HIGH_VALUE,
+			OLD_200W_AWAIT
 		
 		from dm_report_vip_user
         where 1=1

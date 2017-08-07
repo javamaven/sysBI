@@ -225,6 +225,8 @@ function yunyingQueren(){
 
 function exportDetail(index_name, month){
 	var data = {'indexName': index_name, 'month': month } ;
+	console.info('+++++++++data++++++++++')
+	console.info(data)
 	executePost('../yunying/zixiao/exportExcel', {'data': JSON.stringify(data)});  
 }
 /**
