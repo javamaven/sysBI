@@ -225,7 +225,8 @@ function initTable(){
 								return '';
 							}
 						}
-				}, 			
+				}, 		
+				{ label: '首投项目类型', name: 'firstTenderSubject', index: '$FIRST_TENDER_SUBJECT', width: 100 ,align:'right'}, 
 				{ label: '首投期限', name: 'firstInvestPeriod', index: '$FIRST_INVEST_PERIOD', width: 100 ,align:'right'}, 	
 				{ label: '首次复投时间', name: 'secAddtime', index: '$SEC_ADDTIME', width: 100 ,align:'right'}, 	
 				{ label: '复投金额', name: 'afterInvestBalance', index: '$AFTER_INVEST_BALANCE', width: 100,align:'right' 
@@ -236,8 +237,9 @@ function initTable(){
 							return '';
 						}
 					}	
-				}, 			
-				{ label: '复投次数', name: 'afterInvestNumber', index: '$AFTER_INVEST_NUMBER', width: 80,align:'right' }, 			
+				}, 		
+				{ label: '复投项目类型', name: 'afterTenderSubject', index: '$AFTER_TENDER_SUBJECT', width: 100 ,align:'right'},
+				{ label: '复投次数', name: 'afterSubject', index: '$AFTER_INVEST_NUMBER', width: 80,align:'right' }, 			
 				{ label: '累计投资金额', name: 'totalInvestBalance', index: '$TOTAL_INVEST_BALANCE', width: 100 ,align:'right'
 					,formatter:function(cellvalue, options, rowObject){
 						if(cellvalue){

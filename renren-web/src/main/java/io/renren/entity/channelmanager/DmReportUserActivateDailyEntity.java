@@ -58,7 +58,30 @@ public class DmReportUserActivateDailyEntity implements Serializable {
 	
 	private String phone;
 	
+	//首投项目类型
+	private String firstTenderSubject;
+	//首次复投项目类型
+	private String afterTenderSubject;
+
 	
+	
+
+
+	public String getFirstTenderSubject() {
+		return firstTenderSubject;
+	}
+
+	public void setFirstTenderSubject(String firstTenderSubject) {
+		this.firstTenderSubject = firstTenderSubject;
+	}
+
+	public String getAfterTenderSubject() {
+		return afterTenderSubject;
+	}
+
+	public void setAfterTenderSubject(String afterTenderSubject) {
+		this.afterTenderSubject = afterTenderSubject;
+	}
 
 	public String getPhone() {
 		return phone;

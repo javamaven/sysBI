@@ -155,7 +155,7 @@ public class UserRedPacketController {
 			e.printStackTrace();
 		}
 		int total = 0;
-		
+		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql;

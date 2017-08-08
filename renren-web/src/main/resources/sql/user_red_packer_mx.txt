@@ -1,5 +1,4 @@
-
-with pd as -- 有使用新手红包的投资情况
+with pd as 
 (
 select
 a.id, 
@@ -11,11 +10,11 @@ a.borrow_period,
 a.addtime
 from mdtxbi.edw_trading_project_detail a
 where a.tender_account_status=1
-and to_char(a.addtime,'yyyy-mm-dd')<to_char(sysdate,'yyyy-mm-dd')
+--and to_char(a.addtime,'yyyy-mm-dd') between '2017-08-01' and '2017-08-06' -- 限定日期
 ),
 hd as(
 select 
-vl.user_id, -- 用户名
+uv.user_id, -- 用户名 -- 从vl 改成uv
 mv.prize_template_id, -- 红包模板id
 mv.id, --  红包id
 pd.tender_capital, -- 投资金额
@@ -31,19 +30,31 @@ uv.used_times, -- 使用红包次数
 case when uv.annualized=1 then '年化' else '现金' end as annualized, -- 红包类型
 uv.effective_end, -- 红包有效期
 case when uv.effective_end>sysdate  then  uv.money-uv.used_money else 0 end as useable_money -- 可用红包金额
+/*
 from mdtxbi.edw_reward_voucher_log vl 
 left join mdtxbi.edw_reward_voucher mv
 on vl.hongbao_id=mv.id and vl.from_sys=mv.from_sys 
 left join mdtxbi.edw_reward_user_voucher uv
 on (mv.id=uv.voucher_id and mv.from_sys=uv.from_sys and vl.user_id=uv.user_id) 
+*/
+from mdtxbi.edw_reward_user_voucher uv
+left join mdtxbi.edw_reward_voucher mv 
+on (mv.from_sys=uv.from_sys and mv.id=uv.voucher_id)
+left join mdtxbi.edw_reward_voucher_log vl 
+on (vl.user_id=uv.user_id and vl.hongbao_id=uv.voucher_id and vl.from_sys=uv.from_sys)
 left join pd
 on pd.id=vl.tender_id
 where mv.prize_template_id not in (80,79,78,77,76,75,74,73 )
-and mv.from_sys=1
-and vl.use_status=1
-and to_char(vl.create_time,'yyyy-mm-dd')<to_char(sysdate,'yyyy-mm-dd')
+--and uv.user_id=4660340
+and uv.from_sys=1
+and (vl.use_status=1 or vl.use_status is null)
+-- and to_char(vl.create_time,'yyyy-mm-dd') between '2017-08-01' and '2017-08-06' 
 -- and vl.use_money>uv.money -- 流水表中单次使用的红包金额大于用户的总红包
-),
+and to_char(uv.receive_time-1,'yyyy-mm-dd') between '2017-08-01' and '2017-08-06'  -- 参与活动的时间
+)
+-- select * from hd
+
+,
 hongbao as
 (
 select
@@ -78,11 +89,13 @@ hd.user_id,-- 用户id
 hd.prize_template_id, -- 红包模板id
 hongbao.purpose, -- 活动目的
 hongbao.name, -- 红包名称
-min(hd.money) as get_money, -- 获得的红包金额
-to_char(hd.receive_time-1,'yyyy-mm-dd') as ati_time, -- 参与活动日期
+max(hd.money) as get_money, -- 获得的红包金额  -- 改成了max
+to_char(hd.receive_time-1,'yyyy-mm-dd') as ati_time, -- 参与活动日期 -- 感觉还是按照发放红包日期吧
 sum(hd.tender_capital) as tender_capital, -- 使用红包投资金额
 round(sum(hd.tender_capital*hd.borrow_period/360),2) as n_sum_tender,-- 年化投资金额
-sum(hd.tend_vouche) as use_money, -- 使用红包金额
+-- sum(hd.tend_vouche) as use_money, -- 使用红包金额
+max(hd.used_money) as use_money, -- 使用红包金额 -- 改成了红包表中的使用金额
+
 round(sum(hd.tender_capital)/sum(hd.tend_vouche),2) as ROI,
 round(sum(hd.tender_capital*hd.borrow_period/360)/sum(hd.tend_vouche),2) as n_ROI,
 min(receive_time) as receive_time,--获得红包时间
@@ -92,7 +105,6 @@ min(annualized) as annualized, -- 红包类型
 min(effective_end) as effective_end, -- 红包到期时间
 min(useable_money) as useable_money -- 剩余可用红包金额
 from hd left join hongbao  on hongbao.id=hd.prize_template_id
--- where user_id=4660340
 group by 
 hd.user_id,
 hd.prize_template_id,
@@ -100,6 +112,7 @@ to_char(hd.receive_time-1,'yyyy-mm-dd'),
 hongbao.purpose,
 hongbao.name
 )
+
 select  ${selectSql}  from (
 select  s.*  from (
 select  rownum RN,e.* from (
@@ -114,7 +127,10 @@ hd.name AS NAME,
 hd.prize_template_id AS WEIZHI,
 hd.ati_time AS HBTIME,
 hd.get_money AS HBMONEY,
-hd.use_money AS USEMONEY,
+
+
+nvl(hd.use_money,0) AS USEMONEY,
+hd.useable_money,
 hd.rate AS RATE,
 hd.annualized AS ANNUALIZED,
 hd.receive_time AS RETIME,
@@ -130,7 +146,6 @@ from hongbao_detail hd left join ub on ub.user_id=hd.user_id
 left join uaw on uaw.user_id=hd.user_id 
 where 
 hd.purpose not like '%生日%' and hd.purpose not like '%注册%' -- 业务需求，红包申请目的中含有“注册”和“生日”的不算活动红包
-and hd.ati_time between '${begin_time}' and '${end_time}' -- 最近一次营销日期
 )e
 where 1=1
 ${huodong_name}

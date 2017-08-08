@@ -26,6 +26,8 @@
         <result property="changeInvestBalance" column="CHANGE_INVEST_BALANCE"/>
         <result property="totalCapital" column="TOTAL_CAPITAL"/>
         <result property="phone" column="PHONE"/>
+        <result property="firstTenderSubject" column="FIRST_TENDER_SUBJECT"/>
+        <result property="afterTenderSubject" column="AFTER_TENDER_SUBJECT"/>
     </resultMap>
 
 	<select id="queryObject" resultType="io.renren.entity.channelmanager.DmReportUserActivateDailyEntity">
@@ -159,7 +161,9 @@
 				WHEN REGISTER_FROM = 4 THEN 'M站'
 				WHEN REGISTER_FROM = 5 THEN '微信或后台'
 				WHEN REGISTER_FROM = - 1 THEN '系统' ELSE REGISTER_FROM END REGISTER_FROM,
-				PHONE
+				PHONE,
+				FIRST_TENDER_SUBJECT,
+				AFTER_TENDER_SUBJECT
 		 from dm_report_user_activate_daily
       	where 1=1
       	
