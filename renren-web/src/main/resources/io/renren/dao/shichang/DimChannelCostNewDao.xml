@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.shichang.DimChannelCostNewDao">
+
+<!-- 	 电销筛选开通存管版本用户,记录导入信息 -->
+	<insert id="batchInsert" useGeneratedKeys="true" parameterType="java.util.List">  
+	    insert into dim_channel_cost_new    
+	    values  
+	    <foreach collection="list" item="item" index="index" separator="," >  
+	         ( 
+	         	#{item.STAT_PERIOD}, 
+	         	#{item.CHANNEL_LABEL}, 
+	         	#{item.COST},
+	         	#{item.RECHARGE}
+	         )  
+	    </foreach>  
+	</insert> 
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.shichang.DimChannelCostNewEntity" id="dimChannelCostNewMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="channelLabel" column="CHANNEL_LABEL"/>
+        <result property="cost" column="COST"/>
+        <result property="recharge" column="RECHARGE"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.shichang.DimChannelCostNewEntity">
+		select * from dim_channel_cost_new where STAT_PERIOD = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.shichang.DimChannelCostNewEntity">
+		DROP TABLE IF EXISTS last_reg;
+		CREATE TEMPORARY TABLE last_reg AS 
+		
+		  select 
+		    ub.activity_tag,
+		    TIMESTAMPDIFF(DAY,max(register_time),now()) as last_reg_day  
+		  from  edw_user_basic ub  
+		  where activity_tag is not null 
+		  group by ub.activity_tag ;
+		
+		select
+		  dc.channel_name,
+		  dc.channel_label,
+		  dc.channel_head,
+		  sum(recharge) as recharge,
+		  sum(cost) as cost, 
+		  IFNULL(sum(recharge),0)-IFNULL(sum(cost),0) as balance,  
+		  max(case when IFNULL(recharge,0)>0 then stat_period end ) as last_recharge_time,
+		  max(case when IFNULL(cost,0)>0 then stat_period end ) as last_cost_time, 
+		  lr.last_reg_day  
+		from dim_channel_cost_new cn
+		  left join dim_channel dc on cn.channel_label = dc.channel_label
+		  left join last_reg lr on lr.activity_tag = cn.channel_label
+		
+		group by dc.channel_label,
+		  dc.channel_name,
+		  dc.channel_head,
+		  lr.last_reg_day
+		order by lr.last_reg_day asc 
+
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dim_channel_cost_new 
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.shichang.DimChannelCostNewEntity">
+		insert into dim_channel_cost_new
+		(
+			`STAT_PERIOD`, 
+			`CHANNEL_LABEL`, 
+			`COST`, 
+			`RECHARGE`
+		)
+		values
+		(
+			#{statPeriod}, 
+			#{channelLabel}, 
+			#{cost}, 
+			#{recharge}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.shichang.DimChannelCostNewEntity">
+		update dim_channel_cost_new 
+		<set>
+			<if test="channelLabel != null">`CHANNEL_LABEL` = #{channelLabel}, </if>
+			<if test="cost != null">`COST` = #{cost}, </if>
+			<if test="recharge != null">`RECHARGE` = #{recharge}</if>
+		</set>
+		where STAT_PERIOD = #{statPeriod}
+	</update>
+	
+	<delete id="delete">
+		delete from dim_channel_cost_new where STAT_PERIOD = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from dim_channel_cost_new where STAT_PERIOD in 
+		<foreach item="statPeriod" collection="array" open="(" separator="," close=")">
+			#{statPeriod}
+		</foreach>
+	</delete>
+
+</mapper>

@@ -61,7 +61,7 @@ public class basicReportServiceImpl implements BasicReportService {
 			"AND u.register_time >= ? " +
 			"AND u.register_time <= ? " +
 			"AND u2.is_borrower = 0  " +
-			"and u2.phone is not null " +
+			"and u2.phone is not null and u2.phone <> '' " +
 			"group by u.user_id " +
 			"HAVING IFNULL(sum(c.pay_amount) + 	sum(l.tender_amount) + 	sum(p.tender_capital),0) = 0 ";
 

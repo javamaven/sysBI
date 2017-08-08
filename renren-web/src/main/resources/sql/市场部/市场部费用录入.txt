@@ -1,0 +1,44 @@
+with last_reg as (
+  select 
+    ub.activity_tag,
+    to_date(to_char(sysdate,'yyyymmdd'),'YYYY-MM-DD HH24:MI:SS')-
+      to_date(to_char(max(register_time),'yyyymmdd'),'YYYY-MM-DD HH24:MI:SS') as last_reg_day  --有注册天数
+    
+  from  edw_user_basic ub  
+  where activity_tag is not null 
+  group by ub.activity_tag 
+
+)
+
+select
+  dc.channel_name,
+  dc.channel_label,
+  dc.channel_head,
+  sum(recharge) as recharge, --累计充值
+  sum(cost) as cost,  --累计费用
+  nvl(sum(recharge),0)-nvl(sum(cost),0) as balance,  -- 渠道账户余额
+  to_char(to_date(max(case when nvl(recharge,0)>0 then stat_period end ),'yyyy-mm-dd'),'yyyy-mm-dd') as last_recharge_time, --最近充值记录
+  to_char(to_date(max(case when nvl(cost,0)>0 then stat_period end ),'yyyy-mm-dd'),'yyyy-mm-dd') as last_cost_time, --最近费用记录
+  lr.last_reg_day   --最近注册天数
+from dim_channel_cost_new cn
+  left join dim_channel dc on cn.channel_label = dc.channel_label
+  left join last_reg lr on lr.activity_tag = cn.channel_label
+
+group by dc.channel_label,
+  dc.channel_name,
+  dc.channel_head,
+  lr.last_reg_day
+order by lr.last_reg_day asc 
+
+
+
+
+
+
+
+
+
+
+
+
+
