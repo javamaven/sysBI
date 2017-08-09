@@ -102,14 +102,13 @@ function initTimeCond1(){
 function initExportFunction(){
 	$('#btn_exports').click(function(){
 		var params = getParams();
-		
-		var select = $("#list_select").children('option:selected').val();
-		if(select == 'vip_detail'){
-			executePost('../yunying/userred/exportExcel', {'params' : JSON.stringify(params)});
-		}
-		else if(select == 'vip_count'){
-			executePost('../yunying/userred/exportExcel2', {'params' : JSON.stringify(params)});
-		}
+		console.info('++++btn_exports+++')
+		executePost('../yunying/userred/exportExcel', {'params' : JSON.stringify(params)});
+	});
+	$('#btn_exports2').click(function(){
+		var params = getParams();
+		console.info('++++btn_exports2+++')
+		executePost('../yunying/userred/exportExcel2', {'params' : JSON.stringify(params)});
 	});
 
 }  
@@ -118,31 +117,31 @@ function initDetailTableGrid(){
 //        url: '../yunying/dmreportvipuser/list',
         datatype: "json",
         colModel: [
-			{ label: '查询日期', name: 'D_DATE', index: '$TYPE', width: 90,align:'right'},
-			{ label: '用户id', name: 'ID', index: '$NUM', width: 90 ,align:'right'}, 			
-			{ label: '用户名', name: 'USERNAME', index: '$SUM', width: 90 ,align:'right'}, 
-			{ label: '用户姓名', name: 'REALNAME', index: '$BORROW_USER', width: 90 ,align:'right'}, 			
-			{ label: '用户手机号', name: 'PHONE', index: '$BORROW_CAPITAL', width: 90 ,align:'right'}, 	
-			{ label: '用户参与活动描述', name: 'PURPOSE', index: '$NUMM', width: 130,align:'right' },
-			{ label: '红包名称', name: 'NAME', index: '$SUMM', width: 90 ,align:'right'},		
-			{ label: '红包模板id', name: 'WEIZHI', index: '$AVGG', width: 90 ,align:'right'},
-			{ label: '参与活动日期', name: 'HBTIME', index: '$NUMS', width: 120,align:'right' },
-			{ label: '收到红包金额', name: 'HBMONEY', index: '$AVGS', width: 120 ,align:'right'},		
-			{ label: '使用红包金额', name: 'USEMONEY', index: '$AVGLI', width: 120 ,align:'right'},
+			{ label: '查询日期', name: 'D_DATE', index: '$TYPE', width: 90,align:'right',sortable:false},
+			{ label: '用户id', name: 'ID', index: '$NUM', width: 90 ,align:'right',sortable:false}, 			
+			{ label: '用户名', name: 'USERNAME', index: '$SUM', width: 90 ,align:'right',sortable:false}, 
+			{ label: '用户姓名', name: 'REALNAME', index: '$BORROW_USER', width: 90 ,align:'right',sortable:false}, 			
+			{ label: '用户手机号', name: 'PHONE', index: '$BORROW_CAPITAL', width: 90 ,align:'right',sortable:false}, 	
+			{ label: '用户参与活动描述', name: 'PURPOSE', index: '$NUMM', width: 130,align:'right' ,sortable:false},
+			{ label: '红包名称', name: 'NAME', index: '$SUMM', width: 90 ,align:'right',sortable:false},		
+			{ label: '红包模板id', name: 'WEIZHI', index: '$AVGG', width: 90 ,align:'right',sortable:false},
+			{ label: '参与活动日期', name: 'HBTIME', index: '$NUMS', width: 120,align:'right' ,sortable:false},
+			{ label: '收到红包金额', name: 'HBMONEY', index: '$AVGS', width: 120 ,align:'right',sortable:false},		
+			{ label: '使用红包金额', name: 'USEMONEY', index: '$AVGLI', width: 120 ,align:'right',sortable:false},
 			
-			{ label: '红包抵扣率', name: 'RATE', index: '$TYPE', width: 120,align:'right' },
-			{ label: '是否现金红包', name: 'ANNUALIZED', index: '$NUM', width: 120 ,align:'right'}, 			
-			{ label: '获取红包时间', name: 'RETIME', index: '$SUM', width: 120 ,align:'right'}, 
-			{ label: '红包失效时间', name: 'ENDTIME', index: '$BORROW_USER', width: 120 ,align:'right'}, 			
-			{ label: '红包使用次数', name: 'USERTIMES', index: '$BORROW_CAPITAL', width: 120 ,align:'right'}, 	
-			{ label: '使用红包投资金额', name: 'TENDER', index: '$NUMM', width: 150,align:'right' },
-			{ label: '使用红包年化投资金额', name: 'SUMTENDER', index: '$SUMM', width: 150 ,align:'right'},		
-			{ label: 'ROI', name: 'ROI', index: '$ROI', width: 90 ,align:'right'},
-			{ label: '年化ROI', name: 'NROI', index: '$NUMS', width: 90,align:'right' },
-			{ label: '用户待收金额', name: 'AW', index: '$AVGS', width: 120 ,align:'right'},		
-			{ label: '用户分类标签', name: 'TYPE', index: '$AVGLI', width: 120 ,align:'right'},
+			{ label: '红包抵扣率', name: 'RATE', index: '$TYPE', width: 120,align:'right' ,sortable:false},
+			{ label: '是否现金红包', name: 'ANNUALIZED', index: '$NUM', width: 120 ,align:'right',sortable:false}, 			
+			{ label: '获取红包时间', name: 'RETIME', index: '$SUM', width: 120 ,align:'right',sortable:false}, 
+			{ label: '红包失效时间', name: 'ENDTIME', index: '$BORROW_USER', width: 120 ,align:'right',sortable:false}, 			
+			{ label: '红包使用次数', name: 'USERTIMES', index: '$BORROW_CAPITAL', width: 120 ,align:'right',sortable:false}, 	
+			{ label: '使用红包投资金额', name: 'TENDER', index: '$NUMM', width: 150,align:'right' ,sortable:false},
+			{ label: '使用红包年化投资金额', name: 'SUMTENDER', index: '$SUMM', width: 150 ,align:'right',sortable:false},		
+			{ label: 'ROI', name: 'ROI', index: '$ROI', width: 90 ,align:'right',sortable:false},
+			{ label: '年化ROI', name: 'NROI', index: '$NUMS', width: 90,align:'right',sortable:false },
+			{ label: '用户待收金额', name: 'AW', index: '$AVGS', width: 120 ,align:'right',sortable:false},		
+			{ label: '用户分类标签', name: 'TYPE', index: '$AVGLI', width: 120 ,align:'right',sortable:false},
 			
-			{ label: '渠道名称', name: 'CHANNELNAME', index: '$YUQI', width: 90 ,align:'right'}
+			{ label: '渠道名称', name: 'CHANNELNAME', index: '$YUQI', width: 90 ,align:'right',sortable:false}
 					
         ],
 		viewrecords: true,  //页面的 页码和页数和总数的显示
@@ -178,29 +177,29 @@ function initCountTableGrid(){
     $("#jqGrid_count").jqGrid({
         datatype: "json",
         colModel: [
-			{ label: '查询日期', name: 'D_DAY', index: '$TYPE', width: 90,align:'right' },
-			{ label: '用户id', name: 'ID', index: '$NUM', width: 90 ,align:'right'}, 			
-			{ label: '用户名', name: 'USERNAME', index: '$SUM', width: 90 ,align:'right'}, 
-			{ label: '用户姓名', name: 'REALNAME', index: '$BORROW_USER', width: 90 ,align:'right'}, 			
-			{ label: '用户手机号', name: 'PHONE', index: '$BORROW_CAPITAL', width: 90 ,align:'right'}, 	
-			{ label: '最近一次营销日期', name: 'ATI_TIME', index: '$NUMM', width: 130,align:'right' },
-			{ label: '最近一次营销距今天数', name: 'DIF', index: '$SUMM', width: 150 ,align:'right'},		
-			{ label: '获得红包个数', name: 'COUT_HB', index: '$AVGG', width: 90 ,align:'right'},
-			{ label: '使用红包个数', name: 'COUNTU', index: '$AVGG', width: 90 ,align:'right'},
-			{ label: '获得红包总金额', name: 'GMONEY', index: '$NUMS', width: 120,align:'right' },
-			{ label: '使用红包总金额', name: 'USEMONEY', index: '$AVGS', width: 120 ,align:'right'},		
-			{ label: '剩余可用红包金额', name: 'USEABLEMONEY', index: '$AVGLI', width: 120 ,align:'right'},
+			{ label: '查询日期', name: 'D_DAY', index: '$TYPE', width: 90,align:'right' ,sortable:false},
+			{ label: '用户id', name: 'ID', index: '$NUM', width: 90 ,align:'right',sortable:false}, 			
+			{ label: '用户名', name: 'USERNAME', index: '$SUM', width: 90 ,align:'right',sortable:false}, 
+			{ label: '用户姓名', name: 'REALNAME', index: '$BORROW_USER', width: 90 ,align:'right',sortable:false}, 			
+			{ label: '用户手机号', name: 'PHONE', index: '$BORROW_CAPITAL', width: 90 ,align:'right',sortable:false}, 	
+			{ label: '最近一次营销日期', name: 'ATI_TIME', index: '$NUMM', width: 130,align:'right' ,sortable:false},
+			{ label: '最近一次营销距今天数', name: 'DIF', index: '$SUMM', width: 150 ,align:'right',sortable:false},		
+			{ label: '获得红包个数', name: 'COUT_HB', index: '$AVGG', width: 90 ,align:'right',sortable:false},
+			{ label: '使用红包个数', name: 'COUNTU', index: '$AVGG', width: 90 ,align:'right',sortable:false},
+			{ label: '获得红包总金额', name: 'GMONEY', index: '$NUMS', width: 120,align:'right',sortable:false },
+			{ label: '使用红包总金额', name: 'USEMONEY', index: '$AVGS', width: 120 ,align:'right',sortable:false},		
+			{ label: '剩余可用红包金额', name: 'USEABLEMONEY', index: '$AVGLI', width: 120 ,align:'right',sortable:false},
 			
-			{ label: '使用红包金额占比', name: 'MONEYI', index: '$TYPE', width: 120,align:'right' },
-			{ label: '使用红包个数占比', name: 'USERTIME', index: '$TYPE', width: 120,align:'right' },
-			{ label: '投资使用红包次数占比', name: 'TIMEI', index: '$NUM', width: 140 ,align:'right'}, 			
-			{ label: '使用红包投资金额', name: 'TENDER', index: '$SUM', width: 120 ,align:'right'}, 
-			{ label: '使用红包年化投资金额', name: 'SUMTENDER', index: '$BORROW_USER', width: 140 ,align:'right'}, 			
-			{ label: '使用红包投资ROI', name: 'ROI', index: '$BORROW_CAPITAL', width: 120 ,align:'right'}, 	
-			{ label: '使用红包年化投资ROI', name: 'NROI', index: '$NUMM', width: 150,align:'right' },
-			{ label: '用户待收金额', name: 'AW', index: '$SUMM', width: 100 ,align:'right'},	
-			{ label: '渠道名称', name: 'CHANNELNAME', index: '$NUMS', width: 90,align:'right' },
-			{ label: '用户分类标签', name: 'TYPE', index: '$ROI', width: 90 ,align:'right'}
+			{ label: '使用红包金额占比', name: 'MONEYI', index: '$TYPE', width: 120,align:'right' ,sortable:false},
+			{ label: '使用红包个数占比', name: 'USERTIME', index: '$TYPE', width: 120,align:'right',sortable:false },
+			{ label: '投资使用红包次数占比', name: 'TIMEI', index: '$NUM', width: 140 ,align:'right',sortable:false}, 			
+			{ label: '使用红包投资金额', name: 'TENDER', index: '$SUM', width: 120 ,align:'right',sortable:false}, 
+			{ label: '使用红包年化投资金额', name: 'SUMTENDER', index: '$BORROW_USER', width: 140 ,align:'right',sortable:false}, 			
+			{ label: '使用红包投资ROI', name: 'ROI', index: '$BORROW_CAPITAL', width: 120 ,align:'right',sortable:false}, 	
+			{ label: '使用红包年化投资ROI', name: 'NROI', index: '$NUMM', width: 150,align:'right' ,sortable:false},
+			{ label: '用户待收金额', name: 'AW', index: '$SUMM', width: 100 ,align:'right',sortable:false},	
+			{ label: '渠道名称', name: 'CHANNELNAME', index: '$NUMS', width: 90,align:'right',sortable:false },
+			{ label: '用户分类标签', name: 'TYPE', index: '$ROI', width: 90 ,align:'right',sortable:false}
 
 
         ],

@@ -21,7 +21,7 @@ sum(case when a.tend_vouche>0 then 1 else 0 end),--使用红包次数
 round(sum(case when a.tend_vouche>0 then 1 else 0 end)/count(a.tender_capital),4) as vouche_time_i
 from mdtxbi.edw_trading_project_detail a
 where a.tender_account_status=1
-${touzi_begin}
+ ${touzi_begin}
 group by a.user_id
 ),
 hd as(
@@ -119,7 +119,7 @@ hongbao.purpose,
 hongbao.name
 )
 
-select  ${selectSql}  from (
+select  count(1) total from (
 select  s.*  from (
 
 select  rownum RN,e.* from (
@@ -167,26 +167,12 @@ ub.channel_name
 
 ) e
 where 1=1 
-
-${hongbao_begin}
-${hongbao_end}
-${channelName1}
- ${userType}
- ${userName1}
- ${userId1}
+${queryCond}
 ) s
 where 1=1
- and ROWNUM <= ?
-
-
-
-
 ) a
 WHERE 
 1=1
-
- and RN >= ?
-
 
 
 

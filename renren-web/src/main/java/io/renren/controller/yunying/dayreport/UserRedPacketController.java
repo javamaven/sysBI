@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,37 +44,7 @@ public class UserRedPacketController {
 	@Autowired
 	private DataSourceFactory dataSourceFactory;
 
-	/**
-	 * 上传文件
-	 */
-	@SuppressWarnings("unchecked")
-	@ResponseBody
-	@RequestMapping("/upload")
-	@RequiresPermissions("phonesale:upload")
-	public R upload(@RequestParam("file") MultipartFile file) {
-		try {
-			if (file.isEmpty()) {
-				throw new RRException("上传文件不能为空");
-			}
-			String[] fields = { "number", "user_name", "real_name", "register_time", "call_sale", "call_date",
-					"call_result", "is_invest", "real_invest_amount", "sale_jiangli_amount", "year_invest_amount",
-					"first_invest_time" };
-			Map<String, Object> retMap = ExcelUtil.parseExcel(multipartToFile(file), null, fields);
-			List<Map<String, Object>> list = (List<Map<String, Object>>) retMap.get("list");
-
-			// 清空表
-			String tuncate_sql = "truncate table phone_sale_excel_data ";
-			new JdbcUtil(dataSourceFactory, "oracle26").execute(tuncate_sql);
-			// 插入表
-			String sql = "insert into phone_sale_excel_data values(?,?,?,?,?,?)";
-			List<List<Object>> dataList = getInsertDataList(list);
-			new JdbcUtil(dataSourceFactory, "oracle26").batchInsert(sql, dataList);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return R.error(e.getMessage());
-		}
-		return R.ok();
-	}
+	
 
 	/**
 	 * P2P列表
@@ -84,45 +55,54 @@ public class UserRedPacketController {
 	public R daylist(Integer page, Integer limit, String begin_time,String end_time,String huodong_name,
 			String hongbao_name,String hongbao_id, String user_type,String channelName, 
 			String userName,String userId) {
+//		Map<String,Object> params = new HashMap<String, Object>();
+		List<String> paramsList = new ArrayList<>();
 		int start = (page - 1) * limit;
 		int end = start + limit;
 		
 		if (StringUtils.isNotEmpty(userId)) {
 			userId=" AND ID like '%"+userId+"%'";
+			paramsList.add(userId);
 		}else{
 			userId="";
 		}
 
 		if (StringUtils.isNotEmpty(huodong_name)) {
 			huodong_name=" AND PURPOSE like '%"+huodong_name+"%'";
+			paramsList.add(huodong_name);
 		}else{
 			huodong_name="";
 		}
 		
 		if (StringUtils.isNotEmpty(hongbao_name)) {
 			hongbao_name=" AND NAME like '%"+hongbao_name+"%'";
+			paramsList.add(hongbao_name);
 		}else{
 			hongbao_name="";
 		}
 		
 		if (StringUtils.isNotEmpty(hongbao_id)) {
 			hongbao_id=" AND WEIZHI like '%"+hongbao_id+"%'";
+			paramsList.add(hongbao_id);
 		}else{
 			hongbao_id="";
 		}
 		if (StringUtils.isNotEmpty(user_type)) {
 			user_type=" AND TYPE like '%"+user_type+"%'";
+			paramsList.add(user_type);
 		}else{
 			user_type="";
 		}
 		if (StringUtils.isNotEmpty(channelName)) {
 			channelName=" AND channelName like '%"+channelName+"%'";
+			paramsList.add(channelName);
 		}else{
 			channelName="";
 		}
 		
 		if (StringUtils.isNotEmpty(userName)) {
-			userName=" AND REALNAME like '%"+userName+"%'";
+			userName=" AND REALNAME like '%"+userName+"%' ";
+			paramsList.add(userName);
 		}else{
 			userName="";
 		}
@@ -130,67 +110,91 @@ public class UserRedPacketController {
 		long l1 = System.currentTimeMillis();
 
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> totalList = new ArrayList<Map<String, Object>>();
 
 		try {
-			String path = this.getClass().getResource("/").getPath();
-			String detail_sql;
-			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/user_red_packer_mx.txt"));
-			detail_sql = detail_sql.replace("${end_time}", end_time);
-			detail_sql = detail_sql.replace("${userId}", userId);
-			detail_sql = detail_sql.replace("${begin_time}", begin_time);
-			detail_sql = detail_sql.replace("${huodong_name}", huodong_name);
-			detail_sql = detail_sql.replace("${userName}", userName);
-			detail_sql = detail_sql.replace("${channelName}", channelName);
-			detail_sql = detail_sql.replace("${user_type}", user_type);
-			detail_sql = detail_sql.replace("${hongbao_id}", hongbao_id);
-			detail_sql = detail_sql.replace("${hongbao_name}", hongbao_name);
-			detail_sql = detail_sql.replace("${pageStartSql}", " and RN > " + start + "");
-			detail_sql = detail_sql.replace("${pageEndSql}", " and RN <= " + end + "");
-			detail_sql = detail_sql.replace("${selectSql}", " a.* ");
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
-			resultList.addAll(list);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			Thread thread1 = new Thread(new QueryThread("list", dataSourceFactory, resultList, start, end, paramsList,begin_time,end_time));
+			Thread thread2 = new Thread(new QueryThread("total", dataSourceFactory, totalList, 0,0, paramsList,begin_time,end_time));
+			thread1.start();
+			thread2.start();
+			thread1.join();
+			thread2.join();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
 		}
-		int total = 0;
-		System.out.println("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
-		try {
-			String path = this.getClass().getResource("/").getPath();
-			String detail_sql;
-			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/user_red_packer_mx.txt"));
-			detail_sql = detail_sql.replace("${end_time}", end_time);
-			detail_sql = detail_sql.replace("${userId}", userId);
-			detail_sql = detail_sql.replace("${begin_time}", begin_time);
-			detail_sql = detail_sql.replace("${huodong_name}", huodong_name);
-			detail_sql = detail_sql.replace("${userName}", userName);
-			detail_sql = detail_sql.replace("${channelName}", channelName);
-			detail_sql = detail_sql.replace("${user_type}", user_type);
-			detail_sql = detail_sql.replace("${hongbao_id}", hongbao_id);
-			detail_sql = detail_sql.replace("${hongbao_name}", hongbao_name);
-			detail_sql = detail_sql.replace("${pageStartSql}", "");
-			detail_sql = detail_sql.replace("${pageEndSql}", "");
-			detail_sql = detail_sql.replace("${selectSql}", " COUNT(1) TOTAL ");
-			List<Map<String, Object>> total_list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
-			Map<String, Object> map = total_list.get(0);
-			total = Integer.parseInt(map.get("TOTAL").toString());
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+
+		int total = Integer.parseInt(totalList.get(0).get("TOTAL").toString());
 		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
 		long l2 = System.currentTimeMillis();
 
 		System.err.println("++++++++红包明细查询耗时：" + (l2 - l1));
 		return R.ok().put("page", pageUtil);
 	}
+	
+	class QueryThread implements Runnable {
+		private DataSourceFactory dataSourceFactory;
+		private List<Map<String, Object>> list;
+		private String statType;
+		private int start;
+		private int end;
+		private String begin_time;
+		private String end_time;
+		private List<String> paramsList;
+
+		public QueryThread(String statType, DataSourceFactory dataSourceFactory, List<Map<String, Object>> list, int start2, int end2, List<String> paramsList,String begin_time,String end_time) {
+			this.statType = statType;
+			this.dataSourceFactory = dataSourceFactory;
+			this.list = list;
+			this.start = start2;
+			this.end = end2;
+			this.begin_time = begin_time+"";
+			this.end_time = end_time+"";
+			this.paramsList = paramsList;
+		}
+
+		@Override
+		public void run() {
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql = null;
+			try {
+				String queryCond = "";
+				for (int i = 0; i < paramsList.size(); i++) {
+					queryCond += paramsList.get(i);
+				}
+				if("list".equals(statType)){
+					
+					detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/user_red_packer_list.txt"));
+					detail_sql = detail_sql.replace("${queryCond}", queryCond);
+					detail_sql = detail_sql.replace("${begin_time}", begin_time);
+					detail_sql = detail_sql.replace("${end_time}", end_time);
+					list.addAll(new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql, end, start));
+				}else if("total".equals(statType)){
+					detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/user_red_packer_total.txt"));
+					detail_sql = detail_sql.replace("${queryCond}", queryCond);
+					detail_sql = detail_sql.replace("${begin_time}", begin_time);
+					detail_sql = detail_sql.replace("${end_time}", end_time);
+					list.addAll(new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql));
+				}
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	
+	
+	
+	
+	
 	@ResponseBody
 	@RequestMapping("/ddylist")
 	public R daylist1(Integer page, Integer limit, String yingxiao_begin,String yingxiao_end,String touzi_begin,
 			String touzi_end,String hongbao_begin, String hongbao_end,String channelName1, String userName1,
 			String userType,String userId1) {
+		List<String> paramsList = new ArrayList<>();
 		long l1 = System.currentTimeMillis();
 		int start = (page - 1) * limit;
 		int end = start + limit;
@@ -198,94 +202,102 @@ public class UserRedPacketController {
 		
 		if (StringUtils.isNotEmpty(touzi_begin)) {
 			touzi_begin=" AND to_char(a.addtime,'yyyy-mm-dd') between '"+touzi_begin+"' and '"+touzi_end+"'";
-		}else{
+		}else {
 			touzi_begin="";
 		}
 		
 		if (StringUtils.isNotEmpty(hongbao_begin)) {
 			hongbao_begin=" AND USEABLEMONEY >='  "+hongbao_begin+"'";
-		}else{
-			hongbao_begin="";
+			paramsList.add(hongbao_begin);
 		}
 		
 		if (StringUtils.isNotEmpty(hongbao_end)) {
 			hongbao_end=" AND USEABLEMONEY <='  "+hongbao_end+"'";
-		}else{
-			hongbao_end="";
+			paramsList.add(hongbao_end);
 		}
 		
 		if (StringUtils.isNotEmpty(channelName1)) {
 			channelName1=" AND channelName like '%"+channelName1+"%'";
-		}else{
-			channelName1="";
+			paramsList.add(channelName1);
 		}
 
 		if (StringUtils.isNotEmpty(userName1)) {
-			userName1=" AND userName like '%"+userName1+"%'";
-		}else{
-			userName1="";
+			userName1=" AND REALNAME like '%"+userName1+"%'";
+			paramsList.add(userName1);
 		}
 		
 		if (StringUtils.isNotEmpty(userType)) {
 			userType=" AND userType like '%"+userType+"%'";
-		}else{
-			userType="";
+			paramsList.add(userType);
 		}
 		
 		if (StringUtils.isNotEmpty(userId1)) {
 			userId1=" AND ID like '%"+userId1+"%'";
-		}else{
-			userId1="";
+			paramsList.add(userId1);
 		}
+		
+//		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+//		try {
+//			String path = this.getClass().getResource("/").getPath();
+//			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/user_red_packer_qk.txt"));
+//			detail_sql = detail_sql.replace("${hongbao_begin}",hongbao_begin );
+//			detail_sql = detail_sql.replace("${hongbao_end}",hongbao_end );
+//			detail_sql = detail_sql.replace("${yingxiao_begin}",yingxiao_begin );
+//			detail_sql = detail_sql.replace("${yingxiao_end}",yingxiao_end );
+//			detail_sql = detail_sql.replace("${touzi_begin}",touzi_begin );
+//			detail_sql = detail_sql.replace("${channelName1}",channelName1 );
+//			detail_sql = detail_sql.replace("${userType}",userType );
+//			detail_sql = detail_sql.replace("${userId1}",userId1 );
+//			detail_sql = detail_sql.replace("${userName1}",userName1 );
+//			detail_sql = detail_sql.replace("${pageStartSql}", " and RN > " + start + "");
+//			detail_sql = detail_sql.replace("${pageEndSql}", " and RN <= " + end + "");
+//			detail_sql = detail_sql.replace("${selectSql}", " a.* ");
+//			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+//			resultList.addAll(list);
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		int total = 0;
+//		try {
+//			String path = this.getClass().getResource("/").getPath();
+//			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/user_red_packer_qk.txt"));
+//			detail_sql = detail_sql.replace("${hongbao_begin}",hongbao_begin );
+//			detail_sql = detail_sql.replace("${hongbao_end}",hongbao_end );
+//			detail_sql = detail_sql.replace("${yingxiao_begin}",yingxiao_begin );
+//			detail_sql = detail_sql.replace("${yingxiao_end}",yingxiao_end );
+//			detail_sql = detail_sql.replace("${touzi_begin}",touzi_begin );
+//			detail_sql = detail_sql.replace("${channelName1}",channelName1 );
+//			detail_sql = detail_sql.replace("${userType}",userType );
+//			detail_sql = detail_sql.replace("${userId1}",userId1 );
+//			detail_sql = detail_sql.replace("${userName1}",userName1 );
+//			detail_sql = detail_sql.replace("${pageStartSql}", "");
+//			detail_sql = detail_sql.replace("${pageEndSql}", "");
+//			detail_sql = detail_sql.replace("${selectSql}", " COUNT(1) TOTAL ");
+//			List<Map<String, Object>> total_list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+//			Map<String, Object> map = total_list.get(0);
+//			total = Integer.parseInt(map.get("TOTAL").toString());
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 		
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> totalList = new ArrayList<Map<String, Object>>();
+
 		try {
-			String path = this.getClass().getResource("/").getPath();
-			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/user_red_packer_qk.txt"));
-			detail_sql = detail_sql.replace("${hongbao_begin}",hongbao_begin );
-			detail_sql = detail_sql.replace("${hongbao_end}",hongbao_end );
-			detail_sql = detail_sql.replace("${yingxiao_begin}",yingxiao_begin );
-			detail_sql = detail_sql.replace("${yingxiao_end}",yingxiao_end );
-			detail_sql = detail_sql.replace("${touzi_begin}",touzi_begin );
-			detail_sql = detail_sql.replace("${channelName1}",channelName1 );
-			detail_sql = detail_sql.replace("${userType}",userType );
-			detail_sql = detail_sql.replace("${userId1}",userId1 );
-			detail_sql = detail_sql.replace("${userName1}",userName1 );
-			detail_sql = detail_sql.replace("${pageStartSql}", " and RN > " + start + "");
-			detail_sql = detail_sql.replace("${pageEndSql}", " and RN <= " + end + "");
-			detail_sql = detail_sql.replace("${selectSql}", " a.* ");
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
-			resultList.addAll(list);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+			Thread thread1 = new Thread(new QueryUserRedPackQkThread("list", dataSourceFactory, resultList, start, end, paramsList,touzi_begin,yingxiao_begin,yingxiao_end));
+			Thread thread2 = new Thread(new QueryUserRedPackQkThread("total", dataSourceFactory, totalList, 0,0, paramsList,touzi_begin,yingxiao_begin,yingxiao_end));
+			thread1.start();
+			thread2.start();
+			thread1.join();
+			thread2.join();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
 		}
-		int total = 0;
-		try {
-			String path = this.getClass().getResource("/").getPath();
-			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/user_red_packer_qk.txt"));
-			detail_sql = detail_sql.replace("${hongbao_begin}",hongbao_begin );
-			detail_sql = detail_sql.replace("${hongbao_end}",hongbao_end );
-			detail_sql = detail_sql.replace("${yingxiao_begin}",yingxiao_begin );
-			detail_sql = detail_sql.replace("${yingxiao_end}",yingxiao_end );
-			detail_sql = detail_sql.replace("${touzi_begin}",touzi_begin );
-			detail_sql = detail_sql.replace("${channelName1}",channelName1 );
-			detail_sql = detail_sql.replace("${userType}",userType );
-			detail_sql = detail_sql.replace("${userId1}",userId1 );
-			detail_sql = detail_sql.replace("${userName1}",userName1 );
-			detail_sql = detail_sql.replace("${pageStartSql}", "");
-			detail_sql = detail_sql.replace("${pageEndSql}", "");
-			detail_sql = detail_sql.replace("${selectSql}", " COUNT(1) TOTAL ");
-			List<Map<String, Object>> total_list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
-			Map<String, Object> map = total_list.get(0);
-			total = Integer.parseInt(map.get("TOTAL").toString());
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+		int total = Integer.parseInt(totalList.get(0).get("TOTAL").toString());
 		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
 		long l2 = System.currentTimeMillis();
 
@@ -295,6 +307,76 @@ public class UserRedPacketController {
 		
 	}
 
+	
+	class QueryUserRedPackQkThread implements Runnable {
+		private DataSourceFactory dataSourceFactory;
+		private List<Map<String, Object>> list;
+		private String statType;
+		private int start;
+		private int end;
+		private String touzi_begin;
+		private String yingxiao_begin;
+		private String yingxiao_end;
+		private List<String> paramsList;
+
+		public QueryUserRedPackQkThread(String statType, DataSourceFactory dataSourceFactory, List<Map<String, Object>> list, int start2, int end2, List<String> paramsList,String touzi_begin,String yingxiao_begin, String yingxiao_end) {
+			this.statType = statType;
+			this.dataSourceFactory = dataSourceFactory;
+			this.list = list;
+			this.start = start2;
+			this.end = end2;
+			this.touzi_begin = touzi_begin+"";
+			this.yingxiao_begin = yingxiao_begin+"";
+			this.yingxiao_end = yingxiao_end+"";
+			this.paramsList = paramsList;
+		}
+
+		@Override
+		public void run() {
+			String path = this.getClass().getResource("/").getPath();
+			String detail_sql = null;
+			try {
+				String queryCond = "";
+				for (int i = 0; i < paramsList.size(); i++) {
+					queryCond += paramsList.get(i);
+				}
+
+				detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/user_red_packer_qk_"+statType+".txt"));
+				detail_sql = detail_sql.replace("${queryCond}", queryCond);
+				detail_sql = detail_sql.replace("${touzi_begin}", touzi_begin);
+				detail_sql = detail_sql.replace("${yingxiao_begin}", yingxiao_begin);
+				detail_sql = detail_sql.replace("${yingxiao_end}", yingxiao_end);
+				
+				if("list".equals(statType)){
+					list.addAll(new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql, end, start));
+				}else {
+					list.addAll(new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql));
+				}
+//				if("list".equals(statType)){
+//					
+//					detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/user_red_packer_list.txt"));
+//					detail_sql = detail_sql.replace("${queryCond}", queryCond);
+//					detail_sql = detail_sql.replace("${touzi_begin}", touzi_begin);
+//					detail_sql = detail_sql.replace("${yingxiao_begin}", yingxiao_begin);
+//					detail_sql = detail_sql.replace("${yingxiao_end}", yingxiao_end);
+//					list.addAll(new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql, end, start));
+//				}else if("total".equals(statType)){
+//					detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/user_red_packer_total.txt"));
+//					detail_sql = detail_sql.replace("${queryCond}", queryCond);
+//					detail_sql = detail_sql.replace("${touzi_begin}", touzi_begin);
+//					detail_sql = detail_sql.replace("${yingxiao_begin}", yingxiao_begin);
+//					detail_sql = detail_sql.replace("${yingxiao_end}", yingxiao_end);
+//					list.addAll(new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql));
+//				}
+				
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
 	
 	
 
@@ -316,156 +398,29 @@ public class UserRedPacketController {
 		String user_type = map.get("user_type") + "";
 		String hongbao_id = map.get("hongbao_id") + "";
 		String hongbao_name = map.get("hongbao_name") + "";
-	
-	
 		
-		if (StringUtils.isNotEmpty(userId)) {
-			userId=" AND ID like '%"+userId+"%'";
-		}else{
-			userId="";
-		}
+		R r = daylist(1, 1000000, begin_time, end_time, huodong_name, hongbao_name, hongbao_id, user_type, channelName, userName, userId);
+		PageUtils pageUtil = (PageUtils) r.get("page");
+	
+	
 
-		if (StringUtils.isNotEmpty(huodong_name)) {
-			huodong_name=" AND PURPOSE like '%"+huodong_name+"%'";
-		}else{
-			huodong_name="";
-		}
-		
-		if (StringUtils.isNotEmpty(hongbao_name)) {
-			hongbao_name=" AND NAME like '%"+hongbao_name+"%'";
-		}else{
-			hongbao_name="";
-		}
-		
-		if (StringUtils.isNotEmpty(hongbao_id)) {
-			hongbao_id=" AND WEIZHI like '%"+hongbao_id+"%'";
-		}else{
-			hongbao_id="";
-		}
-		if (StringUtils.isNotEmpty(user_type)) {
-			user_type=" AND TYPE like '%"+user_type+"%'";
-		}else{
-			user_type="";
-		}
-		if (StringUtils.isNotEmpty(channelName)) {
-			channelName=" AND channelName like '%"+channelName+"%'";
-		}else{
-			channelName="";
-		}
-		
-		if (StringUtils.isNotEmpty(userName)) {
-			userName=" AND REALNAME like '%"+userName+"%'";
-		}else{
-			userName="";
-		}
-		
-		
-		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
-		try {
-			String path = this.getClass().getResource("/").getPath();
-			String detail_sql;
-			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/user_red_packer_mx.txt"));
-			detail_sql = detail_sql.replace("${end_time}", end_time);
-			detail_sql = detail_sql.replace("${userId}", userId);
-			detail_sql = detail_sql.replace("${begin_time}", begin_time);
-			detail_sql = detail_sql.replace("${huodong_name}", huodong_name);
-			detail_sql = detail_sql.replace("${userName}", userName);
-			detail_sql = detail_sql.replace("${channelName}", channelName);
-			detail_sql = detail_sql.replace("${user_type}", user_type);
-			detail_sql = detail_sql.replace("${hongbao_id}", hongbao_id);
-			detail_sql = detail_sql.replace("${hongbao_name}", hongbao_name);
-			detail_sql = detail_sql.replace("${pageStartSql}", "");
-			detail_sql = detail_sql.replace("${pageEndSql}", "");
-			detail_sql = detail_sql.replace("${selectSql}", " a.* ");
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
-			resultList.addAll(list);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		
-		String hongbao_begin = map.get("hongbao_begin") + "";
-		String hongbao_end = map.get("hongbao_end") + "";
-		String yingxiao_begin = map.get("yingxiao_begin") + "";
-		String yingxiao_end = map.get("yingxiao_end") + "";
-		String touzi_begin = map.get("touzi_begin") + "";
-		String channelName1 = map.get("channelName1") + "";
-		String userType = map.get("userType") + "";
-		String userId1 = map.get("userId1") + "";
-		String userName1 = map.get("userName1") + "";
-		String touzi_end = map.get("touzi_end") + "";
-		
-	
-		
-		if (StringUtils.isNotEmpty(touzi_begin)) {
-			touzi_begin=" AND to_char(a.addtime,'yyyy-mm-dd') between '"+touzi_begin+"' and '"+touzi_end+"'";
-		}else{
-			touzi_begin="";
-		}
-		
-		if (StringUtils.isNotEmpty(hongbao_begin)) {
-			hongbao_begin=" AND USEABLEMONEY >='  "+hongbao_begin+"'";
-		}else{
-			hongbao_begin="";
-		}
-		
-		if (StringUtils.isNotEmpty(hongbao_end)) {
-			hongbao_end=" AND USEABLEMONEY <='  "+hongbao_end+"'";
-		}else{
-			hongbao_end="";
-		}
-		
-		if (StringUtils.isNotEmpty(channelName1)) {
-			channelName1=" AND channelName like '%"+channelName1+"%'";
-		}else{
-			channelName1="";
-		}
 
-		if (StringUtils.isNotEmpty(userName1)) {
-			userName1=" AND userName like '%"+userName1+"%'";
-		}else{
-			userName1="";
-		}
-		
-		if (StringUtils.isNotEmpty(userType)) {
-			userType=" AND userType like '%"+userType+"%'";
-		}else{
-			userType="";
-		}
-		
-		if (StringUtils.isNotEmpty(userId1)) {
-			userId1=" AND ID like '%"+userId1+"%'";
-		}else{
-			userId1="";
-		}
-		
-		
-		List<Map<String, Object>> resultList2 = new ArrayList<Map<String, Object>>();
-		try {
-			String path = this.getClass().getResource("/").getPath();
-			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/user_red_packer_qk.txt"));
-			detail_sql = detail_sql.replace("${hongbao_begin}",hongbao_begin );
-			detail_sql = detail_sql.replace("${hongbao_end}",hongbao_end );
-			detail_sql = detail_sql.replace("${yingxiao_begin}",yingxiao_begin );
-			detail_sql = detail_sql.replace("${yingxiao_end}",yingxiao_end );
-			detail_sql = detail_sql.replace("${touzi_begin}",touzi_begin );
-			detail_sql = detail_sql.replace("${channelName1}",channelName1 );
-			detail_sql = detail_sql.replace("${userType}",userType );
-			detail_sql = detail_sql.replace("${userId1}",userId1 );
-			detail_sql = detail_sql.replace("${userName1}",userName1 );
-			detail_sql = detail_sql.replace("${pageStartSql}", "");
-			detail_sql = detail_sql.replace("${pageEndSql}", "");
-			detail_sql = detail_sql.replace("${selectSql}", " a.* ");
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
-			resultList2.addAll(list);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+//		
+//		String hongbao_begin = map.get("hongbao_begin") + "";
+//		String hongbao_end = map.get("hongbao_end") + "";
+//		String yingxiao_begin = map.get("yingxiao_begin") + "";
+//		String yingxiao_end = map.get("yingxiao_end") + "";
+//		String touzi_begin = map.get("touzi_begin") + "";
+//		String channelName1 = map.get("channelName1") + "";
+//		String userType = map.get("userType") + "";
+//		String userId1 = map.get("userId1") + "";
+//		String userName1 = map.get("userName1") + "";
+//		String touzi_end = map.get("touzi_end") + "";
+//		
+//	
+//		
+
+		List<Map<String,Object>> resultList = (List<Map<String, Object>>) pageUtil.getList();
 		// 查询列表数据
 		JSONArray va = new JSONArray();
 		for (int i = 0; i < resultList.size(); i++) {
@@ -474,26 +429,26 @@ public class UserRedPacketController {
 		Map<String, String> headMap = getDayListExcelFields();
 		String title = "用户收到红包明细";
 		
-		// 查询列表数据
-		JSONArray va2 = new JSONArray();
-		for (int i = 0; i < resultList2.size(); i++) {
-			va2.add(resultList2.get(i));
-		}
-		Map<String, String> headMap2 = getDayListExcelFields2();
-		String title2 = "用户获得红包累计情况";
+//		// 查询列表数据
+//		JSONArray va2 = new JSONArray();
+//		for (int i = 0; i < resultList2.size(); i++) {
+//			va2.add(resultList2.get(i));
+//		}
+//		Map<String, String> headMap2 = getDayListExcelFields2();
+//		String title2 = "用户获得红包累计情况";
 
 		List<String> titleList = new ArrayList<>();
 		titleList.add(title);
-		titleList.add(title2);
+//		titleList.add(title2);
 
 		List<Map<String, String>> headMapList = new ArrayList<Map<String,String>>();
 		headMapList.add(headMap);
-		headMapList.add(headMap2);
+//		headMapList.add(headMap2);
 
 		
 		List<JSONArray> ja = new ArrayList<JSONArray>();
 		ja.add(va);
-		ja.add(va2);
+//		ja.add(va2);
 
 		ExcelUtil.downloadExcelFile(titleList , headMapList, ja , response);
 		
@@ -520,74 +475,13 @@ public class UserRedPacketController {
 		String userName1 = map.get("userName1") + "";
 		String touzi_end = map.get("touzi_end") + "";
 		
+		
+		R r = daylist1(1, 1000000, yingxiao_begin, yingxiao_end, touzi_begin, touzi_end, hongbao_begin, hongbao_end, channelName1, userName1, userType, userId1);
+		PageUtils pageUtil = (PageUtils) r.get("page");
 	
 		
-		if (StringUtils.isNotEmpty(touzi_begin)) {
-			touzi_begin=" AND to_char(a.addtime,'yyyy-mm-dd') between '"+touzi_begin+"' and '"+touzi_end+"'";
-		}else{
-			touzi_begin="";
-		}
-		
-		if (StringUtils.isNotEmpty(hongbao_begin)) {
-			hongbao_begin=" AND USEABLEMONEY >='  "+hongbao_begin+"'";
-		}else{
-			hongbao_begin="";
-		}
-		
-		if (StringUtils.isNotEmpty(hongbao_end)) {
-			hongbao_end=" AND USEABLEMONEY <='  "+hongbao_end+"'";
-		}else{
-			hongbao_end="";
-		}
-		
-		if (StringUtils.isNotEmpty(channelName1)) {
-			channelName1=" AND channelName like '%"+channelName1+"%'";
-		}else{
-			channelName1="";
-		}
-
-		if (StringUtils.isNotEmpty(userName1)) {
-			userName1=" AND userName like '%"+userName1+"%'";
-		}else{
-			userName1="";
-		}
-		
-		if (StringUtils.isNotEmpty(userType)) {
-			userType=" AND userType like '%"+userType+"%'";
-		}else{
-			userType="";
-		}
-		
-		if (StringUtils.isNotEmpty(userId1)) {
-			userId1=" AND ID like '%"+userId1+"%'";
-		}else{
-			userId1="";
-		}
-		
-		
-		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
-		try {
-			String path = this.getClass().getResource("/").getPath();
-			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/user_red_packer_qk.txt"));
-			detail_sql = detail_sql.replace("${hongbao_begin}",hongbao_begin );
-			detail_sql = detail_sql.replace("${hongbao_end}",hongbao_end );
-			detail_sql = detail_sql.replace("${yingxiao_begin}",yingxiao_begin );
-			detail_sql = detail_sql.replace("${yingxiao_end}",yingxiao_end );
-			detail_sql = detail_sql.replace("${touzi_begin}",touzi_begin );
-			detail_sql = detail_sql.replace("${channelName1}",channelName1 );
-			detail_sql = detail_sql.replace("${userType}",userType );
-			detail_sql = detail_sql.replace("${userId1}",userId1 );
-			detail_sql = detail_sql.replace("${userName1}",userName1 );
-			detail_sql = detail_sql.replace("${pageStartSql}", "");
-			detail_sql = detail_sql.replace("${pageEndSql}", "");
-			detail_sql = detail_sql.replace("${selectSql}", " a.* ");
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
-			resultList.addAll(list);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		List<Map<String,Object>> resultList = (List<Map<String, Object>>) pageUtil.getList();
+	
 		// 查询列表数据
 		JSONArray va = new JSONArray();
 		for (int i = 0; i < resultList.size(); i++) {
@@ -668,149 +562,4 @@ public class UserRedPacketController {
 	}
 	
 
-
-
-
-	private static SimpleDateFormat dateSdf = new SimpleDateFormat("yyyy-MM-dd");
-
-	private List<List<Object>> getInsertDataList(List<Map<String, Object>> excelList) {
-		List<List<Object>> dataList = new ArrayList<List<Object>>();
-		List<Object> list = null;
-		for (int i = 0; i < excelList.size(); i++) {
-			list = new ArrayList<Object>();
-			Map<String, Object> map = excelList.get(i);
-			list.add(map.get("user_name") + "");
-			list.add(2);
-			try {
-				list.add(dateSdf.parse(map.get("call_date") + ""));
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			list.add(map.get("call_result") + "");// 打电话结果
-			list.add(map.get("call_sale") + "");// 电销人员
-			list.add(null);
-
-			dataList.add(list);
-		}
-		return dataList;
-	}
-
-	/**
-	 * MultipartFile 转换成File
-	 * 
-	 * @param multfile
-	 *            原文件类型
-	 * @return File
-	 * @throws IOException
-	 */
-	private File multipartToFile(MultipartFile multfile) throws IOException {
-		CommonsMultipartFile cf = (CommonsMultipartFile) multfile;
-		// 这个myfile是MultipartFile的
-		DiskFileItem fi = (DiskFileItem) cf.getFileItem();
-		File file = fi.getStoreLocation();
-		// 手动创建临时文件
-		if (file.length() < 2048) {
-			File tmpFile = new File(
-					System.getProperty("java.io.tmpdir") + System.getProperty("file.separator") + file.getName());
-			multfile.transferTo(tmpFile);
-			return tmpFile;
-		}
-		return file;
-	}
-
-	/**
-	 * 电销日报月报：列表分页列表
-	 * 
-	 * @author Administrator
-	 *
-	 */
-	class QueryListThread implements Runnable {
-		private DataSourceFactory dataSourceFactory;
-		private List<Map<String, Object>> resultList;
-		private int start;
-		private int end;
-		private String reportType;// day , month
-		private String investEndTime;
-
-		public QueryListThread(DataSourceFactory dataSourceFactory, List<Map<String, Object>> resultList, int start,
-				int end, String reportType, String investEndTime) {
-			this.dataSourceFactory = dataSourceFactory;
-			this.resultList = resultList;
-			this.start = start;
-			this.end = end;
-			this.reportType = reportType;
-			this.investEndTime = investEndTime == null ? "" : investEndTime;
-		}
-
-		@Override
-		public void run() {
-			String path = this.getClass().getResource("/").getPath();
-			String detail_sql = null;
-			try {
-				if ("day".equals(reportType)) {
-					detail_sql = FileUtil
-							.readAsString(new File(path + File.separator + "phone_sale_day_detail_sql.txt"));
-				} else if ("month".equals(reportType)) {
-					detail_sql = FileUtil
-							.readAsString(new File(path + File.separator + "phone_sale_month_detail_sql.txt"));
-				}
-				// 分页查询
-				detail_sql = detail_sql.replace("${selectSql}", "*");
-				detail_sql = detail_sql.replace("${pageStartSql}", "and RN >= " + start);
-				detail_sql = detail_sql.replace("${pageEndSql}", "and ROWNUM <= " + end);
-				detail_sql = detail_sql.replace("${investEndTime}", investEndTime);
-				List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
-				resultList.addAll(list);
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	/**
-	 * 电销月报：列表总行数
-	 * 
-	 * @author Administrator
-	 *
-	 */
-	class QueryListTotalThread implements Runnable {
-		private DataSourceFactory dataSourceFactory;
-		private List<Map<String, Object>> totalList;
-		private String reportType;
-		private String investEndTime;
-
-		public QueryListTotalThread(DataSourceFactory dataSourceFactory, List<Map<String, Object>> totalList,
-				String reportType, String investEndTime) {
-			this.dataSourceFactory = dataSourceFactory;
-			this.totalList = totalList;
-			this.reportType = reportType;
-			this.investEndTime = investEndTime == null ? "" : investEndTime;
-		}
-
-		@Override
-		public void run() {
-			String path = this.getClass().getResource("/").getPath();
-			String detail_sql = null;
-			try {
-				if ("day".equals(reportType)) {
-					detail_sql = FileUtil
-							.readAsString(new File(path + File.separator + "phone_sale_day_detail_sql.txt"));
-				} else if ("month".equals(reportType)) {
-					detail_sql = FileUtil
-							.readAsString(new File(path + File.separator + "phone_sale_month_detail_sql.txt"));
-				}
-				detail_sql = detail_sql.replace("${selectSql}", "count(1) total");
-				detail_sql = detail_sql.replace("${pageStartSql}", "");
-				detail_sql = detail_sql.replace("${pageEndSql}", "");
-				detail_sql = detail_sql.replace("${investEndTime}", investEndTime);
-				totalList.addAll(new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql));
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-	}
 }
