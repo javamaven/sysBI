@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.shichang.DimChannelTypeDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.shichang.DimChannelTypeEntity" id="dimChannelTypeMap">
+        <result property="channelLabel" column="CHANNEL_LABEL"/>
+        <result property="channelType" column="CHANNEL_TYPE"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.shichang.DimChannelTypeEntity">
+		select * from dim_channel_type where CHANNEL_LABEL = #{value}
+	</select>
+
+	<select id="queryListMap" resultType="Map">
+			SELECT
+				s.*
+			FROM
+				(
+					SELECT
+						d.CHANNEL_CENTER,
+						d.CHANNEL_HEAD,
+						d.CHANNEL_LABEL,
+						d.CHANNEL_NAME,
+						d.CHANNEL_NAME_BACK,
+						d.CHANNEL_STATUS,
+						d.CHANNEL_UPTIME,
+						d.CHANNEL_STARTTIME,
+						d.PAYMENT_WAY,
+						t.CHANNEL_TYPE,
+						1 as IS_REPEAT
+					FROM
+							dim_channel d
+						LEFT JOIN dim_channel_type t ON (
+						t.CHANNEL_LABEL = d.CHANNEL_LABEL
+					)
+					WHERE
+						1 = 1
+					AND d.CHANNEL_LABEL IS NOT NULL
+					AND d.CHANNEL_LABEL IN (
+						SELECT
+							CHANNEL_LABEL
+						FROM
+							dim_channel
+						GROUP BY
+							CHANNEL_LABEL
+						HAVING
+							count(1) > 1
+					)
+					UNION ALL
+						SELECT
+							d.CHANNEL_CENTER,
+							d.CHANNEL_HEAD,
+							d.CHANNEL_LABEL,
+							d.CHANNEL_NAME,
+							d.CHANNEL_NAME_BACK,
+							d.CHANNEL_STATUS,
+							d.CHANNEL_UPTIME,
+							d.CHANNEL_STARTTIME,
+							d.PAYMENT_WAY,
+							t2.CHANNEL_TYPE,
+							2 as IS_REPEAT
+						FROM
+							dim_channel d
+						LEFT JOIN dim_channel_type t2 ON (
+							d.CHANNEL_LABEL = t2.CHANNEL_LABEL
+						)
+						WHERE
+							1 = 1
+						AND d.CHANNEL_LABEL IS NOT NULL
+						GROUP BY
+							d.CHANNEL_LABEL
+						HAVING
+							count(1) = 1
+				) s
+			WHERE
+				1 = 1
+			<if test="channelName != null and channelName != '' ">
+				AND s.CHANNEL_NAME like concat('%', #{channelName}, '%')
+			</if>
+			<if test="channelType != null and channelType != '' and channelType != 'unknow' ">
+				AND s.CHANNEL_TYPE like concat('%', #{channelType}, '%')
+			</if>
+			<if test="channelType == 'unknow' ">
+				AND s.CHANNEL_TYPE is null
+			</if>
+			<if test="channelLabel != null and channelLabel != '' ">
+				AND s.CHANNEL_LABEL like concat('%', #{channelLabel}, '%')
+			</if>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+			SELECT
+				count(*)
+			FROM
+				(
+					SELECT
+						d.CHANNEL_CENTER,
+						d.CHANNEL_HEAD,
+						d.CHANNEL_LABEL,
+						d.CHANNEL_NAME,
+						d.CHANNEL_NAME_BACK,
+						d.CHANNEL_STATUS,
+						d.CHANNEL_UPTIME,
+						d.CHANNEL_STARTTIME,
+						d.PAYMENT_WAY,
+						t.CHANNEL_TYPE,
+						1 as IS_REPEAT
+					FROM
+							dim_channel d
+						LEFT JOIN dim_channel_type t ON (
+						t.CHANNEL_LABEL = d.CHANNEL_LABEL
+					)
+					WHERE
+						1 = 1
+					AND d.CHANNEL_LABEL IS NOT NULL
+					AND d.CHANNEL_LABEL IN (
+						SELECT
+							CHANNEL_LABEL
+						FROM
+							dim_channel
+						GROUP BY
+							CHANNEL_LABEL
+						HAVING
+							count(1) > 1
+					)
+					UNION ALL
+						SELECT
+							d.CHANNEL_CENTER,
+							d.CHANNEL_HEAD,
+							d.CHANNEL_LABEL,
+							d.CHANNEL_NAME,
+							d.CHANNEL_NAME_BACK,
+							d.CHANNEL_STATUS,
+							d.CHANNEL_UPTIME,
+							d.CHANNEL_STARTTIME,
+							d.PAYMENT_WAY,
+							t2.CHANNEL_TYPE,
+							2 as IS_REPEAT
+						FROM
+							dim_channel d
+						LEFT JOIN dim_channel_type t2 ON (
+							d.CHANNEL_LABEL = t2.CHANNEL_LABEL
+						)
+						WHERE
+							1 = 1
+						AND d.CHANNEL_LABEL IS NOT NULL
+						GROUP BY
+							d.CHANNEL_LABEL
+						HAVING
+							count(1) = 1
+				) s
+			WHERE
+				1 = 1
+			<if test="channelName != null and channelName != '' ">
+				AND s.CHANNEL_NAME like concat('%', #{channelName}, '%')
+			</if>
+			<if test="channelType != null and channelType != '' and channelType != 'unknow' ">
+				AND s.CHANNEL_TYPE like concat('%', #{channelType}, '%')
+			</if>
+			<if test="channelType == 'unknow' ">
+				AND s.CHANNEL_TYPE is null
+			</if>
+			<if test="channelLabel != null and channelLabel != '' ">
+				AND s.CHANNEL_LABEL like concat('%', #{channelLabel}, '%')
+			</if>
+			<if test="channelLabel != null and channelLabel != '' ">
+				AND s.CHANNEL_LABEL like concat('%', #{channelLabel}, '%')
+			</if>
+			
+	</select>
+	 
+	<insert id="" parameterType="io.renren.entity.shichang.DimChannelTypeEntity">
+		insert into dim_channel_type
+		(
+			`CHANNEL_LABEL`, 
+			`CHANNEL_TYPE`
+		)
+		values
+		(
+			#{channelLabel}, 
+			#{channelType}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.shichang.DimChannelTypeEntity">
+		update dim_channel_type 
+		<set>
+			<if test="channelType != null">`CHANNEL_TYPE` = #{channelType}</if>
+		</set>
+		where CHANNEL_LABEL = #{channelLabel}
+	</update>
+	
+	<delete id="delete">
+		delete from dim_channel_type where CHANNEL_LABEL = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from dim_channel_type where CHANNEL_LABEL in 
+		<foreach item="channelLabel" collection="array" open="(" separator="," close=")">
+			#{channelLabel}
+		</foreach>;
+		
+		delete from dim_channel where CHANNEL_LABEL in 
+		<foreach item="channelLabel" collection="array" open="(" separator="," close=")">
+			#{channelLabel}
+		</foreach>;
+	</delete>
+
+</mapper>

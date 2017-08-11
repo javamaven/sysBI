@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -16,12 +17,17 @@ import org.aspectj.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.druid.util.StringUtils;
+import com.alibaba.fastjson.JSON;
 
 import io.renren.dao.yunying.basicreport.BasicReportDao;
 import io.renren.service.yunying.basicreport.BasicReportService;
+import io.renren.system.common.ConfigProp;
 import io.renren.system.jdbc.DataSourceFactory;
+import io.renren.system.jdbc.JdbcHelper;
 import io.renren.system.jdbc.JdbcUtil;
+import io.renren.util.MailUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.Query;
 
@@ -30,6 +36,8 @@ public class basicReportServiceImpl implements BasicReportService {
 
 	@Autowired
 	private DataSourceFactory dataSourceFactory;
+	@Autowired
+	DruidDataSource dataSource;
 	
 	@Autowired
 	private BasicReportDao basicReportDao;
@@ -40,7 +48,7 @@ public class basicReportServiceImpl implements BasicReportService {
 			"	u2.user_name 用户名, " +
 			"	u2.phone 手机号, " +
 			"	u.register_time 注册时间, " +
-			"	case when u.activity_tag is null or u.activity_tag = '' then u.channel_id else u.activity_tag end 用户来源, " +
+			"	case when u.channel_id is null or u.channel_id = '' then u.activity_tag else u.channel_id end 用户来源, " +
 			"	case when u3.real_name is null then '否' else '是' end 实名认证, " +
 			"	u3.real_name 真实姓名, " +
 			"	'否' 是否投资, " +
@@ -48,38 +56,97 @@ public class basicReportServiceImpl implements BasicReportService {
 			"	0 投资次数, " +
 			"	'' 最近一次投资时间, " +
 			"	'' 最近一次投资期限, " +
-			"	0 账户余额 " +
+			"	ifnull(c.amount,0)/100 账户余额 " +
 			"FROM " +
 			"	mdtx_user.user_ext_info u " +
 			"LEFT JOIN mdtx_user.user_basic_info u2 ON (u.user_id = u2.id) " +
 			"LEFT JOIN mdtx_user.user_auth_info u3 ON (u.user_id = u3.user_id) " +
-			"left join creditor_purchase_order c on (c.assignee_user_id=u.user_id)  " +
-			"left join financial_plan_order_detail l on (l.user_id=u.user_id)  " +
-			"left join project_tender_detail p on (p.user_id=u.user_id) " +
+			"left join mdtx_business.account_tender c on (u.user_id=c.user_id) " +
 			"WHERE " +
 			"	1 = 1 " +
 			"AND u.register_time >= ? " +
 			"AND u.register_time <= ? " +
 			"AND u2.is_borrower = 0  " +
 			"and u2.phone is not null and u2.phone <> '' " +
-			"group by u.user_id " +
-			"HAVING IFNULL(sum(c.pay_amount) + 	sum(l.tender_amount) + 	sum(p.tender_capital),0) = 0 ";
+			"and ifnull(c.amount,0)/100 <= 100 ";
 
+	//记录未能识别是否收费，或者未录入dim_channel表的渠道
+	List<String> channelRecordList = new ArrayList<>();
+	
 	@Override
 	public PageUtils queryList(Integer page, Integer limit, String registerStartTime, String registerEndTime, int start, int end) {
 		JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		try {
 			List<Map<String, Object>> resultList = util.query(query_sql, registerStartTime, registerEndTime);
-
+			//免费渠道
 			Map<String, String> channel_map = getChannelMap();
+			//所有渠道
+			Map<String, String> all_channel_map = getAllchannelMap();
+			List<Map<String, Object>> insertList = new ArrayList<>();
+			List<String> unknowNeedMoneyList = new ArrayList<>();//未知是否收费渠道
+			List<String> unknowChannelList = new ArrayList<>();//渠道未录入dim_channel表
 			for (int i = 0; i < resultList.size(); i++) {
 				Map<String, Object> map = resultList.get(i);
 				String channel_label = map.get("用户来源") + "";
+				//每小时推送免费的渠道
+				//用户来源为null
+				//
 				if (channel_map.containsKey(channel_label) || StringUtils.isEmpty(channel_label)) {
 					map.put("用户来源", channel_map.get(channel_label));
 					list.add(map);
+					continue;
 				}
+				//如果用户来源不为null，并且渠道还没更新到dim_channel,入库保存，并通知市场部人员更新
+				if(!StringUtils.isEmpty(channel_label)){
+					if(all_channel_map.containsKey(channel_label)){
+						String channelType = all_channel_map.get(channel_label);
+						if(StringUtils.isEmpty(channelType) || "null".equals(channelType)){//渠道是否收费未能确定，入库保存
+							insertList.add(map);
+							if(!channelRecordList.contains(channel_label)){
+								unknowNeedMoneyList.add(channel_label);
+								channelRecordList.add(channel_label);
+							}
+						}
+					}else{//渠道还没录入，入库保存
+						insertList.add(map);
+						if(!channelRecordList.contains(channel_label)){
+							unknowChannelList.add(channel_label);
+							channelRecordList.add(channel_label);
+						}
+					}
+				}
+			}
+			//插入记录表,3天未复投推送报表，带上这部分数据
+			insertPhoneSaleData(insertList);
+			if(unknowNeedMoneyList.size() > 0 || unknowChannelList.size() > 0){
+				MailUtil mailUtil = new MailUtil();
+				String content = "";
+				if(unknowNeedMoneyList.size() > 0){
+					content += "	未能识别是否是收费渠道：";
+					for (int i = 0; i < unknowNeedMoneyList.size(); i++) {
+						if(i == unknowNeedMoneyList.size() - 1){
+							content += unknowNeedMoneyList.get(i);
+						}else{
+							content += unknowNeedMoneyList.get(i) + " , ";
+						}
+					}
+				}
+				if(unknowChannelList.size() > 0){
+					content += "	<br/>未知渠道：";
+					for (int i = 0; i < unknowChannelList.size(); i++) {
+						if(i == unknowChannelList.size() - 1){
+							content += unknowChannelList.get(i);
+						}else{
+							content += unknowChannelList.get(i) + " , ";
+						}
+					}
+				}
+				content += "	<br/><br/>以上渠道麻烦市场部同事及时录入渠道信息，并登录经分系统标记是否收费渠道,谢谢！";
+				String phones = ConfigProp.getPhoneSaleChannelConfirmPhone();
+				List<String> receiver = Arrays.asList(phones.split(","));
+				List<String> chaosong = null;
+				mailUtil.send("注册一小时未投资用户,未能识别是否收费渠道", content , receiver, chaosong);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -102,7 +169,57 @@ public class basicReportServiceImpl implements BasicReportService {
 	}
 
 
-	
+	/**
+	 * 将用户来源不为null的，并且渠道是否收费未能确定的用户数据插入数据库
+	 * @param insertList
+	 */
+	private void insertPhoneSaleData(List<Map<String, Object>> insertList) {
+		// TODO Auto-generated method stub
+		List<List<Object>> dataList = new ArrayList<>();
+		for (int i = 0; i < insertList.size(); i++) {
+			List<Object> list = new ArrayList<>();
+			Map<String, Object> map = insertList.get(i);
+			list.add(JSON.toJSON(map));
+			list.add(map.get("用户来源"));
+			list.add(map.get("用户ID"));
+			list.add("");
+			dataList.add(list);
+		}
+		String insert_sql = "insert into phone_sale_hour_not_send(insert_time, data, channel_label, cg_user_id, channel_type) values(now(),?,?,?,?)";
+		try {
+			new JdbcHelper(dataSource).batchInsert(insert_sql, dataList);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+
+
+	/**
+	 * 所有渠道
+	 * @return
+	 */
+	private Map<String, String> getAllchannelMap() {
+		// TODO Auto-generated method stub
+		String sql = "SELECT d.CHANNEL_LABEL,d.CHANNEL_NAME, t.CHANNEL_TYPE FROM dim_channel d LEFT JOIN dim_channel_type t ON ( d.channel_label = t.channel_label ) GROUP BY d.CHANNEL_LABEL";
+		Map<String,String> channel_map = new HashMap<String,String>();
+		List<Map<String, Object>> channel_list;
+		try {
+			channel_list = new JdbcHelper(dataSource).query(sql);
+			for (int i = 0; i < channel_list.size(); i++) {
+				Map<String, Object> map = channel_list.get(i);
+				String channelType = map.get("CHANNEL_TYPE") + "";
+				String chanelLabel = map.get("CHANNEL_LABEL") + "";
+				channel_map.put(chanelLabel, channelType);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return channel_map ;
+	}
+
+
+
 
 	String channel_sql = 
 			"SELECT " +
@@ -121,7 +238,8 @@ public class basicReportServiceImpl implements BasicReportService {
 			"AND d.CHANNEL_NAME not LIKE '%360摇一摇%' " ;			
 	
 	private Map<String, String> getChannelMap() throws SQLException {
-		List<Map<String, Object>> channel_list = new JdbcUtil(dataSourceFactory, "oracle26").query(channel_sql);
+		//		List<Map<String, Object>> channel_list = new JdbcUtil(dataSourceFactory, "oracle26").query(channel_sql);
+		List<Map<String, Object>> channel_list = new JdbcHelper(dataSource).query(channel_sql);
 		Map<String,String> channel_map = new HashMap<String,String>();
 		for (int i = 0; i < channel_list.size(); i++) {
 			Map<String, Object> map = channel_list.get(i);

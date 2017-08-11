@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>渠道分类-手动维护</title>
+#parse("sys/header.html")
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<table>
+			<tr>
+				<td>
+					<label>渠道名称：</label><input type="text" class="inputClass" style="width: 200px;" id="channel_name"  placeholder="渠道名称"/>
+				</td>
+				
+				<td>
+					<label>渠道标签：</label><input type="text" class="inputClass" style="width: 200px;" id="channel_label"  placeholder="渠道标签"/>
+				</td>
+				
+				<td style="padding-left: 20px;">
+					<label>是否收费：</label>
+					<select id="channel_type_select" class="inputClassMin">
+			      		<option value =""></option>
+			      		<option value ="unknow">未知</option>
+					  	<option value ="CPS">CPS</option>
+					  	<option value ="付费">付费</option>
+					  	<option value ="免费">免费</option>
+					</select>
+					
+				</td>
+				<td style="padding-left: 20px;">
+					<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
+				</td>
+				<td style="padding-left: 20px;">
+					<a class="btn btn-primary" @click="update"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+				</td>
+				<td style="padding-left: 20px;">
+					<a class="btn btn-primary" @click="del"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+				</td>
+			</tr>
+		</table>
+		
+		<div class="grid-btn">
+			
+			
+			
+			
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+			<div class="form-group">
+			   	<div class="col-sm-2 control-label">是否收费：</div>
+			   	<div class="col-sm-10">
+<!-- 			      <input type="text" class="form-control" v-model="dimChannelType.channelType" placeholder="渠道分类"/> -->
+			      
+				      	<select id="channel_type" class="inputClassMin">
+				      		<option value =""></option>
+						  	<option value ="CPS">CPS</option>
+						  	<option value ="付费">付费</option>
+						  	<option value ="免费">免费</option>
+						</select>
+			    </div>
+			</div>
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+</div>
+<link rel="stylesheet" href="${rc.contextPath}/js/schedule/taskwin.css"></link>
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/channel/channel_cost_type.js?_${date.systemTime}"></script>
+</body>
+</html>

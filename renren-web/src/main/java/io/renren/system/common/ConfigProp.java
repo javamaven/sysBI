@@ -93,6 +93,10 @@ public class ConfigProp {
 	public static String getPrintscreenServicePort() {
 		return p.getProperty("printscreen.service.port");
 	}
+	
+	public static String getPhoneSaleChannelConfirmPhone() {
+		return p.getProperty("phone.sale.channel.confirm");
+	}
 
 	/**
 	 * 后台截图存放目录
