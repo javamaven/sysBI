@@ -78,7 +78,16 @@
 			DAY_TENDER, 
 			DAY_TENDER_Y, 
 			DAY_TENDER_COU, 
-			LV, 
+			case when AWAIT >= 100000 and AWAIT &lt;= 200000 then 1
+					 when AWAIT > 200000 and AWAIT &lt;= 300000 then 2
+					 when AWAIT > 300000 and AWAIT &lt;= 500000 then 3
+					 when AWAIT > 500000 and AWAIT &lt;= 1000000 then 4
+					 when AWAIT > 1000000 and AWAIT &lt;= 1500000 then 5
+					 when AWAIT > 1500000 and AWAIT &lt;= 2000000 then 6
+					 when AWAIT > 2000000 and AWAIT &lt;= 2500000 then 7
+					 when AWAIT > 2500000 and AWAIT &lt;= 4500000 then 8
+					 when AWAIT > 4500000 and AWAIT &lt;= 6000000 then 9
+					 when AWAIT > 6000000 then 10 end as LV,
 			OWNER, 
 			TOTAL_RECEIPT,
 			IS_HIGH_VALUE,
