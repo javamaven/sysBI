@@ -731,7 +731,7 @@ public class MainController {
 			JdbcUtil util_day = new JdbcUtil(dataSourceFactory, "mysql");
 			String addTime_day = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6)  + "-" + currDayStr.substring(6, 8) + " 00:00:00";
 			String addTime_EndDay = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6)  + "-" + currDayStr.substring(6, 8) + " 23:59:59";
-			list_day_cg = util_day.query(SqlConstants.curr_cg_invest_sql, addTime_day,addTime_EndDay, addTime_day, addTime_EndDay);
+			list_day_cg = util_day.query(SqlConstants.curr_cg_invest_sql, addTime_day,addTime_EndDay, addTime_day, addTime_EndDay, addTime_day, addTime_EndDay);
 			
 			
 			//当天普通版投资额
@@ -799,7 +799,7 @@ public class MainController {
 		JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
 		List<Map<String, Object>> list_month_cg;
 		try {
-			list_month_cg = util.query(SqlConstants.curr_cg_invest_sql, startDate, yesEndDate, startDate, yesEndDate);
+			list_month_cg = util.query(SqlConstants.curr_cg_invest_sql, startDate, yesEndDate, startDate, yesEndDate, startDate, yesEndDate);
 			curr_month_invest += Double.parseDouble(list_month_cg.get(0).get("MONEY") + "");
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -854,7 +854,7 @@ public class MainController {
 			String addTime_day = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6)  + "-" + currDayStr.substring(6, 8) + " 00:00:00";
 			String addTime_endday = currDayStr.substring(0, 4) + "-" + currDayStr.substring(4, 6)  + "-" + currDayStr.substring(6, 8) + " 23:59:59";
 			//存管版当天交易笔数
-			list_day_cg = util_day.query(SqlConstants.curr_cg_invest_times_sql, addTime_day, addTime_endday, addTime_day, addTime_endday);
+			list_day_cg = util_day.query(SqlConstants.curr_cg_invest_times_sql, addTime_day, addTime_endday, addTime_day, addTime_endday, addTime_day, addTime_endday);
 			
 			
 			JdbcUtil util2_day = new JdbcUtil(dataSourceFactory, "oracle");
@@ -900,7 +900,7 @@ public class MainController {
 		try {
 			//存管版当月交易笔数
 			JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
-			List<Map<String, Object>> list_month_cg = util.query(SqlConstants.curr_cg_invest_times_sql, monthStartDate,yesEndDate , monthStartDate, yesEndDate);
+			List<Map<String, Object>> list_month_cg = util.query(SqlConstants.curr_cg_invest_times_sql, monthStartDate,yesEndDate , monthStartDate, yesEndDate, monthStartDate, yesEndDate);
 			curr_month_invest_times += Double.parseDouble(list_month_cg.get(0).get("invest_times") + "");
 		} catch (Exception e) {
 			e.printStackTrace();
