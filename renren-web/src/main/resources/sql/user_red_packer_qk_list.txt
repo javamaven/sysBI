@@ -9,7 +9,7 @@ row_number() over (partition by a.user_id order by a.addtime asc) ranks,
 a.borrow_period,
 a.addtime
 from mdtxbi.edw_trading_project_detail a
-where a.tender_account_status=1
+where a.tender_account_status in (0,1)
 
 ), 
 vt as 
@@ -109,7 +109,10 @@ min(annualized) as annualized, -- 红包类型
 min(effective_end) as effective_end, -- 红包到期时间
 min(useable_money) as useable_money -- 剩余可用红包金额
 from hd left join hongbao  on hongbao.id=hd.prize_template_id
-where to_char(hd.receive_time,'yyyy-mm-dd') between  '${yingxiao_begin}' and '${yingxiao_end}' -- 获得红包时间
+where 1=1
+${yingxiao_begin}
+${yingxiao_end}
+-- where to_char(hd.receive_time,'yyyy-mm-dd') between  '${yingxiao_begin}' and '${yingxiao_end}' -- 获得红包时间
 group by 
 hd.user_id,
 hd.id,
@@ -175,7 +178,7 @@ where 1=1
 WHERE 
 1=1
  and RN > ?
-
+order by ati_time desc
 
 
 

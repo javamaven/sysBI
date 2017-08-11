@@ -3,10 +3,8 @@ package io.renren.controller.yunying.dayreport;
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,17 +12,13 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.aspectj.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -34,7 +28,6 @@ import io.renren.system.jdbc.JdbcUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
-import io.renren.utils.RRException;
 
 @Controller
 @RequestMapping(value = "/yunying/userred")
@@ -57,11 +50,42 @@ public class UserRedPacketController {
 			String userName,String userId) {
 //		Map<String,Object> params = new HashMap<String, Object>();
 		List<String> paramsList = new ArrayList<>();
+		
 		int start = (page - 1) * limit;
 		int end = start + limit;
 		
+		
+		
+		if (StringUtils.isNotEmpty(begin_time)) {
+			begin_time=" and to_char(uv.receive_time-1,'yyyy-mm-dd') >= '"+begin_time+"'";
+		}else{
+			begin_time="";
+		}
+		if (StringUtils.isNotEmpty(end_time)) {
+			end_time=" and to_char(uv.receive_time-1,'yyyy-mm-dd') <= '"+end_time+"' ";
+		}else{
+			end_time="";
+		}
+		
+	
+		
 		if (StringUtils.isNotEmpty(userId)) {
-			userId=" AND ID like '%"+userId+"%'";
+			List<String> idList = new ArrayList<>();
+			String[] split = userId.split("\n");
+			for (int i = 0; i < split.length; i++) {
+				String[] idsArr = split[i].split(" ");
+				idList.addAll(Arrays.asList(idsArr));
+			}
+			String idCond = "(";
+			for (int i = 0; i < idList.size(); i++) {
+				if(i == idList.size() - 1){
+					idCond += idList.get(i);
+				}else {
+					idCond += idList.get(i) + ",";
+				}
+			}
+			idCond += ")";
+			userId=" AND ID in "+idCond+" ";
 			paramsList.add(userId);
 		}else{
 			userId="";
@@ -82,7 +106,7 @@ public class UserRedPacketController {
 		}
 		
 		if (StringUtils.isNotEmpty(hongbao_id)) {
-			hongbao_id=" AND WEIZHI like '%"+hongbao_id+"%'";
+			hongbao_id=" AND WEIZHI = "+hongbao_id+" ";
 			paramsList.add(hongbao_id);
 		}else{
 			hongbao_id="";
@@ -101,7 +125,7 @@ public class UserRedPacketController {
 		}
 		
 		if (StringUtils.isNotEmpty(userName)) {
-			userName=" AND REALNAME like '%"+userName+"%' ";
+			userName=" AND REALNAME= "+userName+" ";
 			paramsList.add(userName);
 		}else{
 			userName="";
@@ -200,6 +224,17 @@ public class UserRedPacketController {
 		int end = start + limit;
 		
 		
+		if (StringUtils.isNotEmpty(yingxiao_begin)) {
+			yingxiao_begin=" and to_char(hd.receive_time,'yyyy-mm-dd') >= '"+yingxiao_begin+"'";
+		}else{
+			yingxiao_begin="";
+		}
+		if (StringUtils.isNotEmpty(yingxiao_end)) {
+			yingxiao_end=" and to_char(hd.receive_time,'yyyy-mm-dd') <= '"+yingxiao_end+"' ";
+		}else{
+			yingxiao_end="";
+		}
+		
 		if (StringUtils.isNotEmpty(touzi_begin)) {
 			touzi_begin=" AND to_char(a.addtime,'yyyy-mm-dd') between '"+touzi_begin+"' and '"+touzi_end+"'";
 		}else {
@@ -222,7 +257,7 @@ public class UserRedPacketController {
 		}
 
 		if (StringUtils.isNotEmpty(userName1)) {
-			userName1=" AND REALNAME like '%"+userName1+"%'";
+			userName1=" AND REALNAME = "+userName1+" ";
 			paramsList.add(userName1);
 		}
 		
@@ -231,10 +266,33 @@ public class UserRedPacketController {
 			paramsList.add(userType);
 		}
 		
+//		if (StringUtils.isNotEmpty(userId1)) {
+//			userId1=" AND ID like = "+userId1+" ";
+//			paramsList.add(userId1);
+//		}
+		
 		if (StringUtils.isNotEmpty(userId1)) {
-			userId1=" AND ID like '%"+userId1+"%'";
+			List<String> idList = new ArrayList<>();
+			String[] split = userId1.split("\n");
+			for (int i = 0; i < split.length; i++) {
+				String[] idsArr = split[i].split(" ");
+				idList.addAll(Arrays.asList(idsArr));
+			}
+			String idCond = "(";
+			for (int i = 0; i < idList.size(); i++) {
+				if(i == idList.size() - 1){
+					idCond += idList.get(i);
+				}else {
+					idCond += idList.get(i) + ",";
+				}
+			}
+			idCond += ")";
+			userId1=" AND ID in "+idCond+" ";
 			paramsList.add(userId1);
+		}else{
+			userId1="";
 		}
+		
 		
 //		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 //		try {

@@ -105,23 +105,27 @@ var ctx = "${rc.contextPath}";
 					</td>
 					
 					
+				
 					<td>
-						<label>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp用户姓名：</label>
+						<label>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp用户ID：</label>
 					</td>		
 						<td>
 					
-						<input type="text" class="inputClass2 " id="userName"  placeholder="请输入用户姓名"/>
+						<input type="text" class="inputClass2 " id="userId"  placeholder="请输入用户ID"/>
+					</td>
+					<td>
+						<font color="red"> &nbsp注：可输入多个ID.输入多个ID时用空格或者换行符隔开.</font>
 					</td>
 				</tr>
 				
 				<tr height="10px;"></tr>
 					<tr>
-				<td>
-						<label>用户ID：</label>
+						<td>
+						<label>用户姓名：</label>
 					</td>		
 						<td>
 					
-						<input type="text" class="inputClass2 " id="userId"  placeholder="请输入用户ID"/>
+						<input type="text" class="inputClass2 " id="userName"  placeholder="请输入用户姓名"/>
 					</td>
 				</tr>
 			</table>
@@ -168,6 +172,10 @@ var ctx = "${rc.contextPath}";
 				<td>
 					
 						<input type="text" class="inputClass2 " id="touzi_end"  placeholder="请选择结束投资时间"/>
+						
+					</td>
+					<td>
+						<font color="red"> &nbsp注：投资时间只和使用红包个数占比有关</font>
 					</td>
 				</tr>
 				<tr height="10px;"></tr>
@@ -228,7 +236,12 @@ var ctx = "${rc.contextPath}";
 					
 						<input type="text" class="inputClass2 " id="userId1"  placeholder="请输入用户ID"/>
 					</td>
+					<td>
+						<font color="red"> &nbsp注：可输入多个ID.输入多个ID时用空格或者换行符隔开.</font>
+					</td>
 				</tr>
+				
+				<tr height="10px;"></tr>
 			</table>
 			
 		</div>

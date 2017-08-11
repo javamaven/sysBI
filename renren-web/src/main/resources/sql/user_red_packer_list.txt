@@ -8,7 +8,7 @@ a.tend_vouche,
 a.borrow_period,
 a.addtime
 from mdtxbi.edw_trading_project_detail a
-where a.tender_account_status=1
+where a.tender_account_status  in (0,1)
 ),
 hd as(
 select 
@@ -38,7 +38,8 @@ on pd.id=vl.tender_id
 where mv.prize_template_id not in (80,79,78,77,76,75,74,73 )
 and uv.from_sys=1
 and (vl.use_status in (1,0) or vl.use_status is null)
-and to_char(uv.receive_time-1,'yyyy-mm-dd') between '${begin_time}' and '${end_time}'  -- 参与活动的时间
+${begin_time}
+${end_time}
 )
 -- select * from hd
 
@@ -149,4 +150,4 @@ select a.* from (
 WHERE 
 1=1
 and a.RN > ?
-
+order by HBTIME desc

@@ -9,7 +9,7 @@ a.tend_vouche,
 a.borrow_period,
 a.addtime
 from mdtxbi.edw_trading_project_detail a
-where a.tender_account_status=1
+where a.tender_account_status in(0,1)
 --and to_char(a.addtime,'yyyy-mm-dd') between '2017-08-01' and '2017-08-06' -- 限定日期
 ),
 hd as(
@@ -50,7 +50,10 @@ and uv.from_sys=1
 and (vl.use_status in (1,0) or vl.use_status is null)
 -- and to_char(vl.create_time,'yyyy-mm-dd') between '2017-08-01' and '2017-08-06' 
 -- and vl.use_money>uv.money -- 流水表中单次使用的红包金额大于用户的总红包
-and to_char(uv.receive_time-1,'yyyy-mm-dd') between '${begin_time}' and '${end_time}'  -- 参与活动的时间
+-- and to_char(uv.receive_time-1,'yyyy-mm-dd') between '${begin_time}' and '${end_time}'  -- 参与活动的时间
+${begin_time}
+${end_time}
+
 )
 -- select * from hd
 
