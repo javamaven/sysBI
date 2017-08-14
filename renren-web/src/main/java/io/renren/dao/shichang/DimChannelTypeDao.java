@@ -16,5 +16,7 @@ import io.renren.entity.shichang.DimChannelTypeEntity;
 public interface DimChannelTypeDao extends BaseDao<DimChannelTypeEntity> {
 
 	List<Map<String,Object>> queryListMap(Map<String, Object> map);
+
+	void insert(Map<String, Object> map);
 	
 }

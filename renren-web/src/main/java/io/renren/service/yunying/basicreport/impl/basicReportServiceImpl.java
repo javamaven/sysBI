@@ -73,8 +73,18 @@ public class basicReportServiceImpl implements BasicReportService {
 	//记录未能识别是否收费，或者未录入dim_channel表的渠道
 	List<String> channelRecordList = new ArrayList<>();
 	
+	/**
+	 * @param page
+	 * @param limit
+	 * @param registerStartTime
+	 * @param registerEndTime
+	 * @param start
+	 * @param end
+	 * @param queryType 定时任务的会记录数据，手动查询的不记录数据
+	 * @return
+	 */
 	@Override
-	public PageUtils queryList(Integer page, Integer limit, String registerStartTime, String registerEndTime, int start, int end) {
+	public PageUtils queryList(Integer page, Integer limit, String registerStartTime, String registerEndTime, int start, int end, String queryType) {
 		JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		try {
@@ -103,51 +113,58 @@ public class basicReportServiceImpl implements BasicReportService {
 						String channelType = all_channel_map.get(channel_label);
 						if(StringUtils.isEmpty(channelType) || "null".equals(channelType)){//渠道是否收费未能确定，入库保存
 							insertList.add(map);
-							if(!channelRecordList.contains(channel_label)){
-								unknowNeedMoneyList.add(channel_label);
-								channelRecordList.add(channel_label);
+							if("job".equals(queryType)){
+								if(!channelRecordList.contains(channel_label)){
+									unknowNeedMoneyList.add(channel_label);
+									channelRecordList.add(channel_label);
+								}
 							}
 						}
 					}else{//渠道还没录入，入库保存
 						insertList.add(map);
-						if(!channelRecordList.contains(channel_label)){
-							unknowChannelList.add(channel_label);
-							channelRecordList.add(channel_label);
+						if("job".equals(queryType)){
+							if(!channelRecordList.contains(channel_label)){
+								unknowChannelList.add(channel_label);
+								channelRecordList.add(channel_label);
+							}
 						}
 					}
 				}
 			}
-			//插入记录表,3天未复投推送报表，带上这部分数据
-			insertPhoneSaleData(insertList);
-			if(unknowNeedMoneyList.size() > 0 || unknowChannelList.size() > 0){
-				MailUtil mailUtil = new MailUtil();
-				String content = "";
-				if(unknowNeedMoneyList.size() > 0){
-					content += "	未能识别是否是收费渠道：";
-					for (int i = 0; i < unknowNeedMoneyList.size(); i++) {
-						if(i == unknowNeedMoneyList.size() - 1){
-							content += unknowNeedMoneyList.get(i);
-						}else{
-							content += unknowNeedMoneyList.get(i) + " , ";
+			if("job".equals(queryType)){
+				//插入记录表,3天未复投推送报表，带上这部分数据
+				insertPhoneSaleData(insertList);
+				if(unknowNeedMoneyList.size() > 0 || unknowChannelList.size() > 0){
+					MailUtil mailUtil = new MailUtil();
+					String content = "";
+					if(unknowNeedMoneyList.size() > 0){
+						content += "	未能识别是否是收费渠道：";
+						for (int i = 0; i < unknowNeedMoneyList.size(); i++) {
+							if(i == unknowNeedMoneyList.size() - 1){
+								content += unknowNeedMoneyList.get(i);
+							}else{
+								content += unknowNeedMoneyList.get(i) + " , ";
+							}
 						}
 					}
-				}
-				if(unknowChannelList.size() > 0){
-					content += "	<br/>未知渠道：";
-					for (int i = 0; i < unknowChannelList.size(); i++) {
-						if(i == unknowChannelList.size() - 1){
-							content += unknowChannelList.get(i);
-						}else{
-							content += unknowChannelList.get(i) + " , ";
+					if(unknowChannelList.size() > 0){
+						content += "	<br/>未知渠道：";
+						for (int i = 0; i < unknowChannelList.size(); i++) {
+							if(i == unknowChannelList.size() - 1){
+								content += unknowChannelList.get(i);
+							}else{
+								content += unknowChannelList.get(i) + " , ";
+							}
 						}
 					}
+					content += "	<br/><br/>以上渠道麻烦市场部同事及时录入渠道信息，并登录经分系统标记是否收费渠道,谢谢！";
+					String phones = ConfigProp.getPhoneSaleChannelConfirmPhone();
+					List<String> receiver = Arrays.asList(phones.split(","));
+					List<String> chaosong = null;
+					mailUtil.send("注册一小时未投资用户,未能识别是否收费渠道", content , receiver, chaosong);
 				}
-				content += "	<br/><br/>以上渠道麻烦市场部同事及时录入渠道信息，并登录经分系统标记是否收费渠道,谢谢！";
-				String phones = ConfigProp.getPhoneSaleChannelConfirmPhone();
-				List<String> receiver = Arrays.asList(phones.split(","));
-				List<String> chaosong = null;
-				mailUtil.send("注册一小时未投资用户,未能识别是否收费渠道", content , receiver, chaosong);
 			}
+
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}

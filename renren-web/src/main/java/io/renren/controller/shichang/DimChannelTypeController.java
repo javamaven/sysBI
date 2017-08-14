@@ -102,11 +102,19 @@ public class DimChannelTypeController {
 	@RequestMapping("/delete")
 	public R delete(@RequestBody String[] channelLabels){
 		String[] deletes = new String[channelLabels.length];
+		//有重复的渠道,两条记录完全一样，id和时间都一样，没办法保留一条
+		
 		for (int i = 0; i < deletes.length; i++) {
 			deletes[i] = channelLabels[i].replace("(重复渠道)", "");
 		}
+		//1、查询
+		Map<String, Object> map = new HashMap<>();
+		map.put("channelLabel", deletes[0]);
+		List<Map<String, Object>> queryList = dimChannelTypeService.queryList(map);
+		//2、删除
 		dimChannelTypeService.deleteBatch(deletes);
-		
+		//3、插入
+		dimChannelTypeService.insert(queryList.get(0));
 		return R.ok();
 	}
 	

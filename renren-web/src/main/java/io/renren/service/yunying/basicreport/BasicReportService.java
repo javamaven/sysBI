@@ -11,7 +11,7 @@ import io.renren.utils.PageUtils;
  */
 public interface BasicReportService {
 
-	PageUtils queryList(Integer page, Integer limit, String registerStartTime,String registerEndTime, int start, int end);
+	PageUtils queryList(Integer page, Integer limit, String registerStartTime,String registerEndTime, int start, int end, String queryType);
 
 	Map<String, String> getExcelFields();
 	

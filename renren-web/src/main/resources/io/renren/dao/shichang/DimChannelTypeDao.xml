@@ -19,6 +19,7 @@
 			FROM
 				(
 					SELECT
+						d.CHANNEL_ID,
 						d.CHANNEL_CENTER,
 						d.CHANNEL_HEAD,
 						d.CHANNEL_LABEL,
@@ -50,6 +51,7 @@
 					)
 					UNION ALL
 						SELECT
+							d.CHANNEL_ID,
 							d.CHANNEL_CENTER,
 							d.CHANNEL_HEAD,
 							d.CHANNEL_LABEL,
@@ -210,5 +212,55 @@
 			#{channelLabel}
 		</foreach>;
 	</delete>
-
+	
+	<insert id="insert" parameterType="Map">
+		insert into dim_channel_type
+			(
+			`CHANNEL_LABEL`,
+			`CHANNEL_TYPE`
+			)
+			values 
+			(
+			  #{CHANNEL_LABEL},
+			  #{CHANNEL_TYPE}
+			);
+			
+		insert into dim_channel
+		(
+			`CHANNEL_ID`,
+			`CHANNEL_CENTER`,
+			`CHANNEL_NAME`,
+			`CHANNEL_NAME_BACK`,
+			`CHANNEL_LABEL`,
+			`CHANNEL_HEAD`,
+			`PAYMENT_WAY`,
+			`CORE_TERMS`,
+			`CHANNEL_STATUS`,
+			`CHANNEL_STARTTIME`,
+			`CHANNEL_ENDTIME`,
+			`CHANNEL_UPTIME`,
+			`HEAD_STARTTIME`,
+			`HEAD_ENDTIME`,
+			`STATUS`
+		)
+		values
+		(
+			#{CHANNEL_ID}, 
+			#{CHANNEL_CENTER}, 
+			#{CHANNEL_NAME}, 
+			#{CHANNEL_NAME_BACK}, 
+			#{CHANNEL_LABEL}, 
+			#{CHANNEL_HEAD}, 
+			#{PAYMENT_WAY}, 
+			#{CHANNEL_STATUS}, 
+			#{CHANNEL_STATUS}, 
+			#{CHANNEL_STARTTIME}, 
+			#{CHANNEL_ENDTIME}, 
+			#{CHANNEL_UPTIME}, 
+			#{HEAD_STARTTIME}, 
+			#{HEAD_ENDTIME}, 
+			#{STATUS}
+		);
+	</insert>
+	
 </mapper>

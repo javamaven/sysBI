@@ -393,7 +393,7 @@ public class BasicReportController2 {
 		
 		int start = (page - 1) * limit;
 		int end = start + limit;
-		PageUtils pageUtil = service.queryList(page, limit, registerStartTime, registerEndTime, start, end);
+		PageUtils pageUtil = service.queryList(page, limit, registerStartTime, registerEndTime, start, end, "list");
 
 		return R.ok().put("page", pageUtil);
 
@@ -488,7 +488,7 @@ public class BasicReportController2 {
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String registerStartTime = map.get("registerStartTime") + "";
 		String registerEndTime = map.get("registerEndTime") + "";
-		PageUtils page = service.queryList(1, 10000, registerStartTime, registerEndTime, 0, 10000);
+		PageUtils page = service.queryList(1, 10000, registerStartTime, registerEndTime, 0, 10000, "list");
 		List<Map<String, String>> dataList = (List<Map<String, String>>) page.getList();
 		// 查询列表数据
 		JSONArray va = new JSONArray();

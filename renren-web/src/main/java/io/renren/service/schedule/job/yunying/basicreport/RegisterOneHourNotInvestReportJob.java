@@ -111,7 +111,7 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 			queryParams.put("registerEndTime", registerEndTime);
 			logVo.setParams(JSON.toJSONString(queryParams));
 			log.info("+++++++++查询条件+++++++++++++" + queryParams);
-			PageUtils page = service.queryList(1, 10000, registerStartTime, registerEndTime, 0, 10000);
+			PageUtils page = service.queryList(1, 10000, registerStartTime, registerEndTime, 0, 10000, "job");
 			List<Map<String, Object>> dataList = (List<Map<String, Object>>) page.getList();
 			log.info("+++++++++查询返回结果+++++++++++++" + dataList);
 			JSONArray dataArray = new JSONArray();
