@@ -168,6 +168,8 @@ public class LabeltagUserController {
 			labeltagUser.setVoucherBalance(LabeltagList.get(i).getVoucherBalance());
 			labeltagUser.setMarketingDay(LabeltagList.get(i).getMarketingDay());
 			labeltagUser.setLastLoginTime(LabeltagList.get(i).getLastLoginTime());
+			labeltagUser.setTotalAssets(LabeltagList.get(i).getTotalAssets());
+			
 			ja.add(labeltagUser);
 		}
 
@@ -190,7 +192,11 @@ public class LabeltagUserController {
 		headMap.put("normalPeriodPreference","项目期限偏好");
 		headMap.put("changePeriodPreference","债转期限偏好");
 		headMap.put("cumulativeInvMoney","累计投资金额");
+		
+		
 		headMap.put("totalAssets","当前待收金额");
+		
+		
 		headMap.put("cumulativeInvMoneyYear","累计投资年化金额");
 		headMap.put("balance","账户可用余额");
 		headMap.put("lastInvMoney","最近一笔投资金额");
@@ -218,5 +224,12 @@ public class LabeltagUserController {
 
 		ExcelUtil.downloadExcelFile(title,headMap,ja,response);
 	}
+	
+	
+	
 
 }
+
+
+
+
