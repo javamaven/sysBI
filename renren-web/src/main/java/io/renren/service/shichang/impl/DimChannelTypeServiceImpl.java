@@ -51,5 +51,11 @@ public class DimChannelTypeServiceImpl implements DimChannelTypeService {
 	public void deleteBatch(String[] channelLabels){
 		dimChannelTypeDao.deleteBatch(channelLabels);
 	}
+
+	@Override
+	public void insert(Map<String, Object> map) {
+		// TODO Auto-generated method stub
+		dimChannelTypeDao.insert(map);
+	}
 	
 }

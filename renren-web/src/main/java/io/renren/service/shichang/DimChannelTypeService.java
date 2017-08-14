@@ -27,4 +27,6 @@ public interface DimChannelTypeService {
 	void delete(String channelLabel);
 	
 	void deleteBatch(String[] channelLabels);
+
+	void insert(Map<String, Object> map);
 }
