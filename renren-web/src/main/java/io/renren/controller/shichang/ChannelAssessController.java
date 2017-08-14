@@ -251,12 +251,23 @@ public class ChannelAssessController {
 		headMap.put("CHANNELHEAD", "负责人");
 		headMap.put("CHANNELNAME", "渠道名称");
 		headMap.put("CHANNELLABEL", "渠道标签");
+		headMap.put("COST", "渠道费用");
+		
 		headMap.put("REGISTERED", "注册人数");
+		headMap.put("AVGCOST", "人均注册成本");
+		
 		headMap.put("CGNUM", "存管实名人数");
 		headMap.put("CZNUM", "充值人数");
 		headMap.put("CZMONEY", "充值金额万");
 		headMap.put("TXMONEY", "提现金额万");
 		headMap.put("CTMONEY", "充提差万");
+		
+		headMap.put("SHOUTOU", "首投人数");
+		headMap.put("FIRSTCOST", "人均首投成本");
+		headMap.put("FIRSTMONEY", "首投金额");
+		headMap.put("ROI", "首投金额ROI");
+		
+		
 		headMap.put("INVESTNUM", "投资人数");
 		headMap.put("INVESTMONEY", "投资金额");
 		headMap.put("PTZNUM", "平台注册人数");

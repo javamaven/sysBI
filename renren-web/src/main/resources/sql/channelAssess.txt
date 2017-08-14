@@ -63,7 +63,9 @@ withdraw as(
 first_inv as(
   select 
     ub.rk,
-    count(user_id) as first_inv_num  --首投人数
+    count(user_id) as first_inv_num,  --首投人数
+    sum(case when nvl(normal_firstinvest_time,sysdate)<nvl(depository_firstinvest_time,sysdate) then  normal_firstinvest_balance
+    else depository_firstinvest_balance end) as inv_first_money  --首投金额  
   from   ub  
   where to_char(firstinvest_time,'yyyymmdd') between '${stat_time}' and '${end_time}'
   group by ub.rk 
@@ -134,23 +136,37 @@ last_reg as (
   from   ub   
   group by ub.rk 
 
+),
+--0814新增
+cost as(
+    select 
+    cn.channel_label,
+    sum(cost) as cost  --注册人数
+  from  dim_channel_cost_new cn  
+   where stat_period <=to_char(sysdate,'yyyymmdd')
+  group by cn.channel_label 
+
 )
 select 
  '汇总' as CHANNELHEAD,  --负责人
   null as CHANNELNAME,  --渠道名称
   null as CHANNELLABEL, --渠道标签
+  NULL as COST,  -- 渠道费用  --0814新增
 sum(REGISTERED) as REGISTERED ,  --注册人数
+NULL as AVGCOST, --人均注册成本  --0814新增
 sum(CGNUM) as CGNUM, --实名人数    --0731修正
 sum(CZNUM) as CZNUM, --充值人数
 sum(CZMONEY) as CZMONEY, --充值金额
 sum(TXMONEY) as TXMONEY, --提现金额
 sum(CTMONEY) as CTMONEY, --充提差
 sum(SHOUTOU) as SHOUTOU, --首投人数      -0731新增
+  null as FIRSTCOST, --人均首投成本   --0814新增
+  null as FIRSTMONEY,  --首投金额  --0814新增
+  null as  ROI,  --首投金额roi  --0814新增
 sum(INVESTNUM) as INVESTNUM, -- 投资人数
 sum(INVESTMONEY) as INVESTMONEY, --投资金额
 null as AVGP,  --加权平均期限   --0731新增
-  
-  
+
   --以下历史累计数据
  sum(ZHMONEY) as ZHMONEY, --账户余额
  sum(DSMONEY) as DSMONEY, -- 待收金额
@@ -164,8 +180,13 @@ select
   dc.rk as CHANNELHEAD,  --负责人
   null as CHANNELNAME,  --渠道名称
   null as CHANNELLABEL, --渠道标签
+  null as COST,  -- 渠道费用  --0814新增
+  null as avg_inv_cost, --人均首投成本   --0814新增
+  null as inv_first_money,  --首投金额  --0814新增
+  null as  roi,  --首投金额roi  --0814新增
   tu.reg_num as REGISTERED,  --注册人数
   au.auth_num as CGNUM, --实名人数    --0731修正
+  null as avg_cost, --人均注册成本  --0814新增
   re_num as CZNUM, --充值人数
   re_amount as CZMONEY, --充值金额
   wi_amount as TXMONEY, --提现金额
@@ -195,19 +216,26 @@ from resource_kind dc
   left join max_total mt on (dc.rk = mt.rk)
   left join channel_all ca on (dc.rk = ca.rk)
   left join last_reg lr on (dc.rk = lr.rk)
+  left join cost on (cost.channel_label = dc.rk)
 )
 union all
 select
   dc.rk as CHANNELHEAD,  --负责人
   null as CHANNELNAME,  --渠道名称
   null as CHANNELLABEL, --渠道标签
+  null as COST,  -- 渠道费用  --0814新增
   tu.reg_num as REGISTERED,  --注册人数
+  null as INVCOST, --人均首投成本   --0814新增
   au.auth_num as CGNUM, --实名人数    --0731修正
   re_num as CZNUM, --充值人数
   re_amount as CZMONEY, --充值金额
   wi_amount as TXMONEY, --提现金额
   nvl(re_amount,0)-nvl(wi_amount,0) as CTMONEY, --充提差
   first_inv_num as SHOUTOU, --首投人数      -0731新增
+
+  NULL as INVCOST, --人均首投成本   --0814新增
+  NULL as FIRSTMONEY ,  --首投金额  --0814新增 
+  NULL as ROI,  --首投金额roi  --0814新增
   inv.inv_num as INVESTNUM, -- 投资人数
   inv.inv_money as INVESTMONEY, --投资金额
   inv.avg_period as AVGP,  --加权平均期限   --0731新增
@@ -241,8 +269,10 @@ select
 CHANNELHEAD,  --负责人
  CHANNELNAME,  --渠道名称
  CHANNELLABEL, --渠道标签
-  
+ COST,  -- 渠道费用  --0814新增
+
  REGISTERED,  --注册人数
+  avg_cost, -- 人均注册成本  --0814新增
 CGNUM, --存管实名人数
  CZNUM, --充值人数
  CZMONEY, --充值金额
@@ -250,7 +280,9 @@ CGNUM, --存管实名人数
  CTMONEY, --充提差
   
  SHOUTOU, --首投人数      -0731新增
-  
+ avg_inv_cost, --人均首投成本   --0814新增
+ inv_first_money,  --首投金额  --0814新增
+  roi,  --首投金额roi  --0814新增
  INVESTNUM, -- 投资人数
  INVESTMONEY, --投资金额
   
@@ -304,10 +336,12 @@ recharge as(
   from edw_user_basic ub 
     left join edw_money_acc_recharge ar on ar.user_id = ub.user_id
   where DEDUCT_STATUS in (20,10)
-    and to_char(DEDUCT_TIME_YES,'yyyymmdd') between '${stat_time}' and '${end_time}'
+    and to_char(DEDUCT_TIME_YES,'yyyymmdd') between  '${stat_time}'  and '${end_time}'
     and activity_tag is not null
   group by  ub.activity_tag  
 ),
+
+
 
 withdraw as(
   select
@@ -324,7 +358,9 @@ withdraw as(
 first_inv as(
   select 
     ub.activity_tag,
-    count(user_id) as first_inv_num  --首投人数
+    count(user_id) as first_inv_num,  --首投人数
+    sum(case when nvl(normal_firstinvest_time,sysdate)<nvl(depository_firstinvest_time,sysdate) then  normal_firstinvest_balance
+    else depository_firstinvest_balance end) as inv_first_money  --首投金额  
   from  edw_user_basic ub  
   where to_char(firstinvest_time,'yyyymmdd') between '${stat_time}' and '${end_time}'
     and activity_tag is not null
@@ -360,12 +396,12 @@ sum_recharge as(  --累计充值
 ),
 
 max_total as(  --历史最大资产
-  	select * from(
-	select activity_tag, 
-	sum(max_asset) as max_asset 
-	from MDTXBI.DM_MAX_ASSET
-	 where activity_tag is not null
-	group by activity_tag
+    select * from(
+  select activity_tag, 
+  sum(max_asset) as max_asset 
+  from MDTXBI.DM_MAX_ASSET
+   where activity_tag is not null
+  group by activity_tag
 )
  
 ）,
@@ -402,15 +438,25 @@ last_reg as (
   where activity_tag is not null 
   group by ub.activity_tag 
 
-)
+),
+--0814新增
+cost as(
+    select 
+    cn.channel_label,
+    sum(cost) as cost  --注册人数
+  from  dim_channel_cost_new cn  
+   where stat_period <=to_char(sysdate,'yyyymmdd')
+  group by cn.channel_label 
 
+)
 
 select
   dc.channel_head as CHANNELHEAD,  --负责人
   dc.channel_name as CHANNELNAME,  --渠道名称
   dc.channel_label as CHANNELLABEL, --渠道标签
-  
+  cost.cost,
  tu.reg_num as REGISTERED,  --注册人数
+   round(cost.cost/decode(tu.reg_num,0,1,tu.reg_num),2) as avg_cost, --人均注册成本  --0814新增
   au.auth_num as CGNUM, --存管实名人数
   re_num as CZNUM, --充值人数
   re_amount as CZMONEY, --充值金额
@@ -418,7 +464,9 @@ select
   nvl(re_amount,0)-nvl(wi_amount,0)  as CTMONEY, --充提差
   
   first_inv_num  AS SHOUTOU, --首投人数      -0731新增
-  
+    round(cost.cost/decode(first_inv_num,0,1,first_inv_num),2) as avg_inv_cost, --人均首投成本   --0814新增
+  inv_first_money,  --首投金额  --0814新增
+  round(inv_first_money/decode(cost.cost,0,1,cost.cost),2) as roi,  --首投金额roi  --0814新增
   inv.inv_num as INVESTNUM, -- 投资人数
   inv.inv_money as INVESTMONEY, --投资金额
   
@@ -445,7 +493,8 @@ from dim_channel dc
   left join max_total mt on (dc.channel_label = mt.activity_tag)
   left join channel_all ca on (dc.channel_label = ca.activity_tag)
   left join last_reg lr on (dc.channel_label = lr.activity_tag)
-order by nvl(REGISTERED,0) desc, TIMER asc 
+    left join cost on (cost.channel_label = dc.channel_label)
+    order by nvl(tu.reg_num,0) desc, reg_last_time asc 
   )
   where 1=1
 ${channelName}
