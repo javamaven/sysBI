@@ -105,7 +105,7 @@ public class RegisterThreeDayNotInvestReportJob implements Job {
 				Map<String, Object> entity = dataList.get(i);
 				dataArray.add(entity);
 			}
-			
+			String year = registerEndTime.substring(0 , 4);
 			String month = registerEndTime.substring(5 , 7);
 			String day = registerEndTime.substring(8 , 10);
 			List<String> attachFilePathList = new ArrayList<>();
@@ -138,6 +138,8 @@ public class RegisterThreeDayNotInvestReportJob implements Job {
 //			} else {
 //				logVo.setEmailValue("查询没有返回数据");
 //			}
+			//将电销的数据，入库保存
+			insertPhoneSaleData(year+month+day, dataList);
 			logVo.setSendResult("success");
 		} catch (Exception e) {
 			flag = false;
@@ -153,6 +155,26 @@ public class RegisterThreeDayNotInvestReportJob implements Job {
 			logVo.setTime(new Date());
 		}
 		return flag;
+	}
+
+	private void insertPhoneSaleData(String dataTime, List<Map<String, Object>> dataList) {
+		try {
+			List<Map<String, String>> insert_data = new ArrayList<Map<String,String>>();
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, String> insert_map = new HashMap<String, String>();
+				Map<String, Object> map = dataList.get(i);
+				insert_map.put("data", JSON.toJSONString(map));
+				insert_map.put("cg_user_id", map.get("用户ID") + "");
+				insert_map.put("type", "day");
+				insert_map.put("data_time", dataTime);
+				insert_data.add(insert_map);
+			}
+			if(insert_data.size() > 0){
+				service.batchInsertPhoneSaleJobSendData(insert_data);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	String query_sql = "select " +

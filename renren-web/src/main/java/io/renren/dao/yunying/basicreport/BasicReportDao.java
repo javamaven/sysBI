@@ -24,5 +24,7 @@ public interface BasicReportDao {
 	public int queryPhoneSaleCgUserTotal(Map<String, Object> map);
 
 	public void updatePhoneSaleCgUserList(Map<String, Object> map);
+	
+	public void batchInsertPhoneSaleJobSendData(List<Map<String, String>> dataList);
 
 }

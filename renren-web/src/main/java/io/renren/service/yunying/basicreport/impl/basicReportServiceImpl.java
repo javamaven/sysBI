@@ -161,7 +161,7 @@ public class basicReportServiceImpl implements BasicReportService {
 					String phones = ConfigProp.getPhoneSaleChannelConfirmPhone();
 					List<String> receiver = Arrays.asList(phones.split(","));
 					List<String> chaosong = null;
-					mailUtil.send("注册一小时未投资用户,未能识别是否收费渠道", content , receiver, chaosong);
+//					mailUtil.send("注册一小时未投资用户,未能识别是否收费渠道", content , receiver, chaosong);
 				}
 			}
 
@@ -244,12 +244,15 @@ public class basicReportServiceImpl implements BasicReportService {
 			"	d.CHANNEL_NAME, " +
 			"	d.CHANNEL_NAME_BACK, " +
 			"	d.CHANNEL_LABEL, " +
-			"	d.PAYMENT_WAY " +
+			"	d.PAYMENT_WAY, " +
+			"   d.use_type " +
 			"FROM " +
-			"	DIM_CHANNEL d LEFT JOIN DIM_CHANNEL_TYPE C ON (D.CHANNEL_LABEL = C.CHANNEL_LABEL)" +
+			"	DIM_CHANNEL d " + 
+//			"LEFT JOIN DIM_CHANNEL_TYPE C ON (D.CHANNEL_LABEL = C.CHANNEL_LABEL)" +
 			"WHERE " +
 			"	1 = 1 " +
-			"AND C.CHANNEL_TYPE LIKE '%免费%' " +
+//			"AND C.CHANNEL_TYPE LIKE '%免费%' " +
+			"AND d.use_type LIKE '%免费%' " +
 			"AND d.CHANNEL_NAME not LIKE '%触宝%' " +
 			"AND d.CHANNEL_NAME not LIKE '%北瓜%' " +
 			"AND d.CHANNEL_NAME not LIKE '%360摇一摇%' " ;			
@@ -648,6 +651,13 @@ public class basicReportServiceImpl implements BasicReportService {
 	public void updatePhoneSaleCgUserList(Map<String, Object> map) {
 		// TODO Auto-generated method stub
 		basicReportDao.updatePhoneSaleCgUserList(map);
+	}
+
+
+	@Override
+	public void batchInsertPhoneSaleJobSendData(List<Map<String, String>> dataList) {
+		// TODO Auto-generated method stub
+		basicReportDao.batchInsertPhoneSaleJobSendData(dataList);
 	}
 
 	

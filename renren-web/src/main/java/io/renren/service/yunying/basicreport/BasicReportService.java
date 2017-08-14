@@ -32,4 +32,6 @@ public interface BasicReportService {
 	int queryPhoneSaleCgUserTotal(Map<String, Object> map);
 
 	void updatePhoneSaleCgUserList(Map<String, Object> map);
+	
+	void batchInsertPhoneSaleJobSendData(List<Map<String, String>> dataList);
 }

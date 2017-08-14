@@ -1,6 +1,7 @@
 package io.renren.service.schedule.job.yunying.basicreport;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -111,7 +112,7 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 			queryParams.put("registerEndTime", registerEndTime);
 			logVo.setParams(JSON.toJSONString(queryParams));
 			log.info("+++++++++查询条件+++++++++++++" + queryParams);
-			PageUtils page = service.queryList(1, 10000, registerStartTime, registerEndTime, 0, 10000, "job");
+			PageUtils page = service.queryList(1, 10000, registerStartTime, registerEndTime, 0, 10000, "");
 			List<Map<String, Object>> dataList = (List<Map<String, Object>>) page.getList();
 			log.info("+++++++++查询返回结果+++++++++++++" + dataList);
 			JSONArray dataArray = new JSONArray();
@@ -120,6 +121,7 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 				dataArray.add(entity);
 			}
 //			if (dataList.size() > 0) {
+				String year = registerEndTime.substring(0 , 4);
 				String month = registerEndTime.substring(5 , 7);
 				String day = registerEndTime.substring(8 , 10);
 				String Hour = executeTime.substring(11 , 13);
@@ -131,9 +133,11 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 						taskEntity.getChaosongEmailList(), attachFilePath);
 				log.info("+++++++++发送邮件结束+++++++++++++");
 				logVo.setEmailValue(attachFilePath);
-//			} else {
+			//			} else {
 //				logVo.setEmailValue("查询没有返回数据");
 //			}
+		    //将电销的数据，入库保存
+			insertPhoneSaleData(year+month+day+Hour, dataList);
 			logVo.setSendResult("success");
 		} catch (Exception e) {
 			flag = false;
@@ -150,6 +154,26 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 			logVo.setTime(new Date());
 		}
 		return flag;
+	}
+
+	private void insertPhoneSaleData(String dataTime, List<Map<String, Object>> dataList) {
+		try {
+			List<Map<String, String>> insert_data = new ArrayList<Map<String,String>>();
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, String> insert_map = new HashMap<String, String>();
+				Map<String, Object> map = dataList.get(i);
+				insert_map.put("data", JSON.toJSONString(map));
+				insert_map.put("cg_user_id", map.get("用户ID") + "");
+				insert_map.put("type", "hour");
+				insert_map.put("data_time", dataTime);
+				insert_data.add(insert_map);
+			}
+			if(insert_data.size() > 0){
+				service.batchInsertPhoneSaleJobSendData(insert_data);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**

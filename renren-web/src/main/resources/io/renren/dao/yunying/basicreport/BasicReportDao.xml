@@ -21,6 +21,21 @@
 	    </foreach>  
 	</insert> 
 	
+	<!-- 	 电销每小时，每天推送的数据，入库保存 -->
+	<insert id="batchInsertPhoneSaleJobSendData" useGeneratedKeys="true" parameterType="java.util.List">  
+	    insert into phone_sale_job_send_data (insert_time, data, cg_user_id, type, data_time)   
+	    values  
+	    <foreach collection="list" item="item" index="index" separator="," >  
+	         ( 
+	        	now(),
+	         	#{item.data}, 
+	         	#{item.cg_user_id}, 
+	         	#{item.type},
+	         	#{item.data_time}
+	         )  
+	    </foreach>  
+	</insert> 
+	
 	<select id="queryPhoneSaleCgUserTotal" resultType="int">
 		
 		SELECT
@@ -196,7 +211,7 @@
 		FROM
 			edw_user_basic u
 		left join dim_channel d  on (u.ACTIVITY_TAG=d.CHANNEL_LABEL)
-		left join DIM_CHANNEL_TYPE c on (d.CHANNEL_LABEL=c.CHANNEL_LABEL)
+<!-- 		left join DIM_CHANNEL_TYPE c on (d.CHANNEL_LABEL=c.CHANNEL_LABEL) -->
 		WHERE
 			1 = 1
 		<if test="registerStartTime != null and registerStartTime.trim() != '' ">
@@ -214,7 +229,7 @@
 		AND d.CHANNEL_NAME not LIKE '%北瓜%'
 		AND d.CHANNEL_NAME not LIKE '%360摇一摇%'
 		
-		and c.CHANNEL_TYPE like '%付费%'
+		and (d.use_type like '%付费%' or d.use_type like '%CPS%')
 		
 	</select>
 
