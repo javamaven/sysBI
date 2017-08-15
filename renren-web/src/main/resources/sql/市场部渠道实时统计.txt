@@ -130,44 +130,85 @@ from
 			case when a.addtime=MIN(a.addtime) then a.tender_capital/100*a.days/360/10000 end 首投年化投资金额（万元）
 		from 
 		(
-				SELECT
-					a.addtime,
-					a.tender_capital,
-					a.tender_subject,
-					a.tend_cash,
-					a.tend_vouche,
-					a.user_id,
-					CASE WHEN a.tender_subject = 1 THEN CASE WHEN d.borrow_term_unit = 2 AND borrow_term > 0 THEN borrow_term * 30 WHEN d.borrow_term_unit = 1 AND borrow_term > 0 THEN borrow_term WHEN borrow_term = 0 THEN IFNULL( datediff( borrow_expire_date, project_begin_date ), 0 ) END 
-					WHEN a.tender_subject = 2 THEN IFNULL( datediff( e.interest_end_date, e.interest_begin_date ), 0 ) END days
-				FROM
-					project_tender_detail a
-				LEFT JOIN creditor_purchase_order b ON a.id = b.relate_tender_detail_id
-				LEFT JOIN project d ON a.project_id = d.id
-				LEFT JOIN creditor_purchase_order e ON a.id = e.relate_tender_detail_id
-				WHERE
-				1=1
-				and a.project_id NOT IN ( SELECT DISTINCT project_id FROM financial_plan_order_detail )
-				union all
+			SELECT
+				a.addtime,
+				a.tender_capital,
+				a.tender_subject,
+				a.tend_cash,
+				a.tend_vouche,
+				a.user_id,
+				CASE WHEN a.tender_subject = 1 THEN CASE WHEN d.borrow_term_unit = 2 AND borrow_term > 0 THEN borrow_term * 30 WHEN d.borrow_term_unit = 1 AND borrow_term > 0 THEN borrow_term WHEN borrow_term = 0 THEN IFNULL( datediff( borrow_expire_date, project_begin_date ), 0 ) END 
+				WHEN a.tender_subject = 2 THEN IFNULL( datediff( e.interest_end_date, e.interest_begin_date ), 0 ) END days
+			FROM
+				project_tender_detail a
+			LEFT JOIN creditor_purchase_order b ON a.id = b.relate_tender_detail_id
+			left join project d ON a.project_id = d.id
+			left join creditor_purchase_order e on a.id = e.relate_tender_detail_id
+			where 1=1
+			and a.project_id not in 
+			(
+				select distinct project_id from financial_plan_order_detail
+			)
+			and a.project_id not in (
+			select distinct project_id from easy_aggregate_order_detail
+			)
+			union ALL
+
+			SELECT
+				l.tender_time AS addtime,
+				l.tender_amount / 100 AS tender_capital,
+				3 AS tender_subject,
+				l.tender_cash AS tend_cash,
+				l.tender_vouche,
+				l.user_id,
+				CASE
+			WHEN f.lock_unit = 1 THEN
+				f.lock_period
+			WHEN f.lock_unit = 2 THEN
+				f.lock_period * 30
+			END AS days
+			FROM
+				financial_plan_order l
+			LEFT JOIN financial_plan f ON (l.financial_plan_id = f.id)
+
+
+			union all 
+			SELECT
+				l.tender_time AS addtime,
+				l.tender_amount / 100 AS tender_capital,
+				4 AS tender_subject,
+				s.tender_cash AS tend_cash,
+				s.tender_vouche,
+				s.user_id,
+				CASE WHEN f.BORROW_TERM_UNIT=2 THEN f.BORROW_TERM*30
+									ELSE f.BORROW_TERM END AS days
+			FROM
+				easy_aggregate_order l
+			LEFT JOIN easy_aggregate f ON (l.easy_aggregate_id = f.id)
+			left join (
 				select
-					a.addtime,
-					a.tender_capital,
-					3,
-					a.tend_cash,
-					a.tend_vouche,
-					a.user_id,
-					l.days
-				from project_tender_detail a 
-				left join (
-						SELECT
-							a.project_id,
-							CASE WHEN c.lock_unit = 1 THEN c.lock_period WHEN c.lock_unit = 2 THEN c.lock_period * 30 END AS days
-						FROM
-							financial_plan_order_detail a
-						LEFT JOIN financial_plan c ON a.financial_plan_id = c.id
-						group by a.project_id
-				) l on (a.project_id=l.project_id)
-				where 1=1
-				and a.project_id IN ( SELECT DISTINCT project_id FROM financial_plan_order_detail )
+						d.EASY_AGGREGATE_ORDER_ID,
+						d.user_id,
+						sum(case p.tender_subject
+						 when 1 then
+							p.tend_cash / 100
+						 when 2 then
+							b.pay_amount / 100
+						end) tender_cash,
+			 sum(p.tend_vouche / 100) as tender_vouche,
+										sum(case p.tender_subject
+										 when 1 then
+											p.tender_capital / 100
+										 when 2 then
+											b.purchase_capital / 100
+										end) tender_capital
+				from 
+				easy_aggregate_order_detail d
+				left join project_tender_detail p on (d.PROJECT_ID=p.PROJECT_ID AND d.TENDER_DETAIL_ID=p.ID)
+				left join creditor_purchase_order b on (p.id = b.relate_tender_detail_id)
+				group by d.EASY_AGGREGATE_ORDER_ID,d.user_id
+
+			) s on (l.ID = s.EASY_AGGREGATE_ORDER_ID AND l.USER_ID=s.USER_ID)
 		) a 
 		group by a.user_id
 ) s 
@@ -193,50 +234,92 @@ from
 			sum(a.tender_capital/100*a.days/360)/10000 money
 		from 
 		(
-				SELECT
-					a.addtime,
-					a.tender_capital,
-					a.tender_subject,
-					a.tend_cash,
-					a.tend_vouche,
-					a.user_id,
-					CASE WHEN a.tender_subject = 1 THEN CASE WHEN d.borrow_term_unit = 2 AND borrow_term > 0 THEN borrow_term * 30 WHEN d.borrow_term_unit = 1 AND borrow_term > 0 THEN borrow_term WHEN borrow_term = 0 THEN IFNULL( datediff( borrow_expire_date, project_begin_date ), 0 ) END 
-					WHEN a.tender_subject = 2 THEN IFNULL( datediff( e.interest_end_date, e.interest_begin_date ), 0 ) END days
-				FROM
-					project_tender_detail a
-				LEFT JOIN creditor_purchase_order b ON a.id = b.relate_tender_detail_id
-				LEFT JOIN project d ON a.project_id = d.id
-				LEFT JOIN creditor_purchase_order e ON a.id = e.relate_tender_detail_id
-				WHERE
-				1=1
-				and a.project_id NOT IN ( SELECT DISTINCT project_id FROM financial_plan_order_detail )
-				union all
+			SELECT
+				a.addtime,
+				a.tender_capital,
+				a.tender_subject,
+				a.tend_cash,
+				a.tend_vouche,
+				a.user_id,
+				CASE WHEN a.tender_subject = 1 THEN CASE WHEN d.borrow_term_unit = 2 AND borrow_term > 0 THEN borrow_term * 30 WHEN d.borrow_term_unit = 1 AND borrow_term > 0 THEN borrow_term WHEN borrow_term = 0 THEN IFNULL( datediff( borrow_expire_date, project_begin_date ), 0 ) END 
+				WHEN a.tender_subject = 2 THEN IFNULL( datediff( e.interest_end_date, e.interest_begin_date ), 0 ) END days
+			FROM
+				project_tender_detail a
+			LEFT JOIN creditor_purchase_order b ON a.id = b.relate_tender_detail_id
+			left join project d ON a.project_id = d.id
+			left join creditor_purchase_order e on a.id = e.relate_tender_detail_id
+			where 1=1
+			and a.project_id not in 
+			(
+				select distinct project_id from financial_plan_order_detail
+			)
+			and a.project_id not in (
+			select distinct project_id from easy_aggregate_order_detail
+			)
+			union ALL
+
+			SELECT
+				l.tender_time AS addtime,
+				l.tender_amount / 100 AS tender_capital,
+				3 AS tender_subject,
+				l.tender_cash AS tend_cash,
+				l.tender_vouche,
+				l.user_id,
+				CASE
+			WHEN f.lock_unit = 1 THEN
+				f.lock_period
+			WHEN f.lock_unit = 2 THEN
+				f.lock_period * 30
+			END AS days
+			FROM
+				financial_plan_order l
+			LEFT JOIN financial_plan f ON (l.financial_plan_id = f.id)
+
+
+			union all 
+			SELECT
+				l.tender_time AS addtime,
+				l.tender_amount / 100 AS tender_capital,
+				4 AS tender_subject,
+				s.tender_cash AS tend_cash,
+				s.tender_vouche,
+				s.user_id,
+				CASE WHEN f.BORROW_TERM_UNIT=2 THEN f.BORROW_TERM*30
+									ELSE f.BORROW_TERM END AS days
+			FROM
+				easy_aggregate_order l
+			LEFT JOIN easy_aggregate f ON (l.easy_aggregate_id = f.id)
+			left join (
 				select
-					a.addtime,
-					a.tender_capital,
-					3,
-					a.tend_cash,
-					a.tend_vouche,
-					a.user_id,
-					l.days
-				from project_tender_detail a 
-				left join (
-						SELECT
-							a.project_id,
-							CASE WHEN c.lock_unit = 1 THEN c.lock_period WHEN c.lock_unit = 2 THEN c.lock_period * 30 END AS days
-						FROM
-							financial_plan_order_detail a
-						LEFT JOIN financial_plan c ON a.financial_plan_id = c.id
-						group by a.project_id
-				) l on (a.project_id=l.project_id)
-				where 1=1
-				and a.project_id IN ( SELECT DISTINCT project_id FROM financial_plan_order_detail )
+						d.EASY_AGGREGATE_ORDER_ID,
+						d.user_id,
+						sum(case p.tender_subject
+						 when 1 then
+							p.tend_cash / 100
+						 when 2 then
+							b.pay_amount / 100
+						end) tender_cash,
+			 sum(p.tend_vouche / 100) as tender_vouche,
+										sum(case p.tender_subject
+										 when 1 then
+											p.tender_capital / 100
+										 when 2 then
+											b.purchase_capital / 100
+										end) tender_capital
+				from 
+				easy_aggregate_order_detail d
+				left join project_tender_detail p on (d.PROJECT_ID=p.PROJECT_ID AND d.TENDER_DETAIL_ID=p.ID)
+				left join creditor_purchase_order b on (p.id = b.relate_tender_detail_id)
+				group by d.EASY_AGGREGATE_ORDER_ID,d.user_id
+
+			) s on (l.ID = s.EASY_AGGREGATE_ORDER_ID AND l.USER_ID=s.USER_ID)
 		) a
 		group by a.user_id
 
 ) s
 left join mdtx_user.user_ext_info u1 on (s.user_id=u1.user_id)
 left join mdtx_user.user_basic_info u2 on (s.user_id=u2.id)
+
 where 1=1
 and u2.is_borrower = 0 
 ${firstInvestTimeCond}
