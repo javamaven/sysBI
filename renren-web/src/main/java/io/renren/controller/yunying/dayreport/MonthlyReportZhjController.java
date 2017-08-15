@@ -137,7 +137,7 @@ public class MonthlyReportZhjController {
 	@ResponseBody
 	@RequestMapping("/ddylist")
 	@RequiresPermissions("phonesale:list")
-	public R daylist1(Integer page, Integer limit, String investEndTime) {
+	public R daylist1(Integer page, Integer limit, String invest_end_time) {
 		
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
@@ -145,15 +145,13 @@ public class MonthlyReportZhjController {
 		int start = (page - 1) * limit;
 		int end = start + limit;
 
-		if (StringUtils.isNotEmpty(investEndTime)) {
-			investEndTime = investEndTime.replace("-", "");
-		}
 
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 		List<Map<String, Object>> totalList = new ArrayList<Map<String, Object>>();
 		try {
 			String path = this.getClass().getResource("/").getPath();
-			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/five.txt"));
+			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/zhj2.txt"));
+			detail_sql = detail_sql.replace("${invest_end_time}", invest_end_time);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
 		} catch (SQLException e) {
@@ -165,7 +163,7 @@ public class MonthlyReportZhjController {
 		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
 		long l2 = System.currentTimeMillis();
 
-		System.err.println("++++++++电销日报明细查询耗时：" + (l2 - l1));
+		System.err.println("++++++++中互金2查询耗时：" + (l2 - l1));
 		return R.ok().put("page", pageUtil);
 	}
 
@@ -180,22 +178,37 @@ public class MonthlyReportZhjController {
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		
+		
+		 
+		
+		
+		
+		
+		
+		
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String invest_end_time = map.get("invest_end_time") + "";
 		String invest_day_time = map.get("invest_end_time") + "";
-		if (StringUtils.isNotEmpty(invest_end_time)) {
-			invest_end_time = invest_end_time.replace("-", "");
-			invest_end_time=invest_end_time.substring(0,6);
-		}
+
 		
+		R r=daylist1(1, 1000000, invest_end_time);
+		PageUtils pageUtil = (PageUtils) r.get("page");
 		
-		if (StringUtils.isNotEmpty(invest_day_time)) {
-			invest_day_time = invest_day_time.replace("-", "");
-			
-		}
+		List<Map<String,Object>> resultList2 = (List<Map<String, Object>>) pageUtil.getList();
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 		
 		try {
+			if (StringUtils.isNotEmpty(invest_end_time)) {
+				invest_end_time = invest_end_time.replace("-", "");
+				invest_end_time=invest_end_time.substring(0,6);
+			}
+			
+			
+			if (StringUtils.isNotEmpty(invest_day_time)) {
+				invest_day_time = invest_day_time.replace("-", "");
+				
+			}
+			
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql;
 			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/zhj.txt"));
@@ -217,8 +230,34 @@ public class MonthlyReportZhjController {
 		Map<String, String> headMap = null;
 		String title = "中互金数据";
 		headMap = getDayListExcelFields();
+		
+		
+		
+		// 查询列表数据
+		JSONArray va2 = new JSONArray();
+		for (int i = 0; i < resultList2.size(); i++) {
+			va2.add(resultList2.get(i));
+		}
+		Map<String, String> headMap2 = null;
+		String title2 = "中互金数据2";
+		headMap2 = getDayListExcelFields2();
+		
+		List<String> titleList = new ArrayList<>();
+		titleList.add(title);
+		titleList.add(title2);
 
-		ExcelUtil.downloadExcelFile(title, headMap, va, response);
+		
+		List<Map<String, String>> headMapList = new ArrayList<Map<String,String>>();
+		headMapList.add(headMap);
+		headMapList.add(headMap2);
+
+		
+		List<JSONArray> ja = new ArrayList<JSONArray>();
+		ja.add(va);
+		ja.add(va2);
+
+		ExcelUtil.downloadExcelFile(titleList , headMapList, ja , response);
+//		ExcelUtil.downloadExcelFile(title, headMap, va, response);
 	}
 
 	
@@ -235,6 +274,19 @@ public class MonthlyReportZhjController {
 
 	}
 
+	private Map<String, String> getDayListExcelFields2() {
+
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+
+		headMap.put("BIANMA", "编码");
+		headMap.put("ZHIBIAO", "指标名称");
+		headMap.put("TIME", "频度");
+		headMap.put("NUM1", "金额(占比)");
+
+		return headMap;
+
+	}
+	
 
 
 

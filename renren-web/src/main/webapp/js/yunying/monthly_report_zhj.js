@@ -2,6 +2,7 @@ $(function () {
 	initDetailTableGrid();
 	initTimeCond();
 	initExportFunction();
+	initCountTableGrid();
 	initEvent();
 	initSelectEvent();
 	initTimeCond1();
@@ -94,7 +95,40 @@ function initDetailTableGrid(){
         }
     });
 }
+function initCountTableGrid(){
+    $("#jqGrid_count").jqGrid({
+        datatype: "json",
+        colModel: [
+			{ label: '指标编码', name: 'BIANMA', index: '$ITEMSCODE', width: 90,align:'right' },
+			{ label: '指标名称', name: 'ZHIBIAO', index: '$TYPENAME', width: 90 ,align:'right'}, 			
+			{ label: '频度', name: 'TIME', index: '$MONTH', width: 90 ,align:'right'}, 
+			{ label: '金额(占比)', name: 'NUM1', index: '$MONEY', width: 90 ,align:'right'}	
 
+				
+        ],
+		viewrecords: true,
+        height: $(window).height()-170,
+        rowNum: 20,
+        rownumbers: true, 
+        autowidth:true,
+        pager: "#jqGridPager_count",
+        jsonReader : {
+            root: "page.list",
+            page: "page.currPage",
+            total: "page.totalPage",
+            records: "page.totalCount"
+        },
+        prmNames : {
+            page:"page", 
+            rows:"limit", 
+            order: "order"
+        },
+        gridComplete:function(){
+        	//隐藏grid底部滚动条
+        }
+    });
+    $("#vip_count_div").hide();
+}
 
 
 var vm = new Vue({
@@ -119,7 +153,7 @@ var vm = new Vue({
 				$("#jqGrid_count").jqGrid("clearGridData");
 				$("#jqGrid_count").jqGrid('setGridParam',{ 
 					datatype:'json', 
-					url: '../yunying/p2p/ddylist',
+					url: '../yunying/zhjp2p/ddylist',
 		            postData: getParams()
 	            }).trigger("reloadGrid");
 			}

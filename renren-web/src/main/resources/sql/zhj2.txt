@@ -1,0 +1,197 @@
+select 
+'H41001' as BIANMA,
+'交易总额(万元)' AS ZHIBIAO,
+'月度' AS TIME,
+round(A.project_scale+B.tender_capital,2) as NUM1
+from 
+(SELECT  -- 点点赚  -- 486611.465603
+  SUM(ddzb.project_scale)/10000  AS project_scale --项目在当日应结息时点前最终已投金额，该金额在结息时就为最终值，不会被改写。
+  FROM  mdtxbi.edw_trading_ddz_borrow ddzb
+WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${invest_end_time}')A,
+(select -- 截止某一天的交易额（项目和债转，按照实际成交时间）
+sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
+ from mdtxbi.edw_trading_project_detail pd
+ where 
+ pd.tender_account_status=1
+ and to_char(pd.addtime,'yyyy-mm-dd')<='${invest_end_time}')B
+ union all 
+ select
+ 'H41002' as BIANMA,
+'交易总笔数(笔)' AS ZHIBIAO,
+'月度' AS TIME,
+  A.c_1+B.C_2+C.c_3 
+from
+(
+select -- 一级项目 --49850
+count(1) as c_1
+from mdtxbi.edw_trading_project pj
+where pj.stage in (5,8)
+and to_char(pj.project_complete_date,'yyyy-mm-dd')<='${invest_end_time}'
+)A,
+(
+select -- 二级债转504686
+sum(case when pd.transfer_capital>0 then 1 else 0 end) as c_2
+from mdtxbi.edw_trading_project_detail pd
+where to_char(pd.last_transfer_time,'yyyy-mm-dd')<='${invest_end_time}'
+)B,
+(
+SELECT  -- 点点赚  -- 468
+  count(1)  AS c_3
+  FROM  mdtxbi.edw_trading_ddz_borrow ddzb
+WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${invest_end_time}'
+)C
+union all 
+select
+ 'H41003' as BIANMA,
+'投资总笔数(笔)' AS ZHIBIAO,
+'月度' AS TIME,
+A.a+B.b
+from 
+(
+select
+count(1) a-- 2210483 -- 一级项目和二级债转
+from mdtxbi.edw_trading_project_detail pd
+where pd.tender_account_status=1
+and to_char(pd.addtime,'yyyy-mm-dd')<='${invest_end_time}'
+)A,
+(
+select 
+sum(ddzb.INVEST_COU) b -- 点点赚按照购买和复投笔数
+from mdtxbi.edw_trading_ddz_borrow ddzb
+WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${invest_end_time}'
+)B
+union all
+select 
+ 'H41005' as BIANMA,
+'投资人总数(人)*' AS ZHIBIAO,
+'月度' AS TIME,
+count(distinct(user_id))
+from
+mdtxbi.edw_trading_project_detail
+where to_char(addtime,'yyyy-mm-dd')<='${invest_end_time}'
+union all
+select
+ 'H41006' as BIANMA,
+'待偿金额(万元)*' AS ZHIBIAO,
+'月度' AS TIME,
+round(
+SUM(
+CASE
+  WHEN to_char(rpp.REPAY_DATE,'yyyy-mm-dd') > '${invest_end_time}' 
+    AND ( to_char(rpd.settle_end_time,'yyyy-mm-dd') > '${invest_end_time}'  OR rpd.settle_end_time IS NULL)
+  THEN rpp.repay_capital
+ELSE 0 END)/10000,2) AS REPAY_account_WAIT-- 待收本金
+FROM
+mdtxbi.dm_trading_repay_plan rpp
+left join mdtxbi.dm_trading_repay_detail rpd
+ on (rpp.project_id=rpd.project_id and rpp.period=rpd.period)
+where
+  to_char(rpp.create_time,'yyyy-mm-dd') <= '${invest_end_time}'
+union all
+select 
+ 'H41016' as BIANMA,
+'最大单户投资余额占比' AS ZHIBIAO,
+'月度' AS TIME,
+round(tender_capital/num1,4)
+ from (
+select rownum rn, d.* from 
+(
+select 
+A.user_id,
+round(sum(A.tender_capital)/10000,2) as tender_capital
+from 
+(
+ (select
+ al.user_id,
+
+ sum(al.INCOME) as tender_capital
+ from mdtxbi.edw_trading_ddz_inv_accountlog al
+ where to_char(al.created_time,'yyyy-mm-dd')<='${invest_end_time}'
+ and al.type in('B','RP')
+ group by al.user_id)
+ union all
+ (select 
+ user_id,
+sum(case when tender_subject=2 then tend_cash else tender_capital end) as tender_capital
+ from mdtxbi.edw_trading_project_detail pd
+ where 
+ pd.tender_account_status=1
+ and to_char(pd.addtime,'yyyy-mm-dd')<='${invest_end_time}'
+ group by pd.user_id)
+) A
+where A.user_id<>2611761 and A.user_id<>4504193
+group by A.user_id
+order by sum(A.tender_capital) desc
+) d
+) aa ,(select 
+round(A.project_scale+B.tender_capital,2) as NUM1
+from 
+(SELECT  -- 点点赚  -- 486611.465603
+  SUM(ddzb.project_scale)/10000  AS project_scale --项目在当日应结息时点前最终已投金额，该金额在结息时就为最终值，不会被改写。
+  FROM  mdtxbi.edw_trading_ddz_borrow ddzb
+WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${invest_end_time}')A,
+(select -- 截止某一天的交易额（项目和债转，按照实际成交时间）
+sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
+ from mdtxbi.edw_trading_project_detail pd
+ where 
+ pd.tender_account_status=1
+ and to_char(pd.addtime,'yyyy-mm-dd')<='${invest_end_time}')B) bb
+where rn=1 
+
+union all
+
+select 
+ 'H41017' as BIANMA,
+'最大10户融资余额占比' AS ZHIBIAO,
+'月度' AS TIME,
+round(sum10/num1,4) as num2
+from(
+select 
+sum(tender_capital) as sum10
+ from (
+select rownum rn, d.* from 
+(
+select 
+A.user_id,
+round(sum(A.tender_capital)/10000,2) as tender_capital
+from 
+(
+ (select
+ al.user_id,
+
+ sum(al.INCOME) as tender_capital
+ from mdtxbi.edw_trading_ddz_inv_accountlog al
+ where to_char(al.created_time,'yyyy-mm-dd')<='${invest_end_time}'
+ and al.type in('B','RP')
+ group by al.user_id)
+ union all
+ (select 
+ user_id,
+sum(case when tender_subject=2 then tend_cash else tender_capital end) as tender_capital
+ from mdtxbi.edw_trading_project_detail pd
+ where 
+ pd.tender_account_status=1
+ and to_char(pd.addtime,'yyyy-mm-dd')<='${invest_end_time}'
+ group by pd.user_id)
+) A
+where A.user_id<>2611761 and A.user_id<>4504193
+group by A.user_id
+order by sum(A.tender_capital) desc
+) d
+) aa 
+where rn<=10  -- 193811.63
+)bb,(select 
+round(A.project_scale+B.tender_capital,2) as NUM1
+from 
+(SELECT  -- 点点赚  -- 486611.465603
+  SUM(ddzb.project_scale)/10000  AS project_scale --项目在当日应结息时点前最终已投金额，该金额在结息时就为最终值，不会被改写。
+  FROM  mdtxbi.edw_trading_ddz_borrow ddzb
+WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${invest_end_time}')A,
+(select -- 截止某一天的交易额（项目和债转，按照实际成交时间）
+sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
+ from mdtxbi.edw_trading_project_detail pd
+ where 
+ pd.tender_account_status=1
+ and to_char(pd.addtime,'yyyy-mm-dd')<='${invest_end_time}')B) bb 
+
+
