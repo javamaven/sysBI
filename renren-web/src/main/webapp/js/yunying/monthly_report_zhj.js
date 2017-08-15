@@ -52,7 +52,7 @@ function initExportFunction(){
 			executePost('../yunying/zhjp2p/exportExcel', {'params' : JSON.stringify(params)});
 		}
 		else if(select == 'vip_count'){
-			executePost('../yunying/p2p/exportExcel2', {'params' : JSON.stringify(params)});
+			executePost('../yunying/zhjp2p/exportExcel', {'params' : JSON.stringify(params)});
 		}
 	});
 
