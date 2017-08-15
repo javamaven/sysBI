@@ -4,8 +4,8 @@ $(function () {
 	loadChannel();
 	initExportFunction();
 	stataDay = getYesterday();
-	document.getElementById("stat_day").value = stataDay;
-	initTimeCond();
+//	document.getElementById("stat_day").value = stataDay;
+//	initTimeCond();
 	initTable();
 //	queryTotalInfo(stataDay);
 	initEvent();
@@ -205,9 +205,9 @@ function initTable(){
 	        mtype: 'GET',
 	        postData: {'statPeriod': getYesterday()},
 	        colModel: [			
-				{ label: '统计日期', name: 'statPeriod', index: '$STAT_PERIOD', width: 80 },
+//				{ label: '统计日期', name: 'statPeriod', index: '$STAT_PERIOD', width: 80 },
 				{ label: '用户ID', name: 'userId', index: '$USER_ID', width: 80,align:'right' }, 			
-				{ label: '用户名', name: 'username', index: '$USERNAME', width: 100,align:'right' }, 			
+//				{ label: '用户名', name: 'username', index: '$USERNAME', width: 100,align:'right' }, 			
 //				{ label: '渠道ID', name: 'channelId', index: '$CHANNEL_ID', width: 80 }, 			
 				{ label: '渠道名称', name: 'channelName', index: '$CHANNEL_NAME', width: 140,align:'right' }, 			
 				{ label: '渠道标记', name: 'channelMark', index: '$CHANNEL_MARK', width: 80,align:'right' }, 			
@@ -215,7 +215,7 @@ function initTable(){
 				{ label: '操作平台', name: 'registerFrom', index: '$REGISTER_FROM', width: 100 ,align:'right'},
 				{ label: '实名', name: 'isRealname', index: '$IS_REALNAME', width: 45,align:'right' }, 			
 				{ label: '绑卡', name: 'isBinding', index: '$IS_BINDING', width: 45 ,align:'right'}, 			
-				{ label: '激活投资时间', name: 'activateInvestTime', index: '$ACTIVATE_INVEST_TIME', width: 100,align:'right' }, 			
+//				{ label: '激活投资时间', name: 'activateInvestTime', index: '$ACTIVATE_INVEST_TIME', width: 100,align:'right' }, 			
 				{ label: '首投时间', name: 'firstInvestTime', index: '$FIRST_INVEST_TIME', width: 140,align:'right' }, 			
 				{ label: '首投金额', name: 'firstInvestBalance', index: '$FIRST_INVEST_BALANCE', width: 100,align:'right'
 					,formatter:function(cellvalue, options, rowObject){
@@ -239,7 +239,7 @@ function initTable(){
 					}	
 				}, 		
 				{ label: '复投项目类型', name: 'afterTenderSubject', index: '$AFTER_TENDER_SUBJECT', width: 100 ,align:'right'},
-				{ label: '复投次数', name: 'afterSubject', index: '$AFTER_INVEST_NUMBER', width: 80,align:'right' }, 			
+//				{ label: '复投次数', name: 'afterSubject', index: '$AFTER_INVEST_NUMBER', width: 80,align:'right' }, 			
 				{ label: '累计投资金额', name: 'totalInvestBalance', index: '$TOTAL_INVEST_BALANCE', width: 100 ,align:'right'
 					,formatter:function(cellvalue, options, rowObject){
 						if(cellvalue){

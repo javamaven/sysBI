@@ -25,7 +25,7 @@ sum(case when tender_subject=2 then tend_cash else tender_capital end) as sum_te
  left join mdtxbi.edw_trading_project pj
  on pj.project_id=pd.project_id
  where 
- pd.tender_account_status=1
+ pd.tender_account_status in (0,1)
  and to_char(pd.addtime,'yyyy-mm-dd') between '${firstMonthDay}' and '${lastDayOfMonth}'
 group by pj.borrow_style,to_char(pd.addtime,'yyyy-mm')
 )

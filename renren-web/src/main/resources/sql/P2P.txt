@@ -16,7 +16,7 @@ select -- 截止某一天的交易额（项目和债转，按照实际成交时�
  sum(case when pd.tender_subject=2 then pd.tend_cash else pd.tender_capital end)/10000 as jiaoyie
  from mdtxbi.edw_trading_project_detail pd
  where
- pd.tender_account_status=1
+ pd.tender_account_status in (0,1)
  and to_char(pd.addtime,'yyyymmdd')<='${investEndTime}'
 )
 
@@ -38,7 +38,7 @@ select -- 截止某一天的交易额（项目和债转，按照实际成交时�
  sum(case when pd.tender_subject=2 then pd.tend_cash else pd.tender_capital end)/10000 as jiaoyie
  from mdtxbi.edw_trading_project_detail pd
  where
- pd.tender_account_status=1
+ pd.tender_account_status in (0,1)
  and to_char(pd.addtime,'yyyymmdd') between '${investStatTime}' and '${investEndTime}'
 )
 
@@ -69,7 +69,7 @@ select
 from 
 mdtxbi.edw_trading_project_detail pd
 where to_char(pd.addtime,'yyyymmdd') <='${investEndTime}'
-and pd.tender_account_status=1
+and pd.tender_account_status in (0,1)
 
 UNION ALL
 
@@ -79,7 +79,7 @@ select
 from 
 mdtxbi.edw_trading_project_detail pd
 where to_char(pd.addtime,'yyyymmdd') between '${investStatTime}' and '${investEndTime}'
-and pd.tender_account_status=1
+and pd.tender_account_status in (0,1)
 
 UNION ALL
 ----单笔借款平均金额（万元）,单笔借款平均期限（月）出借人收益率范围，最小,出借人收益率范围，最大,出借人平均收益率

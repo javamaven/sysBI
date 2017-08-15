@@ -468,7 +468,7 @@ union all
   count(pd.user_id) cou
   from mdtxbi.edw_trading_project_detail pd
   where pd.tender_subject=2
-  and pd.tender_account_status=1
+  and pd.tender_account_status in (0,1)
   and to_char(pd.addtime,'yyyymm')='${investStatTime}'
   
     union all
@@ -503,7 +503,7 @@ union all
   count(pd.user_id) cou
   from mdtxbi.edw_trading_project_detail pd
   where pd.tender_subject=2
-  and pd.tender_account_status=1
+  and pd.tender_account_status in (0,1)
   and to_char(pd.addtime,'yyyymm')='${investStatTime}'
        union all
   
@@ -536,7 +536,7 @@ count(distinct user_id) from ( -- 12157 第一部分一致
   pd.user_id
   from mdtxbi.edw_trading_project_detail pd
   where pd.tender_subject=2
-  and pd.tender_account_status=1
+  and pd.tender_account_status in (0,1)
   and to_char(pd.addtime,'yyyymm')='${investStatTime}'
      union all
     select -- 理财计划中，购买的实际是退出的理财计划（实际上是债转）
@@ -569,7 +569,7 @@ count(distinct user_id) from ( -- 12157 第一部分一致
   count(pd.user_id) cou
   from mdtxbi.edw_trading_project_detail pd
   where pd.tender_subject=2
-  and pd.tender_account_status=1
+  and pd.tender_account_status in (0,1)
   and to_char(pd.addtime,'yyyymm') between to_char(sysdate,'yyyy')||'01' and '${investStatTime}'
       union all
   
@@ -601,7 +601,7 @@ count(distinct user_id) from ( -- 12157 第一部分一致
   count(pd.user_id) cou
   from mdtxbi.edw_trading_project_detail pd
   where pd.tender_subject=2
-  and pd.tender_account_status=1
+  and pd.tender_account_status in (0,1)
   and to_char(pd.addtime,'yyyymm') between to_char(sysdate,'yyyy')||'01' and '${investStatTime}'
   
        union all
@@ -637,7 +637,7 @@ count(distinct user_id) from (
   pd.user_id
   from mdtxbi.edw_trading_project_detail pd
   where pd.tender_subject=2
-  and pd.tender_account_status=1
+  and pd.tender_account_status in (0,1)
   and to_char(pd.addtime,'yyyymm') between to_char(sysdate,'yyyy')||'01'and '${investStatTime}'
      union all
   
@@ -670,7 +670,7 @@ union all
   count(pd.user_id) cou
   from mdtxbi.edw_trading_project_detail pd
   where pd.tender_subject=2
-  and pd.tender_account_status=1
+  and pd.tender_account_status in (0,1)
   and to_char(pd.addtime,'yyyymm')<='2016'
     union all
   
@@ -702,7 +702,7 @@ union all
   count(pd.user_id) cou
   from mdtxbi.edw_trading_project_detail pd
   where pd.tender_subject=2
-  and pd.tender_account_status=1
+  and pd.tender_account_status in (0,1)
   and to_char(pd.addtime,'yyyymm')<='2016'
   
   union all
@@ -737,7 +737,7 @@ union all
   count(pd.user_id) cou
   from mdtxbi.edw_trading_project_detail pd
   where pd.tender_subject=2
-  and pd.tender_account_status=1
+  and pd.tender_account_status in (0,1)
   and to_char(pd.addtime,'yyyymmdd')='${investDayTime}'
   union all
   

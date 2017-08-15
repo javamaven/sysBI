@@ -20,7 +20,7 @@ count(a.tender_capital),-- 投资成功次数
 sum(case when a.tend_vouche>0 then 1 else 0 end),--使用红包次数
 round(sum(case when a.tend_vouche>0 then 1 else 0 end)/count(a.tender_capital),4) as vouche_time_i
 from mdtxbi.edw_trading_project_detail a
-where a.tender_account_status=1
+where a.tender_account_status in (0,1)
  ${touzi_begin}
 group by a.user_id
 ),

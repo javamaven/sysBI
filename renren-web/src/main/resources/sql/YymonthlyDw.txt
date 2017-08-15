@@ -13,7 +13,7 @@ WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${invest_end_time}')A,
 sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
  from mdtxbi.edw_trading_project_detail pd
  where 
- pd.tender_account_status=1
+ pd.tender_account_status in (0,1)
  and to_char(pd.addtime,'yyyy-mm-dd')<='${invest_end_time}')B
 union all
 
@@ -104,7 +104,7 @@ select
             count(user_id)  投资人次
 from (
 select user_id,sum(case when pd.tender_subject=2 then pd.tend_cash else tender_capital end) money from mdtxbi.edw_trading_project_detail pd
-where to_char(addtime,'yyyymm')='${monthtime}' and pd.tender_account_status=1
+where to_char(addtime,'yyyymm')='${monthtime}' and pd.tender_account_status in (0,1)
 group by user_id) 
 group by case when money between 0.1 and 10000 then '投资金额1万以下的人数' 
             when money between 10000.1 and 100000 then '投资金额1~10万的人数'
@@ -120,7 +120,7 @@ select
 count(1) cou 
 from mdtxbi.edw_trading_project_detail pd
 where to_char(addtime,'yyyymm')='${lastMonthTimeString}'
-and pd.tender_account_status=1
+and pd.tender_account_status in (0,1)
 union all
 select sum(db.invest_cou) cou from  mdtxbi.edw_trading_ddz_borrow db where to_char(db.issue_date,'yyyymm')='${lastMonthTimeString}')
 
@@ -133,7 +133,7 @@ select
 count(1) cou 
 from mdtxbi.edw_trading_project_detail pd
 where to_char(addtime,'yyyymm')='${monthtime}'
-and pd.tender_account_status=1
+and pd.tender_account_status in (0,1)
 union all
 select sum(db.invest_cou) cou from  mdtxbi.edw_trading_ddz_borrow db where to_char(db.issue_date,'yyyymm')='${monthtime}')
 union all
@@ -145,7 +145,7 @@ select
 count(1) cou 
 from mdtxbi.edw_trading_project_detail pd
 where to_char(addtime,'yyyymm')='${lastyeartime}'
-and pd.tender_account_status=1
+and pd.tender_account_status in (0,1)
 union all
 select sum(db.invest_cou) cou from  mdtxbi.edw_trading_ddz_borrow db where to_char(db.issue_date,'yyyymm')='${lastyeartime}')
 
@@ -158,7 +158,7 @@ select
 count(1) cou 
 from mdtxbi.edw_trading_project_detail pd
 where to_char(addtime,'yyyymm')='${monthtime}'
-and pd.tender_account_status=1
+and pd.tender_account_status in (0,1)
 union all
 select sum(db.invest_cou) cou from  mdtxbi.edw_trading_ddz_borrow db where to_char(db.issue_date,'yyyymm')='${monthtime}')
 
@@ -182,7 +182,7 @@ WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${time}' and to_char(ISSUE_DATE, 'yyyy
 sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
  from mdtxbi.edw_trading_project_detail pd
  where 
- pd.tender_account_status=1
+ pd.tender_account_status in (0,1)
  and to_char(pd.addtime,'yyyy-mm-dd')between '${firstTime}' and '${time}')B
 
 union all
@@ -200,7 +200,7 @@ WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${invest_end_time}' and to_char(ISSUE_
 sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
  from mdtxbi.edw_trading_project_detail pd
  where 
- pd.tender_account_status=1
+ pd.tender_account_status in (0,1)
  and to_char(pd.addtime,'yyyy-mm-dd')between '${firstMonth}' and '${invest_end_time}')B
 
 union all
@@ -220,7 +220,7 @@ WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${firstlasttime}' and to_char(ISSUE_DA
 sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
  from mdtxbi.edw_trading_project_detail pd
  where 
- pd.tender_account_status=1
+ pd.tender_account_status in (0,1)
  and to_char(pd.addtime,'yyyy-mm-dd')between '${firstMonthTime}' and '${firstlasttime}')B
 
 union all
@@ -238,5 +238,5 @@ WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${invest_end_time}' and to_char(ISSUE_
 sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
  from mdtxbi.edw_trading_project_detail pd
  where 
- pd.tender_account_status=1
+ pd.tender_account_status in (0,1)
  and to_char(pd.addtime,'yyyy-mm-dd')between '${firstMonth}' and '${invest_end_time}')B

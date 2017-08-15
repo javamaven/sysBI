@@ -11,7 +11,7 @@ row_number() over (partition by a.user_id order by a.addtime asc) ranks,
 a.borrow_period,
 a.addtime
 from mdtxbi.edw_trading_project_detail a
-where a.tender_account_status=1
+where a.tender_account_status in (0,1)
 ),
 hd as(
 select 

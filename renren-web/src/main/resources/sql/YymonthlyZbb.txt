@@ -189,7 +189,7 @@ pd.tend_cash*BORROW_PERIOD/360 end)/10000,2) as sum_tender, -- 本月销售年�
 
 from mdtxbi.dm_trading_project_detail pd
 where to_char(pd.addtime,'yyyymmdd') between '${firstday}' and '${day}'
-and pd.tender_account_status=1
+and pd.tender_account_status in (0,1)
 group by to_char(pd.addtime,'yyyymm')
 order by to_char(pd.addtime,'yyyymm')
 )
