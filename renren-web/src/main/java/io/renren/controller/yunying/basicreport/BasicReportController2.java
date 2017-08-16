@@ -387,7 +387,7 @@ public class BasicReportController2 {
 	@ResponseBody
 	@RequestMapping("/registNotInvest")
 	public R registNotInvest(Integer page, Integer limit, String registerStartTime, String registerEndTime) {
-		String reportType="本月首投3天未复投用户";
+		String reportType="注册一小时未投资用户";
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+#parse("sys/header.html")
+<style type="text/css">
+.inputClass {
+	height: 30px;
+	width: 130px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+.inputClass2 {
+	height: 30px;
+	width: 200px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+</style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<table style="padding-bottom: 15px;margin-bottom: 10px;">
+			<tr>
+				<td>
+					<label>投资结束时间：</label>
+				</td>
+				<td>
+					<input type="text" class="inputClass2 form_datetime_2" id="stat_month" placeholder="请选择月份"/>
+				</td>
+				<td >
+					&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
+					
+					<a class="btn btn-primary" id="upload"><i class="fa fa-plus"></i>&nbsp;Excel导入</a>
+					<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;Excel导出</a>
+				</td>
+				
+			</tr>
+		</table>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+    <div v-show="!showList" class="panel panel-default">
+		<div class="panel-heading">{{title}}</div>
+		<form class="form-horizontal">
+											<div class="form-group">
+			   	<div class="col-sm-2 control-label">1：内部，2：外包</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="phoneSaleMonth.mark" placeholder="1：内部，2：外包"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">电销日期</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="phoneSaleMonth.callDate" placeholder="电销日期"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">接通结果</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="phoneSaleMonth.callResult" placeholder="接通结果"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">电销人员</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="phoneSaleMonth.callPerson" placeholder="电销人员"/>
+			    </div>
+			</div>
+									<div class="form-group">
+			   	<div class="col-sm-2 control-label">电销月份</div>
+			   	<div class="col-sm-10">
+			      <input type="text" class="form-control" v-model="phoneSaleMonth.statMonth" placeholder="电销月份"/>
+			    </div>
+			</div>
+							<div class="form-group">
+				<div class="col-sm-2 control-label"></div> 
+				<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+				&nbsp;&nbsp;<input type="button" class="btn btn-warning" @click="reload" value="返回"/>
+			</div>
+		</form>
+	</div>
+</div>
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/yunying/phone_sale_month.js?_${date.systemTime}"></script>
+</body>
+</html>

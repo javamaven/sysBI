@@ -92,7 +92,7 @@ function initTableGrid(){
         rownumbers: true, 
         rownumWidth: 25, 
         autowidth:true,
-        multiselect: true,
+//        multiselect: true,
         pager: "#jqGridPager",
         jsonReader : {
             root: "page.list",

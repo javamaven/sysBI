@@ -68,7 +68,8 @@ public class basicReportServiceImpl implements BasicReportService {
 			"AND u.register_time <= ? " +
 			"AND u2.is_borrower = 0  " +
 			"and u2.phone is not null and u2.phone <> '' " +
-			"and ifnull(c.amount,0)/100 <= 100 ";
+			"and ifnull(c.amount,0)/100 <= 100 " + 
+			"and not EXISTS (select DISTINCT p.user_id from  mdtx_business.project_tender_detail p where 1=1 and p.user_id=u.user_id) ";
 
 	//记录未能识别是否收费，或者未录入dim_channel表的渠道
 	List<String> channelRecordList = new ArrayList<>();

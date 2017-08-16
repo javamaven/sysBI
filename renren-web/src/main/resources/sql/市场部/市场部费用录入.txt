@@ -23,7 +23,8 @@ select
 from dim_channel_cost_new cn
   left join dim_channel dc on cn.channel_label = dc.channel_label
   left join last_reg lr on lr.activity_tag = cn.channel_label
-
+where 1=1
+and dc.channel_label is not null
 group by dc.channel_label,
   dc.channel_name,
   dc.channel_head,

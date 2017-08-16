@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.yunying.phonesale.PhoneSaleMonthDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.yunying.phonesale.PhoneSaleMonthEntity" id="phoneSaleMonthMap">
+        <result property="userName" column="USER_NAME"/>
+        <result property="mark" column="MARK"/>
+        <result property="callDate" column="CALL_DATE"/>
+        <result property="callResult" column="CALL_RESULT"/>
+        <result property="callPerson" column="CALL_PERSON"/>
+        <result property="statMonth" column="STAT_MONTH"/>
+    </resultMap>
+    
+    <!-- 	 每月电销数据导入  -->
+	<insert id="batchInsertPhoneSaleMonthData" useGeneratedKeys="true" parameterType="java.util.List">  
+	    insert into phone_sale_month (user_name,mark, call_date, call_result, call_person, stat_month, import_time,import_user_id,batch_id, phone_type)   
+	    values  
+	    <foreach collection="list" item="item" index="index" separator="," >  
+	         ( 
+	         	#{item.user_name}, 
+	         	#{item.mark}, 
+	         	#{item.call_date},
+	         	#{item.call_result},
+	         	#{item.call_person},
+	         	#{item.stat_month},
+	         	now(),
+	         	#{item.import_user_id},
+	         	#{item.batch_id},
+	         	#{item.phone_type}
+	         	
+	         )  
+	    </foreach>  
+	</insert> 
+
+	<select id="queryObject" resultType="io.renren.entity.yunying.phonesale.PhoneSaleMonthEntity">
+		select * from phone_sale_month where USER_NAME = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.yunying.phonesale.PhoneSaleMonthEntity">
+		SELECT
+			p.user_name,
+			case when p.mark ='1' then '否' when p.mark = '2' then '是' else '' end mark,
+			p.call_date,
+			p.call_person,
+			case when p.phone_type = 'laxin' then '拉新' when p.phone_type = 'chenmo' then '沉默' else '' end phone_type,
+			p.stat_month,
+<!-- 			p.import_time, -->
+			DATE_FORMAT(p.IMPORT_TIME,'%Y-%m-%d %h:%i:%s') import_time,
+			p.import_user_id,
+			p.call_result,
+			p.batch_id,
+			u.username as import_user_name
+		FROM
+			phone_sale_month p
+		LEFT JOIN sys_user u ON (p.import_user_id = u.user_id)
+		where 1=1
+		<if test="statMonth != null and statMonth != '' ">
+			AND p.stat_month =#{statMonth}
+		</if>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(1) from phone_sale_month p
+		where 1=1
+		<if test="statMonth != null and statMonth != '' ">
+			AND p.stat_month =#{statMonth}
+		</if>
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.yunying.phonesale.PhoneSaleMonthEntity">
+		insert into phone_sale_month
+		(
+			`USER_NAME`, 
+			`MARK`, 
+			`CALL_DATE`, 
+			`CALL_RESULT`, 
+			`CALL_PERSON`, 
+			`STAT_MONTH`
+		)
+		values
+		(
+			#{userName}, 
+			#{mark}, 
+			#{callDate}, 
+			#{callResult}, 
+			#{callPerson}, 
+			#{statMonth}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.yunying.phonesale.PhoneSaleMonthEntity">
+		update phone_sale_month 
+		<set>
+			<if test="mark != null">`MARK` = #{mark}, </if>
+			<if test="callDate != null">`CALL_DATE` = #{callDate}, </if>
+			<if test="callResult != null">`CALL_RESULT` = #{callResult}, </if>
+			<if test="callPerson != null">`CALL_PERSON` = #{callPerson}, </if>
+			<if test="statMonth != null">`STAT_MONTH` = #{statMonth}</if>
+		</set>
+		where USER_NAME = #{userName}
+	</update>
+	
+	<delete id="delete">
+		delete from phone_sale_month where USER_NAME = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from phone_sale_month where USER_NAME in 
+		<foreach item="userName" collection="array" open="(" separator="," close=")">
+			#{userName}
+		</foreach>
+	</delete>
+
+</mapper>
