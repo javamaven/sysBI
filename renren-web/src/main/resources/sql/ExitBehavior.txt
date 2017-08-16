@@ -19,7 +19,7 @@ with tmp_user as(
 )
 
 select
-  exit_time as TIME,
+  tu.exit_time as TIME,
   sum(tender_capital) AS EXIT, --退出
   sum(withdraw) AS TIXIAN,  -- 提现
   sum(recharge) AS CHONGZHI, --充值
@@ -32,40 +32,40 @@ from tmp_user tu
 
   left join( 
     select 
-      tu.user_id,
+      tu.user_id,tu.exit_time,
       sum(amount) as withdraw
     from tmp_user tu
       left join mdtxbi.edw_money_acc_withdraw maw 
         on (tu.user_id = maw.user_id and to_char(deduct_time,'yyyymmdd') = tu.exit_time)
     where from_sys =1
     group by tu.exit_time, tu.user_id
-  )tixian on tu.user_id = tixian.user_id
+  )tixian on tu.user_id = tixian.user_id and tu.exit_time=tixian.exit_time
 
   left join(  
     select 
-      tu.user_id,
+      tu.user_id,tu.exit_time,
       sum(amount) as recharge
     from tmp_user tu
       left join mdtxbi.edw_money_acc_recharge mac 
         on (tu.user_id = mac.user_id and to_char(deduct_time,'yyyymmdd') = tu.exit_time)
     where from_sys =1
     group by tu.exit_time, tu.user_id
-  )chongzhi on  tu.user_id = chongzhi.user_id 
+  )chongzhi on  tu.user_id = chongzhi.user_id and tu.exit_time=chongzhi.exit_time
   
   left join(  
     select 
-      tu.user_id,
+      tu.user_id,tu.exit_time,
       sum(transfer_amount/100) as transfer
     from tmp_user tu
       left join mdtxbi.ods_mdtx_cg_acc_transfer_order@ora40 cto 
         on (cto.user_id = tu.user_id and to_char(cto.transfer_time_yes,'yyyymmdd') =tu.exit_time)
     where transfer_status = 2
     group by tu.exit_time, tu.user_id
-  )transfer on transfer.user_id = tu.user_id  
+  )transfer on transfer.user_id = tu.user_id  and tu.exit_time=transfer.exit_time
   
   left join( 
     select
-      tu.user_id,
+      tu.user_id,tu.exit_time,
       sum(mpd.tender_capital) as capital,
       sum(case when mpd.tender_subject =3 then mpd.tender_capital end ) as zt,
       sum(mpd.tend_vouche) as vouche
@@ -75,7 +75,7 @@ from tmp_user tu
         on (tu.user_id = mpd.user_id and to_char(mpd.addtime,'yyyymmdd')= tu.exit_time)
     where from_sys =1
     group by tu.exit_time, tu.user_id
-  ) invest on invest.user_id = tu.user_id
- where exit_time  between '${exit_stat_time}' AND'${exit_end_time}'
-group by exit_time
-order by exit_time desc
+  ) invest on invest.user_id = tu.user_id and tu.exit_time=invest.exit_time
+ where tu.exit_time  between '${exit_stat_time}' AND'${exit_end_time}'
+group by tu.exit_time
+order by tu.exit_time desc
