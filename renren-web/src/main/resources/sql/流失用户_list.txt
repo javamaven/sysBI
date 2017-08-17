@@ -1,0 +1,14 @@
+with hz as(
+select c.* from (
+select b.* from (
+select rownum rn,a.*
+from dm_report_user_loss a
+where 1=1
+${queryCond}) b
+where 1=1
+and rn<=?
+)c
+where 1=1
+and rn>?
+)
+select * FROM HZ

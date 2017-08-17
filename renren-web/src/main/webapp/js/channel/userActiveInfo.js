@@ -4,8 +4,8 @@ $(function () {
 	loadChannel();
 	initExportFunction();
 	stataDay = getYesterday();
-//	document.getElementById("stat_day").value = stataDay;
-//	initTimeCond();
+	document.getElementById("stat_day").value = stataDay;
+	initTimeCond();
 	initTable();
 //	queryTotalInfo(stataDay);
 	initEvent();
@@ -161,8 +161,10 @@ function initTimeCond(){
         autoclose:true,
         endDate: getYesterday()
     }).on("click",function(){
-//        $("#stat_day").datetimepicker("setEndDate",$("#stat_day").val())
+
+
     });
+    $("#stat_day").datetimepicker("setEndDate",$("#stat_day").val())
     
     $("#start_first_invest_time").datetimepicker({
         format: 'yyyy-mm-dd',
@@ -210,7 +212,8 @@ function initTable(){
 //				{ label: '用户名', name: 'username', index: '$USERNAME', width: 100,align:'right' }, 			
 //				{ label: '渠道ID', name: 'channelId', index: '$CHANNEL_ID', width: 80 }, 			
 				{ label: '渠道名称', name: 'channelName', index: '$CHANNEL_NAME', width: 140,align:'right' }, 			
-				{ label: '渠道标记', name: 'channelMark', index: '$CHANNEL_MARK', width: 80,align:'right' }, 			
+				{ label: '渠道标记', name: 'channelMark', index: '$CHANNEL_MARK', width: 80,align:'right' }, 	
+				{ label: '手机号码', name: 'phone', index: '$PHONE', width: 100,align:'right' },
 				{ label: '注册时间', name: 'registerTime', index: '$REGISTER_TIME', width: 140,align:'right' }, 			
 				{ label: '操作平台', name: 'registerFrom', index: '$REGISTER_FROM', width: 100 ,align:'right'},
 				{ label: '实名', name: 'isRealname', index: '$IS_REALNAME', width: 45,align:'right' }, 			
@@ -267,8 +270,8 @@ function initTable(){
 							return '';
 						}
 					}		
-				},
-				{ label: '手机号码', name: 'phone', index: '$PHONE', width: 100,align:'right' }
+				}
+				
 				
 	        ],
 			viewrecords: true,
