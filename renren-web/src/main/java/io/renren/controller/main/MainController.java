@@ -720,7 +720,7 @@ public class MainController {
 			if(last_month_total_invest_amount == 0){
 				queryLastMonthTotalInvestAmont();
 			}
-			if(curr_month_invest == 0 || isNextDay()){
+			if(curr_month_invest == 0 || isNextDay("invest_amount")){
 				//存管版当月投资额
 				queryCgCurrMonthInvest(monthStartDate, yesEndDate);
 				//普通版当月投资额
@@ -808,21 +808,38 @@ public class MainController {
 	
 	/**
 	 * 判断当前时间，是否跨入第二天了，是的话则返回true
+	 * @param type 投资笔数,投资金额
 	 * @return
 	 */
-	private boolean isNextDay(){
+	private boolean isNextDay(String type){
 		String currDayStr = DateUtil.getCurrDayStr();//'2017-06-27 00:00:00'
-		if(StringUtils.isEmpty(SqlConstants.currDay)){
-			SqlConstants.currDay = DateUtil.getCurrDayStr();
-			return false;
-		}else{
-			if(SqlConstants.currDay.equals(currDayStr)){
+		
+		if("invest_times".equals(type)){
+			if(StringUtils.isEmpty(SqlConstants.currDay)){
+				SqlConstants.currDay = DateUtil.getCurrDayStr();
 				return false;
 			}else{
-				SqlConstants.currDay = currDayStr;
-				return true;
+				if(SqlConstants.currDay.equals(currDayStr)){
+					return false;
+				}else{
+					SqlConstants.currDay = currDayStr;
+					return true;
+				}
+			}
+		}else if("invest_amount".equals(type)){
+			if(StringUtils.isEmpty(SqlConstants.currDay)){
+				SqlConstants.currDayAmount = DateUtil.getCurrDayStr();
+				return false;
+			}else{
+				if(SqlConstants.currDayAmount.equals(currDayStr)){
+					return false;
+				}else{
+					SqlConstants.currDayAmount = currDayStr;
+					return true;
+				}
 			}
 		}
+		return true;
 	}
 
 	/**
@@ -843,7 +860,7 @@ public class MainController {
 		double total_month = 0;
 		double total_day = 0;
 		try {
-			if(curr_month_invest_times == 0 || isNextDay()){
+			if(curr_month_invest_times == 0 || isNextDay("invest_times")){
 				//存管版当月投资次数
 				queryCgCurrMonthInvestTimes(monthStartDate, yesEndDate);
 				//普通版当月投资次数
