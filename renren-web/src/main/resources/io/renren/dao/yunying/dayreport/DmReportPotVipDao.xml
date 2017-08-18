@@ -19,6 +19,10 @@
         <result property="amount" column="AMOUNT"/>
         <result property="moneyInvest" column="MONEY_INVEST"/>
         <result property="registerTime" column="REGISTER_TIME"/>
+                <result property="tendVouche" column="TEND_VOUCHE"/>
+        <result property="transferCapital" column="TRANSFER_CAPITAL"/>
+        <result property="transferNum" column="TRANSFER_NUM"/>
+        <result property="channelName" column="CHANNEL_NAME"/>
     </resultMap>
 
 	<select id="queryObject" resultType="io.renren.entity.yunying.dayreport.DmReportPotVipEntity">

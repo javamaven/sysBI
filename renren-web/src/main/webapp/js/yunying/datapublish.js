@@ -458,7 +458,7 @@ function getOption4(rows) {
 	}
 	option4 = {
 			title : {
-		        text: '按还款方式',
+		        text: '按还款方式（万元）',
 		        x:'center'
 		    },
 		    tooltip : {
@@ -469,7 +469,7 @@ function getOption4(rows) {
 		    },
 		    legend: {
 		    	 padding:35,
-		        data:['按天付息：￥'+tian_total, '按月付息：￥' + yue_total,'到期还本还息：￥'+daoqi_total,'等额本息：￥'+benxi_total]
+		        data:['按天付息：'+tian_total, '按月付息：' + yue_total,'到期还本还息：'+daoqi_total,'等额本息：'+benxi_total]
 		    },
 		    toolbox: {
 		        show : true,
@@ -496,7 +496,7 @@ function getOption4(rows) {
 		    ],
 		    series : [
 		        {
-		            name:'按天付息：￥'+tian_total,
+		            name:'按天付息：'+tian_total,
 		            color: ['#31859C'],
 			        formatter: "{a} <br/>{b} : {c}",
 		            type:'bar',
@@ -505,7 +505,7 @@ function getOption4(rows) {
 		            data:data_list5
 		        },
 		        {
-		            name:'按月付息：￥' + yue_total,
+		            name:'按月付息：' + yue_total,
 		            color: ['#B7DEE8'],
 		            type:'bar',
 		            stack: '总量',
@@ -513,7 +513,7 @@ function getOption4(rows) {
 		            data:data_list6
 		        },
 		        {
-		            name:'到期还本还息：￥'+daoqi_total,
+		            name:'到期还本还息：'+daoqi_total,
 		            color: ['#B9CDE5'],
 		            type:'bar',
 		            stack: '总量',
@@ -521,7 +521,7 @@ function getOption4(rows) {
 		            data:data_list2
 		        },
 		        {
-		            name:'等额本息：￥'+benxi_total,
+		            name:'等额本息：'+benxi_total,
 		            color: ['#215968'],
 		            type:'bar',
 		            stack: '总量',
@@ -722,7 +722,7 @@ function getOption6() {
 		            data:[
 		                {value:500, name:'小额贷款'},
 		                {value:500, name:'汽车金融'},
-		                {value:500, name:'房贷'},
+		                {value:500, name:'信用贷'},
 		                {value:500, name:'消费金融'}
 		            ],
 		            itemStyle: {
@@ -1102,7 +1102,7 @@ function getOption12(rows) {
 	
 	option12 = {
 		    title : {
-		        text: '投资者年龄分布',
+		        text: '投资者性别分布',
 		        x:'center'
 		    },
 		    tooltip : {

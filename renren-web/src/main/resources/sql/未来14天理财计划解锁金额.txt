@@ -1,0 +1,17 @@
+select * from (
+select
+  to_char(unlock_time,'yyyymmdd') as TIME, 
+  sum(tender_amount)/100 AS MONEY
+
+from ODS_MDTX_CG_FCIAL_PLAN_ORDER@ora40 po
+where to_char(unlock_time,'yyyymmdd') between '${begin_time}' and '${end_time}'
+group by to_char(unlock_time,'yyyymmdd')
+order by to_char(unlock_time,'yyyymmdd')
+)
+union all 
+select
+'累计解锁未退出(今天)', --87836312
+  (sum（case when to_char(unlock_time,'yyyymmdd')<=to_char(sysdate,'yyyymmdd') then tender_amount end） -
+    sum（case when to_char(exit_time,'yyyymmdd')<=to_char(sysdate,'yyyymmdd') then tender_amount end）)/100 as 累计解锁未退出
+from ODS_MDTX_CG_FCIAL_PLAN_ORDER@ora40 po                
+

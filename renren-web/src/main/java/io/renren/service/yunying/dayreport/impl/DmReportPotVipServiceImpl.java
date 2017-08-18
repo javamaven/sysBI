@@ -73,6 +73,13 @@ public class DmReportPotVipServiceImpl implements DmReportPotVipService {
 		
 		headMap.put("moneyInvest", "累计投资金额（≥5万元）");
 		headMap.put("registerTime", "注册日期");
+
+		headMap.put("tendVouche", "使用红包金额");
+		headMap.put("transferCapital", "债转金额");
+		headMap.put("transferNum", "债转次数");
+		headMap.put("channelName", "渠道名称");
+		
+		
 		
 		
 

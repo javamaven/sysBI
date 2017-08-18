@@ -42,7 +42,11 @@ function initTableGrid(){
 			{ label: '平均投资期限偏好(大于100天)', name: 'avgPeriod', index: '$AVG_PERIOD', width: 80 }, 			
 			{ label: '累计充值金额（≥5万元）', name: 'amount', index: '$AMOUNT', width: 80 }, 			
 			{ label: '累计投资金额（≥5万元）', name: 'moneyInvest', index: '$MONEY_INVEST', width: 80 }, 			
-			{ label: '注册日期', name: 'registerTime', index: '$REGISTER_TIME', width: 80 }			
+			{ label: '注册日期', name: 'registerTime', index: '$REGISTER_TIME', width: 80 },
+			{ label: '使用红包金额', name: 'tendVouche', index: '$TEND_VOUCHE', width: 80 }, 			
+			{ label: '债转金额', name: 'transferCapital', index: '$TRANSFER_CAPITAL', width: 80 }, 			
+			{ label: '债转次数', name: 'transferNum', index: '$TRANSFER_NUM', width: 80 }, 			
+			{ label: '渠道名称', name: 'channelName', index: '$CHANNEL_NAME', width: 80 }	
         ],
 		viewrecords: true,
         height: $(window).height()-130,

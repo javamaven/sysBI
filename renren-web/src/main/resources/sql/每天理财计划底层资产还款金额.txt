@@ -1,0 +1,13 @@
+select
+  to_char(RECOVER_TIME,'yyyymmdd') as TIME  ,
+  sum(RECOVER_AMOUNT)  AS MONEY
+from EDW_TRADING_RECOVER_DETAIL
+where  to_char(RECOVER_TIME,'yyyymmdd')  between '${begin_time}' and '${end_time}'
+  and project_id in (
+        select
+          distinct(project_id)  
+        from ODS_MDTX_CG_FCIAL_PLAN_ODETAIL@ora40
+      )
+
+group by to_char(RECOVER_TIME,'yyyymmdd')
+order by to_char(RECOVER_TIME,'yyyymmdd')

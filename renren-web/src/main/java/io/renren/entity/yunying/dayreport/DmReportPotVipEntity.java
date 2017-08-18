@@ -44,7 +44,43 @@ public class DmReportPotVipEntity implements Serializable {
 	private BigDecimal moneyInvest;
 	//注册日期
 	private String registerTime;
+	//使用红包金额
+	private BigDecimal tendVouche;
+	//债转金额
+	private BigDecimal transferCapital;
+	//债转次数
+	private String transferNum;
+	//渠道名称
+	private String channelName;
 
+	
+	
+	
+	
+	public BigDecimal getTendVouche() {
+		return tendVouche;
+	}
+	public void setTendVouche(BigDecimal tendVouche) {
+		this.tendVouche = tendVouche;
+	}
+	public BigDecimal getTransferCapital() {
+		return transferCapital;
+	}
+	public void setTransferCapital(BigDecimal transferCapital) {
+		this.transferCapital = transferCapital;
+	}
+	public String getTransferNum() {
+		return transferNum;
+	}
+	public void setTransferNum(String transferNum) {
+		this.transferNum = transferNum;
+	}
+	public String getChannelName() {
+		return channelName;
+	}
+	public void setChannelName(String channelName) {
+		this.channelName = channelName;
+	}
 	/**
 	 * 设置：日期
 	 */

@@ -1,0 +1,7 @@
+select
+  to_char(apply_exit_time,'yyyymmdd') as TIME,
+  sum(tender_amount)/100 as MONEY
+from ODS_MDTX_CG_FCIAL_PLAN_ORDER@ora40 po
+where to_char(apply_exit_time,'yyyymmdd') between '${begin_time}' and '${end_time}'
+group by to_char(apply_exit_time,'yyyymmdd')
+order by to_char(apply_exit_time,'yyyymmdd')
