@@ -1,6 +1,7 @@
 $(function () {
 	initTimeCond();
 	initExportFunction();
+	queryDaishouUserLiuxiang();
 });
 
 function initExportFunction(){
@@ -11,7 +12,7 @@ function initExportFunction(){
 			return;
 		}
 		var params = getParams();
-		executePost('../analyse/exportDaishouYidong', {'params' : JSON.stringify(params)});  
+		executePost('../analyse/exportZiranUser', {'params' : JSON.stringify(params)});  
 	});
 
 }
@@ -25,105 +26,8 @@ function initTimeCond(){
         autoclose:true
     }).on("click",function(){
     });
-}
-
-function queryDapanAnalyse(){
-	var day =  $("#stat_period").val();
-	if(!day){
-		alert('请先选择查询日期');
-		return;
-	}
-	loading();
-	 $.ajax({
-		    type: "POST",
-		    url: "../analyse/queryDaishouYidong",
-		    data: JSON.stringify(getParams()),
-		    contentType: "application/json;charset=utf-8",
-		    success : function(msg) {
-		    	loaded();
-		    	buildTable(msg.data_list);
-		    	
-		    }
-	 });
-	 queryDaishouUserLiuxiang();
-}
-
-function buildTable(data_list){
-	var html = '';
-	
-	for (var i = 0; i < data_list.length; i++) {
-		var row = data_list[i];
-        html += '<tr>' +   
-			    '	 <td>'+row.日期+'</td>' +    
-			    
-			    '    <td>'+ formatNumber(row.净待收金额,2) +'</td>' +    
-			    '    <td>'+ row.用户总数 +'</td>' +   
-			    '    <td>'+row.高净值用户+'</td>' +    
-			    '    <td>'+row.沉默用户+'</td>' +   
-			    
-			    '    <td>'+row.新用户+'</td>' +    
-			    '    <td>'+row.成熟用户+'</td>' +   
-			    
-			    '    <td>'+row.自然用户+'</td>' +   
-			    '    <td>'+row.其他+'</td>' +   
-			    '</tr>'; 
-	}
-	
-	$("#dapan_table").html( getTableHead() + html + getLastWeekHuanbi(data_list[0], data_list[1]));
-}
-function getLastWeekHuanbi(lastweek, curr){
-	var html = '';
-	 html += '<tr>' +   
-	    '	 <td>与上周环比</td>' +    
-	    '    <td>'+ formatNumber((curr.净待收金额-lastweek.净待收金额)*100/lastweek.净待收金额,2) +'%</td>' +   
-	    '    <td>'+ (curr.用户总数-lastweek.用户总数) +'</td>' +   
-	    '    <td>'+ (curr.高净值用户-lastweek.高净值用户) +'</td>' + 
-	    '    <td>'+ (curr.沉默用户-lastweek.沉默用户) +'</td>' + 
-	    '    <td>'+ (curr.新用户-lastweek.新用户) +'</td>' +
-	    '    <td>'+ (curr.成熟用户-lastweek.成熟用户) +'</td>' +
-	    '    <td>'+ (curr.自然用户-lastweek.自然用户) +'</td>' +
-	    '    <td>'+ (curr.其他-lastweek.其他) +'</td>' +
-	    '</tr>'; 
-//    html += '<tr>' +   
-//    '	 <td>与上周环比</td>' +    
-//    '    <td>'+ formatNumber((curr.净待收金额-lastweek.净待收金额)*100/lastweek.净待收金额,2) +'%</td>' +   
-//    '    <td>'+ formatNumber((curr.用户总数-lastweek.用户总数)*100/lastweek.用户总数,2) +'%</td>' +   
-//    
-//    '    <td>'+ formatNumber((curr.高净值用户-lastweek.高净值用户)*100/lastweek.高净值用户,2) +'%</td>' +   
-//    '    <td>'+ formatNumber((curr.沉默用户-lastweek.沉默用户)*100/lastweek.沉默用户,2) +'%</td>' +   
-//    '    <td>'+ formatNumber((curr.新用户-lastweek.新用户)*100/lastweek.新用户,2) +'%</td>' +   
-//    
-//    '    <td>'+ formatNumber((curr.成熟用户-lastweek.成熟用户)*100/lastweek.成熟用户,2) +'%</td>' +   
-//    '    <td>'+ formatNumber((curr.自然用户-lastweek.自然用户)*100/lastweek.自然用户,2) +'%</td>' +   
-//    '    <td>'+ formatNumber((curr.其他-lastweek.其他)*100/lastweek.其他,2) +'%</td>' +  
-//    '</tr>'; 
-    return html;
-}
-
-function getTableHead(){
-	var html = '';
-	html += ' <tr> ' +
-		' <th rowspan="2">日期</th> ' +
-		' <th rowspan="2">待收金额</th> ' +
-		' <th colspan="7">待收资金用户分布(待收资金>0)</th> ' +
-		' </tr> ' +
-		' <tr>   ' +
-		' <th>用户总数</th> ' +  
-		' <th>高净值用户</th> ' +
-		' <th>沉默用户</th> ' +  
-		' <th>新用户</th>  ' +
-		' <th>成熟用户</th>   ' +
-		' <th>自然用户</th>   ' +		
-		' <th>其他</th>   ' +			
-		' </tr> ';
-	return html;
-}
-
-function getParams(){
-	var params = {
-        	'statPeriod': $("#stat_period").val()
-	};
-	return params;
+    $("#stat_period").val('2017-08-13');
+    
 }
 
 function queryDaishouUserLiuxiang(){
@@ -140,37 +44,38 @@ function queryDaishouUserLiuxiang(){
 		    contentType: "application/json;charset=utf-8",
 		    success : function(msg) {
 		    	loaded();
-		    	buildDaishuoLiuxiangTable(msg.data_map);
+		    	buildTable(msg.data_map);
+		    	
 		    }
 	 });
 
 }
 
-function buildDaishuoLiuxiangTable(data_map){
+function buildTable(data_map){
 	var statPeriod = data_map.statPeriod;
 	var weekAgo = data_map.weekAgo;
 	var html = '';
 	//第一行
 	html += '<tr><td rowspan="6">高净值用户</td>'+
-	'	 <td rowspan="6" class="redColorTd">'+data_map.高净值_留存用户+'</td>'+
+	'	 <td rowspan="6">'+data_map.高净值_留存用户+'</td>'+
 	'	 <td rowspan="6">'+ formatNumber(data_map.高净值_留存_上周待收,2) +'</td>' + 
 	'	 <td rowspan="6">'+ formatNumber(data_map.高净值_留存_本周待收,2) + '</td>' +  
     '    <td rowspan="6">'+ formatNumber(data_map.高净值_留存_净增待收,2) + '</td>' +  
 
-    '    <td class="boldFontTd">总增量 流入</td>' +   
-    '    <td class="redColorTd">'+data_map.高净值_总_流入.人数+'</td>' +    
-    '    <td class="redColorTd">'+formatNumber(data_map.高净值_总_流入.本周待收,2)+'</td>' +    
-    '    <td class="redColorTd">'+formatNumber(data_map.高净值_总_流入.上周待收,2)+'</td>' +    
-    '    <td class="redColorTd">'+formatNumber(data_map.高净值_总_流入.流入净待收,2)+'</td>' +    
+    '    <td>总增量 流入</td>' +   
+    '    <td>'+data_map.高净值_总_流入.人数+'</td>' +    
+    '    <td>'+formatNumber(data_map.高净值_总_流入.本周待收,2)+'</td>' +    
+    '    <td>'+formatNumber(data_map.高净值_总_流入.上周待收,2)+'</td>' +    
+    '    <td>'+formatNumber(data_map.高净值_总_流入.流入净待收,2)+'</td>' +    
     
-    '    <td class="boldFontTd">总减量 流出</td>' +   
-    '    <td class="redColorTd">'+data_map.高净值_总_流出.人数+'</td>' +    
-    '    <td class="redColorTd">'+formatNumber(data_map.高净值_总_流出.上周待收,2)+'</td>' +    
-    '    <td class="redColorTd">'+formatNumber(data_map.高净值_总_流出.本周待收,2)+'</td>' +    
-    '    <td class="redColorTd">'+formatNumber(data_map.高净值_总_流出.流出净待收,2)+'</td>' +    
+    '    <td>总减量 流出</td>' +   
+    '    <td>'+data_map.高净值_总_流出.人数+'</td>' +    
+    '    <td>'+formatNumber(data_map.高净值_总_流出.上周待收,2)+'</td>' +    
+    '    <td>'+formatNumber(data_map.高净值_总_流出.本周待收,2)+'</td>' +    
+    '    <td>'+formatNumber(data_map.高净值_总_流出.流出净待收,2)+'</td>' +    
     
-    '    <td class="redColorTd" rowspan="6">'+ (data_map.高净值_总_流入.人数-data_map.高净值_总_流出.人数) +'</td>' +    
-    '    <td class="redColorTd" rowspan="6">'+ formatNumber((data_map.高净值_总_流入.流入净待收 + data_map.高净值_总_流出.流出净待收),2) +'</td>' +    
+    '    <td rowspan="6">'+ (data_map.高净值_总_流入.人数-data_map.高净值_总_流出.人数) +'</td>' +    
+    '    <td rowspan="6">'+ formatNumber((data_map.高净值_总_流入.流入净待收 + data_map.高净值_总_流出.流出净待收),2) +'</td>' +    
     '</tr>'; 
 	//第2行
 	html += '<tr>' +   
@@ -240,25 +145,25 @@ function buildDaishuoLiuxiangTable(data_map){
     '</tr>'; 
 	//第7行 --新用户
 	html += '<tr><td rowspan="4">新用户</td>'+
-	'	 <td rowspan="4" class="redColorTd">'+data_map.新_留存用户+'</td>'+
+	'	 <td rowspan="4">'+data_map.新_留存用户+'</td>'+
 	'	 <td rowspan="4">'+ formatNumber(data_map.新_留存_上周待收,2) +'</td>' + 
 	'	 <td rowspan="4">'+ formatNumber(data_map.新_留存_本周待收,2) + '</td>' +  
     '    <td rowspan="4">'+ formatNumber(data_map.新_留存_净增待收,2) + '</td>' +  
 
-    '    <td class="boldFontTd">总增量 流入</td>' +   
-    '    <td class="redColorTd">'+data_map.新_总_流入.人数+'</td>' +    
-    '    <td class="redColorTd">'+formatNumber(data_map.新_总_流入.本周待收,2)+'</td>' +    
-    '    <td class="redColorTd">'+formatNumber(data_map.新_总_流入.上周待收,2)+'</td>' +    
-    '    <td class="redColorTd">'+formatNumber(data_map.新_总_流入.流入净待收,2)+'</td>' +    
+    '    <td>总增量 流入</td>' +   
+    '    <td>'+data_map.新_总_流入.人数+'</td>' +    
+    '    <td>'+formatNumber(data_map.新_总_流入.本周待收,2)+'</td>' +    
+    '    <td>'+formatNumber(data_map.新_总_流入.上周待收,2)+'</td>' +    
+    '    <td>'+formatNumber(data_map.新_总_流入.流入净待收,2)+'</td>' +    
     
-    '    <td class="boldFontTd">总减量 流出</td>' +   
-    '    <td class="redColorTd">'+data_map.新_总_流出.人数+'</td>' +    
-    '    <td class="redColorTd">'+formatNumber(data_map.新_总_流出.上周待收,2)+'</td>' +    
-    '    <td class="redColorTd">'+formatNumber(data_map.新_总_流出.本周待收,2)+'</td>' +    
-    '    <td class="redColorTd">'+formatNumber(data_map.新_总_流出.流出净待收,2)+'</td>' +    
+    '    <td>总减量 流出</td>' +   
+    '    <td>'+data_map.新_总_流出.人数+'</td>' +    
+    '    <td>'+formatNumber(data_map.新_总_流出.上周待收,2)+'</td>' +    
+    '    <td>'+formatNumber(data_map.新_总_流出.本周待收,2)+'</td>' +    
+    '    <td>'+formatNumber(data_map.新_总_流出.流出净待收,2)+'</td>' +    
     
-    '    <td class="redColorTd" rowspan="4">'+ (data_map.新_总_流入.人数-data_map.新_总_流出.人数) +'</td>' +    
-    '    <td class="redColorTd" rowspan="4">'+ formatNumber((data_map.新_总_流入.流入净待收 + data_map.新_总_流出.流出净待收),2) +'</td>' +    
+    '    <td rowspan="4">'+ (data_map.新_总_流入.人数-data_map.新_总_流出.人数) +'</td>' +    
+    '    <td rowspan="4">'+ formatNumber((data_map.新_总_流入.流入净待收 + data_map.新_总_流出.流出净待收),2) +'</td>' +    
     '</tr>'; 
 	//第8行 --新用户
 	html += '<tr>'+
@@ -302,25 +207,25 @@ function buildDaishuoLiuxiangTable(data_map){
 	
 	//第11行 --成熟用户
 	html += '<tr><td rowspan="6">成熟用户</td>'+
-	'	 <td rowspan="6" class="redColorTd">'+data_map.成熟_留存用户+'</td>'+
+	'	 <td rowspan="6">'+data_map.成熟_留存用户+'</td>'+
 	'	 <td rowspan="6">'+ formatNumber(data_map.成熟_留存_上周待收,2) +'</td>' + 
 	'	 <td rowspan="6">'+ formatNumber(data_map.成熟_留存_本周待收,2) + '</td>' +  
     '    <td rowspan="6">'+ formatNumber(data_map.成熟_留存_净增待收,2) + '</td>' +  
 
-    '    <td class="boldFontTd">总增量 流入</td>' +   
-    '    <td class="redColorTd">'+data_map.成熟_总_流入.人数+'</td>' +    
-    '    <td class="redColorTd">'+formatNumber(data_map.成熟_总_流入.本周待收,2)+'</td>' +    
-    '    <td class="redColorTd">'+formatNumber(data_map.成熟_总_流入.上周待收,2)+'</td>' +    
-    '    <td class="redColorTd">'+formatNumber(data_map.成熟_总_流入.流入净待收,2)+'</td>' +    
+    '    <td>总增量 流入</td>' +   
+    '    <td>'+data_map.成熟_总_流入.人数+'</td>' +    
+    '    <td>'+formatNumber(data_map.成熟_总_流入.本周待收,2)+'</td>' +    
+    '    <td>'+formatNumber(data_map.成熟_总_流入.上周待收,2)+'</td>' +    
+    '    <td>'+formatNumber(data_map.成熟_总_流入.流入净待收,2)+'</td>' +    
     
-    '    <td class="boldFontTd">总减量 流出</td>' +   
-    '    <td class="redColorTd">'+data_map.成熟_总_流出.人数+'</td>' +    
-    '    <td class="redColorTd">'+formatNumber(data_map.成熟_总_流出.上周待收,2)+'</td>' +    
-    '    <td class="redColorTd">'+formatNumber(data_map.成熟_总_流出.本周待收,2)+'</td>' +    
-    '    <td class="redColorTd">'+formatNumber(data_map.成熟_总_流出.流出净待收,2)+'</td>' +    
+    '    <td>总减量 流出</td>' +   
+    '    <td>'+data_map.成熟_总_流出.人数+'</td>' +    
+    '    <td>'+formatNumber(data_map.成熟_总_流出.上周待收,2)+'</td>' +    
+    '    <td>'+formatNumber(data_map.成熟_总_流出.本周待收,2)+'</td>' +    
+    '    <td>'+formatNumber(data_map.成熟_总_流出.流出净待收,2)+'</td>' +    
     
-    '    <td class="redColorTd" rowspan="6">'+ (data_map.成熟_总_流入.人数-data_map.成熟_总_流出.人数) +'</td>' +    
-    '    <td class="redColorTd" rowspan="6">'+ formatNumber((data_map.成熟_总_流入.流入净待收 + data_map.成熟_总_流出.流出净待收),2) +'</td>' +    
+    '    <td rowspan="6">'+ (data_map.成熟_总_流入.人数-data_map.成熟_总_流出.人数) +'</td>' +    
+    '    <td rowspan="6">'+ formatNumber((data_map.成熟_总_流入.流入净待收 + data_map.成熟_总_流出.流出净待收),2) +'</td>' +    
     '</tr>'; 
 	//第12行
 	html += '<tr>' +   
@@ -388,10 +293,31 @@ function buildDaishuoLiuxiangTable(data_map){
     '    <td></td>' +   
     '    <td></td>' +   
     '</tr>';
-	$("#daishou_liuxiang").html( getDaishouLiuxiangTableHead(data_map) + html);
+	$("#dapan_table").html( getTableHead(data_map) + html);
+}
+function getLastWeekHuanbi(lastweek, curr){
+	var html = '';
+    html += '<tr>' +   
+    '	 <td>与上周环比</td>' +    
+    '    <td>'+ formatNumber((curr.平台总投资用户-lastweek.平台总投资用户)*100/lastweek.平台总投资用户,2) +'%</td>' +   
+    '    <td>'+ formatNumber((curr.平台总待收金额-lastweek.平台总待收金额)*100/lastweek.平台总待收金额,2) +'%</td>' +   
+    '    <td>'+ formatNumber((curr.平台红包使用总金额-lastweek.平台红包使用总金额)*100/lastweek.平台红包使用总金额,2) +'%</td>' +  
+   
+    '    <td>'+ formatNumber((curr.自然用户数-lastweek.自然用户数)*100/lastweek.自然用户数,2) +'%</td>' +    
+    '    <td>'+ formatNumber((curr.占比_自然用户数-lastweek.占比_自然用户数)*100/lastweek.占比_自然用户数,2) +'%</td>' +   
+    '    <td>'+ formatNumber((curr.自然用户待收-lastweek.自然用户待收)*100/lastweek.自然用户待收,2) +'%</td>' +  
+    
+    '    <td>'+ formatNumber((curr.占比_自然用户待收-lastweek.占比_自然用户待收)*100/lastweek.占比_自然用户待收,2) +'%</td>' +    
+    '    <td>'+ formatNumber((curr.自然用户红包使用-lastweek.自然用户红包使用)*100/lastweek.自然用户红包使用,2) +'%</td>' +   
+    '    <td>'+ formatNumber((curr.占比_自然用户红包使用-lastweek.占比_自然用户红包使用)*100/lastweek.占比_自然用户红包使用,2) +'%</td>' +  
+    
+    '    <td>'+ formatNumber((curr.自然用户项目平均投资期限-lastweek.自然用户项目平均投资期限)*100/lastweek.自然用户项目平均投资期限,2) +'%</td>' +    
+    
+    '</tr>'; 
+    return html;
 }
 
-function getDaishouLiuxiangTableHead(data_map){
+function getTableHead(data_map){
 	var statPeriod = data_map.statPeriod;
 	var weekAgo = data_map.weekAgo;
 	var html = '';
@@ -402,13 +328,13 @@ function getDaishouLiuxiangTableHead(data_map){
 	
 	html += ' <tr> ' +
 	' <th rowspan="2">类别</th> ' +
-	' <th rowspan="2" class="boldFontTd">'+weekAgo+' 留存用户</th> ' +
+	' <th rowspan="2">'+weekAgo+' 留存用户</th> ' +
 	' <th rowspan="2">'+weekAgo+' 待收资金</th> ' +
 	' <th rowspan="2">'+statPeriod+' 待收资金</th> ' +
 	' <th rowspan="2">留存用户净增待收</th> ' +
 	
-	' <th colspan="5">'+statPeriod+' <font color="red">增量流入</font> （待收>0）</th> ' +
-	' <th colspan="5">'+weekAgo+' <font color="red">减量流出</font> </th> ' +
+	' <th colspan="5">'+statPeriod+' 增量流入 （待收>0）</th> ' +
+	' <th colspan="5">'+weekAgo+' 减量流出 </th> ' +
 	
 	' <th rowspan="2">净增用户</th> ' +
 	' <th rowspan="2">净增待收</th> ' +
@@ -427,4 +353,11 @@ function getDaishouLiuxiangTableHead(data_map){
 	' <th>流出净待收</th> ' +  
 	' </tr> ';
 	return html;
+}
+
+function getParams(){
+	var params = {
+        	'statPeriod': $("#stat_period").val()
+	};
+	return params;
 }

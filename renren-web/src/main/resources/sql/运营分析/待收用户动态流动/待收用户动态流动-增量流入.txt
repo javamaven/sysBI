@@ -1,0 +1,613 @@
+-- 本周高净值用户，除掉上周高净值用户的交集
+with tmp1 as (
+  select
+    a.user_id,
+    a.money_wait
+  from 
+  mdtxbi.dm_report_mdtx_analyze a
+  where 1=1
+  and a.stat_peroid='${currDay}'
+  and a.money_wait > 0
+  and a.user_level='高净值用户'
+  and a.user_id not in 
+  (
+      select user_id from mdtxbi.dm_report_mdtx_analyze 
+      where 1=1
+      and stat_peroid='${weekAgo}'
+      and money_wait > 0
+      and user_level='高净值用户'
+  )
+),tmp2 as (
+  select
+    a.user_id,
+    a.money_wait
+  from 
+  mdtxbi.dm_report_mdtx_analyze a
+  where 1=1
+  and a.stat_peroid='${currDay}'
+  and a.money_wait > 0
+  and a.user_level='新用户'
+  and a.user_id not in 
+  (
+      select user_id from mdtxbi.dm_report_mdtx_analyze 
+      where 1=1
+      and stat_peroid='${weekAgo}'
+      and money_wait > 0
+      and user_level='新用户'
+  )
+),tmp3 as (
+  select
+    a.user_id,
+    a.money_wait
+  from 
+  mdtxbi.dm_report_mdtx_analyze a
+  where 1=1
+  and a.stat_peroid='${currDay}'
+  and a.money_wait > 0
+  and a.user_level='成熟用户'
+  and a.user_id not in 
+  (
+      select user_id from mdtxbi.dm_report_mdtx_analyze 
+      where 1=1
+      and stat_peroid='${weekAgo}'
+      and money_wait > 0
+      and user_level='成熟用户'
+  )
+)
+select
+  s.type,
+  sum(s.高净值_总增量_流入) 人数,
+  sum(s.高净值_总增量_本周待收) 本周待收,
+  sum(s.高净值_总增量_上周待收) 上周待收,
+  sum(s.高净值_总增量_本周待收)-sum(s.高净值_总增量_上周待收) 流入净待收
+from (
+    select
+      '高净值_总' as type,
+      count(1) as 高净值_总增量_流入,
+      sum(t.money_wait) as 高净值_总增量_本周待收,
+      0 as 高净值_总增量_上周待收
+    from tmp1 t
+    union all 
+    select
+       '高净值_总' as type,
+       0 as 高净值_总增量_流入,
+       0 as 高净值_总增量_本周待收,
+       sum(a.money_wait) as 高净值_总增量_上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze a
+    where 1=1
+    and a.stat_peroid='${weekAgo}'
+    and a.user_id in (
+        select user_id from tmp1
+    )
+) s
+where 1=1 group by s.type
+
+union all 
+
+select
+  s.type,
+  sum(s.新_总增量_流入) 新_总增量_流入,
+  sum(s.新_总增量_本周待收) 新_总增量_本周待收,
+  sum(s.新_总增量_上周待收) 新_总增量_上周待收,
+  sum(s.新_总增量_本周待收)-sum(s.新_总增量_上周待收) 新_总增量_净待收
+from (
+    select
+      '新_总' as type,
+      count(1) as 新_总增量_流入,
+      sum(t.money_wait) as 新_总增量_本周待收,
+      0 as 新_总增量_上周待收
+    from tmp2 t
+    union all 
+    select
+       '新_总' as type,
+       0 as 新_总增量_流入,
+       0 as 新_总增量_本周待收,
+       sum(a.money_wait) as 新_总增量_上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze a
+    where 1=1
+    and a.stat_peroid='${weekAgo}'
+    and a.user_id in (
+        select user_id from tmp2
+    )
+) s
+where 1=1 group by s.type
+union all 
+
+select
+  s.type,
+  sum(s.成熟_总增量_流入) 成熟_总增量_流入,
+  sum(s.成熟_总增量_本周待收) 成熟_总增量_本周待收,
+  sum(s.成熟_总增量_上周待收) 成熟_总增量_上周待收,
+  sum(s.成熟_总增量_本周待收)-sum(s.成熟_总增量_上周待收) 成熟_总增量_净待收
+from (
+    select
+      '成熟_总' as type,
+      count(1) as 成熟_总增量_流入,
+      sum(t.money_wait) as 成熟_总增量_本周待收,
+      0 as 成熟_总增量_上周待收
+    from tmp3 t
+    union all 
+    select
+       '成熟_总' as type,
+       0 as 成熟_总增量_流入,
+       0 as 成熟_总增量_本周待收,
+       sum(a.money_wait) as 成熟_总增量_上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze a
+    where 1=1
+    and a.stat_peroid='${weekAgo}'
+    and a.user_id in (
+        select user_id from tmp3
+    )
+) s
+where 1=1 group by s.type
+
+union all
+-- 高净值用户 成熟用户 流入
+select
+   s.type,
+   sum(s.人数) 人数,
+   sum(s.本周待收) 本周待收,
+   sum(s.上周待收) 上周待收,
+   sum(s.本周待收)-sum(s.上周待收) 流入净待收
+from (
+    select 
+      '高净值_成熟' as type,
+      count(a.user_id) 人数,
+      sum(a.money_wait) 本周待收,
+      0 as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze a
+    where 1=1
+    and a.stat_peroid='${currDay}'
+    and a.user_level='高净值用户'
+    and a.money_wait > 0
+    and a.user_id in (
+    select user_id from mdtxbi.dm_report_mdtx_analyze where stat_peroid='${weekAgo}' and user_level='成熟用户' and  money_wait > 0
+    )
+    union all
+    select
+      '高净值_成熟' as type,
+      0 as 人数,
+      0 as 本周待收,
+      sum(money_wait) as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze
+    where 1=1 
+    and stat_peroid='${weekAgo}' 
+    and user_id in (
+        select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE 
+        where stat_peroid='${currDay}' and user_level='高净值用户'  
+        and user_id in (select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE where stat_peroid='${weekAgo}' and user_level='成熟用户' and  money_wait>0) 
+        and money_wait>0
+    )
+) s
+where 1=1 group by s.type   
+
+union all
+-- 新用户 成熟用户 流入
+select
+   s.type,
+   sum(s.人数) 人数,
+   sum(s.本周待收) 本周待收,
+   sum(s.上周待收) 上周待收,
+   sum(s.本周待收)-sum(s.上周待收) 流入净待收
+from (
+    select 
+      '新_高净值' as type,
+      count(a.user_id) 人数,
+      sum(a.money_wait) 本周待收,
+      0 as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze a
+    where 1=1
+    and a.stat_peroid='${currDay}'
+    and a.user_level='新用户'
+    and a.money_wait > 0
+    and a.user_id in (
+    select user_id from mdtxbi.dm_report_mdtx_analyze where stat_peroid='${weekAgo}' and user_level='高净值用户' and  money_wait > 0
+    )
+    union all
+    select
+      '新_高净值' as type,
+      0 as 人数,
+      0 as 本周待收,
+      sum(money_wait) as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze
+    where 1=1 
+    and stat_peroid='${weekAgo}' 
+    and user_id in (
+        select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE 
+        where stat_peroid='${currDay}' and user_level='新用户'  
+        and user_id in (select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE where stat_peroid='${weekAgo}' and user_level='高净值用户' and  money_wait>0) 
+        and money_wait>0
+    )
+) s
+where 1=1 group by s.type   
+
+union all
+-- 成熟用户 高净值用户 流入
+select
+   s.type,
+   sum(s.人数) 人数,
+   sum(s.本周待收) 本周待收,
+   sum(s.上周待收) 上周待收,
+   sum(s.本周待收)-sum(s.上周待收) 流入净待收
+from (
+    select 
+      '成熟_高净值' as type,
+      count(a.user_id) 人数,
+      sum(a.money_wait) 本周待收,
+      0 as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze a
+    where 1=1
+    and a.stat_peroid='${currDay}'
+    and a.user_level='成熟用户'
+    and a.money_wait > 0
+    and a.user_id in (
+    select user_id from mdtxbi.dm_report_mdtx_analyze where stat_peroid='${weekAgo}' and user_level='高净值用户' and  money_wait > 0
+    )
+    union all
+    select
+      '成熟_高净值' as type,
+      0 as 人数,
+      0 as 本周待收,
+      sum(money_wait) as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze
+    where 1=1 
+    and stat_peroid='${weekAgo}' 
+    and user_id in (
+        select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE 
+        where stat_peroid='${currDay}' and user_level='成熟用户'  
+        and user_id in (select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE where stat_peroid='${weekAgo}' and user_level='高净值用户' and  money_wait>0) 
+        and money_wait>0
+    )
+) s
+where 1=1 group by s.type   
+
+
+union all
+-- 高净值用户 0待收 成熟用户 流入
+select
+   s.type,
+   sum(s.人数) 人数,
+   sum(s.本周待收) 本周待收,
+   sum(s.上周待收) 上周待收,
+   sum(s.本周待收)-sum(s.上周待收) 流入净待收
+from (
+    select 
+      '高净值_0待收_成熟' as type,
+      count(a.user_id) 人数,
+      sum(a.money_wait) 本周待收,
+      0 as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze a
+    where 1=1
+    and a.stat_peroid='${currDay}'
+    and a.user_level='高净值用户'
+    and a.money_wait > 0
+    and a.user_id in (
+    select user_id from mdtxbi.dm_report_mdtx_analyze where stat_peroid='${weekAgo}' and user_level='成熟用户' and  money_wait = 0
+    )
+    union all
+    select
+      '高净值_0待收_成熟' as type,
+      0 as 人数,
+      0 as 本周待收,
+      sum(money_wait) as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze
+    where 1=1 
+    and stat_peroid='${weekAgo}' 
+    and user_id in (
+        select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE 
+        where stat_peroid='${currDay}' and user_level='高净值用户'  
+        and user_id in (select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE where stat_peroid='${weekAgo}' and user_level='成熟用户' and  money_wait = 0) 
+        and money_wait>0
+    )
+) s
+where 1=1 group by s.type   
+
+union all
+-- 成熟用户 0待收 成熟用户 流入
+select
+   s.type,
+   sum(s.人数) 人数,
+   sum(s.本周待收) 本周待收,
+   sum(s.上周待收) 上周待收,
+   sum(s.本周待收)-sum(s.上周待收) 流入净待收
+from (
+    select 
+      '成熟_0待收_成熟' as type,
+      count(a.user_id) 人数,
+      sum(a.money_wait) 本周待收,
+      0 as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze a
+    where 1=1
+    and a.stat_peroid='${currDay}'
+    and a.user_level='成熟用户'
+    and a.money_wait > 0
+    and a.user_id in (
+    select user_id from mdtxbi.dm_report_mdtx_analyze where stat_peroid='${weekAgo}' and user_level='成熟用户' and  money_wait = 0
+    )
+    union all
+    select
+      '成熟_0待收_成熟' as type,
+      0 as 人数,
+      0 as 本周待收,
+      sum(money_wait) as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze
+    where 1=1 
+    and stat_peroid='${weekAgo}' 
+    and user_id in (
+        select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE 
+        where stat_peroid='${currDay}' and user_level='成熟用户'  
+        and user_id in (select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE where stat_peroid='${weekAgo}' and user_level='成熟用户' and  money_wait = 0) 
+        and money_wait>0
+    )
+) s
+where 1=1 group by s.type     
+
+union all
+-- 高净值用户 新用户 流入
+select
+   s.type,
+   sum(s.人数) 人数,
+   sum(s.本周待收) 本周待收,
+   sum(s.上周待收) 上周待收,
+   sum(s.本周待收)-sum(s.上周待收) 流入净待收
+from (
+    select 
+      '高净值_新' as type,
+      count(a.user_id) 人数,
+      sum(a.money_wait) 本周待收,
+      0 as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze a
+    where 1=1
+    and a.stat_peroid='${currDay}'
+    and a.user_level='高净值用户'
+    and a.money_wait > 0
+    and a.user_id in (
+    select user_id from mdtxbi.dm_report_mdtx_analyze where stat_peroid='${weekAgo}' and user_level='新用户' and  money_wait > 0
+    )
+    union all
+    select
+      '高净值_新' as type,
+      0 as 人数,
+      0 as 本周待收,
+      sum(money_wait) as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze
+    where 1=1 
+    and stat_peroid='${weekAgo}' 
+    and user_id in (
+      select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE 
+      where stat_peroid='${currDay}' and user_level='高净值用户'  
+      and user_id in (select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE where stat_peroid='${weekAgo}' and user_level='新用户' and  money_wait > 0) 
+      and money_wait>0
+    )
+) s
+where 1=1 group by s.type 
+
+union all
+-- 成熟用户 新用户 流入
+select
+   s.type,
+   sum(s.人数) 人数,
+   sum(s.本周待收) 本周待收,
+   sum(s.上周待收) 上周待收,
+   sum(s.本周待收)-sum(s.上周待收) 流入净待收
+from (
+    select 
+      '成熟_新' as type,
+      count(a.user_id) 人数,
+      sum(a.money_wait) 本周待收,
+      0 as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze a
+    where 1=1
+    and a.stat_peroid='${currDay}'
+    and a.user_level='成熟用户'
+    and a.money_wait > 0
+    and a.user_id in (
+    select user_id from mdtxbi.dm_report_mdtx_analyze where stat_peroid='${weekAgo}' and user_level='新用户' and  money_wait > 0
+    )
+    union all
+    select
+      '成熟_新' as type,
+      0 as 人数,
+      0 as 本周待收,
+      sum(money_wait) as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze
+    where 1=1 
+    and stat_peroid='${weekAgo}' 
+    and user_id in (
+      select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE 
+      where stat_peroid='${currDay}' and user_level='成熟用户'  
+      and user_id in (select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE where stat_peroid='${weekAgo}' and user_level='新用户' and  money_wait > 0) 
+      and money_wait>0
+    )
+) s
+where 1=1 group by s.type 
+
+union all
+-- 高净值用户 0待收 新用户 流入
+select
+   s.type,
+   sum(s.人数) 人数,
+   sum(s.本周待收) 本周待收,
+   sum(s.上周待收) 上周待收,
+   sum(s.本周待收)-sum(s.上周待收) 流入净待收
+from (
+    select 
+      '高净值_0待收_新' as type,
+      count(a.user_id) 人数,
+      sum(a.money_wait) 本周待收,
+      0 as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze a
+    where 1=1
+    and a.stat_peroid='${currDay}'
+    and a.user_level='高净值用户'
+    and a.money_wait > 0
+    and a.user_id in (
+    select user_id from mdtxbi.dm_report_mdtx_analyze where stat_peroid='${weekAgo}' and user_level='新用户' and  money_wait = 0
+    )
+    union all
+    select
+      '高净值_0待收_新' as type,
+      0 as 人数,
+      0 as 本周待收,
+      sum(money_wait) as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze
+    where 1=1 
+    and stat_peroid='${weekAgo}' 
+    and user_id in (
+      select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE 
+      where stat_peroid='${currDay}' and user_level='高净值用户'  
+             and user_id in (select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE where stat_peroid='${weekAgo}' 
+                             and user_level='新用户' and  money_wait = 0) 
+      and money_wait>0
+    )
+) s
+where 1=1 group by s.type
+
+union all
+-- 新用户 0待收 新用户 流入
+select
+   s.type,
+   sum(s.人数) 人数,
+   sum(s.本周待收) 本周待收,
+   sum(s.上周待收) 上周待收,
+   sum(s.本周待收)-sum(s.上周待收) 流入净待收
+from (
+    select 
+      '新_0待收_新' as type,
+      count(a.user_id) 人数,
+      sum(a.money_wait) 本周待收,
+      0 as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze a
+    where 1=1
+    and a.stat_peroid='${currDay}'
+    and a.user_level='新用户'
+    and a.money_wait > 0
+    and a.user_id in (
+    select user_id from mdtxbi.dm_report_mdtx_analyze where stat_peroid='${weekAgo}' and user_level='新用户' and  money_wait = 0
+    )
+    union all
+    select
+      '新_0待收_新' as type,
+      0 as 人数,
+      0 as 本周待收,
+      sum(money_wait) as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze
+    where 1=1 
+    and stat_peroid='${weekAgo}' 
+    and user_id in (
+      select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE 
+      where stat_peroid='${currDay}' and user_level='新用户'  
+             and user_id in (select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE where stat_peroid='${weekAgo}' 
+                             and user_level='新用户' and  money_wait = 0) 
+      and money_wait>0
+    )
+) s
+where 1=1 group by s.type
+
+union all
+-- 成熟用户 0待收 新用户 流入
+select
+   s.type,
+   sum(s.人数) 人数,
+   sum(s.本周待收) 本周待收,
+   sum(s.上周待收) 上周待收,
+   sum(s.本周待收)-sum(s.上周待收) 流入净待收
+from (
+    select 
+      '成熟_0待收_新' as type,
+      count(a.user_id) 人数,
+      sum(a.money_wait) 本周待收,
+      0 as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze a
+    where 1=1
+    and a.stat_peroid='${currDay}'
+    and a.user_level='成熟用户'
+    and a.money_wait > 0
+    and a.user_id in (
+    select user_id from mdtxbi.dm_report_mdtx_analyze where stat_peroid='${weekAgo}' and user_level='新用户' and  money_wait = 0
+    )
+    union all
+    select
+      '成熟_0待收_新' as type,
+      0 as 人数,
+      0 as 本周待收,
+      sum(money_wait) as 上周待收
+    from 
+    mdtxbi.dm_report_mdtx_analyze
+    where 1=1 
+    and stat_peroid='${weekAgo}' 
+    and user_id in (
+      select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE 
+      where stat_peroid='${currDay}' and user_level='成熟用户'  
+             and user_id in (select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE where stat_peroid='${weekAgo}' 
+                             and user_level='新用户' and  money_wait = 0) 
+      and money_wait>0
+    )
+) s
+where 1=1 group by s.type
+union all 
+-- 高净值上周后发生首次投资用户 流入
+select
+   '高净值_首投' as type,
+   count(user_id) as 人数,
+   sum(money_wait) as 本周待收,
+   0 as 上周待收,
+   sum(money_wait)-0 as 流入净待收
+from  mdtxbi.dm_report_mdtx_analyze 
+where 1=1 
+and stat_peroid='${currDay}' 
+and user_level='高净值用户'  
+and money_wait>0
+and user_id not in (select user_id from mdtxbi.dm_report_mdtx_analyze where stat_peroid = '${weekAgo}') 
+union all 
+-- 新用户 上周后发生首次投资用户 流入
+select
+   '新_首投' as type,
+   count(user_id) as 人数,
+   sum(money_wait) as 本周待收,
+   0 as 上周待收,
+   sum(money_wait)-0 as 流入净待收
+from  mdtxbi.dm_report_mdtx_analyze 
+where 1=1 
+and stat_peroid='${currDay}' 
+and user_level='新用户'  
+and money_wait>0
+and user_id not in (select user_id from mdtxbi.dm_report_mdtx_analyze where stat_peroid = '${weekAgo}') 
+union all 
+-- 成熟 上周后发生首次投资用户 流入
+select
+   '成熟_首投' as type,
+   count(user_id) as 人数,
+   sum(money_wait) as 本周待收,
+   0 as 上周待收,
+   sum(money_wait)-0 as 流入净待收
+from  mdtxbi.dm_report_mdtx_analyze 
+where 1=1 
+and stat_peroid='${currDay}' 
+and user_level='成熟用户'  
+and money_wait>0
+and user_id not in (select user_id from mdtxbi.dm_report_mdtx_analyze where stat_peroid = '${weekAgo}')
+
+order by type 

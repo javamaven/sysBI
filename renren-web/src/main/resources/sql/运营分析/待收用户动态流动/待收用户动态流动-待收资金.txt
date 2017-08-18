@@ -1,0 +1,29 @@
+select
+   --高净值
+   sum(case when a.user_level='高净值用户' and l.user_level='高净值用户' then 1 else 0 end) 高净值_留存用户,
+   sum(case when a.user_level='高净值用户' and l.user_level='高净值用户' then l.money_wait else 0 end) as 高净值_留存_上周待收,
+   sum(case when a.user_level='高净值用户' and l.user_level='高净值用户' then a.money_wait else 0 end) as 高净值_留存_本周待收,
+   sum(case when a.user_level='高净值用户' and l.user_level='高净值用户' then a.money_wait else 0 end)
+     - sum(case when a.user_level='高净值用户' and l.user_level='高净值用户' then l.money_wait else 0 end) as 高净值_留存_净增待收,
+   --新用户 
+   sum(case when a.user_level='新用户' and l.user_level='新用户' then 1 else 0 end) 新_留存用户,
+   sum(case when a.user_level='新用户' and l.user_level='新用户' then l.money_wait else 0 end) as 新_留存_上周待收,
+   sum(case when a.user_level='新用户' and l.user_level='新用户' then a.money_wait else 0 end) as 新_留存_本周待收,
+   sum(case when a.user_level='新用户' and l.user_level='新用户' then a.money_wait else 0 end)
+     - sum(case when a.user_level='新用户' and l.user_level='新用户' then l.money_wait else 0 end) as 新_留存_净增待收,
+   --成熟用户
+   sum(case when a.user_level='成熟用户' and l.user_level='成熟用户' then 1 else 0 end) 成熟_留存用户,
+   sum(case when a.user_level='成熟用户' and l.user_level='成熟用户' then l.money_wait else 0 end) as 成熟_留存_上周待收,
+   sum(case when a.user_level='成熟用户' and l.user_level='成熟用户' then a.money_wait else 0 end) as 成熟_留存_本周待收,
+   sum(case when a.user_level='成熟用户' and l.user_level='成熟用户' then a.money_wait else 0 end)
+     - sum(case when a.user_level='成熟用户' and l.user_level='成熟用户' then l.money_wait else 0 end) as 成熟_留存_净增待收  
+from 
+dm_report_mdtx_analyze l, mdtxbi.dm_report_mdtx_analyze a -- 内关联
+where 1=1
+and l.user_id=a.user_id
+-- 本周
+and a.stat_peroid=?
+-- 一周前
+and l.stat_peroid=?
+and l.money_wait > 0
+and a.money_wait > 0

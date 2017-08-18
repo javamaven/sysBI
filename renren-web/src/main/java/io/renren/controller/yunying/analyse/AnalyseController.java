@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +53,63 @@ public class AnalyseController {
 	DataSourceFactory dataSourceFactory;
 	@Autowired
 	private UserBehaviorService userBehaviorService;
+	
+	/**
+	 * 净资金待收异动
+	 * @param statPeriod
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/queryDaishouUserLiuxiang")
+	public R queryDaishouUserLiuxiang(@RequestBody Map<String, Object> params) {
+		long l1 = System.currentTimeMillis();
+		String reportType="待收用户动态流动";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+		String statPeriod = params.get("statPeriod") + "";
+		if(StringUtils.isNotEmpty(statPeriod)){
+			statPeriod = statPeriod.replace("-", "");
+		}
+		Map<String,Object> dataMap = new HashMap<String, Object>(); 
+		List<Map<String, Object>> daishouList = new ArrayList<>();
+		List<Map<String, Object>> liuruList = new ArrayList<>();
+		List<Map<String, Object>> liuchuList = new ArrayList<>();
+		try {
+			Thread thread1 = new Thread(new DaishouUserLiuxiangThred("daishou", dataSourceFactory, daishouList, statPeriod, "", false));
+			Thread thread2 = new Thread(new DaishouUserLiuxiangThred("liuru", dataSourceFactory, liuruList, statPeriod, "", false));
+			Thread thread3 = new Thread(new DaishouUserLiuxiangThred("liuchu", dataSourceFactory, liuchuList, statPeriod, "", false));
+			thread1.start();thread2.start();thread3.start();
+			thread1.join();thread2.join();thread3.join();
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		for (int i = 0; i < daishouList.size(); i++) {
+			Map<String, Object> map = daishouList.get(i);
+			dataMap.putAll(map);
+		}
+		for (int i = 0; i < liuruList.size(); i++) {
+			Map<String, Object> map = liuruList.get(i);
+			String type = map.get("TYPE") + "";
+			dataMap.put(type+"_流入", map);
+		}
+		for (int i = 0; i < liuchuList.size(); i++) {
+			Map<String, Object> map = liuchuList.get(i);
+			String type = map.get("TYPE") + "";
+			dataMap.put(type+"_流出", map);
+		}
+		long l2 = System.currentTimeMillis();
+		System.err.println("++++++查詢耗時+++++++" + (l2-l1));
+		System.err.println(dataMap);
+		String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
+		dataMap.put("statPeriod", statPeriod);
+		dataMap.put("weekAgo", weekAgo);
+		return R.ok().put("data_map", dataMap);
+	}
+	
+	
+	
+	
 	
 	/**
 	 * 净资金待收异动
@@ -1439,9 +1497,43 @@ public class AnalyseController {
 			}
 		}
 	}
+	
+	private Map<String, String> getMingxiExcelFields(String statPeriod, String weekAgo, boolean isCurrWeek) {
+
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+		headMap.put("STAT_PERIOD", "截至日期");
+		headMap.put("USER_ID", "用户ID");
+		if(isCurrWeek){
+			headMap.put("CURRDAY_MONEY_WAIT", statPeriod + "待收金额");
+			headMap.put("WEEKAGO_MONEY_WAIT", weekAgo + "待收金额");
+			headMap.put("CURRDAY_USER_LEVEL", statPeriod + "用户层级");
+			headMap.put("WEEKAGO_USER_LEVEL", weekAgo + "用户层级");
+		}else{
+			headMap.put("CURRDAY_MONEY_WAIT", weekAgo + "待收金额");
+			headMap.put("WEEKAGO_MONEY_WAIT", statPeriod + "待收金额");
+			headMap.put("CURRDAY_USER_LEVEL", weekAgo + "用户层级");
+			headMap.put("WEEKAGO_USER_LEVEL", statPeriod + "用户层级");
+		}
+		
+		headMap.put("DAY_NO_INVEST", "已有几天未投资");
+		headMap.put("MONEY_INVEST", "累计投资金额");
+		headMap.put("MONEY_INVEST_COUNT", "累计投资次数");
+		
+		headMap.put("MONEY_VOUCHER", "累计红包使用金额");
+		headMap.put("AVG_DAYS", "平均投资项目期限");
+		headMap.put("CHANNEL_NAME", "注册渠道");
+		
+		headMap.put("IS_STAFF", "是否员工");
+		headMap.put("MONEY_WITHDRAW_ALL", "7天内累计提现金额");
+		headMap.put("MONEY_WITHDRAW_MAX", "是否大额提现用户");
+		headMap.put("IS_SPREADS", "是否被邀请");
+	
+		return headMap;
+
+	}
 
 	/**
-	 * 净资金待收异动导出
+	 * 净资金待收异动导出 只导出明细数据
 	 * @param params
 	 * @param request
 	 * @param response
@@ -1458,12 +1550,86 @@ public class AnalyseController {
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 
-		R daishouData = queryDaishouYidong(map);
-
-		List<Map<String,Object>> dataList = (List<Map<String, Object>>) daishouData.get("data_list");
-		OutputStream os = null;
-		String excelName = "当周待收用户分布-" + map.get("statPeriod");
+		List<Map<String,Object>> dataList1 = new ArrayList<>();
+		List<Map<String,Object>> dataList2 = new ArrayList<>();
+		List<Map<String,Object>> dataList3 = new ArrayList<>();
+		List<Map<String,Object>> dataList4 = new ArrayList<>();
+		List<Map<String,Object>> dataList5 = new ArrayList<>();
+		List<Map<String,Object>> dataList6 = new ArrayList<>();
+		String statPeriod = map.get("statPeriod") + "";
+		statPeriod = statPeriod.replace("-", "");
+		String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
 		try {
+			Thread t1 = new Thread(new DaishouUserLiuxiangThred("mingxi", dataSourceFactory, dataList1, statPeriod, "高净值用户",true));
+			Thread t2 = new Thread(new DaishouUserLiuxiangThred("mingxi", dataSourceFactory, dataList2, statPeriod, "新用户",true));
+			Thread t3 = new Thread(new DaishouUserLiuxiangThred("mingxi", dataSourceFactory, dataList3, statPeriod, "成熟用户",true));
+			Thread t4 = new Thread(new DaishouUserLiuxiangThred("mingxi", dataSourceFactory, dataList4, statPeriod, "高净值用户",false));
+			Thread t5 = new Thread(new DaishouUserLiuxiangThred("mingxi", dataSourceFactory, dataList5, statPeriod, "新用户",false));
+			Thread t6 = new Thread(new DaishouUserLiuxiangThred("mingxi", dataSourceFactory, dataList6, statPeriod, "成熟用户",false));
+			t1.start();t2.start();t3.start();t4.start();t5.start();t6.start();
+			t1.join();t2.join();t3.join();t4.join();t5.join();t6.join();
+		} catch (InterruptedException e1) {
+			e1.printStackTrace();
+		}
+		//导出明细
+		String excelName = "待收用户动态流动-" + statPeriod;
+		String title1 = statPeriod + " 高净值";
+		String title2 = statPeriod + " 新用户";
+		String title3 = statPeriod + " 成熟用户";
+		String title4 = weekAgo + " 高净值";
+		String title5 = weekAgo + " 新用户";
+		String title6 = weekAgo + " 成熟用户";
+		List<String> titleList = new ArrayList<>();
+		titleList.add(title1);
+		titleList.add(title2);
+		titleList.add(title3);
+		titleList.add(title4);
+		titleList.add(title5);
+		titleList.add(title6);
+		
+		List<Map<String, String>> headMapList = new ArrayList<Map<String,String>>();
+		headMapList.add(getMingxiExcelFields(statPeriod, weekAgo, true));
+		headMapList.add(getMingxiExcelFields(statPeriod, weekAgo, true));
+		headMapList.add(getMingxiExcelFields(statPeriod, weekAgo, true));
+		headMapList.add(getMingxiExcelFields(statPeriod, weekAgo, false));
+		headMapList.add(getMingxiExcelFields(statPeriod, weekAgo, false));
+		headMapList.add(getMingxiExcelFields(statPeriod, weekAgo, false));
+		
+		// 查询列表数据
+		JSONArray arr1 = new JSONArray();
+		for (int i = 0; i < dataList1.size(); i++) {
+			arr1.add(dataList1.get(i));
+		}
+		JSONArray arr2 = new JSONArray();
+		for (int i = 0; i < dataList2.size(); i++) {
+			arr2.add(dataList2.get(i));
+		}
+		JSONArray arr3 = new JSONArray();
+		for (int i = 0; i < dataList3.size(); i++) {
+			arr3.add(dataList3.get(i));
+		}
+		JSONArray arr4 = new JSONArray();
+		for (int i = 0; i < dataList4.size(); i++) {
+			arr4.add(dataList4.get(i));
+		}
+		JSONArray arr5 = new JSONArray();
+		for (int i = 0; i < dataList5.size(); i++) {
+			arr5.add(dataList5.get(i));
+		}
+		JSONArray arr6 = new JSONArray();
+		for (int i = 0; i < dataList6.size(); i++) {
+			arr6.add(dataList6.get(i));
+		}
+		
+		List<JSONArray> ja = new ArrayList<JSONArray>();
+		ja.add(arr1);
+		ja.add(arr2);
+		ja.add(arr3);
+		ja.add(arr4);
+		ja.add(arr5);
+		ja.add(arr6);
+		ExcelUtil.downloadExcelFile(excelName, titleList, headMapList, ja, response);
+		/*try {
 			HSSFWorkbook wb = new HSSFWorkbook();
 			
 	        //创建sheet页  
@@ -1484,7 +1650,7 @@ public class AnalyseController {
 	        
 			// 列头样式
 			CellStyle cellStyle = wb.createCellStyle();
-			/* headerStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND); */
+			 headerStyle.setFillPattern(HSSFCellStyle.SOLID_FOREGROUND); 
 //			headerStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
 //			headerStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 //			headerStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
@@ -1577,7 +1743,7 @@ public class AnalyseController {
 			if(os != null){
 				os.close();
 			}
-		}
+		}*/
 	}
 	
 	/**

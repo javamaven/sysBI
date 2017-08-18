@@ -82,6 +82,9 @@ function getYesterday(){
  * @type String
  */
 function formatNumber(num,cent) {
+	if(!num){
+		return '';
+	}
 	var num = num.toString().replace(/\$|\,/g,'');
 	 var isThousand = 1;
 	 // 检查传入数值为数值类型

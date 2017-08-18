@@ -1,0 +1,43 @@
+select STAT_PEROID as STAT_PERIOD, --截至日期
+       t1.USER_ID, --USER_ID
+       t1.MONEY_WAIT as CURRDAY_MONEY_WAIT, --20170813待收金额
+       t2.MONEY_WAIT as WEEKAGO_MONEY_WAIT, --20170806待收金额
+       t1.USER_LEVEL as CURRDAY_USER_LEVEL, --20170813用户层级
+       t2.USER_LEVEL as WEEKAGO_USER_LEVEL, --20170806用户层级
+       DAY_NO_INVEST, --已有几天未投资
+       MONEY_INVEST, --累计投资金额
+       MONEY_INVEST_COUNT, --累计投资次数
+       MONEY_VOUCHER, --累计红包使用金额
+       round(BORROW_PERIOD / MONEY_INVEST_COUNT, 0) AVG_DAYS, --平均投资项目期限
+       CASE
+         WHEN CHANNEL_NAME = '-1' THEN
+          '自然流量'
+         else
+          CHANNEL_NAME
+       end CHANNEL_NAME, --注册渠道
+       case
+         when IS_STAFF = 0 then
+          '否'
+         else
+          '是'
+       end IS_STAFF, --是否员工
+       MONEY_WITHDRAW_ALL, --7天内累计提现金额
+       case
+         when MONEY_WITHDRAW_MAX = 0 then
+          '否'
+         else
+          '是'
+       end MONEY_WITHDRAW_MAX, --是否大额提现用户
+       case
+         when IS_SPREADS = 0 then
+          '否'
+         else
+          '是'
+       end IS_SPREADS --是否被邀请
+  From MDTXBI.DM_REPORT_MDTX_ANALYZE t1
+  left join (select user_id, MONEY_WAIT, USER_LEVEL
+               from MDTXBI.DM_REPORT_MDTX_ANALYZE
+              where stat_peroid = ?) t2 on t1.user_id = t2.user_id
+ where t1.stat_peroid = ?
+   and t1.USER_LEVEL = ?
+   and t1.money_wait > 0
