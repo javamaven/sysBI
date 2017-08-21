@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+#parse("sys/header.html")
+<style type="text/css">
+.inputClass {
+	height: 30px;
+	width: 280px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+
+.inputClassMin {
+	height: 30px;
+	width: 80px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+
+
+</style>
+</head>
+<body>
+<div k>
+	<div>
+		<div class="grid-btn">
+			<a class="btn btn-primary" onclick="add()"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			<a class="btn btn-primary" onclick="update()"><i class="fa fa-pencil-square-o"></i>&nbsp;修改</a>
+			<a class="btn btn-primary" onclick="del()"><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+<!-- 			<a class="btn btn-primary" id="upload"><i class="fa fa-plus"></i>&nbsp;Excel导入</a> -->
+<!-- 			<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a> -->
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+			<!-- 模态框（Modal） -->
+	<div class="modal fade" id="table_win" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content" style="width: 80%">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel"><font style="font-weight: bold;">渠道负责人</font></h4>
+				</div>
+				<div class="modal-body" style="height: 135px;" id="modal_body_div">
+				
+					<form class="form-horizontal" style="padding-top: 0px;line-height: -1.2">
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="firstname" class="col-sm-2 control-label">负责人姓名：</label>
+							<div class="col-sm-10">
+								<input type="text" class="inputClass"  height="29" id="channel_head" placeholder="负责人姓名">
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">经分系统帐号：</label>
+							<div class="col-sm-10">
+								<input type="text" class="inputClass" height="29"  id="sys_account" placeholder="经分系统帐号">
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;">
+							<label for="lastname" class="col-sm-2 control-label">市场部总监：</label>
+							<div class="col-sm-10">
+								<input style="margin-top: 10px;"  id="is_boss" onclick="selectType('0')" name="TimeSelect" checked="checked" type="radio" value="0" />是
+								<input style="margin-left: 50px;" id="not_boss" onclick="selectType('1')"  name="TimeSelect" type="radio" value="1" />否
+							</div>
+						</div>
+						<div class="form-group" style="margin-bottom: 5px;display: none;" id="parent_channel_head_div">
+							<label for="lastname" class="col-sm-2 control-label">上级负责人：</label>
+							<div class="col-sm-10">
+								<select id="parent_channel_head" class="inputClassMin">
+								</select>
+							</div>
+						</div>
+						
+					</form>
+									
+				
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭
+					</button>
+					<button type="button" class="btn btn-primary" onclick="saveOrUpdate()">
+						确定
+					</button>
+				</div>
+			</div><!-- /.modal-content -->
+		</div>
+		<!-- /.modal -->
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	
+</div>
+<!-- <link rel="stylesheet" href="${rc.contextPath}/js/schedule/taskwin.css"></link> -->
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/channel/channel_head.js?_${date.systemTime}"></script>
+</body>
+</html>

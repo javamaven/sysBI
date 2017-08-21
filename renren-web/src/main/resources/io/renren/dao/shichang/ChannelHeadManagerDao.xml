@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.shichang.ChannelHeadManagerDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.shichang.ChannelHeadManagerEntity" id="dimChannelTypeMap">
+        <result property="channelLabel" column="CHANNEL_LABEL"/>
+        <result property="channelType" column="CHANNEL_TYPE"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.shichang.ChannelHeadManagerEntity">
+		select * from dim_channel_type where CHANNEL_LABEL = #{value}
+	</select>
+	
+	<select id="queryByChannelHead" resultType="io.renren.entity.shichang.ChannelHeadManagerEntity">
+		select * from dm_report_channel_head_manager 
+		where 1=1
+		<if test="channelHead != null and channelHead != '' ">
+			and channel_head = #{channelHead}
+		</if>
+	</select>
+	
+
+	<select id="queryListMap" resultType="Map">
+			SELECT
+				a.channel_head_id,
+				a.channel_head,
+				a.sys_account,
+				a.parent_channel_head,
+				a.parent_channel_head_id,
+				a.description,
+				(
+					SELECT
+						ifnull(GROUP_CONCAT(distinct channel_name), '')
+					FROM
+						dim_channel
+					WHERE
+						channel_head = a.channel_head
+				) channelName
+			FROM
+				dm_report_channel_head_manager a 
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+			SELECT
+				count(*)
+			FROM
+				(
+					SELECT
+						a.channel_head_id,
+						a.channel_head,
+						a.sys_account,
+						a.parent_channel_head,
+						a.parent_channel_head_id,
+						a.description,
+						(
+							SELECT
+								 IFNULL(GROUP_CONCAT(distinct channel_name),'')
+							FROM
+								dim_channel
+							WHERE
+								channel_head = a.channel_head
+						) channelName
+					FROM
+						dm_report_channel_head_manager a 
+				) s
+			WHERE
+				1 = 1
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.shichang.ChannelHeadManagerEntity">
+		insert into dm_report_channel_head_manager
+		(
+			`channel_head`, 
+			`sys_account`,
+			`parent_channel_head`,
+			`parent_channel_head_id`,
+			`description`
+		)
+		values
+		(
+			#{channelHead}, 
+			#{sysAccount},
+			#{parentChannelHead},
+			#{parentChannelHeadId},
+			#{description}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.shichang.ChannelHeadManagerEntity">
+		update dm_report_channel_head_manager 
+		<set>
+		CHANNEL_HEAD = #{channelHead}, SYS_ACCOUNT = #{sysAccount}, PARENT_CHANNEL_HEAD = #{parentChannelHead}, PARENT_CHANNEL_HEAD_ID = #{parentChannelHeadId}
+<!-- 			<if test="channelHead != null"> CHANNEL_HEAD = #{channelHead}</if> -->
+<!-- 			<if test="sysAccount != null"> SYS_ACCOUNT = #{sysAccount}</if> -->
+<!-- 			<if test="parentChannelHead != null"> PARENT_CHANNEL_HEAD = #{parentChannelHead}</if> -->
+<!-- 			<if test="parentChannelHeadId != null"> PARENT_CHANNEL_HEAD_ID = #{parentChannelHeadId}</if> -->
+		</set>
+		where channel_head_id = #{channelHeadId}
+	</update>
+	
+	<delete id="delete">
+		delete from dm_report_channel_head_manager 
+		where 1=1 
+		<if test="channelHeadId != null and channelHeadId != '' ">
+			and channel_head_id = #{channelHeadId}
+		</if>
+		<if test="channel_head != null and channel_head != '' ">
+			and channel_head = #{channel_head}
+		</if>
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from dim_channel_type where CHANNEL_LABEL in 
+		<foreach item="channelLabel" collection="array" open="(" separator="," close=")">
+			#{channelLabel}
+		</foreach>;
+		
+		delete from dim_channel where CHANNEL_LABEL in 
+		<foreach item="channelLabel" collection="array" open="(" separator="," close=")">
+			#{channelLabel}
+		</foreach>;
+	</delete>
+	
+	<insert id="insert" parameterType="Map">
+		insert into dim_channel_type
+			(
+			`CHANNEL_LABEL`,
+			`CHANNEL_TYPE`
+			)
+			values 
+			(
+			  #{CHANNEL_LABEL},
+			  #{CHANNEL_TYPE}
+			);
+			
+		insert into dim_channel
+		(
+			`CHANNEL_ID`,
+			`CHANNEL_CENTER`,
+			`CHANNEL_NAME`,
+			`CHANNEL_NAME_BACK`,
+			`CHANNEL_LABEL`,
+			`CHANNEL_HEAD`,
+			`PAYMENT_WAY`,
+			`CORE_TERMS`,
+			`CHANNEL_STATUS`,
+			`CHANNEL_STARTTIME`,
+			`CHANNEL_ENDTIME`,
+			`CHANNEL_UPTIME`,
+			`HEAD_STARTTIME`,
+			`HEAD_ENDTIME`,
+			`STATUS`
+		)
+		values
+		(
+			#{CHANNEL_ID}, 
+			#{CHANNEL_CENTER}, 
+			#{CHANNEL_NAME}, 
+			#{CHANNEL_NAME_BACK}, 
+			#{CHANNEL_LABEL}, 
+			#{CHANNEL_HEAD}, 
+			#{PAYMENT_WAY}, 
+			#{CHANNEL_STATUS}, 
+			#{CHANNEL_STATUS}, 
+			#{CHANNEL_STARTTIME}, 
+			#{CHANNEL_ENDTIME}, 
+			#{CHANNEL_UPTIME}, 
+			#{HEAD_STARTTIME}, 
+			#{HEAD_ENDTIME}, 
+			#{STATUS}
+		);
+	</insert>
+	
+</mapper>
