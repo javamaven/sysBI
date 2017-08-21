@@ -110,10 +110,11 @@ public class MonthlyReportYyController {
 
 
 			String currDate = sdf.format(new Date());
+//			String currDate = "201612";
 			int year = Integer.parseInt(currDate.substring(0,4));
 			int month = Integer.parseInt(currDate.substring(4,6));
 			System.err.println(month);
-			for (int i = 1; i < month; i++) {
+			for (int i = 1; i <= month; i++) {
 				System.err.println("查询" + i + "月数据");
 				String lastDayOfMonth = DateUtil.getLastDayOfMonth(year, i);
 				System.err.println("查询日期" + lastDayOfMonth);

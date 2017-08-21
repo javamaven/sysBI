@@ -488,6 +488,8 @@ function initExportFunction(){
 		}
 		else if(select == 'vip_count'){
 			executePost('../yunying/zb2/exportExcel', {'params' : JSON.stringify(params)});
+		}else if(select == 'daishou'){
+			executePost('../yunying/zb2/exportExcel', {'params' : JSON.stringify(params)});
 		}
 	});
 

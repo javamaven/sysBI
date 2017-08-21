@@ -82,7 +82,7 @@ function initDetailTableGrid(){
 			{ label: '渠道标签', name: 'CHANNELLABEL', index: '$CHANNELLABEL', width: 70 ,align:'right',sortable:false }, 
 			{ label: '渠道费用', name: 'COST', index: '$CHANNELLABEL', width: 70 ,align:'right',sortable:false }, 
 			{ label: '注册人数', name: 'REGISTERED', index: '$REGISTERED', width: 70 ,align:'right',sortable:false }, 		
-			{ label: '人均注册成本', name: 'AVGCOST', index: '$REGISTERED', width: 70 ,align:'right',sortable:false },
+			{ label: '人均注册成本', name: 'AVGCOST', index: '$REGISTERED', width: 100 ,align:'right',sortable:false },
 			{ label: '实名人数', name: 'CGNUM', index: '$CGNUM', width: 70 ,align:'right',sortable:false }, 	
 			{ label: '充值人数', name: 'CZNUM', index: '$CZNUM', width: 90,align:'right' ,sortable:false },
 			{ label: '充值金额(万)', name: 'CZMONEY', index: '$CZMONEY', width: 120 ,align:'right',sortable:false },		
@@ -90,14 +90,14 @@ function initDetailTableGrid(){
 			{ label: '充提差(万)', name: 'CTMONEY', index: '$CTMONEY', width: 90,align:'right' ,sortable:false },
 			{ label: '首投人数', name: 'SHOUTOU', index: '$INVESTNUM', width: 90 ,align:'right',sortable:false },	
 			
-			{ label: '人均首投成本', name: 'FIRSTCOST', index: '$INVESTNUM', width: 90 ,align:'right',sortable:false },
+			{ label: '人均首投成本', name: 'FIRSTCOST', index: '$INVESTNUM', width: 110 ,align:'right',sortable:false },
 			{ label: '首投金额', name: 'FIRSTMONEY', index: '$INVESTNUM', width: 90 ,align:'right',sortable:false },
 			{ label: '首投金额ROI', name: 'ROI', index: '$INVESTNUM', width: 90 ,align:'right',sortable:false },
 			
 			
 			{ label: '投资人数', name: 'INVESTNUM', index: '$INVESTNUM', width: 90 ,align:'right',sortable:false },
 			{ label: '投资金额', name: 'INVESTMONEY', index: '$INVESTMONEY', width: 90 ,align:'right',sortable:false },
-			{ label: '加权平均期限', name: 'AVGP', index: '$INVESTMONEY', width: 90 ,align:'right',sortable:false },
+			{ label: '加权平均期限', name: 'AVGP', index: '$INVESTMONEY', width: 110 ,align:'right',sortable:false },
 			{ label: '账户余额(万)', name: 'ZHMONEY', index: '$ZHMONEY', width: 100 ,align:'right',sortable:false },		
 			{ label: '待收金额(万)', name: 'DSMONEY', index: '$DSMONEY', width: 100 ,align:'right',sortable:false },
 			{ label: '待收流失人数', name: 'DSLSNUM', index: '$DSLSNUM', width: 110 ,align:'right',sortable:false },

@@ -58,23 +58,21 @@ public class MonthlyReportYxController {
 	@SuppressWarnings("unchecked")
 	@ResponseBody
 	@RequestMapping("/upload")
-	@RequiresPermissions("phonesale:upload")
 	public R upload(@RequestParam("file") MultipartFile file) {
 		try {
 			if (file.isEmpty()) {
 				throw new RRException("上传文件不能为空");
 			}
-			String[] fields = { "number", "user_name", "real_name", "register_time", "call_sale", "call_date",
-					"call_result", "is_invest", "real_invest_amount", "sale_jiangli_amount", "year_invest_amount",
-					"first_invest_time" };
+			String[] fields = { "type", "username", "sum1", "num", "sum2", "sum3",
+					"sum4"};
 			Map<String, Object> retMap = ExcelUtil.parseExcel(multipartToFile(file), null, fields);
 			List<Map<String, Object>> list = (List<Map<String, Object>>) retMap.get("list");
 
 			// 清空表
-			String tuncate_sql = "truncate table phone_sale_excel_data ";
+			String tuncate_sql = "truncate table dm_yx_p2p ";
 			new JdbcUtil(dataSourceFactory, "oracle26").execute(tuncate_sql);
 			// 插入表
-			String sql = "insert into phone_sale_excel_data values(?,?,?,?,?,?)";
+			String sql = "insert into dm_yx_p2p values(?,?,?,?,?,?,?)";
 			List<List<Object>> dataList = getInsertDataList(list);
 			new JdbcUtil(dataSourceFactory, "oracle26").batchInsert(sql, dataList);
 		} catch (Exception e) {
@@ -106,7 +104,7 @@ public class MonthlyReportYxController {
 			String detail_sql;
 			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/yxP2P.txt"));
 			detail_sql = detail_sql.replace("${investEndTime}", invest_end_time);
-			detail_sql = detail_sql.replace("${investMonthTime}", invest_month_time);
+//			detail_sql = detail_sql.replace("${investMonthTime}", invest_month_time);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
 		} catch (SQLException e) {
@@ -231,17 +229,13 @@ public class MonthlyReportYxController {
 		for (int i = 0; i < excelList.size(); i++) {
 			list = new ArrayList<Object>();
 			Map<String, Object> map = excelList.get(i);
-			list.add(map.get("user_name") + "");
-			list.add(2);
-			try {
-				list.add(dateSdf.parse(map.get("call_date") + ""));
-			} catch (ParseException e) {
-				e.printStackTrace();
-			}
-			list.add(map.get("call_result") + "");// 打电话结果
-			list.add(map.get("call_sale") + "");// 电销人员
-			list.add(null);
-
+			list.add(map.get("type") + "");
+			list.add(map.get("username") + "");
+			list.add(map.get("sum1") + "");
+			list.add(map.get("num") + "");
+			list.add(map.get("sum2") + "");
+			list.add(map.get("sum3") + "");
+			list.add(map.get("sum4") + "");
 			dataList.add(list);
 		}
 		return dataList;

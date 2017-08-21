@@ -5,6 +5,7 @@ $(function () {
 	initEvent();
 	initSelectEvent();
 	initTimeCond1();
+	initUpload();
 });
 
 
@@ -21,6 +22,24 @@ function initSelectEvent(){
 			$("#vip_count_div").show();
 		}
 	});
+}
+
+function initUpload(){
+    new AjaxUpload('#upload', {
+        action: '../yunying/yxp2p/upload',
+        name: 'file',
+        autoSubmit:true,
+        responseType:"json",
+        onSubmit:function(file, extension){
+        },
+        onComplete : function(file, r){
+            if(r.code == 0){
+                alert('数据导入成功');
+            }else{
+                alert(r.msg);
+            }
+        }
+    });
 }
 
 function initTimeCond(){

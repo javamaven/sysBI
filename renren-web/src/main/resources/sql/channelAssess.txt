@@ -143,7 +143,7 @@ cost as(
     cn.channel_label,
     sum(cost) as cost  --注册人数
   from  dim_channel_cost_new cn  
-   where stat_period <=to_char(sysdate,'yyyymmdd')
+   where stat_period  between '${stat_time}' and '${end_time}'
   group by cn.channel_label 
 
 )
@@ -445,7 +445,7 @@ cost as(
     cn.channel_label,
     sum(cost) as cost  --注册人数
   from  dim_channel_cost_new cn  
-   where stat_period <=to_char(sysdate,'yyyymmdd')
+   where stat_period  between '${stat_time}' and '${end_time}'
   group by cn.channel_label 
 
 )
