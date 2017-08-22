@@ -58,7 +58,16 @@
 				#{channelName_}
 			</foreach>
 		</if>
-	
+		<!-- 渠道负责人权限-->
+		<if test="channelNameAuth != null and channelNameAuth.size()!=0">
+			AND (
+				CHANNEL_NAME IN
+				<foreach item="channelNameAuth_" collection="channelNameAuth" open="(" separator="," close=")">
+					#{channelNameAuth_}
+				</foreach>
+				or channel_name is null or channel_name = ''
+			)
+		</if>
 	</sql>
 
 	<select id="queryObject" resultType="io.renren.entity.DmReportInvestmentDailyEntity">

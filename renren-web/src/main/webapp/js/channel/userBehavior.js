@@ -1,3 +1,10 @@
+$(function(){
+	$(".spinners li").removeClass("active");
+	//    loadTableAjax();
+	initExportFunction();
+
+});
+
 function getDate(datatype){
     var today = new Date(new Date()-24*60*60*1000*1);
     var halfYearAgo = new Date(new Date()-24*60*60*1000*182);
@@ -63,27 +70,31 @@ function loadTable(columnsData,tableData){
 }
 
 function loadTableAjax(){
-
-var userName =  document.getElementById("userName").value;
-if(!userName){
-    userName = null;
-}
-var beginStatDate =  document.getElementById("beginStatDate").value;
-if(!beginStatDate){
-    beginStatDate = null;
-}
-var endStatDate =  document.getElementById("endStatDate").value;
-if(!endStatDate){
-    endStatDate = null;
-}
-pageInfo = {
-        page  : 1,
-        limit : 10,
-        beginStatDate:beginStatDate,
-        endStatDate:endStatDate,
-            userName: userName
-    };
- $.ajax({
+	var userName =  document.getElementById("userName").value;
+	if(!userName){
+	    userName = null;
+	}
+	var notUserName =  document.getElementById("notUserName").value;
+	if(!notUserName){
+		notUserName = null;
+	}
+	var beginStatDate =  document.getElementById("beginStatDate").value;
+	if(!beginStatDate){
+	    beginStatDate = null;
+	}
+	var endStatDate =  document.getElementById("endStatDate").value;
+	if(!endStatDate){
+	    endStatDate = null;
+	}
+	pageInfo = {
+	        page  : 1,
+	        limit : 10,
+	        beginStatDate:beginStatDate,
+	        endStatDate:endStatDate,
+	            userName: userName,
+	            notUserName: notUserName
+	    };
+	 $.ajax({
   //请求方式
     type: "POST",
     //发送请求的地址
@@ -128,14 +139,15 @@ $("#searchButton").click(function(){
     // 显示之前，先把当前表格销毁
       $('#reportTable').bootstrapTable('destroy');
         //添加样式
-        $(".spinners li").addClass("active");
+      $(".spinners li").addClass("active");
     // 查询条件
-var pageInfo = {
+      var pageInfo = {
         page  : 1,
         limit : 10,
             beginStatDate: document.getElementById("beginStatDate").value,
              endStatDate: document.getElementById("endStatDate").value,
-            userName: document.getElementById("userName").value
+            userName: document.getElementById("userName").value,
+            notUserName: document.getElementById("notUserName").value
     };
 
 
@@ -154,12 +166,6 @@ function getParams(){
 	return params;
 }
 
-$(function(){
-$(".spinners li").removeClass("active");
-//    loadTableAjax();
-initExportFunction();
-
-});
 
  function initExportFunction(){
  var userName =  document.getElementById("userName").value;

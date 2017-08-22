@@ -15,7 +15,7 @@
 
 	<select id="queryList" resultType="io.renren.entity.UserBehaviorEntity">
 
-		call sys_user_oper_log(#{beginStatDate},#{endStatDate},#{userName});
+		call sys_user_oper_log(#{beginStatDate},#{endStatDate},#{userName},#{notUserName});
 
 	</select>
 

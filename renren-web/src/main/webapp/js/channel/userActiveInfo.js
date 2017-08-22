@@ -211,6 +211,7 @@ function initTable(){
 				{ label: '用户ID', name: 'userId', index: '$USER_ID', width: 80,align:'right' }, 			
 //				{ label: '用户名', name: 'username', index: '$USERNAME', width: 100,align:'right' }, 			
 //				{ label: '渠道ID', name: 'channelId', index: '$CHANNEL_ID', width: 80 }, 			
+//				{ label: '渠道负责人', name: 'channelHead', index: '$CHANNEL_NAME', width: 100,align:'right' }, 	
 				{ label: '渠道名称', name: 'channelName', index: '$CHANNEL_NAME', width: 140,align:'right' }, 			
 				{ label: '渠道标记', name: 'channelMark', index: '$CHANNEL_MARK', width: 80,align:'right' }, 	
 				{ label: '手机号码', name: 'phone', index: '$PHONE', width: 100,align:'right' },
@@ -413,7 +414,8 @@ function loadChannel(){
 	    var i = 0;
 	    $.ajax({
 	        type: "POST",
-	        url: "../channel/queryChannelName",
+//	        url: "../channel/queryChannelName",
+	        url: "../channel/queryChannelNameByAuth",
 	        data: JSON.stringify(),
 	        contentType: "application/json;charset=utf-8",
 	        success : function(msg) {

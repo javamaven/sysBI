@@ -1,5 +1,7 @@
 package io.renren.service.channelmanager.impl;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -15,12 +17,16 @@ import io.renren.dao.channelmanager.DmReportUserActivateDailyDao;
 import io.renren.entity.channelmanager.DmReportUserActivateDailyEntity;
 import io.renren.entity.channelmanager.UserActiveInfoEntity;
 import io.renren.service.channelmanager.DmReportUserActivateDailyService;
+import io.renren.service.shichang.ChannelHeadManagerService;
+import io.renren.utils.Constant;
 import io.renren.utils.PageUtils;
 
 @Service("dmReportUserActivateDailyService")
 public class DmReportUserActivateDailyServiceImpl implements DmReportUserActivateDailyService {
 	@Autowired
 	private DmReportUserActivateDailyDao dmReportUserActivateDailyDao;
+	@Autowired
+	private ChannelHeadManagerService channelHeadManagerService;
 
 	@Override
 	public DmReportUserActivateDailyEntity queryObject(Integer statPeriod) {
@@ -34,7 +40,8 @@ public class DmReportUserActivateDailyServiceImpl implements DmReportUserActivat
 
 	@Override
 	public int queryTotal(Map<String, Object> map) {
-		return dmReportUserActivateDailyDao.queryTotal(map);
+		int queryTotal = dmReportUserActivateDailyDao.queryTotal(map);
+		return queryTotal;
 	}
 
 	@Override
@@ -110,6 +117,8 @@ public class DmReportUserActivateDailyServiceImpl implements DmReportUserActivat
 			channelName = channelName.toString().substring(0, channelName.toString().length() - 1);
 			map.put("channelName", Arrays.asList(channelName.toString().split("\\^")));
 		}
+		
+		setChannelAuth(map);
 
 		System.err.println("++++++++++map: " + map);
 
@@ -119,6 +128,28 @@ public class DmReportUserActivateDailyServiceImpl implements DmReportUserActivat
 
 		PageUtils pageUtil = new PageUtils(dmReportUserActivateDailyList, total, limit, page);
 		return pageUtil;
+	}
+	
+	/**
+	 * 设置渠道权限查询条件
+	 * @param map
+	 * @param channelName
+	 */
+	private void setChannelAuth(Map<String, Object> map) {
+		if(getUserId() != Constant.SUPER_ADMIN){//不是超级管理员
+			boolean isMarketDirector = channelHeadManagerService.isMarketDirector();
+			if(!isMarketDirector){
+				List<String> labelList = channelHeadManagerService.queryChannelAuthByChannelHead("channel_name");
+				System.err.println(labelList);
+				String headString = "";
+				if(labelList.size() > 0){
+					map.put("channelNameAuth", labelList);
+				}else{
+					map.put("channelNameAuth", "'123^abc'");
+				}
+				System.err.println("+++++++channelHead+++++" + headString);
+			}
+		}
 	}
 
 	@Override

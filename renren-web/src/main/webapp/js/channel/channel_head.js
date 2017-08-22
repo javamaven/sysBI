@@ -119,7 +119,7 @@ function update(){
 		$("input[name='TimeSelect']").get(1).checked=true; 
 		selectType('1');
 		$("#parent_channel_head").val(currSelectRow.parent_channel_head);
-		initChannelHeadList(currSelectRow.parent_channel_head);//替换掉自己的上级负责人
+//		initChannelHeadList(currSelectRow.parent_channel_head);//替换掉自己的上级负责人
 	}
 }
 function del(){

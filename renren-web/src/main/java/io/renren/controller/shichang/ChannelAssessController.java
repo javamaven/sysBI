@@ -1,5 +1,7 @@
 package io.renren.controller.shichang;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -7,7 +9,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,16 +31,16 @@ import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
-import io.renren.entity.yunying.dayreport.DmReportDepSalesEntity;
 import io.renren.service.UserBehaviorService;
+import io.renren.service.shichang.ChannelHeadManagerService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
 import io.renren.util.UserBehaviorUtil;
+import io.renren.utils.Constant;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
 import io.renren.utils.RRException;
-import static io.renren.utils.ShiroUtils.getUserId;
 
 
 @Controller
@@ -51,6 +52,8 @@ public class ChannelAssessController {
 	private DataSourceFactory dataSourceFactory;
 	@Autowired
 	private UserBehaviorService userBehaviorService;
+	@Autowired
+	private ChannelHeadManagerService channelHeadManagerService;
 
 	private  String reportType="渠道质量表";
 
@@ -91,7 +94,6 @@ public class ChannelAssessController {
 	 */
 	@ResponseBody
 	@RequestMapping("/list")
-	@RequiresPermissions("phonesale:list")
 	public R daylist(Integer page, Integer limit, String end_time,String stat_time,String channelName,String channelHead) {
 
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
@@ -119,10 +121,30 @@ public class ChannelAssessController {
 		
 		long l1 = System.currentTimeMillis();
 		
-		
-
+		if(getUserId() != Constant.SUPER_ADMIN){//不是超级管理员
+			boolean isMarketDirector = channelHeadManagerService.isMarketDirector();
+			if(!isMarketDirector){
+				List<String> headList = channelHeadManagerService.queryAuthByChannelHead();
+				System.err.println(headList);
+				String headString = "";
+				for (int i = 0; i < headList.size(); i++) {
+					String head = headList.get(i);
+					if(i == headList.size() - 1){
+						headString += "'" + head + "'";
+					}else{
+						headString += "'" + head + "',";
+					}
+				}
+				if(headList.size() > 0){
+					channelHead += " and channelHead in ("+headString+") ";
+				}else{
+					channelHead += " and channelHead in ('123^abc') ";//没有权限的完全不能看到
+				}
+			}
+			System.err.println("+++++++channelHead+++++" + channelHead);
+		}
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
-
+		
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql;
@@ -213,6 +235,28 @@ public class ChannelAssessController {
 			channelHead=" AND channelHead in ("+channelHead+")";
 		}else{
 			channelHead="";
+		}
+		if(getUserId() != Constant.SUPER_ADMIN){//不是超级管理员
+			boolean isMarketDirector = channelHeadManagerService.isMarketDirector();
+			if(!isMarketDirector){
+				List<String> headList = channelHeadManagerService.queryAuthByChannelHead();
+				System.err.println(headList);
+				String headString = "";
+				for (int i = 0; i < headList.size(); i++) {
+					String head = headList.get(i);
+					if(i == headList.size() - 1){
+						headString += "'" + head + "'";
+					}else{
+						headString += "'" + head + "',";
+					}
+				}
+				if(headList.size() > 0){
+					channelHead += " and channelHead in ("+headString+") ";
+				}else{
+					channelHead += " and channelHead in ('123^abc') ";//没有权限的完全不能看到
+				}
+			}
+			System.err.println("+++++++channelHead+++++" + channelHead);
 		}
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 		

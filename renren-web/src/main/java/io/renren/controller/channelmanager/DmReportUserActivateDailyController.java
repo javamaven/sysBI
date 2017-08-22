@@ -1,13 +1,17 @@
 package io.renren.controller.channelmanager;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import io.renren.service.UserBehaviorService;
-import io.renren.util.UserBehaviorUtil;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +26,14 @@ import com.alibaba.fastjson.JSONArray;
 
 import io.renren.entity.channelmanager.DmReportUserActivateDailyEntity;
 import io.renren.entity.channelmanager.UserActiveInfoEntity;
+import io.renren.service.UserBehaviorService;
 import io.renren.service.channelmanager.DmReportUserActivateDailyService;
+import io.renren.service.shichang.ChannelHeadManagerService;
+import io.renren.util.UserBehaviorUtil;
+import io.renren.utils.Constant;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
-
-import static io.renren.utils.ShiroUtils.getUserId;
 
 /**
  * 用户激活情况表
@@ -42,6 +48,9 @@ public class DmReportUserActivateDailyController {
 	@Autowired
 	private UserBehaviorService userBehaviorService;
 	private  String reportType="用户激活情况表";
+	
+	@Autowired
+	private ChannelHeadManagerService channelHeadManagerService;
 
 	/**
 	 * 列表
@@ -102,7 +111,8 @@ public class DmReportUserActivateDailyController {
 			channelName = channelName.toString().substring(0, channelName.toString().length() - 1);
 			map.put("channelName", Arrays.asList(channelName.toString().split("\\^")));
 		}
-
+		//设置渠道权限查询条件
+		setChannelAuth(map);
 		System.err.println("++++++++++map: " + map);
 
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
@@ -120,6 +130,28 @@ public class DmReportUserActivateDailyController {
 		String title = "用户激活情况";
 
 		ExcelUtil.downloadExcelFile(title, headMap, va, response);
+	}
+
+	/**
+	 * 设置渠道权限查询条件
+	 * @param map
+	 * @param channelName
+	 */
+	private void setChannelAuth(Map<String, Object> map) {
+		if(getUserId() != Constant.SUPER_ADMIN){//不是超级管理员
+			boolean isMarketDirector = channelHeadManagerService.isMarketDirector();
+			if(!isMarketDirector){
+				List<String> labelList = channelHeadManagerService.queryChannelAuthByChannelHead("channel_name");
+				System.err.println(labelList);
+				String headString = "";
+				if(labelList.size() > 0){
+					map.put("channelNameAuth", labelList);
+				}else{
+					map.put("channelNameAuth", "'123^abc'");
+				}
+				System.err.println("+++++++channelHead+++++" + headString);
+			}
+		}
 	}
 
 	@ResponseBody
@@ -153,6 +185,9 @@ public class DmReportUserActivateDailyController {
 			channelName = channelName.toString().substring(0, channelName.toString().length() - 1);
 			map.put("channelName", Arrays.asList(channelName.toString().split("\\^")));
 		}
+		
+		setChannelAuth(map);
+		
 		System.err.println("++++++++++map: " + map);
 
 		// 查询列表数据

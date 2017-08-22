@@ -1,5 +1,7 @@
 package io.renren.service.impl;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -14,12 +16,16 @@ import org.springframework.stereotype.Service;
 import io.renren.dao.DmReportInvestmentDailyDao;
 import io.renren.entity.DmReportInvestmentDailyEntity;
 import io.renren.service.DmReportInvestmentDailyService;
+import io.renren.service.shichang.ChannelHeadManagerService;
+import io.renren.utils.Constant;
 import io.renren.utils.PageUtils;
 
 @Service("dmReportInvestmentDailyService")
 public class DmReportInvestmentDailyServiceImpl implements DmReportInvestmentDailyService {
 	@Autowired
 	private DmReportInvestmentDailyDao dmReportInvestmentDailyDao;
+	@Autowired
+	ChannelHeadManagerService channelHeadManagerService;
 
 	@Override
 	public DmReportInvestmentDailyEntity queryObject(String statPeriod) {
@@ -85,12 +91,32 @@ public class DmReportInvestmentDailyServiceImpl implements DmReportInvestmentDai
 			channelName = channelName.toString().substring(0, channelName.toString().length() - 1);
 			map.put("channelName", Arrays.asList(channelName.toString().split("\\^")));
 		}
+		setChannelAuth(map);
 		// 查询列表数据
 		List<DmReportInvestmentDailyEntity> dmReportInvestmentDailyList = queryList(map);
 		int total = queryTotal(map);
 
 		PageUtils pageUtil = new PageUtils(dmReportInvestmentDailyList, total, limit, page);
 		return pageUtil;
+	}
+	
+	/**
+	 * 设置渠道权限查询条件
+	 * @param map
+	 * @param channelName
+	 */
+	private void setChannelAuth(Map<String, Object> map) {
+		if(getUserId() != Constant.SUPER_ADMIN){//不是超级管理员
+			boolean isMarketDirector = channelHeadManagerService.isMarketDirector();
+			if(!isMarketDirector){
+				List<String> labelList = channelHeadManagerService.queryChannelAuthByChannelHead("channel_name");
+				if(labelList.size() > 0){
+					map.put("channelNameAuth", labelList);
+				}else{
+					map.put("channelNameAuth", "'123^abc'");
+				}
+			}
+		}
 	}
 
 	@Override

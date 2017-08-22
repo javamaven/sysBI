@@ -95,6 +95,9 @@
         <if test="channelHead != null and channelHead.trim() != ''">
             AND CO.CHANNEL_HEAD = #{channelHead}
         </if>
+        <if test="channelHeadList != null and channelHeadList.trim() != ''">
+            AND CO.CHANNEL_HEAD in (#{channelHeadList})
+        </if>
         GROUP BY
         IFNULL(CO.STAT_PERIOD,''),
         IFNULL(CO.CHANNEL_HEAD,''),

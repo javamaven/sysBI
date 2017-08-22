@@ -31,4 +31,9 @@ public interface ChannelHeadManagerService {
 	void insert(Map<String, Object> map);
 
 	ChannelHeadManagerEntity queryByChannelHead(ChannelHeadManagerEntity entity);
+	
+	List<String> queryAuthByChannelHead();//查询当前账号所能查看的渠道
+	List<String> queryChannelAuthByChannelHead(String key);//key:channel_label,channel_name
+	
+	boolean isMarketDirector();//是否是市场部总监
 }

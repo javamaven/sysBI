@@ -1,30 +1,32 @@
 package io.renren.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import io.renren.entity.MarketChannelEntity;
-import io.renren.service.MarketChannelService;
-import io.renren.service.UserBehaviorService;
-import io.renren.util.UserBehaviorUtil;
-import io.renren.utils.ExcelUtil;
-import io.renren.utils.PageUtils;
-import io.renren.utils.Query;
-import io.renren.utils.R;
-import org.apache.shiro.authz.annotation.RequiresPermissions;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import static io.renren.utils.ShiroUtils.getUserId;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import static io.renren.utils.ShiroUtils.getUserId;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+
+import io.renren.entity.MarketChannelEntity;
+import io.renren.service.MarketChannelService;
+import io.renren.service.UserBehaviorService;
+import io.renren.service.shichang.ChannelHeadManagerService;
+import io.renren.util.UserBehaviorUtil;
+import io.renren.utils.Constant;
+import io.renren.utils.ExcelUtil;
+import io.renren.utils.Query;
 
 
 /**
@@ -41,6 +43,9 @@ public class MarketChannelController {
 	private MarketChannelService marketChannelDataService;
 	@Autowired
 	private UserBehaviorService userBehaviorService;
+	@Autowired
+	private ChannelHeadManagerService channelHeadManagerService;
+	
 	private  String reportType="渠道负责人表";
 	static class Page{
 		private int total;
@@ -86,7 +91,28 @@ public class MarketChannelController {
 		params.put("channelHead", channelHead);
 		params.put("channelName", JSON.parseArray(channelName + "", String.class));
 		params.put("channelName_a", JSON.parseArray(channelName_a + "", String.class));
-
+		if(getUserId() != Constant.SUPER_ADMIN){//不是超级管理员
+			boolean isMarketDirector = channelHeadManagerService.isMarketDirector();
+			if(!isMarketDirector){
+				List<String> headList = channelHeadManagerService.queryAuthByChannelHead();
+				System.err.println(headList);
+				String headString = "";
+				for (int i = 0; i < headList.size(); i++) {
+					String head = headList.get(i);
+					if(i == headList.size() - 1){
+						headString += "'" + head + "'";
+					}else{
+						headString += "'" + head + "',";
+					}
+				}
+				if(headList.size() > 0){
+					params.put("channelHeadList", headString);
+				}else{
+					params.put("channelHeadList", "'123^abc'");
+				}
+				System.err.println("+++++++channelHead+++++" + headString);
+			}
+		}
 
 		//查询列表数据
 		Query query = new Query(params);
@@ -109,7 +135,28 @@ public class MarketChannelController {
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 
 		Map<String,Object> map = JSON.parseObject(params, Map.class);
-		
+		if(getUserId() != Constant.SUPER_ADMIN){//不是超级管理员
+			boolean isMarketDirector = channelHeadManagerService.isMarketDirector();
+			if(!isMarketDirector){
+				List<String> headList = channelHeadManagerService.queryAuthByChannelHead();
+				System.err.println(headList);
+				String headString = "";
+				for (int i = 0; i < headList.size(); i++) {
+					String head = headList.get(i);
+					if(i == headList.size() - 1){
+						headString += "'" + head + "'";
+					}else{
+						headString += "'" + head + "',";
+					}
+				}
+				if(headList.size() > 0){
+					map.put("channelHeadList", headString);
+				}else{
+					map.put("channelHeadList", "'123^abc'");
+				}
+			}
+			System.err.println("+++++++channelHead+++++" + map);
+		}
 		List<MarketChannelEntity> ProjectSumList = marketChannelDataService.queryList(map);
 		JSONArray va = new JSONArray();
 
