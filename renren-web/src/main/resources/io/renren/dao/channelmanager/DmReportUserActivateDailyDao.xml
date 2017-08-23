@@ -163,7 +163,10 @@
 				WHEN REGISTER_FROM = - 1 THEN '系统' ELSE REGISTER_FROM END REGISTER_FROM,
 				PHONE,
 				FIRST_TENDER_SUBJECT,
-				AFTER_TENDER_SUBJECT
+				AFTER_TENDER_SUBJECT,
+				SECOND_TENDER_BALANCE,
+				USE_HONGBAO_BALANCE,
+				SPREADS_USERID
 		 from dm_report_user_activate_daily
       	where 1=1
       	
@@ -272,11 +275,14 @@
 		<if test="phone != null and phone.trim() != '' ">
 		     <![CDATA[ and PHONE =  #{phone}  ]]>
 		</if>
+		<!-- 首次复投金额 -->
 		<if test="afterInvestBalance_start != null and afterInvestBalance_start.trim() != ''">
-		     <![CDATA[ and AFTER_INVEST_BALANCE >=  #{afterInvestBalance_start}  ]]>
+<!-- 		     <![CDATA[ and AFTER_INVEST_BALANCE >=  #{afterInvestBalance_start}  ]]> -->
+ 				<![CDATA[ and second_tender_balance >=  #{afterInvestBalance_start}  ]]>
 		</if>
 		<if test="afterInvestBalance_end != null and afterInvestBalance_end.trim() != ''">
-		     <![CDATA[ and AFTER_INVEST_BALANCE <=  #{afterInvestBalance_end}  ]]>
+<!-- 		     <![CDATA[ and AFTER_INVEST_BALANCE <=  #{afterInvestBalance_end}  ]]> -->
+			<![CDATA[ and second_tender_balance <=  #{afterInvestBalance_end}  ]]> 
 		</if>
 		<if test="startFirstInvestTime != null and startFirstInvestTime.trim() != ''">
 		     <![CDATA[ and FIRST_INVEST_TIME >=  #{startFirstInvestTime}  ]]>

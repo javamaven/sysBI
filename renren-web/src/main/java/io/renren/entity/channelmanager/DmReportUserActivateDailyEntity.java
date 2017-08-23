@@ -64,6 +64,34 @@ public class DmReportUserActivateDailyEntity implements Serializable {
 	private String afterTenderSubject;
 	
 	private String channelHead;
+	//首次复投金额
+	private BigDecimal secondTenderBalance;
+	//使用红包金额
+	private BigDecimal useHongbaoBalance;
+	//邀请人ID
+	private Integer spreadsUserid;
+	
+	public void setSpreadsUserid(Integer spreadsUserid) {
+		this.spreadsUserid = spreadsUserid;
+	}
+	
+	public void setUseHongbaoBalance(BigDecimal useHongbaoBalance) {
+		this.useHongbaoBalance = useHongbaoBalance;
+	}
+	public Integer getSpreadsUserid() {
+		return spreadsUserid;
+	}
+	public BigDecimal getUseHongbaoBalance() {
+		return useHongbaoBalance;
+	}
+	
+	public void setSecondTenderBalance(BigDecimal secondTenderBalance) {
+		this.secondTenderBalance = secondTenderBalance;
+	}
+	
+	public BigDecimal getSecondTenderBalance() {
+		return secondTenderBalance;
+	}
 	
 	public void setChannelHead(String channelHead) {
 		this.channelHead = channelHead;

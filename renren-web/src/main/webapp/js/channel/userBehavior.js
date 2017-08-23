@@ -74,10 +74,10 @@ function loadTableAjax(){
 	if(!userName){
 	    userName = null;
 	}
-	var notUserName =  document.getElementById("notUserName").value;
-	if(!notUserName){
-		notUserName = null;
-	}
+//	var notUserName =  document.getElementById("notUserName").value;
+//	if(!notUserName){
+//		notUserName = null;
+//	}
 	var beginStatDate =  document.getElementById("beginStatDate").value;
 	if(!beginStatDate){
 	    beginStatDate = null;
@@ -91,8 +91,7 @@ function loadTableAjax(){
 	        limit : 10,
 	        beginStatDate:beginStatDate,
 	        endStatDate:endStatDate,
-	            userName: userName,
-	            notUserName: notUserName
+	            userName: userName
 	    };
 	 $.ajax({
   //请求方式
@@ -146,8 +145,7 @@ $("#searchButton").click(function(){
         limit : 10,
             beginStatDate: document.getElementById("beginStatDate").value,
              endStatDate: document.getElementById("endStatDate").value,
-            userName: document.getElementById("userName").value,
-            notUserName: document.getElementById("notUserName").value
+            userName: document.getElementById("userName").value
     };
 
 

@@ -3,6 +3,7 @@ package io.renren.controller;
 import static io.renren.utils.ShiroUtils.getUserId;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -91,28 +92,7 @@ public class MarketChannelController {
 		params.put("channelHead", channelHead);
 		params.put("channelName", JSON.parseArray(channelName + "", String.class));
 		params.put("channelName_a", JSON.parseArray(channelName_a + "", String.class));
-		if(getUserId() != Constant.SUPER_ADMIN){//不是超级管理员
-			boolean isMarketDirector = channelHeadManagerService.isMarketDirector();
-			if(!isMarketDirector){
-				List<String> headList = channelHeadManagerService.queryAuthByChannelHead();
-				System.err.println(headList);
-				String headString = "";
-				for (int i = 0; i < headList.size(); i++) {
-					String head = headList.get(i);
-					if(i == headList.size() - 1){
-						headString += "'" + head + "'";
-					}else{
-						headString += "'" + head + "',";
-					}
-				}
-				if(headList.size() > 0){
-					params.put("channelHeadList", headString);
-				}else{
-					params.put("channelHeadList", "'123^abc'");
-				}
-				System.err.println("+++++++channelHead+++++" + headString);
-			}
-		}
+		setChannelHeadAuth(params);
 
 		//查询列表数据
 		Query query = new Query(params);
@@ -127,6 +107,23 @@ public class MarketChannelController {
 
 	}
 
+	private void setChannelHeadAuth(Map<String, Object> params) {
+		if(getUserId() != Constant.SUPER_ADMIN){//不是超级管理员
+			boolean isMarketDirector = channelHeadManagerService.isMarketDirector();
+			if(!isMarketDirector){
+				List<String> headList = channelHeadManagerService.queryAuthByChannelHead();
+				System.err.println(headList);
+				if(headList.size() > 0){
+					params.put("channelHeadList", headList);
+				}else{
+					List<String> list = new ArrayList<>();
+					list.add("123^abc");
+					params.put("channelHeadList", list);
+				}
+			}
+		}
+	}
+
 	@ResponseBody
 	@RequestMapping("/partExport")
 	public void partExport(String params,HttpServletResponse response, HttpServletRequest request) throws IOException {
@@ -135,28 +132,7 @@ public class MarketChannelController {
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 
 		Map<String,Object> map = JSON.parseObject(params, Map.class);
-		if(getUserId() != Constant.SUPER_ADMIN){//不是超级管理员
-			boolean isMarketDirector = channelHeadManagerService.isMarketDirector();
-			if(!isMarketDirector){
-				List<String> headList = channelHeadManagerService.queryAuthByChannelHead();
-				System.err.println(headList);
-				String headString = "";
-				for (int i = 0; i < headList.size(); i++) {
-					String head = headList.get(i);
-					if(i == headList.size() - 1){
-						headString += "'" + head + "'";
-					}else{
-						headString += "'" + head + "',";
-					}
-				}
-				if(headList.size() > 0){
-					map.put("channelHeadList", headString);
-				}else{
-					map.put("channelHeadList", "'123^abc'");
-				}
-			}
-			System.err.println("+++++++channelHead+++++" + map);
-		}
+		setChannelHeadAuth(map);
 		List<MarketChannelEntity> ProjectSumList = marketChannelDataService.queryList(map);
 		JSONArray va = new JSONArray();
 

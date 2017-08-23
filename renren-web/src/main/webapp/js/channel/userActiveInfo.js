@@ -208,7 +208,8 @@ function initTable(){
 	        postData: {'statPeriod': getYesterday()},
 	        colModel: [			
 //				{ label: '统计日期', name: 'statPeriod', index: '$STAT_PERIOD', width: 80 },
-				{ label: '用户ID', name: 'userId', index: '$USER_ID', width: 80,align:'right' }, 			
+				{ label: '用户ID', name: 'userId', index: '$USER_ID', width: 80,align:'right' }, 
+				{ label: '邀请人ID', name: 'spreadsUserid', index: '$USER_ID', width: 80,align:'right' }, 	
 //				{ label: '用户名', name: 'username', index: '$USERNAME', width: 100,align:'right' }, 			
 //				{ label: '渠道ID', name: 'channelId', index: '$CHANNEL_ID', width: 80 }, 			
 //				{ label: '渠道负责人', name: 'channelHead', index: '$CHANNEL_NAME', width: 100,align:'right' }, 	
@@ -230,10 +231,11 @@ function initTable(){
 							}
 						}
 				}, 		
-				{ label: '首投项目类型', name: 'firstTenderSubject', index: '$FIRST_TENDER_SUBJECT', width: 100 ,align:'right'}, 
+				{ label: '首投项目类型', name: 'firstTenderSubject', index: '$FIRST_TENDER_SUBJECT', width: 130 ,align:'right'}, 
 				{ label: '首投期限', name: 'firstInvestPeriod', index: '$FIRST_INVEST_PERIOD', width: 100 ,align:'right'}, 	
 				{ label: '首次复投时间', name: 'secAddtime', index: '$SEC_ADDTIME', width: 100 ,align:'right'}, 	
-				{ label: '复投金额', name: 'afterInvestBalance', index: '$AFTER_INVEST_BALANCE', width: 100,align:'right' 
+//				{ label: '复投金额', name: 'afterInvestBalance', index: '$AFTER_INVEST_BALANCE', width: 100,align:'right' 
+				{ label: '首次复投金额', name: 'secondTenderBalance', index: '$AFTER_INVEST_BALANCE', width: 100,align:'right'
 					,formatter:function(cellvalue, options, rowObject){
 						if(cellvalue){
 							return formatNumber(cellvalue,2);
@@ -242,7 +244,8 @@ function initTable(){
 						}
 					}	
 				}, 		
-				{ label: '复投项目类型', name: 'afterTenderSubject', index: '$AFTER_TENDER_SUBJECT', width: 100 ,align:'right'},
+				{ label: '复投项目类型', name: 'afterTenderSubject', index: '$AFTER_TENDER_SUBJECT', width: 130 ,align:'right'},
+				{ label: '使用红包金额', name: 'useHongbaoBalance', index: '$AFTER_TENDER_SUBJECT', width: 100 ,align:'right'},
 //				{ label: '复投次数', name: 'afterSubject', index: '$AFTER_INVEST_NUMBER', width: 80,align:'right' }, 			
 				{ label: '累计投资金额', name: 'totalInvestBalance', index: '$TOTAL_INVEST_BALANCE', width: 100 ,align:'right'
 					,formatter:function(cellvalue, options, rowObject){
