@@ -108,7 +108,9 @@ public class DmReportInvestmentDailyController {
 				if(labelList.size() > 0){
 					map.put("channelNameAuth", labelList);
 				}else{
-					map.put("channelNameAuth", "'123^abc'");
+					List<String> list = new ArrayList<String>();
+					list.add("123^abc");
+					map.put("channelNameAuth", list);
 				}
 			}
 		}
