@@ -7,12 +7,12 @@ from
 (SELECT  -- 点点赚  -- 486611.465603
   SUM(ddzb.project_scale)/10000  AS project_scale --项目在当日应结息时点前最终已投金额，该金额在结息时就为最终值，不会被改写。
   FROM  mdtxbi.edw_trading_ddz_borrow ddzb
-WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${invest_end_time}')A,
+WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')<= '${invest_end_time}')A,
 (select -- 截止某一天的交易额（项目和债转，按照实际成交时间）
 sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
  from mdtxbi.edw_trading_project_detail pd
  where 
- pd.tender_account_status=1
+ pd.tender_account_status in(0,1)
  and to_char(pd.addtime,'yyyy-mm-dd')<='${invest_end_time}')B
  union all 
  select
@@ -38,7 +38,7 @@ where to_char(pd.last_transfer_time,'yyyy-mm-dd')<='${invest_end_time}'
 SELECT  -- 点点赚  -- 468
   count(1)  AS c_3
   FROM  mdtxbi.edw_trading_ddz_borrow ddzb
-WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${invest_end_time}'
+WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')<= '${invest_end_time}'
 )C
 union all 
 select
@@ -51,14 +51,14 @@ from
 select
 count(1) a-- 2210483 -- 一级项目和二级债转
 from mdtxbi.edw_trading_project_detail pd
-where pd.tender_account_status=1
+where pd.tender_account_status in(0,1)
 and to_char(pd.addtime,'yyyy-mm-dd')<='${invest_end_time}'
 )A,
 (
 select 
 sum(ddzb.INVEST_COU) b -- 点点赚按照购买和复投笔数
 from mdtxbi.edw_trading_ddz_borrow ddzb
-WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${invest_end_time}'
+WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')<= '${invest_end_time}'
 )B
 union all
 select 
@@ -115,7 +115,7 @@ from
 sum(case when tender_subject=2 then tend_cash else tender_capital end) as tender_capital
  from mdtxbi.edw_trading_project_detail pd
  where 
- pd.tender_account_status=1
+ pd.tender_account_status in(0,1)
  and to_char(pd.addtime,'yyyy-mm-dd')<='${invest_end_time}'
  group by pd.user_id)
 ) A
@@ -134,7 +134,7 @@ WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${invest_end_time}')A,
 sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
  from mdtxbi.edw_trading_project_detail pd
  where 
- pd.tender_account_status=1
+ pd.tender_account_status in(0,1)
  and to_char(pd.addtime,'yyyy-mm-dd')<='${invest_end_time}')B) bb
 where rn=1 
 
@@ -170,7 +170,7 @@ from
 sum(case when tender_subject=2 then tend_cash else tender_capital end) as tender_capital
  from mdtxbi.edw_trading_project_detail pd
  where 
- pd.tender_account_status=1
+ pd.tender_account_status in(0,1)
  and to_char(pd.addtime,'yyyy-mm-dd')<='${invest_end_time}'
  group by pd.user_id)
 ) A
@@ -191,7 +191,7 @@ WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${invest_end_time}')A,
 sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
  from mdtxbi.edw_trading_project_detail pd
  where 
- pd.tender_account_status=1
+ pd.tender_account_status in(0,1)
  and to_char(pd.addtime,'yyyy-mm-dd')<='${invest_end_time}')B) bb 
 
 

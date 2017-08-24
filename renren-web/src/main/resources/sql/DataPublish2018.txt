@@ -12,5 +12,5 @@ WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${lastDayOfMonth}')A,
 sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
  from mdtxbi.edw_trading_project_detail pd
  where 
- pd.tender_account_status=1
+ pd.tender_account_status in(0,1)
  and to_char(pd.addtime,'yyyy-mm-dd')<='${lastDayOfMonth}')B

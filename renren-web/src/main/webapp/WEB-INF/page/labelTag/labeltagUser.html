@@ -6,8 +6,64 @@
 </head>
 <body>
 <div class="content">
-
 	<div style="padding: 10px 30px;">
+	
+	 <div class="panel panel-primary">
+            <div class="panel-heading">
+                <i class="fa fa-search-plus"></i>   添加标签
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <div class="form-group">
+                        <div class="col-md-3">
+                            <select class="form-control" id="lagTagType">
+                                <option>请选择标签类型</option>
+                                <option>用户标签</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" id="mainLabelName" class="form-control" placeholder="请输入标签名称..." />
+                        </div>
+                        <div class="col-md-6">
+                            <!-- <a class="btn btn-primary" id="btn_addtr" onClick="addTr()"><i class="fa fa-plus"></i>&nbsp;新增</a>-->
+                            <a class="btn btn-success" id="btn_save" ><i class="fa fa-hand-peace-o"></i>&nbsp;保存</a>
+                            <a class="btn btn-info" href="../statics/picture/labelTagManager/userLabel_01.jpg" rel="lightbox-group" ><i class="fa fa-picture-o"></i>&nbsp;查看标签注释</a>
+                            <a class="btn btn-info" href="../statics/picture/labelTagManager/userLabel_02.jpg" rel="lightbox-group" style="display: none"></a>
+                            <a class="btn btn-info" href="../statics/picture/labelTagManager/userLabel_03.jpg" rel="lightbox-group" style="display: none"></a>
+                            <a class="btn btn-info" href="../statics/picture/labelTagManager/userLabel_04.jpg" rel="lightbox-group" style="display: none"></a>
+                            <a class="btn btn-info" href="../statics/picture/labelTagManager/userLabel_05.jpg" rel="lightbox-group" style="display: none"></a>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <table id="dynamicTable" class="table table-hover">
+                            <thead>
+                            <tr>
+                                <td align="center" width="5%">ID</td>
+                                <td align="center" width="10%">维度/指标</td>
+                                <td align="center" width="15%">内容</td>
+                                <td align="center" width="10%">逻辑</td>
+                                <td align="center" width="50%">条件</td>
+                                <td width="10%"></td>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            </tbody>
+                        </table>
+                        <table id="dataTable" class="table table-hover" style="display: none">
+                            <tbody>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-xs-6 col-md-offset-5">
+                            <a class="btn btn-primary btn-circle btn-lg" id="btn_addtr" onClick="addTr()"><i class="fa fa-plus"></i></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+	
+	
 		<div class="panel panel-primary">
 			<div class="panel-heading">
 				<i class="fa fa-eye"></i>   查询条件
@@ -29,6 +85,7 @@
 						<a class="btn btn-primary" id="btn_search"><i class="fa fa-search"></i>&nbsp;查询</a>
 						#if($shiro.hasPermission("labeltaguser:export"))
 						<a class="btn btn-primary" id="btn_export"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+						<a class="btn btn-danger" id="btn_del" ><i class="fa fa-trash-o"></i>&nbsp;删除</a>
 						#end
 					</div>
 				</div>
@@ -36,9 +93,8 @@
 
 				</div>
 			</div>
-		</div>
-
-		<div class="row">
+			<div id="echart_div" style="width: 100%;height: 50px;"></div>	
+			
 			<div class="panel panel-primary" >
 				<div class="panel-heading">
 					<i class="fa fa-list-ol"></i>  标签条件
@@ -51,6 +107,10 @@
 				</div>
 			</div>
 		</div>
+
+<!-- 		<div class="row"> -->
+			
+<!-- 		</div> -->
 
 		<div class="row">
 			<div class="panel panel-primary"  >
@@ -81,7 +141,7 @@
 
 
 </div>
-
+<script src="${rc.contextPath}/js/labelTag/labelManager.js?_${date.systemTime}"></script>
 <script src="${rc.contextPath}/js/schedule/addtask.js?_${date.systemTime}"></script>
 <script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
 <script src="${rc.contextPath}/js/labelTag/labeltagUser.js?_${date.systemTime}"></script>

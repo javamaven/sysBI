@@ -20,7 +20,7 @@ du.realname,
 round(sum(pd.tender_capital)/10000,2) AS tender_capital
 from mdtxbi.edw_trading_project_detail pd
 left join du on du.user_id=pd.user_id
-where pd.tender_account_status=1
+where pd.tender_account_status in(0,1)
 and to_char(pd.addtime,'yyyymmdd') between '${investStatTime}' and '${investEndTime}'
 and du.user_type=1 -- 自然人
 and du.username<>'13248572405' -- 剔除做市商
