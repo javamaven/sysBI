@@ -146,7 +146,7 @@ public class LabeltagUserController {
 			labeltagUser.setNormalPeriodPreference(LabeltagList.get(i).getNormalPeriodPreference());
 			labeltagUser.setChangePeriodPreference(LabeltagList.get(i).getChangePeriodPreference());
 			labeltagUser.setCumulativeInvMoney(LabeltagList.get(i).getCumulativeInvMoney());
-			labeltagUser.setCumulativeInvMoney(LabeltagList.get(i).getTotalAssets());
+			labeltagUser.setTotalAssets(LabeltagList.get(i).getTotalAssets());
 			labeltagUser.setCumulativeInvMoneyYear(LabeltagList.get(i).getCumulativeInvMoneyYear());
 			labeltagUser.setBalance(LabeltagList.get(i).getBalance());
 			labeltagUser.setLastInvMoney(LabeltagList.get(i).getLastInvMoney());
@@ -168,7 +168,7 @@ public class LabeltagUserController {
 			labeltagUser.setVoucherBalance(LabeltagList.get(i).getVoucherBalance());
 			labeltagUser.setMarketingDay(LabeltagList.get(i).getMarketingDay());
 			labeltagUser.setLastLoginTime(LabeltagList.get(i).getLastLoginTime());
-			labeltagUser.setTotalAssets(LabeltagList.get(i).getTotalAssets());
+//			labeltagUser.setTotalAssets(LabeltagList.get(i).getTotalAssets());
 			
 			ja.add(labeltagUser);
 		}
