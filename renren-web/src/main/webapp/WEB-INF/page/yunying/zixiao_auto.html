@@ -4,15 +4,72 @@
 <title></title>
 #parse("sys/header.html")
 <style type="text/css">
-
 .inputClass2 {
 	height: 30px;
 	width: 200px;
 	border: 1px solid #ccc;
 	border-radius: 4px;
- 	padding-left: 6px; 
+	padding-left: 6px;
 	vertical-align: middle;
 }
+.btnClass{
+    color: #fff;
+    background-color: #428bca;
+    border-color: #357ebd;
+    display: inline-block;
+    padding: 4px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.someClass { background-color:  	#F0F8FF; background-image: none; }
+table th {
+ 	background-color: #ecf0f5;
+ 	padding: 0px;
+ 	margin: opx; 
+}
+ /*修改grid标题的字体大小*/
+.ui-jqgrid .ui-jqgrid-title {
+	font-size: 14px;
+	font-weight: bold;
+}
+/*修改列名的字体大小*/
+.ui-jqgrid-sortable {
+	font-size: 13px;
+/* 	font-family: "宋体"; */
+/*  	padding: 5px;  */
+margin: 0px;
+	margin: 0px;
+	height:auto;
+	font-weight: bold;
+} 
+/*修改表格内容字体*/
+.ui-jqgrid tr.jqgrow td {
+	font-size: 12px;
+	font-family: "微软雅黑";
+	
+} 
+.ui-jqgrid tr.jqgrow td {
+	white-space: normal !important;
+  	height:auto;
+  	vertical-align:text-top;
+  	padding:6px;
+ }
 </style>
 <script type="text/javascript">
 var ctx = "${rc.contextPath}";
@@ -32,7 +89,7 @@ var ctx = "${rc.contextPath}";
 						</select>
 					</td>
 					<td>
-						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" onclick="query()"><i class="fa fa-search"></i>&nbsp;查询</a>
+						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btnClass" onclick="query()"><i  class="fa fa-search"></i>&nbsp;查询</a>
 					</td>
 					
 				</tr>

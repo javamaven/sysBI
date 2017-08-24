@@ -31,11 +31,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
 import io.renren.entity.shichang.DimChannelCostNewEntity;
+import io.renren.service.shichang.ChannelHeadManagerService;
 import io.renren.service.shichang.DimChannelCostNewService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcHelper;
 import io.renren.system.jdbc.JdbcUtil;
 import io.renren.util.UserBehaviorUtil;
+import io.renren.utils.Constant;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
@@ -58,6 +60,9 @@ public class DimChannelCostNewController {
 	DataSourceFactory dataSourceFactory;
 	@Autowired
 	DruidDataSource dataSource;
+	
+	@Autowired
+	private ChannelHeadManagerService service;
 	
 	/**
 	 * 上传文件
@@ -82,21 +87,45 @@ public class DimChannelCostNewController {
 			Map<String, Object> retMap = ExcelUtil.parseExcel(multipartToFile(file), null, fields);
 			List<Map<String, Object>> list = (List<Map<String, Object>>) retMap.get("list");
 			total_record = list.size();//导入总行数
-			
+			//查出所有有权限的渠道
+			List<String> labelList = new ArrayList<>();
+			if(getUserId() != Constant.SUPER_ADMIN && !service.isMarketDirector()){//不是超级管理员
+				labelList = service.queryChannelAuthByChannelHead("channel_label");
+				System.err.println("+++++++++负责渠道："+labelList);
+			}
+			//遍历导入的渠道是否有权限
+			//有权限则先删后增
 			for (int i = 0; i < list.size(); i++) {
 				try {
 					Map<String, Object> map = list.get(i);
 					String stat_period = map.get("stat_period").toString().trim();
 					stat_period = stat_period.replace("-", "");
-					String channel_label = map.get("channel_label").toString().trim();
 					String cost = map.get("cost") + "";
 					String recharge = map.get("recharge") + "";
-					//删除
-					new JdbcUtil(dataSourceFactory, "oracle26").execute(deleteSql, stat_period, channel_label);
-					//插入
-					new JdbcUtil(dataSourceFactory, "oracle26").execute(insertSql, stat_period, channel_label,
-							cost, recharge);
-					sucess_record++;
+					String channel_label = map.get("channel_label").toString().trim();
+					if(recharge.equals("null")){
+						recharge = "";
+					}
+					if(getUserId() != Constant.SUPER_ADMIN && !service.isMarketDirector()){
+						for (int j = 0; j < labelList.size(); j++) {//判断是否有权限
+							if(labelList.get(j).trim().equals(channel_label)){
+								//删除
+								new JdbcUtil(dataSourceFactory, "oracle26").execute(deleteSql, stat_period, channel_label);
+								//插入
+								new JdbcUtil(dataSourceFactory, "oracle26").execute(insertSql, stat_period, channel_label,
+										cost, recharge);
+								sucess_record++;
+							}
+						}
+					}else{
+						//删除
+						new JdbcUtil(dataSourceFactory, "oracle26").execute(deleteSql, stat_period, channel_label);
+						//插入
+						new JdbcUtil(dataSourceFactory, "oracle26").execute(insertSql, stat_period, channel_label,
+								cost, recharge);
+						sucess_record++;
+					}
+					
 				} catch (Exception e) {
 					errorList.add(e.getMessage());
 					e.printStackTrace();

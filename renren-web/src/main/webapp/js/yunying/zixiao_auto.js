@@ -360,6 +360,9 @@ function initYunyingTable(){
         rowNum: 20,
         rownumbers: true, 
         autowidth:true,
+        altRows: true,
+        altclass:'someClass',
+//        altclass: '.ui-priority-secondary',
 //        pager: "#jqGridPager",
         jsonReader : {
             root: "page.list",
@@ -462,6 +465,8 @@ function initShichangRegTable(){
         rowNum: 20,
         rownumbers: true, 
         autowidth:true,
+        altRows: true,
+        altclass:'someClass',
 //        pager: "#jqGridPager",
         jsonReader : {
             root: "page.list",
@@ -481,7 +486,6 @@ function initShichangRegTable(){
         loadComplete:function(){
         	loaded();
         }
-        
     });
 }
 function initShichangCost(){
