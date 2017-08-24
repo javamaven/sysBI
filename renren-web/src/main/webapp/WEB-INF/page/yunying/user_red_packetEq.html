@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+#parse("sys/header.html")
+<style type="text/css">
+
+.inputClass2 {
+	height: 30px;
+	width: 200px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+</style>
+</head>
+<script type="text/javascript">
+var ctx = "${rc.contextPath}";
+</script>
+<body>
+		<div>
+			<td>
+				<label>报表类型：&nbsp&nbsp</label>
+				<td>
+				<select id="list_select" class="inputClass2" >
+					<option value ="vip_detail" selected="selected">按渠道汇总</option>
+					<option value ="vip_count">按活动目的和红包名称汇总</option>
+					<option value ="hongbao">按杠杆和金额汇总</option>
+			</select>
+			<div>
+		<div class="grid-btn" id="query_cond_div1">
+			<table border="0">
+
+									
+				<tr height="10px;"></tr>
+						
+				<tr>
+					<td>
+						<label>发放日期：&nbsp&nbsp&nbsp </label>
+					</td>
+					
+					<td>
+						<input type="text" class="inputClass2 form_datetime_2" id="begin_time"  placeholder="请选择活动开始时间"/>
+					</td>
+					
+					<td>
+						<label>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp结束时间：</label>
+					</td>
+					
+					<td>
+					
+						<input type="text" class="inputClass2 form_datetime_2" id="end_time"  placeholder="请选择活动结束时间"/>
+					</td>
+	
+					<td>
+						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" onclick="reload()"><i class="fa fa-search"></i>&nbsp;查询</a>
+						<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+						
+					</td>
+				</tr>
+				
+				<tr height="10px;"></tr>
+			<tr>
+				<td>
+						<label>投资时间：</label>
+					</td>		
+						<td>
+					
+						<input type="text" class="inputClass2 " id="touzi_begin"  placeholder="请选择开始投资时间"/>
+					</td>
+				<td>
+					<label>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp投资时间：</label>
+					</td>
+				<td>
+					
+						<input type="text" class="inputClass2 " id="touzi_end"  placeholder="请选择结束投资时间"/>
+						
+					</td>
+					<td>
+						<font color="red"> &nbsp注：投资时间只和使用红包个数占比有关</font>
+					</td>
+				</tr>
+				<tr height="10px;"></tr>
+				<tr>
+				<td>
+						<label>活动名称：</label>
+					</td>		
+						<td>
+						<select id="huodong_name"  style="height: 32px; overflow: hidden;" multiple="multiple" class="form-control"></select>
+<!-- 						<input type="text" class="inputClass2 " id="huodong_name"  placeholder="请输入活动名称"/> -->
+					</td>
+				<td>
+					<label>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp红包名称：</label>
+					</td>
+				<td>
+						<select id="hongbao_name" style="height: 32px; overflow: hidden;"  multiple="multiple" class="form-control"></select>
+<!-- 						<input type="text" class="inputClass2 " id="hongbao_name"  placeholder="请输入红包名称"/> -->
+					</td>
+				</tr>
+				
+				<tr height="10px;"></tr>
+					<tr>
+				<td>
+						<label>渠道名称：</label>
+					</td>		
+						<td>
+						<select id="id_select"  style="height: 32px; overflow: hidden;" multiple="multiple" class="form-control"></select>
+<!-- 						<input type="text" class="inputClass2 " id="channelName"  placeholder="请输入渠道名称"/> -->
+					</td>
+					
+					
+				
+					<td>
+						<label>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp用户标签分类：</label>
+					</td>		
+						<td>
+					<select id="user_type"  style="height: 32px; overflow: hidden;"  multiple="multiple" class="form-control"></select>
+<!-- 						<input type="text" class="inputClass2 " id="userId"  placeholder="请输入用户ID"/> -->
+					</td>
+					
+				</tr>
+				
+				<tr height="10px;"></tr>
+					<tr>
+						<td>
+						<label>红包模板id：</label>
+					</td>		
+						<td>
+					
+						<input type="text" class="inputClass2 " id="hongbao_id"  placeholder="请输入红包id"/>
+					</td>
+					<td>
+						<label>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp用户ID：</label>
+					</td>		
+						<td>
+					
+						<input type="text" class="inputClass2 " id="userId"  placeholder="请输入用户ID"/>
+					</td>
+					<td>
+						<font color="red"> &nbsp注：可输入多个ID.输入多个ID时用空格或者换行符隔开.</font>
+					</td>
+					
+				</tr>
+			</table>
+		</div>
+		<div id="query_cond_div2" style="display: none;">
+			<table>
+			<tr height="10px;"></tr>
+						
+				<tr>
+					<td>
+						<label>发放日期：</label>
+					</td>
+					
+					<td>
+						<input type="text" class="inputClass2 form_datetime_2" id="begin_time2"  placeholder="请选择红包发放日期"/>
+					</td>
+					<td>
+						<label>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp结束日期：</label>
+					</td>
+					<td>
+					
+						<input type="text" class="inputClass2 form_datetime_2" id="end_time2"  placeholder="请选择结束日期"/>
+					</td>
+	
+					<td>
+						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" onclick="reload()"><i class="fa fa-search"></i>&nbsp;查询</a>
+						<a class="btn btn-primary" id="btn_exports2"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+						
+					</td>
+				</tr>
+				
+				<tr height="10px;"></tr>
+				<tr>
+				<td>
+						<label>投资时间：</label>
+					</td>		
+						<td>
+					
+						<input type="text" class="inputClass2 " id="touzi_begin2"  placeholder="请选择开始投资时间"/>
+					</td>
+				<td>
+					<label>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp投资时间：</label>
+					</td>
+				<td>
+					
+						<input type="text" class="inputClass2 " id="touzi_end2"  placeholder="请选择结束投资时间"/>
+						
+					</td>
+					<td>
+						<font color="red"> &nbsp注：投资时间只和使用红包个数占比有关</font>
+					</td>
+				</tr>
+				<tr height="10px;"></tr>
+			<tr>
+				<td>
+						<label>活动名称：</label>
+					</td>		
+						<td>
+						<select id="huodong_name2"  style="height: 32px; overflow: hidden;" multiple="multiple" class="form-control"></select>
+<!-- 						<input type="text" class="inputClass2 " id="huodong_name"  placeholder="请输入活动名称"/> -->
+					</td>
+				<td>
+					<label>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp红包名称：</label>
+					</td>
+				<td>
+						<select id="hongbao_name2" style="height: 32px; overflow: hidden;"  multiple="multiple" class="form-control"></select>
+<!-- 						<input type="text" class="inputClass2 " id="hongbao_name"  placeholder="请输入红包名称"/> -->
+					</td>
+				</tr>
+				
+				<tr height="10px;"></tr>
+					<tr>
+				<td>
+						<label>渠道名称：</label>
+					</td>		
+						<td>
+						<select id="id_select2"  style="height: 32px; overflow: hidden;" multiple="multiple" class="form-control"></select>
+<!-- 						<input type="text" class="inputClass2 " id="channelName"  placeholder="请输入渠道名称"/> -->
+					</td>
+					
+					
+				
+					<td>
+						<label>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp用户标签分类：</label>
+					</td>		
+						<td>
+					<select id="user_type2"  style="height: 32px; overflow: hidden;"  multiple="multiple" class="form-control"></select>
+<!-- 						<input type="text" class="inputClass2 " id="userId"  placeholder="请输入用户ID"/> -->
+					</td>
+				</tr>
+				
+				<tr height="10px;"></tr>
+					<tr>
+						<tr>
+					<td>
+						<label>红包模板id：</label>
+					</td>		
+						<td>
+					
+						<input type="text" class="inputClass2 " id="hongbao_id2"  placeholder="请输入红包id"/>
+					</td>
+				
+				<td>
+						<label>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp用户ID：</label>
+					</td>		
+						<td>
+					
+						<input type="text" class="inputClass2 " id="userId2"  placeholder="请输入用户ID"/>
+					</td>
+					<td>
+						<font color="red"> &nbsp注：可输入多个ID.输入多个ID时用空格或者换行符隔开.</font>
+					</td>
+				</tr>
+				
+				<tr height="10px;"></tr>
+			</table>
+			
+		</div>
+		
+		<div id="query_cond_div3" style="display: none;">
+			<table>
+			<tr height="10px;"></tr>
+						
+				<tr>
+					<td>
+						<label>发放日期：</label>
+					</td>
+					
+					<td>
+						<input type="text" class="inputClass2 form_datetime_2" id="begin_time3"  placeholder="请选择红包发放日期"/>
+					</td>
+					<td>
+						<label>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp结束日期：</label>
+					</td>
+					<td>
+					
+						<input type="text" class="inputClass2 form_datetime_2" id="end_time3"  placeholder="请选择结束日期"/>
+					</td>
+	
+					<td>
+						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" onclick="reload()"><i class="fa fa-search"></i>&nbsp;查询</a>
+						<a class="btn btn-primary" id="btn_exports3"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+						
+					</td>
+				</tr>
+				
+				<tr height="10px;"></tr>
+				<tr>
+				<td>
+						<label>投资时间：</label>
+					</td>		
+						<td>
+					
+						<input type="text" class="inputClass2 " id="touzi_begin3"  placeholder="请选择开始投资时间"/>
+					</td>
+				<td>
+					<label>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp投资时间：</label>
+					</td>
+				<td>
+					
+						<input type="text" class="inputClass2 " id="touzi_end3"  placeholder="请选择结束投资时间"/>
+						
+					</td>
+					<td>
+						<font color="red"> &nbsp注：投资时间只和使用红包个数占比有关</font>
+					</td>
+				</tr>
+				<tr height="10px;"></tr>
+					<tr>
+				<td>
+						<label>活动名称：</label>
+					</td>		
+						<td>
+						<select id="huodong_name3"  style="height: 32px; overflow: hidden;" multiple="multiple" class="form-control"></select>
+<!-- 						<input type="text" class="inputClass2 " id="huodong_name"  placeholder="请输入活动名称"/> -->
+					</td>
+				<td>
+					<label>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp红包名称：</label>
+					</td>
+				<td>
+						<select id="hongbao_name3" style="height: 32px; overflow: hidden;"  multiple="multiple" class="form-control"></select>
+<!-- 						<input type="text" class="inputClass2 " id="hongbao_name"  placeholder="请输入红包名称"/> -->
+					</td>
+				</tr>
+				
+				<tr height="10px;"></tr>
+					<tr>
+				<td>
+						<label>杠杆：</label>
+					</td>		
+						<td>
+						<select id="rate"  style="height: 32px; overflow: hidden;" multiple="multiple" class="form-control"></select>
+<!-- 						<input type="text" class="inputClass2 " id="rate"  placeholder="请输入渠道名称"/> -->
+					</td>
+					
+					
+					<td>
+						<label>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp红包类型：</label>
+					</td>		
+						<td>
+					<select id="hongbaoType"  style="height: 32px; overflow: hidden;" multiple="multiple" class="form-control"></select>
+<!-- 						<input type="text" class="inputClass2 " id="rate"  placeholder="杠杆"/> -->
+					</td>
+				</tr>
+				
+				<tr height="10px;"></tr>
+					<tr>
+						<tr>
+					<td>
+						<label>红包模板id：</label>
+					</td>		
+						<td>
+					
+						<input type="text" class="inputClass2 " id="hongbao_id3"  placeholder="请输入红包id"/>
+					</td>
+				
+				<td>
+						<label>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp红包金额：</label>
+					</td>		
+						<td>
+					
+						<input type="text" class="inputClass2 " id="money"  placeholder="请输入红包金额"/>
+					</td>
+					
+				</tr>
+				
+				<tr height="10px;"></tr>
+			</table>
+			
+		</div>
+		
+		<div id="vip_detail_div">
+		    <table id="jqGrid"></table>
+		    <div id="jqGridPager"></div>
+		</div>
+		<div id="vip_count_div">
+		    <table id="jqGrid_count"></table>
+		    <div id="jqGridPager_count"></div>
+		</div>
+		<div id="hongbao_div">
+		    <table id="jqGrid_hongbao"></table>
+		    <div id="jqGridPager_hongbao"></div>
+		</div>
+    </div>
+    
+
+	
+</div>
+<link rel="stylesheet" href="${rc.contextPath}/js/schedule/taskwin.css"></link>
+<script src="${rc.contextPath}/js/schedule/addtask.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/yunying/user_red_packetEq.js?_${date.systemTime}"></script>
+</body>
+</html>

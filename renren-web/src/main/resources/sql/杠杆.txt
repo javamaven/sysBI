@@ -1,0 +1,2 @@
+select distinct rate
+ from edw_reward_user_voucher

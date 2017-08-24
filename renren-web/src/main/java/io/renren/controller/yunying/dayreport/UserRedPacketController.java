@@ -92,14 +92,14 @@ public class UserRedPacketController {
 		}
 
 		if (StringUtils.isNotEmpty(huodong_name)) {
-			huodong_name=" AND PURPOSE like '%"+huodong_name+"%'";
+			huodong_name=" AND PURPOSE in ("+huodong_name+") ";
 			paramsList.add(huodong_name);
 		}else{
 			huodong_name="";
 		}
 		
 		if (StringUtils.isNotEmpty(hongbao_name)) {
-			hongbao_name=" AND NAME like '%"+hongbao_name+"%'";
+			hongbao_name=" AND NAME  in ("+hongbao_name+") ";
 			paramsList.add(hongbao_name);
 		}else{
 			hongbao_name="";
@@ -112,13 +112,13 @@ public class UserRedPacketController {
 			hongbao_id="";
 		}
 		if (StringUtils.isNotEmpty(user_type)) {
-			user_type=" AND TYPE like '%"+user_type+"%'";
+			user_type=" AND TYPE  in ("+user_type+") ";
 			paramsList.add(user_type);
 		}else{
 			user_type="";
 		}
 		if (StringUtils.isNotEmpty(channelName)) {
-			channelName=" AND channelName like '%"+channelName+"%'";
+			channelName=" AND channelName in ("+channelName+") ";
 			paramsList.add(channelName);
 		}else{
 			channelName="";
@@ -252,7 +252,7 @@ public class UserRedPacketController {
 		}
 		
 		if (StringUtils.isNotEmpty(channelName1)) {
-			channelName1=" AND channelName like '%"+channelName1+"%'";
+			channelName1=" AND channelName in ("+channelName1+") ";
 			paramsList.add(channelName1);
 		}
 
@@ -262,7 +262,7 @@ public class UserRedPacketController {
 		}
 		
 		if (StringUtils.isNotEmpty(userType)) {
-			userType=" AND userType like '%"+userType+"%'";
+			userType=" AND Type in ("+userType+") ";
 			paramsList.add(userType);
 		}
 		

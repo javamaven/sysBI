@@ -1,0 +1,1 @@
+select distinct user_level from edw_user_basic

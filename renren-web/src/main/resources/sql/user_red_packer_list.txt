@@ -60,7 +60,8 @@ ub.user_id,
 ub.username,
 ub.realname,
 ub.phone,
-dc.channel_name
+dc.channel_name,
+ub.user_level
 from mdtxbi.edw_user_basic ub
 left join mdtxbi.dim_channel dc on dc.channel_label=ub.activity_tag
 ),
@@ -130,6 +131,7 @@ hd.n_sum_tender AS SUMTENDER,
 hd.ROI AS ROI,
 hd.n_ROI AS NROI,
 uaw.aw AS AW,
+ub.user_level as TYPE,
 ub.channel_name as CHANNELNAME
 from hongbao_detail hd left join ub on ub.user_id=hd.user_id
 left join uaw on uaw.user_id=hd.user_id 

@@ -1,0 +1,11 @@
+SELECT * FROM (
+select 
+'年化' as type
+ from dual
+ union all
+ select 
+'现金' as Type
+ from dual
+
+ )
+ 

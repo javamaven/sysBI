@@ -63,8 +63,7 @@ public class MonthlyReportYxController {
 			if (file.isEmpty()) {
 				throw new RRException("上传文件不能为空");
 			}
-			String[] fields = { "type", "username", "sum1", "num", "sum2", "sum3",
-					"sum4"};
+			String[] fields = { "type", "username", "sum1", "num"};
 			Map<String, Object> retMap = ExcelUtil.parseExcel(multipartToFile(file), null, fields);
 			List<Map<String, Object>> list = (List<Map<String, Object>>) retMap.get("list");
 
@@ -72,7 +71,7 @@ public class MonthlyReportYxController {
 			String tuncate_sql = "truncate table dm_yx_p2p ";
 			new JdbcUtil(dataSourceFactory, "oracle26").execute(tuncate_sql);
 			// 插入表
-			String sql = "insert into dm_yx_p2p values(?,?,?,?,?,?,?)";
+			String sql = "insert into dm_yx_p2p values(?,?,?,?)";
 			List<List<Object>> dataList = getInsertDataList(list);
 			new JdbcUtil(dataSourceFactory, "oracle26").batchInsert(sql, dataList);
 		} catch (Exception e) {
@@ -229,13 +228,12 @@ public class MonthlyReportYxController {
 		for (int i = 0; i < excelList.size(); i++) {
 			list = new ArrayList<Object>();
 			Map<String, Object> map = excelList.get(i);
-			list.add(map.get("type") + "");
+			String type = map.get("type") + "";
+			type = type.replace(".0", "");
+			list.add(type);
 			list.add(map.get("username") + "");
 			list.add(map.get("sum1") + "");
 			list.add(map.get("num") + "");
-			list.add(map.get("sum2") + "");
-			list.add(map.get("sum3") + "");
-			list.add(map.get("sum4") + "");
 			dataList.add(list);
 		}
 		return dataList;

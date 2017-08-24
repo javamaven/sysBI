@@ -10,6 +10,10 @@ $(function () {
 	initTimeCond3();
 	initTimeCond4();
 	initTimeCond5();
+	loadChannel();
+	loadChannel2();
+	loadChannel3();
+	loadChannel4();
 });
 
 
@@ -173,6 +177,156 @@ function initDetailTableGrid(){
     });
 }
 
+
+//加载活动名称
+function loadChannel2(){
+    var str = '';
+    var i = 0;
+    $.ajax({
+        type: "POST",
+//        url: "../channel/channelAll/getChannel",
+        url: '../yunying/userredeq/hongbaohuodong',
+        data: JSON.stringify(),
+        contentType: "application/json;charset=utf-8",
+        success : function(msg) {
+            console.log(msg);
+            for(var list in msg.hongbao){
+                for(var key in msg.hongbao[list]){
+                    if(key == "PURPOSE")
+                        str += '<option value="'+(i++)+'">' + msg.hongbao[list][key] + "</option>";
+                }
+            };
+            $("#huodong_name").select2({
+                maximumSelectionLength: 3,
+                width:'100%'
+            });
+            $("#huodong_name").append(str);
+        }
+     });
+};
+//加载红包名称
+function loadChannel3(){
+    var str = '';
+    var i = 0;
+    $.ajax({
+        type: "POST",
+//        url: "../channel/channelAll/getChannel",
+        url: '../yunying/userredeq/hongbaoname',
+        data: JSON.stringify(),
+        contentType: "application/json;charset=utf-8",
+        success : function(msg) {
+            console.log(msg);
+            for(var list in msg.hongbaoname){
+                for(var key in msg.hongbaoname[list]){
+                    if(key == "NAME")
+                        str += '<option value="'+(i++)+'">' + msg.hongbaoname[list][key] + "</option>";
+                }
+            };
+            $("#hongbao_name").select2({
+                maximumSelectionLength: 3,
+                width:'100%'
+            });
+            $("#hongbao_name").append(str);
+        }
+     });
+};
+
+//加载用户分类标签
+function loadChannel4(){
+    var str = '';
+    var i = 0;
+    $.ajax({
+        type: "POST",
+//        url: "../channel/channelAll/getChannel",
+        url: '../yunying/userredeq/userbiaoqian',
+        data: JSON.stringify(),
+        contentType: "application/json;charset=utf-8",
+        success : function(msg) {
+            console.log(msg);
+            for(var list in msg.userbiaoqian){
+                for(var key in msg.userbiaoqian[list]){
+                    if(key == "USER_LEVEL")
+                        str += '<option value="'+(i++)+'">' + msg.userbiaoqian[list][key] + "</option>";
+                }
+            };
+            $("#user_type").select2({
+                maximumSelectionLength: 3,
+                width:'100%'
+            });
+            $("#user_type").append(str);
+            $("#userType").select2({
+                maximumSelectionLength: 3,
+                width:'100%'
+            });
+            $("#userType").append(str);
+        }
+     });
+};
+
+//加载渠道数据
+function loadChannel(){
+    var str = '';
+    var i = 0;
+    $.ajax({
+        type: "POST",
+//        url: "../channel/channelAll/getChannel",
+        url: "../channel/queryChannelNameByAuth",
+        data: JSON.stringify(),
+        contentType: "application/json;charset=utf-8",
+        success : function(msg) {
+//            console.log(msg);
+            for(var list in msg.Channel){
+                for(var key in msg.Channel[list]){
+                    if(key == "channelName")
+                        str += '<option value="'+(i++)+'">' + msg.Channel[list][key] + "</option>";
+                }
+            };
+            $("#id_select").select2({
+                maximumSelectionLength: 3,
+                width:'100%'
+            });
+            $("#id_select").append(str);
+            $("#channelName1").select2({
+                maximumSelectionLength: 3,
+                width:'100%'
+            });
+            $("#channelName1").append(str);
+        }
+     });
+};
+
+//获取渠道信息
+function getChannelName(){
+    var arrStr = new Array();
+    $("#id_select").each(function(){
+        arrStr.push($(this).attr("title"))
+        });
+    return  arrStr;
+};	
+/**
+ * 获取选中的值
+ * @param id 
+ * @returns
+ */
+function getSelectData(id){
+    var hongbao = '';
+    var hongbaoname='';
+    var userbiaoqian='';
+    var selectData = $("#" + id).select2("data");
+    for (var i = 0; i < selectData.length; i++) {
+		var select = selectData[i];
+		hongbao += "'" + select.text + "',";
+		hongbaoname += "'" + select.text + "',";
+		userbiaoqian += "'" + select.text + "',";
+	}
+    if(hongbao.indexOf(",") >= 0){
+    	hongbao = hongbao.substring(0, hongbao.length-1);
+    	hongbaoname = hongbaoname.substring(0, hongbaoname.length-1);
+    	userbiaoqian = userbiaoqian.substring(0, userbiaoqian.length-1);
+    }
+    return  hongbao;
+};
+
 function initCountTableGrid(){
     $("#jqGrid_count").jqGrid({
         datatype: "json",
@@ -255,11 +409,15 @@ function getParams(){
 	var params = {
         	'end_time': $("#end_time").val(),
         	'begin_time': $("#begin_time").val(),
-        	'huodong_name': $("#huodong_name").val(),
-        	'hongbao_name': $("#hongbao_name").val(),
+//        	'huodong_name': $("#huodong_name").val(),
+        	huodong_name : getSelectData("huodong_name"),
+//        	'hongbao_name': $("#hongbao_name").val(),
         	'hongbao_id': $("#hongbao_id").val(),
-        	'user_type': $("#user_type").val(),
-        	'channelName': $("#channelName").val(),
+//        	'user_type': $("#user_type").val(),
+//        	'channelName': $("#channelName").val(),
+        	user_type : getSelectData("user_type"),
+        	channelName : getSelectData("id_select"),
+        	hongbao_name : getSelectData("hongbao_name"),
         	'userName': $("#userName").val(),
         	
         	'yingxiao_begin': $("#yingxiao_begin").val(),
@@ -268,11 +426,14 @@ function getParams(){
         	'touzi_end': $("#touzi_end").val(),
         	'hongbao_begin': $("#hongbao_begin").val(),
         	'hongbao_end': $("#hongbao_end").val(),
-        	'userType': $("#userType").val(),
+//        	'userType': $("#userType").val(),
+        	userType : getSelectData("userType"),
         	'userName1': $("#userName1").val(),
-        	'channelName1': $("#channelName1").val(),
+//        	'channelName1': $("#channelName1").val(),
+        	channelName1 : getSelectData("channelName1"),
         	'userId1': $("#userId1").val(),
-        	'userId': $("#userId").val()
+        	'userId': $("#userId").val(),
+        	
 	};
 	return params;
 }

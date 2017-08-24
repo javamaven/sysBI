@@ -41,7 +41,91 @@ sum(s.num) as num,
 sum(s.sum4) as sum
 from 
 -------------------------------------------------------------------1
-(select * from dm_yx_p2p
+(select 
+a.type,
+a.USERNAME,
+a.SUM as SUM1,
+a.num as NUM,
+b.sum as SUM2,
+c.sum as SUM3,
+case when b.sum<>0 then round(c.sum*(a.sum/b.sum),2) else 0 end as SUM4
+from (select 
+	type,
+  USERNAME,
+  	SUM(SUM1) AS SUM,
+  	SUM(NUM) AS NUM
+ from  dm_yx_p2p 
+ GROUP BY USERNAME,TYPE
+  ORDER BY type) a
+left join (	
+select 
+  USERNAME,
+  SUM(SUM1) AS SUM,
+  SUM(NUM) AS NUM
+ from  dm_yx_p2p 
+  GROUP BY USERNAME)b
+on a.username=b.username
+left join
+----------------
+(with tmp_repay_list as
+(
+select
+rpp.user_id,
+nvl(dmu.user_type,1) as user_type, -- 1 为自然人，2为法人 
+rpp.repay_capital, -- 待还本金
+rpp.repay_interest -- 待还利息
+FROM
+mdtxbi.edw_trading_repay_plan rpp
+left join mdtxbi.dm_trading_repay_detail rpd
+ on (rpp.project_id=rpd.project_id and rpp.period=rpd.period)
+left join mdtxbi.edw_user_basic dmu
+ on (rpp.user_id=dmu.user_id) 
+where
+  to_char(rpp.create_time,'yyyy-mm-dd') <= '${investEndTime}'
+  and 
+  to_char(rpp.REPAY_DATE,'yyyy-mm-dd') > '${investEndTime}'
+  AND ( to_char(rpd.settle_end_time,'yyyy-mm-dd') > '${investEndTime}' OR rpd.settle_end_time IS NULL)
+  and rpp.repay_status<>3
+  ),
+dm_username as 
+(
+select 
+distinct(dmu.user_id),
+dmu.username 
+from mdtxbi.edw_user_basic dmu
+where dmu.username in
+(
+'gfzc20160202',
+'hjsy20160427',
+'jswy20160801',
+'mdb20150813001',
+'mrz20151020001',
+'yckj',
+'mbl1216001',
+'xiangjia0122'
+)
+)  
+select 
+un.username ,
+sum(tl.repay_capital)as sum
+from tmp_repay_list tl
+left join dm_username un on un.user_id=tl.user_id
+where tl.user_id in
+(
+2844050,
+2701500,
+2577261,
+3849100,
+4457558,
+2601250,
+3205910,
+4369400
+)
+group by un.username
+------------
+)c
+on a.username=c.username
+ORDER BY a.type,a.username
 ---------------------------------------------------------------------------1
 ) s
 

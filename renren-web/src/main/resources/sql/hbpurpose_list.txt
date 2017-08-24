@@ -9,9 +9,8 @@ row_number() over (partition by a.user_id order by a.addtime asc) ranks,
 a.borrow_period,
 a.addtime
 from mdtxbi.edw_trading_project_detail a
-where a.tender_account_status in (0,1)
-
-), 
+where a.tender_account_status=1
+),
 vt as 
 (
 select
@@ -20,8 +19,9 @@ count(a.tender_capital),-- 投资成功次数
 sum(case when a.tend_vouche>0 then 1 else 0 end),--使用红包次数
 round(sum(case when a.tend_vouche>0 then 1 else 0 end)/count(a.tender_capital),4) as vouche_time_i
 from mdtxbi.edw_trading_project_detail a
-where a.tender_account_status in (0,1)
- ${touzi_begin}
+where a.tender_account_status=1
+${touzi_begin}
+-- and to_char(a.addtime,'yyyy-mm-dd') between '2017-08-01' and '2017-08-06' 
 group by a.user_id
 ),
 hd as(
@@ -49,15 +49,17 @@ left join mdtxbi.edw_reward_voucher_log vl
 on (vl.user_id=uv.user_id and vl.hongbao_id=uv.voucher_id and vl.from_sys=uv.from_sys)
 left join pd
 on pd.id=vl.tender_id
-where mv.prize_template_id not in-- (80,79,78,77,76,75,74,73 )
+where mv.prize_template_id not in --(80,79,78,77,76,75,74,73 )
 (
 select
-pt.id
+pt.id--,
 --pt.name
 from  MDTXBI.ODS_MDTX_CG_prize_template@ora40 pt where pt.purpose  like '%注册%' or pt.purpose like '%生日%' 
 )
+--and uv.user_id=4660340
 and uv.from_sys=1
 and (vl.use_status in(0,1) or vl.use_status is null)
+-- and to_char(uv.receive_time,'yyyy-mm-dd') between '2017-08-01' and '2017-08-06' 4s -- 放下面差不多时间
 ),
 hongbao as
 (
@@ -74,7 +76,7 @@ ub.user_id,
 ub.username,
 ub.realname,
 ub.phone,
-ub.user_level,
+ub.USER_LEVEL,
 dc.channel_name
 from mdtxbi.edw_user_basic ub
 left join mdtxbi.dim_channel dc on dc.channel_label=ub.activity_tag
@@ -92,11 +94,11 @@ hongbao_detail as
 select
 hd.user_id,-- 用户id
 hd.prize_template_id, -- 红包模板id
-hd.id,
 hongbao.purpose, -- 活动目的
 hongbao.name, -- 红包名称
+hd.id,
 max(hd.money) as get_money, -- 获得的红包金额 -- 改成max
-to_char(hd.receive_time,'yyyy-mm-dd') as ati_time, -- 参与活动日期
+to_char(hd.receive_time,'yyyy-mm-dd') as ati_time, -- 红包发放时间
 sum(hd.tender_capital) as tender_capital, -- 使用红包投资金额
 round(sum(hd.tender_capital*hd.borrow_period/360),2) as n_sum_tender,-- 年化投资金额
 -- sum(hd.tend_vouche) as use_money, -- 使用红包金额
@@ -110,10 +112,8 @@ min(annualized) as annualized, -- 红包类型
 min(effective_end) as effective_end, -- 红包到期时间
 min(useable_money) as useable_money -- 剩余可用红包金额
 from hd left join hongbao  on hongbao.id=hd.prize_template_id
-where 1=1
-${yingxiao_begin}
-${yingxiao_end}
--- where to_char(hd.receive_time,'yyyy-mm-dd') between  '${yingxiao_begin}' and '${yingxiao_end}' -- 获得红包时间
+-- where to_char(hd.receive_time,'yyyy-mm-dd') between  '2017-01-01' and '2017-08-08'
+--where user_id=4660340
 group by 
 hd.user_id,
 hd.id,
@@ -122,66 +122,62 @@ to_char(hd.receive_time,'yyyy-mm-dd'),
 hongbao.purpose,
 hongbao.name
 )
-
-select  a.* from (
-select  s.*  from (
-
-select  rownum RN,e.* from (
+--select * from hongbao_detail hd
 
 select
-
-to_char(sysdate,'yyyy-mm-dd') as D_DAY,
-hd.user_id AS ID,
-ub.username AS USERNAME,
-ub.realname AS REALNAME,
-ub.phone AS PHONE,
-
-
-
-max(hd.ati_time) AS ATI_TIME,
-round(sysdate-max(receive_time),0) AS DIF,
-count(hd.get_money) cout_hb, -- 获取红包个数
-sum(case when nvl(hd.use_money,0)>0 then 1 else 0 end) as COUNTU, -- 使用红包的个数
-sum(hd.get_money) AS GMONEY,-- 获得红包总金额
-sum(nvl(hd.use_money,0)) as USEMONEY,-- 使用红包总金额
-sum(nvl(hd.useable_money,0)) USEABLEMONEY, -- 剩余可使用红包金额
-round(sum(nvl(hd.use_money,0))/sum(hd.get_money),4) as MONEYI, -- 使用红包金额占比
-round(sum(case when nvl(hd.use_money,0)>0 then 1 else 0 end)/count(hd.get_money),4) as USERTIME, -- 使用红包个数占比
-min(vt.vouche_time_i) as TIMEI, -- 投资次数中红包使用次数占比
-
-sum(nvl(hd.tender_capital,0)) AS TENDER,  -- 投资额
-sum(nvl(hd.n_sum_tender,0)) AS SUMTENDER,-- 年化投资额
-case when sum(nvl(hd.use_money,0))>0 then round(sum(nvl(hd.tender_capital,0))/sum(nvl(hd.use_money,0)),2) end ROI,-- ROI
-case when sum(nvl(hd.use_money,0))>0 then round(sum(nvl(hd.n_sum_tender,0))/sum(nvl(hd.use_money,0)),2) end NROI,-- 年化ROI
-uaw.aw AS AW,-- 待收
-ub.user_level as TYPE,
-ub.channel_name AS CHANNELNAME -- 渠道名称
+to_char(sysdate,'yyyy-mm-dd') as TIME, -- 系统日期
+hd.ati_time AS TITIME,
+hd.purpose AS PURPOSE,
+hd.name AS NAME,
+hd.prize_template_id AS PTID,
+hd.rate AS RATE,
+hd.annualized AS AN,
+hd.get_money as MONEY,
+--nvl(ub.channel_name,'未知')  as channel_name,-- 渠道名称
+--hd.user_id,
+count(distinct(hd.user_id)) as USERNUM, -- 获得红包用户数
+count(hd.get_money) HBCOUNT, -- 获取红包个数
+sum(case when nvl(hd.use_money,0)>0 then 1 else 0 end)  COUNTHB, -- 使用红包的个数
+sum(hd.get_money) HBMONEY,-- 获得红包总金额
+sum(nvl(hd.use_money,0)) USEMONEY,-- 使用红包总金额
+sum(nvl(hd.useable_money,0)) SYMONEY, -- 剩余可使用红包金额
+round(sum(nvl(hd.use_money,0))/sum(hd.get_money),4) as SYMONEYZ, -- 使用红包金额占比
+round(sum(case when nvl(hd.use_money,0)>0 then 1 else 0 end)/count(hd.get_money),4) as SYGESHU, -- 使用红包个数占比
+round(avg(vt.vouche_time_i),4) as TZZHANBI, -- 投资次数中红包使用次数占比
+sum(nvl(hd.tender_capital,0)) CAPITAL, -- 使用红包投资的总金额
+sum(nvl(hd.n_sum_tender,0)) SUMTENDER, -- 使用红包投资的年化投资金额
+case when sum(nvl(hd.use_money,0))>0 then round(sum(nvl(hd.tender_capital,0))/sum(nvl(hd.use_money,0)),2) end ROI, -- 使用红包的ROI
+case when sum(nvl(hd.use_money,0))>0 then round(sum(nvl(hd.n_sum_tender,0))/sum(nvl(hd.use_money,0)),2) end NROI -- 使用红包的年化ROI
 from hongbao_detail hd left join ub on ub.user_id=hd.user_id
-left join uaw on uaw.user_id=hd.user_id 
 left join vt on vt.user_id=hd.user_id 
--- hd.purpose not like '%生日%' and hd.purpose not like '%注册%'
--- and hd.ati_time between '${yingxiao_begin}' and '${yingxiao_end}'
--- and useable_money between 0 and 100 -- 可通过剩余使用红包金额筛选用户
-group by 
-hd.user_id,
-ub.username,
-ub.realname,
-ub.phone,
-uaw.aw,
-ub.user_level,
-ub.channel_name
+where  1=1
+and hd.ati_time between '${begin_time}' and '${end_time}' -- 发放红包时间，发现放后面更快
 
-) e
-where 1=1 
 ${queryCond}
-) s
-where 1=1
- and RN <= ?
-) a
-WHERE 
-1=1
- and RN > ?
-order by ati_time desc
 
 
+-- and ub.channel_name like '%百度%' -- 渠道名称，支持模糊搜索，为空时查询所有
+-- and hd.purpose like '%回馈%'
+--and hd.name like '%年%'
+--and hd.prize_template_id=120
+--and hd.user_id=5027536 -- 支持使用用户id查询用户使用红包情况，支持批量导入用户id查询
+--and ub.realname='???' -- 支持用户姓名查询
+-- and hd.rate=1
+-- and hd.annualized like '%年化%'
+group by 
+hd.purpose,
+hd.name,
+hd.prize_template_id,
+hd.ati_time,
+hd.rate,
+hd.annualized,
+hd.get_money
 
+order by 
+hd.purpose,
+hd.name,
+hd.prize_template_id,
+hd.ati_time,
+hd.rate,
+hd.annualized,
+hd.get_money

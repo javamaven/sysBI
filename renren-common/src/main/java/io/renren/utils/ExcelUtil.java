@@ -45,6 +45,7 @@ import org.apache.poi.xssf.streaming.SXSSFCell;
 import org.apache.poi.xssf.streaming.SXSSFRow;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.alibaba.fastjson.JSONArray;
@@ -774,7 +775,7 @@ public class ExcelUtil {
                         } else {
                             cellStringValue = String.valueOf(cell.getNumericCellValue()); // 数字
                             if (cellStringValue.contains("E")) {
-                                cellStringValue = String.valueOf(new Double(cell.getNumericCellValue()).longValue()); // 数字
+                                cellStringValue = String.valueOf(new Double(cell.getNumericCellValue()).doubleValue()); // 数字
                             }
                         }
                         break;
@@ -788,7 +789,11 @@ public class ExcelUtil {
                         cellStringValue = "错误";
                         break;
                     case Cell.CELL_TYPE_FORMULA: // 公式
-                        cellStringValue = "错误";
+                    	try {
+                    		cellStringValue = cell.getNumericCellValue() + "";
+						} catch (Exception e) {
+							cellStringValue = "错误";
+						}
                         break;
                     default:
                         cellStringValue = "错误";
