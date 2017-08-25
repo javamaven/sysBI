@@ -1,6 +1,6 @@
 select
   to_char(RECOVER_TIME,'yyyymmdd') as TIME  ,
-  sum(RECOVER_AMOUNT)  AS MONEY
+  round(sum(RECOVER_AMOUNT)/10000,2)  AS MONEY
 from EDW_TRADING_RECOVER_DETAIL
 where  to_char(RECOVER_TIME,'yyyymmdd')  between '${begin_time}' and '${end_time}'
   and project_id in (

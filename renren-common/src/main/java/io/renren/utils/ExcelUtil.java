@@ -217,7 +217,7 @@ public class ExcelUtil {
 	 *            输出流
 	 */
 	public static void exportExcelX(String title, Map<String, String> headMap, JSONArray jsonArray, String datePattern,
-			int colWidth, OutputStream out) {
+			int colWidth, OutputStream out, Map<String, String> typeMap) {
 		if (datePattern == null)
 			datePattern = DEFAULT_DATE_PATTERN;
 		// 声明一个工作薄
@@ -322,7 +322,24 @@ public class ExcelUtil {
 						newCell.setCellValue(intValue);
 					}
 				}else{
-					newCell.setCellValue(o.toString());
+					if(typeMap != null){
+						if(typeMap.containsKey(i + "")){//判断该列字段是否指定了字段类型
+							String type = typeMap.get(i + "");
+							if("int".equals(type)){
+								newCell.setCellValue(Integer.parseInt(o.toString()));
+							}else if("double".equals(type)){
+								BigDecimal setScale = new BigDecimal(o.toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
+								newCell.setCellValue(setScale.doubleValue());
+							}else if("float".equals(type)){
+								BigDecimal setScale = new BigDecimal(o.toString()).setScale(2, BigDecimal.ROUND_HALF_UP);
+								newCell.setCellValue(setScale.floatValue());
+							}
+						}else{
+							newCell.setCellValue(o.toString());
+						}
+					}else{
+						newCell.setCellValue(o.toString());
+					}
 				}
 				
 				newCell.setCellStyle(cellStyle);
@@ -483,7 +500,7 @@ public class ExcelUtil {
 			FileOutputStream outputStream) {
 		try {
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			ExcelUtil.exportExcelX(title, headMap, dataArray, null, 0, os);
+			ExcelUtil.exportExcelX(title, headMap, dataArray, null, 0, os, null);
 			byte[] content = os.toByteArray();
 			InputStream is = new ByteArrayInputStream(content);
 			BufferedInputStream bis = new BufferedInputStream(is);
@@ -513,7 +530,7 @@ public class ExcelUtil {
 			HttpServletResponse response) throws Exception {
 		try {
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			ExcelUtil.exportExcelX(title, headMap, ja, null, 0, os);
+			ExcelUtil.exportExcelX(title, headMap, ja, null, 0, os, null);
 			byte[] content = os.toByteArray();
 			InputStream is = new ByteArrayInputStream(content);
 			// 设置response参数，可以打开下载页面
@@ -615,7 +632,47 @@ public class ExcelUtil {
 			HttpServletResponse response) {
 		try {
 			ByteArrayOutputStream os = new ByteArrayOutputStream();
-			ExcelUtil.exportExcelX(title, headMap, ja, null, 0, os);
+			ExcelUtil.exportExcelX(title, headMap, ja, null, 0, os, null);
+			byte[] content = os.toByteArray();
+			InputStream is = new ByteArrayInputStream(content);
+			// 设置response参数，可以打开下载页面
+			response.reset();
+
+			response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8");
+			response.setHeader("Content-Disposition",
+					"attachment;filename=" + new String((title + ".xlsx").getBytes(), "iso-8859-1"));
+			response.setContentLength(content.length);
+			ServletOutputStream outputStream = response.getOutputStream();
+			BufferedInputStream bis = new BufferedInputStream(is);
+			BufferedOutputStream bos = new BufferedOutputStream(outputStream);
+			byte[] buff = new byte[8192];
+			int bytesRead;
+			while (-1 != (bytesRead = bis.read(buff, 0, buff.length))) {
+				bos.write(buff, 0, bytesRead);
+
+			}
+			bis.close();
+			bos.close();
+			outputStream.flush();
+			outputStream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * 
+	 * @param title
+	 * @param headMap
+	 * @param ja
+	 * @param response
+	 * @param types 指定每一列的数据类型
+	 */
+	public static void downloadExcelFile(String title, Map<String, String> headMap, JSONArray ja,
+			HttpServletResponse response, Map<String, String> typeMap) {
+		try {
+			ByteArrayOutputStream os = new ByteArrayOutputStream();
+			ExcelUtil.exportExcelX(title, headMap, ja, null, 0, os, typeMap);
 			byte[] content = os.toByteArray();
 			InputStream is = new ByteArrayInputStream(content);
 			// 设置response参数，可以打开下载页面

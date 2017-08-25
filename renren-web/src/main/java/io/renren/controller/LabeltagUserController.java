@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -221,8 +222,26 @@ public class LabeltagUserController {
 
 		String title = "用户标签";
 
-
-		ExcelUtil.downloadExcelFile(title,headMap,ja,response);
+		Map<String, String> typeMap = new HashMap<String, String>();
+		typeMap.put("17", "double");//从0开始
+		typeMap.put("18", "double");//从0开始
+		typeMap.put("19", "double");
+		typeMap.put("20", "double");
+		typeMap.put("21", "double");
+		typeMap.put("22", "double");
+		typeMap.put("24", "double");
+		typeMap.put("25", "int");
+		typeMap.put("28", "double");
+		typeMap.put("31", "double");
+		typeMap.put("32", "double");
+		typeMap.put("33", "double");
+		typeMap.put("34", "int");
+		typeMap.put("35", "int");
+		typeMap.put("36", "int");
+		typeMap.put("37", "double");
+		typeMap.put("38", "int");
+		ExcelUtil.downloadExcelFile(title, headMap, ja, response, typeMap);
+//		ExcelUtil.downloadExcelFile(title,headMap,ja,response);
 	}
 	
 	

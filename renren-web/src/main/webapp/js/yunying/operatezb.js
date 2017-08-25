@@ -132,7 +132,7 @@ function getOption(rows){
 	}
 	var option = {
 			 title : {
-			        text: '理财计划解金额',
+			        text: '理财计划解金额(万元)',
 			        x:'center',
 //			        	  fontWeight: 'normal'
 			    },
@@ -228,7 +228,7 @@ function getOption2(rows){
 	}
 	var option2 = {
 			 title : {
-			        text: '每天申请退出的金额',
+			        text: '每天申请退出的金额(万元)',
 			        x:'center'
 			    },
 			      textStyle: {  
@@ -317,7 +317,7 @@ function getOption3(rows){
 	}
 	var option3 = {
 			 title : {
-			        text: '每天理财计划底层资产还款金额',
+			        text: '每天理财计划底层资产还款金额(万元)',
 			        x:'center'
 			    },
 			      textStyle: {  

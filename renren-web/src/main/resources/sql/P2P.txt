@@ -10,7 +10,7 @@ select
 SELECT  -- 点点赚
   SUM(ddzb.project_scale)/10000  AS jiaoyie -- 点点赚交易额
   FROM mdtxbi.edw_trading_ddz_borrow ddzb
-WHERE to_char(ddzb.ISSUE_DATE, 'yyyymmdd')< '${investEndTime}' -- 官网点点赚没有在凌晨直接加当天再投，故取时点值取小于
+WHERE to_char(ddzb.ISSUE_DATE, 'yyyymmdd')<= '${investEndTime}' -- 官网点点赚没有在凌晨直接加当天再投，故取时点值取小于
 union all
 select -- 截止某一天的交易额（项目和债转，按照实际成交时间)
  sum(case when pd.tender_subject=2 then pd.tend_cash else pd.tender_capital end)/10000 as jiaoyie

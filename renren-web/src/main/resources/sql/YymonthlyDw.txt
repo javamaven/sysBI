@@ -8,7 +8,7 @@ from
 (SELECT  -- 点点赚 
   SUM(ddzb.project_scale)/10000  AS project_scale --项目在当日应结息时点前最终已投金额，该金额在结息时就为最终值，不会被改写。
   FROM  mdtxbi.edw_trading_ddz_borrow ddzb
-WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')< '${invest_end_time}')A,
+WHERE to_char(ISSUE_DATE, 'yyyy-mm-dd')<= '${invest_end_time}')A,
 (select -- 截止某一天的交易额（项目和债转，按照实际成交时间）
 sum(case when tender_subject=2 then tend_cash else tender_capital end)/10000  as tender_capital
  from mdtxbi.edw_trading_project_detail pd
