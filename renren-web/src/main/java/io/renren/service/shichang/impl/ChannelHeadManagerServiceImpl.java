@@ -119,7 +119,9 @@ public class ChannelHeadManagerServiceImpl implements ChannelHeadManagerService 
 			for (int i = 0; i < headArr.length; i++) {
 				currChannelHead = headArr[i];
 				channelHeadList.add(currChannelHead);
-				getAll(channelHeadList, channelHeadMap, currChannelHead);
+				if(!channelHeadList.contains(currChannelHead)){//避免上级负责人选了自己，死循环
+					getAll(channelHeadList, channelHeadMap, currChannelHead);
+				}
 			}
 		}
 	}
