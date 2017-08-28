@@ -63,6 +63,12 @@ public class SysPageController {
 	public String yunying(@PathVariable("url") String url){
 		return "yunying/" + url + ".html";
 	}
+	
+	@RequestMapping("hr/{url}.html")
+	public String hr(@PathVariable("url") String url){
+		return "hr/" + url + ".html";
+	}
+
 
 	@RequestMapping("property/{url}.html")
 	public String property(@PathVariable("url") String url){

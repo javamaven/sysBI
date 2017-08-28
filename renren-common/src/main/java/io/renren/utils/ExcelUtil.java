@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -830,10 +831,22 @@ public class ExcelUtil {
                         if (DateUtil.isCellDateFormatted(cell)) {
                             cellStringValue = fmt.format(cell.getDateCellValue()); // 日期型
                         } else {
+                        	Object inputValue = null;// 单元格值
                             cellStringValue = String.valueOf(cell.getNumericCellValue()); // 数字
-                            if (cellStringValue.contains("E")) {
-                                cellStringValue = String.valueOf(new Double(cell.getNumericCellValue()).doubleValue()); // 数字
+                            Long longVal = Math.round(cell.getNumericCellValue());
+                            Double doubleVal = cell.getNumericCellValue();
+                            if(Double.parseDouble(longVal + ".0") == doubleVal){   //判断是否含有小数位.0
+                                inputValue = longVal;
+                            }else{
+                                inputValue = doubleVal;
                             }
+                            DecimalFormat df = new DecimalFormat("#.##");    //格式化为四位小数，按自己需求选择；
+                            cellStringValue = String.valueOf(df.format(inputValue));
+//                            if (cellStringValue.contains("E")) {
+//                                cellStringValue = String.valueOf(new Double(cell.getNumericCellValue()).longValue()); // 数字
+//                                cellStringValue = String.valueOf(new Double(cell.getNumericCellValue()).longValue()); // 数字
+//                                cellStringValue = String.valueOf(new Double(cell.getNumericCellValue()).longValue()); // 数字
+//                            }
                         }
                         break;
                     case Cell.CELL_TYPE_BOOLEAN: // 布尔型

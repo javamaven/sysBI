@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.hr.DimStaffDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.hr.DimStaffEntity" id="dimStaffMap">
+        <result property="realname" column="REALNAME"/>
+        <result property="cardId" column="CARD_ID"/>
+        <result property="phone" column="PHONE"/>
+        <result property="department" column="DEPARTMENT"/>
+        <result property="part" column="PART"/>
+        <result property="post" column="POST"/>
+        <result property="ifBoss" column="IF_BOSS"/>
+        <result property="workTime" column="WORK_TIME"/>
+        <result property="leaveTime" column="LEAVE_TIME"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.hr.DimStaffEntity">
+		select * from dim_staff where card_id = #{value}
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.hr.DimStaffEntity">
+		select  
+		  realname,
+		  card_id,
+		  phone,
+		  department,
+		  part,
+		  post,
+		  if_boss,
+		  date_format(work_time, '%Y-%m-%d') work_time,
+		  date_format(leave_time, '%Y-%m-%d') leave_time
+		from dim_staff 
+		order by case when leave_time is null then 0 else 1 end asc , department asc, if_boss desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dim_staff 
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.hr.DimStaffEntity">
+		insert into dim_staff
+		(
+			`REALNAME`, 
+			`PHONE`, 
+			`DEPARTMENT`, 
+			`PART`, 
+			`POST`, 
+			`IF_BOSS`, 
+			<if test="workTime != null and workTime != '' ">`WORK_TIME`, </if>
+			<if test="leaveTime != null and leaveTime != '' ">`LEAVE_TIME`, </if>
+			`CARD_ID`
+		)
+		values
+		(
+			#{realname}, 
+			#{phone}, 
+			#{department}, 
+			#{part}, 
+			#{post}, 
+			#{ifBoss}, 
+<!-- 			str_to_date(#{workTime}, '%Y-%m-%d'), -->
+<!-- 			str_to_date(ifnull(#{leaveTime}, null), '%Y-%m-%d') -->
+<!-- 			<if test="leaveTime == null || leaveTime == '' "></if> -->
+<!-- 			<if test="leaveTime != null and leaveTime != '' ">str_to_date(#{leaveTime}, '%Y-%m-%d')</if> -->
+<!-- 			#{workTimeDate},  -->
+<!-- 			#{leaveTimeDate} -->
+			<if test="workTime != null and workTime != '' ">str_to_date(#{workTime}, '%Y-%m-%d'),</if>
+			<if test="leaveTime != null and leaveTime != '' ">str_to_date(#{leaveTime}, '%Y-%m-%d'),</if>
+			#{cardId}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.hr.DimStaffEntity">
+		update dim_staff 
+		<set>
+<!-- 			<if test="cardId != null">`CARD_ID` = #{cardId}, </if> -->
+			<if test="phone != null and phone != '' ">`PHONE` = #{phone}, </if>
+			<if test="department != null and department != '' ">`DEPARTMENT` = #{department}, </if>
+			<if test="part != null and part != '' ">`PART` = #{part}, </if>
+			<if test="post != null and post != '' ">`POST` = #{post}, </if>
+			<if test="ifBoss != null and ifBoss != '' ">`IF_BOSS` = #{ifBoss}, </if>
+			<if test="workTime != null and workTime != '' ">`WORK_TIME` = #{workTime}, </if>
+			<if test="leaveTime != null and leaveTime != '' ">`LEAVE_TIME` = #{leaveTime}</if>
+		</set>
+		where CARD_ID = #{cardId}
+	</update>
+	
+	<delete id="delete">
+		delete from dim_staff where REALNAME = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from dim_staff where REALNAME in 
+		<foreach item="realname" collection="array" open="(" separator="," close=")">
+			#{realname}
+		</foreach>
+	</delete>
+
+</mapper>
