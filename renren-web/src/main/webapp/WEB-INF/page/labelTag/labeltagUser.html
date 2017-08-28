@@ -83,23 +83,21 @@
 						</select>
 					</div>
 					<div class="col-md-3">
-						<a class="btn btn-primary" id="btn_search"><i class="fa fa-search"></i>&nbsp;查询</a>
+						<a class="btn btn-primary" id="btn_search"><i class="fa fa-search"></i>&nbsp;查询数据</a>
 						#if($shiro.hasPermission("labeltaguser:export"))
+						<a class="btn btn-danger" id="btn_del" ><i class="fa fa-trash-o"></i>&nbsp;删除标签</a>
 						<a class="btn btn-primary" id="btn_export"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
-						<a class="btn btn-danger" id="btn_del" ><i class="fa fa-trash-o"></i>&nbsp;删除</a>
+
 						#end
 					</div>
 				</div>
-				<div id="container">
+				<div id="container" >
 
 				</div>
 			</div>
-			<div id="echart_div" style="width: 100%;height: 50px;"></div>	
+			<div id="hezi" style="width: 100%;height: 20px;"></div>	
 			
-			<div class="panel panel-primary" >
-				<div class="panel-heading">
-					<i class="fa fa-list-ol"></i>  标签条件
-				</div>
+
 				<div class="panel-body">
 					<div class="table-responsive">
 						<table id="labelTable" class="table table-hover">
@@ -107,7 +105,6 @@
 					</div>
 				</div>
 			</div>
-		</div>
 
 <!-- 		<div class="row"> -->
 			

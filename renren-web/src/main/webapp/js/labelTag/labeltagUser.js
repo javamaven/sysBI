@@ -202,7 +202,7 @@ function getTotal(){
             success : function(msg) {
                 console.log(msg);
                 var con  = $("#container");
-                var s = "一共查询到：" + msg.total + " 条数据";
+                var s =  + msg.total + " 条数据";
                 var len = s.length;
                 var index = 0;
                 var tid = null;
