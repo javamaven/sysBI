@@ -34,8 +34,8 @@
         CREATE TEMPORARY TABLE TMP_dm_report_channel_data_01
         SELECT
         IFNULL(CO.STAT_PERIOD,'') AS STAT_PERIOD,
-        IFNULL(CO.CHANNEL_HEAD,'') AS CHANNEL_HEAD,
-        IFNULL(CO.TYPE,'') AS TYPE,
+        IFNULL(TMP.CHANNEL_HEAD,CO.CHANNEL_HEAD) AS CHANNEL_HEAD,
+        IFNULL(TMP.TYPE,CO.TYPE) AS TYPE,
         IFNULL(CO.CHANNEL_NAME,'') AS CHANNEL_NAME,
         IFNULL(CO.CHANNEL_LABEL,'') AS CHANNEL_LABEL,
         IFNULL((SUM(ACTUAL_COST)),0) AS ACTUAL_COST,
@@ -60,11 +60,12 @@
         DC.CHANNEL_NAME,
         DC.CHANNEL_HEAD,
         DC.PAYMENT_WAY AS TYPE,
+        DC.channel_label,
         COUNT(DISTINCT UAD.USER_ID) AS INV_COU
         FROM
         edw_trading_project_detail UAD
         left JOIN edw_user_basic EUB ON (UAD.USER_ID = EUB.USER_ID)
-        LEFT JOIN	dim_channel DC ON (EUB.CHANNEL_ID=DC.CHANNEL_ID)
+        LEFT JOIN	dim_channel DC ON (EUB.CHANNEL_ID=DC.CHANNEL_LABEL)
         WHERE 1=1
         <if test="channelName_a!=null and channelName_a.size()!=0">
             AND DC.CHANNEL_NAME IN
@@ -79,9 +80,9 @@
         GROUP BY
         DC.CHANNEL_NAME,
         DC.CHANNEL_HEAD,
-        DC.PAYMENT_WAY
-        ) TMP ON (CO.CHANNEL_NAME=TMP.CHANNEL_NAME
-        AND CO.CHANNEL_HEAD= TMP.CHANNEL_HEAD AND CO.TYPE=TMP.TYPE)
+        DC.PAYMENT_WAY,
+        DC.channel_label
+        ) TMP ON (CO.channel_label=TMP.channel_label)
         where 1=1
         <if test="channelName!=null and channelName.size()!=0">
             AND CO.CHANNEL_NAME IN
