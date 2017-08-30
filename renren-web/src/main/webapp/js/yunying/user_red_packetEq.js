@@ -213,7 +213,7 @@ function initDetailTableGrid(){
 					
         ],
 		viewrecords: true,  //页面的 页码和页数和总数的显示
-        height: $(window).height()-170,
+        height: $(window).height()-330,
         rowNum: 500,
         rownumbers: true, 
         autowidth:true,
@@ -252,7 +252,8 @@ function initCountTableGrid(){
 			{ label: '红包模板ID', name: 'PTID', index: '$BORROW_CAPITAL', width: 90 ,align:'right',sortable:false}, 	
 			{ label: '杠杆', name: 'RATE', index: '$NUMM', width: 130,align:'right' ,sortable:false},
 			{ label: '红包类型', name: 'AN', index: '$SUMM', width: 150 ,align:'right',sortable:false},		
-			{ label: '获得红包用户数', name: 'MONEY', index: '$AVGG', width: 90 ,align:'right',sortable:false},
+			{ label: '红包金额', name: 'MONEY', index: '$SUMM', width: 150 ,align:'right',sortable:false},	
+			{ label: '获得红包用户数', name: 'USERNUM', index: '$AVGG', width: 90 ,align:'right',sortable:false},
 			{ label: '获取红包个数', name: 'HBCOUNT', index: '$AVGG', width: 90 ,align:'right',sortable:false},
 			{ label: '使用红包的个数', name: 'COUNTHB', index: '$NUMS', width: 120,align:'right',sortable:false },
 			{ label: '获得红包总金额', name: 'HBMONEY', index: '$AVGS', width: 120 ,align:'right',sortable:false},		
@@ -269,7 +270,7 @@ function initCountTableGrid(){
 			
         ],
 		viewrecords: true,
-        height: $(window).height()-170,
+        height: $(window).height()-330,
         rowNum: 500,
         rownumbers: true, 
         autowidth:true,
@@ -320,7 +321,7 @@ function hongbaoTableGrid(){
 			{ label: '使用红包的年化ROI', name: 'NROI', index: '$BORROW_USER', width: 140 ,align:'right',sortable:false}
         ],
 		viewrecords: true,
-        height: $(window).height()-170,
+        height: $(window).height()-330,
         rowNum: 500,
         rownumbers: true, 
         autowidth:true,

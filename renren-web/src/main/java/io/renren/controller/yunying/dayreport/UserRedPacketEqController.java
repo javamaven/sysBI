@@ -664,7 +664,8 @@ public class UserRedPacketEqController {
 		headMap.put("PTID", "红包模板ID");
 		headMap.put("RATE", "杠杆");
 		headMap.put("AN", "红包类型");
-		headMap.put("MONEY", "获得红包用户数");
+		headMap.put("MONEY", "红包金额");
+		headMap.put("USERNUM", "获得红包用户数");
 		headMap.put("HBCOUNT", "获取红包个数");
 		headMap.put("COUNTHB", "使用红包的个数");
 		headMap.put("HBMONEY", "获得红包总金额");
