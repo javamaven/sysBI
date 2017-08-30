@@ -6,18 +6,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.Date;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
 
-import javax.sound.midi.SysexMessage;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.lang.StringUtils;
@@ -33,16 +32,15 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.commons.CommonsMultipartFile;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 
-import io.renren.entity.ChannelInvestTimesEntity;
 import io.renren.entity.hr.DimStaffAttendanceEntity;
 import io.renren.entity.hr.DimStaffEntity;
-import io.renren.service.ChannelInvestTimesService;
 import io.renren.service.hr.DimStaffAttendanceService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcHelper;
 import io.renren.system.jdbc.JdbcUtil;
-import io.renren.util.DateUtil;
 import io.renren.util.MapUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
@@ -445,4 +443,64 @@ public class DimStaffAttendanceController {
 		return R.ok();
 	}
 	
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping("/exportExcel")
+	public void exportExcel(String params, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		Map<String, Object> map = JSON.parseObject(params, Map.class);
+		String month = map.get("month") + "";
+		String type = map.get("type") + "";
+		JSONArray va = new JSONArray();
+		List<Map<String, Object>> dataList = queryOracleDataList(type, month);
+		for (int i = 0; i < dataList.size(); i++) {
+			Map<String, Object> entity = dataList.get(i);
+			va.add(entity);
+		}
+		
+		
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+		
+		getExcelFields(headMap, type);
+		
+		String title = "";
+		if("staff".equals(type)){
+			title = "员工"+month+"考勤信息";
+		}else if("partment".equals(type)){
+			title = "部门"+month+"考勤信息";
+		}
+
+		ExcelUtil.downloadExcelFile(title, headMap, va, response);
+	}
+
+	private void getExcelFields(Map<String, String> headMap, String type) {
+		if("staff".equals(type)){
+			headMap.put("REALNAME", "员工姓名");
+			headMap.put("DEPARTMENT", "部门");
+			headMap.put("POST", "职位");
+			
+			headMap.put("IF_BOSS", "是否副总级及以上职位");
+			
+			headMap.put("IF_BOSS", "是否副总监及以上职位");
+			headMap.put("OVERTIME", "月度总加班工时");
+			headMap.put("DAY_OVERTIME", "日均加班工时");
+			
+			headMap.put("LATETIME", "月度总迟到工时");
+			headMap.put("LATE_TIMES", "月度迟到次数");
+			headMap.put("RANK", "加班工时排名");
+		}else if("partment".equals(type)){
+			headMap.put("DEPARTMENT", "部门");
+			headMap.put("CLOCK_NUM", "考勤人数");
+			
+			headMap.put("M_OVERTIME", "月度总加班工时");
+			headMap.put("M_PER_OVERTIME", "月度人均加班工时");
+			
+			headMap.put("D_PE_OVERTIME", "日人均加班工时");
+			headMap.put("M_PER_LATETIME", "月度人均迟到工时");
+			headMap.put("M_PER_LATE_TIMES", "月度人均迟到次数");
+			
+			headMap.put("MOST_OVERTIME_STAFF", "加班最长员工");
+			headMap.put("RANK", "人均加班工时排名");
+		}
+		
+	}
 }

@@ -6,16 +6,8 @@ $(function () {
 	initSelectEvent();
 	initTimeCond();
 	
-	
-	
-	init();
 });
 
-function init(){
-	var html = "";
-	$("#test").html(html);
-	
-}
 function initTimeCond(){
     $("#month").datetimepicker({
         format: 'yyyy-mm',
@@ -49,9 +41,8 @@ function initSelectEvent(){
 }
 
 function initExportFunction(){
-	var params = {};
 	$('#btn_exports').click(function(){
-		executePost('../hr/exportExcel', {'params' : JSON.stringify(params)});  
+		executePost('../hr/worktime/exportExcel', {'params' : JSON.stringify(getParams())});  
 	});
 
 }
@@ -266,9 +257,11 @@ var vm = new Vue({
 function getParams(){
 	var params = {};
 	var month =  $("#month").val();
+	var list_select =  $("#list_select").val();
 	if(month){
 		month = month.replace("-", "");
 		params.month = month;
 	}
+	params.type = list_select;
 	return params;
 }

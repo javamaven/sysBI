@@ -47,6 +47,7 @@ public class ShiroUtils {
 	}
 	
 	public static String getKaptcha(String key) {
+		System.err.println("+++++++getKaptcha key +++++" + key);
 		String kaptcha = getSessionAttribute(key).toString();
 		getSession().removeAttribute(key);
 		return kaptcha;
