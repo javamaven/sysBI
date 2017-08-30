@@ -107,6 +107,7 @@
 			phone_sale_cg_user_import p
 		LEFT JOIN edw_user_basic u ON (u.cg_user_id=p.user_id)
 		LEFT JOIN edw_user_basic u2 on (u2.user_id=p.USER_ID)
+		left join edw_trading_project_detail pd on (u.user_id=pd.USER_ID)
 		WHERE
 			1 = 1
 		
@@ -124,6 +125,7 @@
 			AND u.DEPOSITORY_OPEN_TIME IS NULL and u2.DEPOSITORY_OPEN_TIME IS NULL
 		</if>
 		and p.is_export != #{isExport}
+		group by p.user_id HAVING count(pd.user_id) = 0
 		<if test="offset != null and limit != null">
 			limit #{offset}, #{limit}
 		</if>

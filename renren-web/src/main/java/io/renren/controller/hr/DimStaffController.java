@@ -112,9 +112,13 @@ public class DimStaffController {
 						dimStaffService.update(dimStaff);
 						new JdbcUtil(dataSourceFactory, "oracle26").execute(deleteSql, cardId);
 					}
+					
+					DimStaffEntity entity_new = dimStaffService.queryObject(cardId);
+					
 					//插入到41oracle
-					new JdbcUtil(dataSourceFactory, "oracle26").execute(insertSql, realname, cardId,
-							phone, department, part, post, ifBoss, workTimeDate, leaveTimeDate);
+					new JdbcUtil(dataSourceFactory, "oracle26").execute(insertSql, entity_new.getRealname(), entity_new.getCardId(),
+							entity_new.getPhone(), entity_new.getDepartment(), entity_new.getPart(), entity_new.getPost(), entity_new.getIfBoss(),
+							entity_new.getWorkTimeDate(), entity_new.getLeaveTimeDate());
 					sucess_record++;
 					
 				} catch (Exception e) {

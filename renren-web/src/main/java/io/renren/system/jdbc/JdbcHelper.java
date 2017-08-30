@@ -305,7 +305,10 @@ public class JdbcHelper {
 						cmd.setString(j + 1, null);
 					} else {
 						if (obj instanceof Date) {
-							cmd.setDate(j + 1, new java.sql.Date(((Date) obj).getTime()));
+//							cmd.setDate(j + 1, new java.sql.Date(((Date) obj).getTime()));//该方法没了时分秒
+							long time = ((Date) obj).getTime();
+//							cmd.setDate(j + 1, new java.sql.Date(time));
+							cmd.setTimestamp(j + 1, new java.sql.Timestamp(time));  //指定时间
 						} else {
 							cmd.setString(j + 1, obj + "");
 						}

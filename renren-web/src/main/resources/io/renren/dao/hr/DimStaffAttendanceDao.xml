@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.hr.DimStaffAttendanceDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.hr.DimStaffAttendanceEntity" id="dimStaffAttendanceMap">
+        <result property="realname" column="REALNAME"/>
+        <result property="post" column="POST"/>
+        <result property="attendTime" column="ATTEND_TIME"/>
+        <result property="clockTime" column="CLOCK_TIME"/>
+        <result property="clockResult" column="CLOCK_RESULT"/>
+    </resultMap>
+    	<delete id="deleteBatch">
+		delete from dim_staff_attendance 
+		where 1=1
+<!-- 		and CONCAT(realname,'^',post, '^', attend_time) = '蔡彬（离职）^中级DBA工程师^2017-07-03 09:00:00'-->
+		and CONCAT(realname,'^',post, '^', attend_time) in
+		<foreach item="item" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	<insert id="batchInsert" useGeneratedKeys="true" parameterType="java.util.List"> 
+<!-- 		truncate table DIM_STAFF_ATTENDANCE_TMP;  -->
+		delete from DIM_STAFF_ATTENDANCE_TMP;
+	    insert into dim_staff_attendance_tmp (realname,post, attend_time, clock_time, clock_result, batch)   
+	    values  
+	    <foreach collection="list" item="item" index="index" separator="," >  
+	         ( 
+	         	#{item.realname}, 
+	         	#{item.post}, 
+	         	#{item.attend_time},
+	         	#{item.clock_time},
+	         	#{item.clock_result},
+	         	#{item.batch}
+	         )  
+	    </foreach>;
+<!-- 	    	insert into DIM_STAFF_ATTENDANCE  -->
+<!-- 				select * from DIM_STAFF_ATTENDANCE_TMP t where 1=1   -->
+<!-- 				and not exists (   -->
+<!-- 				    select concat(d.realname , d.post , date_format(d.attend_time, '%Y-%m-%d %H:%i')) from DIM_STAFF_ATTENDANCE d  -->
+<!-- 				   where  concat(d.realname , d.post , date_format(d.attend_time, '%Y-%m-%d %H:%i'))=concat(t.realname , t.post , date_format(t.attend_time, '%Y-%m-%d %H:%i'))   -->
+<!-- 				)   -->
+	    
+	</insert> 
+
+	<select id="queryObject" resultType="io.renren.entity.hr.DimStaffAttendanceEntity">
+		select * from dim_staff_attendance 
+		where 1=1
+		<if test="realname != null and realname != '' ">
+			and realname = #{realname}
+		</if>
+		<if test="post != null and post != '' ">
+			and post = #{post}
+		</if>
+		<if test="attendTimeString != null and attendTimeString != '' ">
+			and attend_time = #{attendTimeString}
+		</if>
+	</select>
+
+	<select id="queryList" resultType="io.renren.entity.hr.DimStaffAttendanceEntity">
+		select * from dim_staff_attendance
+        <choose>
+            <when test="sidx != null and sidx.trim() != ''">
+                order by ${sidx} ${order}
+            </when>
+			<otherwise>
+                order by REALNAME desc
+			</otherwise>
+        </choose>
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dim_staff_attendance 
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.hr.DimStaffAttendanceEntity">
+		insert into dim_staff_attendance
+		(
+			`POST`, 
+			<if test="attendTimeString != null and attendTimeString != '' ">`ATTEND_TIME`, </if>
+			<if test="clockTimeString != null and clockTimeString != '' ">`CLOCK_TIME`, </if>
+			`CLOCK_RESULT`,
+			`REALNAME`
+		)
+		values
+		(
+			#{post}, 
+			<if test="attendTimeString != null and attendTimeString != '' ">str_to_date(#{attendTimeString}, '%Y-%m-%d %H:%i'),</if>
+			<if test="clockTimeString != null and clockTimeString != '' ">str_to_date(#{clockTimeString}, '%Y-%m-%d %H:%i'),</if>
+			#{clockResult},
+			#{realname}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.hr.DimStaffAttendanceEntity">
+		update dim_staff_attendance 
+		<set>
+			<if test="post != null">`POST` = #{post}, </if>
+			<if test="attendTime != null">`ATTEND_TIME` = #{attendTime}, </if>
+			<if test="clockTime != null">`CLOCK_TIME` = #{clockTime}, </if>
+			<if test="clockResult != null">`CLOCK_RESULT` = #{clockResult}</if>
+		</set>
+		where REALNAME = #{realname}
+	</update>
+	
+	<delete id="delete">
+		delete from dim_staff_attendance where REALNAME = #{value}
+	</delete>
+	
+
+</mapper>

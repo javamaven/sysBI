@@ -17,7 +17,21 @@
     </resultMap>
 
 	<select id="queryObject" resultType="io.renren.entity.hr.DimStaffEntity">
-		select * from dim_staff where card_id = #{value}
+<!-- 		select * from dim_staff where card_id = #{value} -->
+			select
+				d.realname,
+				d.card_id,
+				d.phone,
+				d.department,
+				d.part,
+				d.post,
+				d.if_boss,
+				date_format(d.work_time, '%Y-%m-%d') as work_time,
+				date_format(d.leave_time, '%Y-%m-%d') as leave_time,
+				d.work_time as work_time_date,
+				d.leave_time as  leave_time_date
+			from dim_staff d
+			where d.card_id = #{value}
 	</select>
 
 	<select id="queryList" resultType="io.renren.entity.hr.DimStaffEntity">
