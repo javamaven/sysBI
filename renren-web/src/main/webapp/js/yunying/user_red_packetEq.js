@@ -557,8 +557,8 @@ function loadChannel(){
     var i = 0;
     $.ajax({
         type: "POST",
-//        url: "../channel/channelAll/getChannel",
-        url: "../channel/queryChannelNameByAuth",
+        url: "../channel/channelAll/getChannel",
+//        url: "../channel/queryChannelNameByAuth",
         data: JSON.stringify(),
         contentType: "application/json;charset=utf-8",
         success : function(msg) {

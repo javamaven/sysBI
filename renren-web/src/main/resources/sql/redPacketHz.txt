@@ -26,24 +26,18 @@ from mdtxbi.edw_trading_project_detail a
 where a.tender_account_status in (0,1)
 ),
 hd as(
+
 select 
-vl.user_id, -- 用户名
-mv.prize_template_id, -- 红包模板id
-pd.tend_vouche, -- 该次购买使用的红包金额
-vl.use_money, -- 该次投资使用金额 -- 改了这里
-pd.ranks,
-vl.create_time,
-vl.USE_TIME-- 改了这里
-from mdtxbi.edw_reward_voucher_log vl 
-left join mdtxbi.edw_reward_voucher mv
-on vl.hongbao_id=mv.id and vl.from_sys=mv.from_sys 
-left join mdtxbi.edw_reward_user_voucher uv
-on (mv.id=uv.voucher_id and mv.from_sys=uv.from_sys and vl.user_id=uv.user_id) 
+uvl.user_id,
+uvl.prize_template_id,
+uvl.use_money ,
+uvl.use_time,
+pd.ranks
+from  mdtxbi.edw_reward_user_voucher_log uvl
 left join pd
-on pd.id=vl.tender_id
-where 
-mv.from_sys=1
-and vl.use_status in (0,1) --  改了这里
+on pd.id=uvl.tender_detail_id
+where uvl.from_sys=1 and uvl.use_status in (0,1)
+
 ),
 fafang as 
 (
@@ -63,8 +57,8 @@ select -- 按照红包分类的使用情况
 hd.prize_template_id,
 count(distinct(hd.user_id))  as v_num,-- 红包使用人数
 sum(nvl(hd.use_money,0)) as sum_vouche, -- 改了这里
-sum(case when hd.ranks=1 then nvl(hd.tend_vouche,0)else 0 end ) as ft_vouche,  -- 首投的红包成本
-sum(case when hd.ranks>1 then nvl(hd.tend_vouche,0)else 0 end ) as sc_vouche  -- 复投的红包成
+sum(case when hd.ranks=1 then nvl(hd.use_money,0)else 0 end ) as ft_vouche,  -- 首投的红包成本
+sum(case when hd.ranks>1 then nvl(hd.use_money,0)else 0 end ) as sc_vouche  -- 复投的红包成
 from hd
 where  to_char(hd.USE_TIME,'yyyy-mm-dd') between '${investMonthTime}' and '${investEndTime}' -- 这里需要改 ，create_time 应该用USE_TIME
 group by 
