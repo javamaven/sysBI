@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="io.renren.dao.shichang.DmReportDalilyMarketingDao">
+
+	<!-- 可根据自己的需求，是否要使用 -->
+    <resultMap type="io.renren.entity.shichang.DmReportDalilyMarketingEntity" id="dmReportDalilyMarketingMap">
+        <result property="statPeriod" column="STAT_PERIOD"/>
+        <result property="regNum" column="REG_NUM"/>
+        <result property="authNum" column="AUTH_NUM"/>
+        <result property="firstInvNum" column="FIRST_INV_NUM"/>
+        <result property="reNum" column="RE_NUM"/>
+        <result property="invNum" column="INV_NUM"/>
+        <result property="invFirstMoney" column="INV_FIRST_MONEY"/>
+        <result property="yInvFirstMoney" column="Y_INV_FIRST_MONEY"/>
+        <result property="invMoney" column="INV_MONEY"/>
+        <result property="yInvMoney" column="Y_INV_MONEY"/>
+        <result property="reAmount" column="RE_AMOUNT"/>
+        <result property="wiAmount" column="WI_AMOUNT"/>
+        <result property="pureRecharge" column="PURE_RECHARGE"/>
+        <result property="dayReAmount" column="DAY_RE_AMOUNT"/>
+        <result property="dayInvMoney" column="DAY_INV_MONEY"/>
+        <result property="cRegNum" column="C_REG_NUM"/>
+        <result property="cAuthNum" column="C_AUTH_NUM"/>
+        <result property="cFirstInvNum" column="C_FIRST_INV_NUM"/>
+        <result property="cInvFirstMoney" column="C_INV_FIRST_MONEY"/>
+        <result property="yCInvFirstMoney" column="Y_C_INV_FIRST_MONEY"/>
+        <result property="cInvMoney" column="C_INV_MONEY"/>
+        <result property="yCInvMoney" column="Y_C_INV_MONEY"/>
+        <result property="mInvMoney" column="M_INV_MONEY"/>
+    </resultMap>
+
+	<select id="queryObject" resultType="io.renren.entity.shichang.DmReportDalilyMarketingEntity">
+		select * from dm_report_daily_marketing where STAT_PERIOD = #{value}
+	</select>
+	
+	<select id="queryDayList" resultType="io.renren.entity.shichang.DmReportDalilyMarketingEntity">
+				select
+				  dm.stat_period,
+				  reg_num, -- 注册人数
+				  auth_num, -- 实名人数
+				  first_inv_num,  -- 首投人数
+				  re_num,  -- 充值人数
+				  inv_num,  -- 投资人数
+				  inv_first_money, -- 首投金额
+				  y_inv_first_money, -- 首投年化金额
+				  inv_money,  -- 投资金额
+				  y_inv_money,  -- 年化投资金额
+				  re_amount,  -- 充值金额
+				  wi_amount,  -- 提现金额
+				  pure_recharge,  -- 充提差
+				  day_re_amount, -- 当日注册当日充值
+				  day_inv_money, -- 当日注册当日投资
+				  c_reg_num, -- 渠道注册人数
+				  c_auth_num, -- 渠道实名人数
+				  c_first_inv_num, -- 渠道首投人数
+				  c_inv_first_money,-- 渠道首投金额
+				  y_c_inv_first_money,-- 渠道年化首投金额
+				  c_inv_money, -- 渠道投资金额
+				  y_c_inv_money, -- 渠道年化投资金额
+				  m_inv_money,  -- 当月首投用户当日投资
+				  c_cost,  -- 渠道费用
+				  c_recharge -- 渠道充值  
+				from  dm_report_daily_marketing dm 
+				  left join(
+				    select
+				      stat_period,
+				      sum(cost) as c_cost, -- 渠道费用
+				      sum(recharge) as c_recharge  -- 渠道充值
+				    from dim_channel_cost_new 
+				    group by stat_period
+				  )cc on dm.stat_period = cc.stat_period
+				order by stat_period desc
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+
+	<select id="queryMonthList" resultType="io.renren.entity.shichang.DmReportDalilyMarketingEntity">
+			select
+			  left(dm.stat_period,6) stat_period,
+			  sum(reg_num) reg_num, -- 注册人数
+			  sum(auth_num) auth_num, -- 实名人数
+			  sum(first_inv_num) first_inv_num,  -- 首投人数
+			  sum(re_num) re_num,  -- 充值人数
+			  sum(inv_num) inv_num,  -- 投资人数
+			  sum(inv_first_money) inv_first_money, -- 首投金额
+			  sum(y_inv_first_money) y_inv_first_money , -- 首投年化金额
+			  sum(inv_money) inv_money,  -- 投资金额
+			  sum(y_inv_money) y_inv_money,  -- 年化投资金额
+			  sum(re_amount) re_amount,  -- 充值金额
+			  sum(wi_amount) wi_amount,  -- 提现金额
+			  sum(pure_recharge) pure_recharge,  -- 充提差
+			  sum(day_re_amount) day_re_amount, -- 当日注册当日充值
+			  sum(day_inv_money) day_inv_money, -- 当日注册当日投资
+			  sum(c_reg_num) c_reg_num, -- 渠道注册人数
+			  sum(c_auth_num) c_auth_num, -- 渠道实名人数
+			  sum(c_first_inv_num) c_first_inv_num, -- 渠道首投人数
+			  sum(c_inv_first_money) c_inv_first_money,-- 渠道首投金额
+			  sum(y_c_inv_first_money) y_c_inv_first_money,-- 渠道年化首投金额
+			  sum(c_inv_money) c_inv_money, -- 渠道投资金额
+			  sum(y_c_inv_money) y_c_inv_money, -- 渠道年化投资金额
+			  sum(m_inv_money) m_inv_money,  -- 当月首投用户当日投资
+			  sum(c_cost) c_cost,  -- 渠道费用
+			  sum(c_recharge) c_recharge -- 渠道充值 
+			from  dm_report_daily_marketing dm 
+			  left join(
+			    select
+			      stat_period,
+			      sum(cost) as c_cost, -- 渠道费用
+			      sum(recharge) as c_recharge  -- 渠道充值
+			    from dim_channel_cost_new 
+			    group by stat_period
+			  )cc on dm.stat_period = cc.stat_period
+			group by left(dm.stat_period,6)
+			order by left(dm.stat_period,6)
+		<if test="offset != null and limit != null">
+			limit #{offset}, #{limit}
+		</if>
+	</select>
+	<select id="queryTotalList" resultType="io.renren.entity.shichang.DmReportDalilyMarketingEntity">
+			select
+			   '汇总' as stat_period,
+			  sum(reg_num) reg_num, -- 注册人数
+			  sum(auth_num) auth_num, -- 实名人数
+			  sum(first_inv_num) first_inv_num,  -- 首投人数
+			  sum(re_num) re_num,  -- 充值人数
+			  sum(inv_num) inv_num,  -- 投资人数
+			  sum(inv_first_money) inv_first_money, -- 首投金额
+			  sum(y_inv_first_money) y_inv_first_money , -- 首投年化金额
+			  sum(inv_money) inv_money,  -- 投资金额
+			  sum(y_inv_money) y_inv_money,  -- 年化投资金额
+			  sum(re_amount) re_amount,  -- 充值金额
+			  sum(wi_amount) wi_amount,  -- 提现金额
+			  sum(pure_recharge) pure_recharge,  -- 充提差
+			  sum(day_re_amount) day_re_amount, -- 当日注册当日充值
+			  sum(day_inv_money) day_inv_money, -- 当日注册当日投资
+			  sum(c_reg_num) c_reg_num, -- 渠道注册人数
+			  sum(c_auth_num) c_auth_num, -- 渠道实名人数
+			  sum(c_first_inv_num) c_first_inv_num, -- 渠道首投人数
+			  sum(c_inv_first_money) c_inv_first_money,-- 渠道首投金额
+			  sum(y_c_inv_first_money) y_c_inv_first_money,-- 渠道年化首投金额
+			  sum(c_inv_money) c_inv_money, -- 渠道投资金额
+			  sum(y_c_inv_money) y_c_inv_money, -- 渠道年化投资金额
+			  sum(m_inv_money) m_inv_money,  -- 当月首投用户当日投资
+			  sum(c_cost) c_cost,  -- 渠道费用
+			  sum(c_recharge) c_recharge -- 渠道充值 
+			from  dm_report_daily_marketing dm 
+			  left join(
+			    select
+			      stat_period,
+			      sum(cost) as c_cost, -- 渠道费用
+			      sum(recharge) as c_recharge  -- 渠道充值
+			    from dim_channel_cost_new 
+			    group by stat_period
+			  )cc on dm.stat_period = cc.stat_period
+	</select>	
+ 	<select id="queryTotal" resultType="int">
+		select count(*) from dm_report_daily_marketing 
+	</select>
+	 
+	<insert id="save" parameterType="io.renren.entity.shichang.DmReportDalilyMarketingEntity">
+		insert into dm_report_daily_marketing
+		(
+			`STAT_PERIOD`, 
+			`REG_NUM`, 
+			`AUTH_NUM`, 
+			`FIRST_INV_NUM`, 
+			`RE_NUM`, 
+			`INV_NUM`, 
+			`INV_FIRST_MONEY`, 
+			`Y_INV_FIRST_MONEY`, 
+			`INV_MONEY`, 
+			`Y_INV_MONEY`, 
+			`RE_AMOUNT`, 
+			`WI_AMOUNT`, 
+			`PURE_RECHARGE`, 
+			`DAY_RE_AMOUNT`, 
+			`DAY_INV_MONEY`, 
+			`C_REG_NUM`, 
+			`C_AUTH_NUM`, 
+			`C_FIRST_INV_NUM`, 
+			`C_INV_FIRST_MONEY`, 
+			`Y_C_INV_FIRST_MONEY`, 
+			`C_INV_MONEY`, 
+			`Y_C_INV_MONEY`, 
+			`M_INV_MONEY`
+		)
+		values
+		(
+			#{statPeriod}, 
+			#{regNum}, 
+			#{authNum}, 
+			#{firstInvNum}, 
+			#{reNum}, 
+			#{invNum}, 
+			#{invFirstMoney}, 
+			#{yInvFirstMoney}, 
+			#{invMoney}, 
+			#{yInvMoney}, 
+			#{reAmount}, 
+			#{wiAmount}, 
+			#{pureRecharge}, 
+			#{dayReAmount}, 
+			#{dayInvMoney}, 
+			#{cRegNum}, 
+			#{cAuthNum}, 
+			#{cFirstInvNum}, 
+			#{cInvFirstMoney}, 
+			#{yCInvFirstMoney}, 
+			#{cInvMoney}, 
+			#{yCInvMoney}, 
+			#{mInvMoney}
+		)
+	</insert>
+	 
+	<update id="update" parameterType="io.renren.entity.shichang.DmReportDalilyMarketingEntity">
+		update dm_report_daily_marketing 
+		<set>
+			<if test="regNum != null">`REG_NUM` = #{regNum}, </if>
+			<if test="authNum != null">`AUTH_NUM` = #{authNum}, </if>
+			<if test="firstInvNum != null">`FIRST_INV_NUM` = #{firstInvNum}, </if>
+			<if test="reNum != null">`RE_NUM` = #{reNum}, </if>
+			<if test="invNum != null">`INV_NUM` = #{invNum}, </if>
+			<if test="invFirstMoney != null">`INV_FIRST_MONEY` = #{invFirstMoney}, </if>
+			<if test="yInvFirstMoney != null">`Y_INV_FIRST_MONEY` = #{yInvFirstMoney}, </if>
+			<if test="invMoney != null">`INV_MONEY` = #{invMoney}, </if>
+			<if test="yInvMoney != null">`Y_INV_MONEY` = #{yInvMoney}, </if>
+			<if test="reAmount != null">`RE_AMOUNT` = #{reAmount}, </if>
+			<if test="wiAmount != null">`WI_AMOUNT` = #{wiAmount}, </if>
+			<if test="pureRecharge != null">`PURE_RECHARGE` = #{pureRecharge}, </if>
+			<if test="dayReAmount != null">`DAY_RE_AMOUNT` = #{dayReAmount}, </if>
+			<if test="dayInvMoney != null">`DAY_INV_MONEY` = #{dayInvMoney}, </if>
+			<if test="cRegNum != null">`C_REG_NUM` = #{cRegNum}, </if>
+			<if test="cAuthNum != null">`C_AUTH_NUM` = #{cAuthNum}, </if>
+			<if test="cFirstInvNum != null">`C_FIRST_INV_NUM` = #{cFirstInvNum}, </if>
+			<if test="cInvFirstMoney != null">`C_INV_FIRST_MONEY` = #{cInvFirstMoney}, </if>
+			<if test="yCInvFirstMoney != null">`Y_C_INV_FIRST_MONEY` = #{yCInvFirstMoney}, </if>
+			<if test="cInvMoney != null">`C_INV_MONEY` = #{cInvMoney}, </if>
+			<if test="yCInvMoney != null">`Y_C_INV_MONEY` = #{yCInvMoney}, </if>
+			<if test="mInvMoney != null">`M_INV_MONEY` = #{mInvMoney}</if>
+		</set>
+		where STAT_PERIOD = #{statPeriod}
+	</update>
+	
+	<delete id="delete">
+		delete from dm_report_daily_marketing where STAT_PERIOD = #{value}
+	</delete>
+	
+	<delete id="deleteBatch">
+		delete from dm_report_daily_marketing where STAT_PERIOD in 
+		<foreach item="statPeriod" collection="array" open="(" separator="," close=")">
+			#{statPeriod}
+		</foreach>
+	</delete>
+
+</mapper>

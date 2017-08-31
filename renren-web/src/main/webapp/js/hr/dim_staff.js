@@ -24,6 +24,10 @@ function initUpload(){
         	console.info(r);
             if(r.code == 0){
                 alert('导入成功'+r.sucess_record+'条');
+                var page = $("#jqGrid").jqGrid('getGridParam','page');
+    			$("#jqGrid").jqGrid('setGridParam',{ 
+                    page:page
+                }).trigger("reloadGrid");
             }else{
                 alert(r.msg);
             }

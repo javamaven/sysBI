@@ -74,5 +74,10 @@ public class SysPageController {
 	public String property(@PathVariable("url") String url){
 		return "property/" + url + ".html";
 	}
+	
+	@RequestMapping("shichang/{url}.html")
+	public String shichang(@PathVariable("url") String url){
+		return "shichang/" + url + ".html";
+	}
 
 }

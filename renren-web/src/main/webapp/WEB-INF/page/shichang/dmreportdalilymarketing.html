@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+#parse("sys/header.html")
+<style type="text/css">
+.inputClass{
+	height: 30px;
+	width: 150px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+</style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<label>列表类型：</label>
+				<select id="list_select" class="inputClass" >
+					<option value ="day" selected="selected">每日数据</option>
+					<option value ="month">每月数据</option>
+					<option value ="total">全部数据</option>
+				</select>
+			&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
+			<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+		</div>
+		<div id="day_div">
+	    	<table id="jqGrid_day"></table>
+	    	<div id="jqGridPager_day"></div>
+		</div>
+		<div id="month_div">
+	    	<table id="jqGrid_month"></table>
+	    	<div id="jqGridPager_month"></div>
+		</div>
+		<div id="total_div">
+	    	<table id="jqGrid_total"></table>
+	    	<div id="jqGridPager_total"></div>
+		</div>
+    </div>
+    
+   
+</div>
+
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/shichang/dmreportdalilymarketing.js?_${date.systemTime}"></script>
+</body>
+</html>

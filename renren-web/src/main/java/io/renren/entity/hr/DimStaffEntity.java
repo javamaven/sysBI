@@ -38,6 +38,23 @@ public class DimStaffEntity implements Serializable {
 	//
 	private Date leaveTimeDate;
 	
+	
+	
+	public DimStaffEntity(String realname, String cardId, String phone, String department, String part, String post,
+			String ifBoss, String workTime, String leaveTime, Date workTimeDate, Date leaveTimeDate) {
+		super();
+		this.realname = realname;
+		this.cardId = cardId;
+		this.phone = phone;
+		this.department = department;
+		this.part = part;
+		this.post = post;
+		this.ifBoss = ifBoss;
+		this.workTime = workTime;
+		this.leaveTime = leaveTime;
+		this.workTimeDate = workTimeDate;
+		this.leaveTimeDate = leaveTimeDate;
+	}
 
 	public DimStaffEntity(String realname, String cardId, String phone, String department, String part, String post,
 			String ifBoss, String workTime, String leaveTime) {
