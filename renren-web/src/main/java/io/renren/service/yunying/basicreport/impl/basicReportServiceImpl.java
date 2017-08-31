@@ -599,6 +599,7 @@ public class basicReportServiceImpl implements BasicReportService {
 		params.put("isKaitongCg", 3);
 		params.put("date", "");
 		params.put("cgUserId", "");
+		params.put("offset", "");
 		List<Map<String, Object>> exportList = basicReportDao.queryPhoneSaleCgUserList(params);
 		
 		for (int i = 0; i < list.size(); i++) {

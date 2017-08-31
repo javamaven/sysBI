@@ -125,8 +125,13 @@
 			AND u.DEPOSITORY_OPEN_TIME IS NULL and u2.DEPOSITORY_OPEN_TIME IS NULL
 		</if>
 		and p.is_export != #{isExport}
-		group by p.user_id HAVING count(pd.user_id) = 0
-		<if test="offset != null and limit != null">
+		group by p.user_id
+		<!-- 首投未复投时，查询的是已导出过的数据 ,首投三天未复投筛选，同时过滤掉已投资的查询投资次数未0的-->
+		<if test="type != 1 ">
+			 HAVING count(pd.user_id) &lt; 2
+		</if>
+		
+		<if test="offset != null and offset != '' and limit != null and limit != '' ">
 			limit #{offset}, #{limit}
 		</if>
 	</select>

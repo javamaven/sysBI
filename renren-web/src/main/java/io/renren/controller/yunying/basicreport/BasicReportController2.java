@@ -75,9 +75,22 @@ public class BasicReportController2 {
 		List<Map<String, Object>> retList = service.queryPhoneSaleCgUserList(map);
 		
 		int total = service.queryPhoneSaleCgUserTotal(map);
+		PageUtils pageUtil = null;
+		if("1".equals(type)){
+			total = retList.size();
+			List<Map<String, Object>> dataList = new ArrayList<>();
+			if(total <= limit){
+				dataList.addAll(retList);
+			}else{
+				int fromIndex = (page - 1) * limit;
+				int toIndex = fromIndex + limit;
+				dataList.addAll(retList.subList(fromIndex, toIndex));
+			}
+			pageUtil = new PageUtils(dataList , total, limit, page);
+		}else{
+			 pageUtil = new PageUtils(retList, total, limit, page);
+		}
 		
-		PageUtils pageUtil = new PageUtils(retList, total, limit, page);
-
 		return R.ok().put("page", pageUtil);
 	}
 	
