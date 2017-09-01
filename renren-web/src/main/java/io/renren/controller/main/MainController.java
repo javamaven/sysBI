@@ -784,7 +784,16 @@ public class MainController {
 			JdbcUtil util2 = new JdbcUtil(dataSourceFactory, "oracle");
 			//当月普通版投资额
 			List<Map<String, Object>> list_month_pt = util2.query(SqlConstants.curr_invest_sql, monthStartDate, yesEndDate);
-			curr_month_invest += Double.parseDouble(list_month_pt.get(0).get("MONEY") + "");
+//			curr_month_invest += Double.parseDouble(list_month_pt.get(0).get("MONEY") + "");
+			
+			Map<String, Object> map = list_month_pt.get(0);
+			Object obj = map.get("MONEY");
+			if("".equals(obj + "") || obj == null || "null".equals(obj+"")){
+				curr_month_invest += 0;
+			}else{
+				curr_month_invest += Double.parseDouble(obj + "");
+			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -800,7 +809,13 @@ public class MainController {
 		List<Map<String, Object>> list_month_cg;
 		try {
 			list_month_cg = util.query(SqlConstants.curr_cg_invest_sql, startDate, yesEndDate, startDate, yesEndDate, startDate, yesEndDate);
-			curr_month_invest += Double.parseDouble(list_month_cg.get(0).get("MONEY") + "");
+			Map<String, Object> map = list_month_cg.get(0);
+			Object moneyObj = map.get("MONEY");
+			if("".equals(moneyObj + "") || moneyObj == null || "null".equals(moneyObj+"")){
+				curr_month_invest += 0;
+			}else{
+				curr_month_invest += Double.parseDouble(moneyObj + "");
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -902,7 +917,15 @@ public class MainController {
 			//普通版当月交易笔数
 			JdbcUtil util2 = new JdbcUtil(dataSourceFactory, "oracle");
 			List<Map<String, Object>> list_month_pt = util2.query(SqlConstants.curr_invest_times_sql, monthStartDate, yesEndDate, monthStartDate, yesEndDate);
-			curr_month_invest_times += Double.parseDouble(list_month_pt.get(0).get("INVEST_TIMES") + "");
+//			curr_month_invest_times += Double.parseDouble(list_month_pt.get(0).get("INVEST_TIMES") + "");
+			
+			Map<String, Object> map = list_month_pt.get(0);
+			Object obj = map.get("INVEST_TIMES");
+			if("".equals(obj + "") || obj == null || "null".equals(obj+"")){
+				curr_month_invest_times += 0;
+			}else{
+				curr_month_invest_times += Double.parseDouble(obj + "");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -918,7 +941,17 @@ public class MainController {
 			//存管版当月交易笔数
 			JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
 			List<Map<String, Object>> list_month_cg = util.query(SqlConstants.curr_cg_invest_times_sql, monthStartDate,yesEndDate , monthStartDate, yesEndDate, monthStartDate, yesEndDate);
-			curr_month_invest_times += Double.parseDouble(list_month_cg.get(0).get("invest_times") + "");
+			
+			
+			Map<String, Object> map = list_month_cg.get(0);
+			Object obj = map.get("invest_times");
+			if("".equals(obj + "") || obj == null || "null".equals(obj+"")){
+				curr_month_invest_times += 0;
+			}else{
+				curr_month_invest_times += Double.parseDouble(obj + "");
+			}
+			
+//			curr_month_invest_times += Double.parseDouble(list_month_cg.get(0).get("invest_times") + "");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
