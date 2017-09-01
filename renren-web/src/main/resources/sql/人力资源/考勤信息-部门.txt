@@ -13,7 +13,7 @@ with clock as(
     and sa.clock_result is not null   --去除员工重复打卡的数据
     and to_char(attend_time,'day') not in ('星期六','星期日')  --去除周六日考勤数据
     and sa.clock_result in （'正常','迟到','外勤'）  -- 只算正常和迟到状态数据   --修正,添加外勤数据
-    and to_char(attend_time,'yyyymm') =201707  --需求方的筛选条件为：月
+    and to_char(attend_time,'yyyymm') =?  --需求方的筛选条件为：月
   group by realname,post
 ),
 

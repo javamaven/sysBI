@@ -62,6 +62,27 @@ public class DmReportDalilyMarketingEntity implements Serializable {
 	//
 	private BigDecimal mInvMoney;
 
+	//
+	private BigDecimal cCost;
+	//
+	private BigDecimal cRecharge;
+	
+	public void setcCost(BigDecimal cCost) {
+		this.cCost = cCost;
+	}
+	
+	public BigDecimal getcCost() {
+		return cCost;
+	}
+	
+	public void setcRecharge(BigDecimal cRecharge) {
+		this.cRecharge = cRecharge;
+	}
+	
+	public BigDecimal getcRecharge() {
+		return cRecharge;
+	}
+	
 	/**
 	 * 设置：
 	 */

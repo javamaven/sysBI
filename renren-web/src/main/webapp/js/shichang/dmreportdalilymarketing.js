@@ -55,7 +55,9 @@ function initDayTable(){
 			{ label: '年化渠道首投金额', name: 'yCInvFirstMoney', index: '$Y_C_INV_FIRST_MONEY', width: 130, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }, 			
 			{ label: '渠道投资金额', name: 'cInvMoney', index: '$C_INV_MONEY', width: 100, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }, 			
 			{ label: '渠道年化投资金额', name: 'yCInvMoney', index: '$Y_C_INV_MONEY', width: 140 , formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}} }, 			
-			{ label: '当月首投用户当日投资', name: 'mInvMoney', index: '$M_INV_MONEY', width: 160, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }			
+			{ label: '当月首投用户当日投资', name: 'mInvMoney', index: '$M_INV_MONEY', width: 160, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  },
+			{ label: '渠道费用', name: 'cCost', index: '$M_INV_MONEY', width: 160, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  },
+			{ label: '渠道充值', name: 'cRecharge', index: '$M_INV_MONEY', width: 160, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }
         ],
         height:  $(window).height()-130,
         rowNum: 20,
@@ -114,8 +116,11 @@ function initMonthTable(){
 			{ label: '年化渠道首投金额', name: 'yCInvFirstMoney', index: '$Y_C_INV_FIRST_MONEY', width: 130, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }, 			
 			{ label: '渠道投资金额', name: 'cInvMoney', index: '$C_INV_MONEY', width: 100, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }, 			
 			{ label: '渠道年化投资金额', name: 'yCInvMoney', index: '$Y_C_INV_MONEY', width: 140 , formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}} }, 			
-			{ label: '当月首投用户当月投资', name: 'mInvMoney', index: '$M_INV_MONEY', width: 160, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }			
-        ],
+			{ label: '当月首投用户当月投资', name: 'mInvMoney', index: '$M_INV_MONEY', width: 160, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  },		
+			{ label: '渠道费用', name: 'cCost', index: '$M_INV_MONEY', width: 160, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  },
+			{ label: '渠道充值', name: 'cRecharge', index: '$M_INV_MONEY', width: 160, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }
+   
+			],
         height:  $(window).height()-130,
         rowNum: 20,
 //		rowList : [10,30,50],
@@ -171,8 +176,11 @@ function initTotalTable(){
 			{ label: '渠道首投金额', name: 'cInvFirstMoney', index: '$C_INV_FIRST_MONEY', width: 100, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }, 			
 			{ label: '年化渠道首投金额', name: 'yCInvFirstMoney', index: '$Y_C_INV_FIRST_MONEY', width: 130, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }, 			
 			{ label: '渠道投资金额', name: 'cInvMoney', index: '$C_INV_MONEY', width: 100, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }, 			
-			{ label: '渠道年化投资金额', name: 'yCInvMoney', index: '$Y_C_INV_MONEY', width: 140 , formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}} }
-//			{ label: '当月首投用户当月投资', name: 'mInvMoney', index: '$M_INV_MONEY', width: 160, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }			
+			{ label: '渠道年化投资金额', name: 'yCInvMoney', index: '$Y_C_INV_MONEY', width: 140 , formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}} },
+//			{ label: '当月首投用户当月投资', name: 'mInvMoney', index: '$M_INV_MONEY', width: 160, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }	
+			{ label: '渠道费用', name: 'cCost', index: '$M_INV_MONEY', width: 160, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  },
+			{ label: '渠道充值', name: 'cRecharge', index: '$M_INV_MONEY', width: 160, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }
+   
         ],
         height:  $(window).height()-130,
         rowNum: 20,
