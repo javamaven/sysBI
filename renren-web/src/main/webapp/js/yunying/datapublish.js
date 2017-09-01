@@ -51,7 +51,7 @@ function initEcharts() {
 	
 	chart2.setOption(getOption2());
 //	chart5.setOption(getOption5());
-	chart6.setOption(getOption6());
+//	chart6.setOption(getOption6());
 //	chart9.setOption(getOption9());
 //	chart10.setOption(getOption10());
 //	chart11.setOption(getOption11());
@@ -402,13 +402,32 @@ function queryEchartTouZiXingBieData(){
 //		    data: JSON.stringify(getParams()),
 		    contentType: "application/json;charset=utf-8",
 		    success : function(msg) {	
-		    	console.info(msg.page.list)
+//		    	console.info(msg.page.list)
 		    	chart12.setOption(getOption12(msg.page.list));
 		    },
 		    
 	 });
 	 
 }
+
+function queryEchartChanPinData(){
+	var paramsUrl = '';
+	paramsUrl += 'page=1&limit=200';
+	 $.ajax({
+		    type: "GET",
+		    url: "../yunying/pilu/chanpin?" + paramsUrl,
+//		    data: JSON.stringify(getParams()),
+		    contentType: "application/json;charset=utf-8",
+		    success : function(msg) {	
+		    	console.info(msg.page.list)
+		    	chart6.setOption(getOption6(msg.page.list));
+		    },
+		    
+	 });
+	 
+}
+
+
 
 function getOption4(rows) {
 
@@ -695,8 +714,19 @@ function getOption5(rows) {
 	return option5;
 }
 
-function getOption6() {
+function getOption6(rows) {
+	var data_list = [];
+	var data_list2 = [];
+	var data_list3 = [];
+	var data_list4 = [];
 	
+	for (var i = 0; i < rows.length; i++) {
+		var row = rows[i];
+		data_list.push(row.XINSHOU);	
+		data_list2.push(row.ZHITOU);
+		data_list3.push(row.JINGXUAN);
+		data_list4.push(row.SHENGXIN);
+	}
 	option6 = {
 		    title : {
 		        text: '产品组合',
@@ -712,26 +742,36 @@ function getOption6() {
 		            saveAsImage : {show: true}
 		        }
 		    },   
+		    legend: {
+		        orient: 'vertical',
+		        left: 'left',
+		        data: ['新手项目','智能投标','精选项目','省心投']
+		    },
 		    series : [
 		        {
 		            name: '产品名称',
 		            type: 'pie',
-		            color:['#39869B', '#46A1B9','#7CBBCF','#B5D4E0'] ,
+		            color:['#39869B', '#46A1B9','#7CBBCF','#61A0A8'] ,
 		            radius : '55%',
 		            center: ['50%', '60%'],
 		            data:[
-		                {value:500, name:'小额贷款'},
-		                {value:500, name:'汽车金融'},
-		                {value:500, name:'信用贷'},
-		                {value:500, name:'消费金融'}
+		                {value:data_list, name:'新手项目'},
+		                {value:data_list2, name:'智能投标'},
+		                {value:data_list3, name:'精选项目'},
+		                {value:data_list4, name:'省心投'}
 		            ],
 		            itemStyle: {
 		                emphasis: {
 		                    shadowBlur: 10,
 		                    shadowOffsetX: 0,
 		                    shadowColor: 'rgba(0, 0, 0, 0.5)'
-		                }
+		                },normal:{
+	                        label: { 
+	                            show: true,//是否展示  
+	                            formatter: '{b} :{d}%' 
+	                        }  
 		            }
+				   }
 		        }
 		    ]
 		};
@@ -1168,6 +1208,7 @@ function reload(){
 	queryEchartBiaoQiXianData();
 	queryEchartJieKuanData();
 	queryEchartTouZiData();
+	queryEchartChanPinData();
 	queryEchartXingBieData();
 	queryEchartNianLinData();
 	queryEchartTouZiNianLingData();

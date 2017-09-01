@@ -1,0 +1,13 @@
+select 
+round(sum(case when pj.is_novice=1 then pd.tender_capital else 0 end )/
+sum(case when pd.tender_subject in(1,3,4) then pd.tender_capital else 0 end),4) as XINSHOU,-- 新手项目
+round(sum(case when pj.is_novice=0 and pd.tender_subject=3 then pd.tender_capital else 0 end)/
+sum(case when pd.tender_subject in(1,3,4) then pd.tender_capital else 0 end),4) as ZHITOU,-- 智能投标
+round(sum(case when pj.is_novice=0 and pd.tender_subject=1 then pd.tender_capital else 0 end)/
+sum(case when pd.tender_subject in(1,3,4) then pd.tender_capital else 0 end),4) as JINGXUAN,-- 精选项目
+round(sum(case when pd.tender_subject=4 then pd.tender_capital else 0 end)/
+sum(case when pd.tender_subject in(1,3,4) then pd.tender_capital else 0 end),4) as SHENGXIN -- 省心投
+from mdtxbi.edw_trading_project_detail pd
+left join mdtxbi.edw_trading_project pj 
+on pd.project_id=pj.project_id
+where to_char(pd.addtime,'yyyymm')='201708'

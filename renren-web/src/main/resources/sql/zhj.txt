@@ -167,8 +167,8 @@ CASE
   THEN (rpp.repay_capital+rpp.repay_interest)
 ELSE 0 END)/10000,2) AS REPAY_capital -- 待收本息
 FROM
-mdtxbi.dm_trading_repay_plan rpp
-left join mdtxbi.dm_trading_repay_detail rpd
+mdtxbi.edw_trading_repay_plan rpp
+left join mdtxbi.edw_trading_repay_detail rpd
  on (rpp.project_id=rpd.project_id and rpp.period=rpd.period)
  ,mdtxbi.edw_trading_project b
 where 
@@ -209,8 +209,8 @@ CASE
   THEN (rpp.repay_capital+rpp.repay_interest)
 ELSE 0 END)/10000,2) AS REPAY_capital -- 待收本息
 FROM
-mdtxbi.dm_trading_repay_plan rpp
-left join mdtxbi.dm_trading_repay_detail rpd
+mdtxbi.edw_trading_repay_plan rpp
+left join mdtxbi.edw_trading_repay_detail rpd
  on (rpp.project_id=rpd.project_id and rpp.period=rpd.period)
  ,mdtxbi.edw_trading_project b
 where
@@ -233,8 +233,8 @@ CASE
   THEN (rpp.repay_capital+rpp.repay_interest)
 ELSE 0 END)/10000,2) AS REPAY_capital -- 待收本息
 FROM
-mdtxbi.dm_trading_repay_plan rpp
-left join mdtxbi.dm_trading_repay_detail rpd
+mdtxbi.edw_trading_repay_plan rpp
+left join mdtxbi.edw_trading_repay_detail rpd
  on (rpp.project_id=rpd.project_id and rpp.period=rpd.period)
  ,mdtxbi.edw_trading_project b
 where
@@ -328,7 +328,7 @@ union all
      and zhj_type=2
    group by to_char(project_complete_date,'yyyymm')
    union all
-   select sum(project_scale)/10000,sum(invest_cou) from mdtxbi.dm_trading_ddz_borrow where to_char(issue_date,'yyyymm')='${investStatTime}'
+   select sum(project_scale)/10000,sum(invest_cou) from mdtxbi.edw_trading_ddz_borrow where to_char(issue_date,'yyyymm')='${investStatTime}'
    )
  union all
    --H5068
@@ -342,7 +342,7 @@ union all
      and zhj_type=2
    group by to_char(project_complete_date,'yyyymm')
    union all
-   select sum(project_scale)/10000,sum(invest_cou) from mdtxbi.dm_trading_ddz_borrow where to_char(issue_date,'yyyymm')='${investStatTime}'
+   select sum(project_scale)/10000,sum(invest_cou) from mdtxbi.edw_trading_ddz_borrow where to_char(issue_date,'yyyymm')='${investStatTime}'
    )
  union all
   --H5069-----------------
@@ -351,7 +351,7 @@ union all
   '当期债权受让人人数',
   '月度' as month,
   count(distinct user_id) from (
-  select user_id from mdtxbi.dm_trading_project_detail where project_id in (
+  select user_id from mdtxbi.edw_trading_project_detail where project_id in (
   select a.project_id from mdtxbi.edw_trading_project a
      where to_char(project_complete_date,'yyyymm')='${investStatTime}' and a.project_id = a.from_project_id and stage in (5,8)
         and zhj_type=2
@@ -373,7 +373,7 @@ union all
       and zhj_type=2
    group by to_char(project_complete_date,'yyyy')
    union all
-   select sum(project_scale)/10000,sum(invest_cou) from mdtxbi.dm_trading_ddz_borrow where to_char(issue_date,'yyyymm')between to_char(sysdate,'yyyy')||'01'and '${investStatTime}'
+   select sum(project_scale)/10000,sum(invest_cou) from mdtxbi.edw_trading_ddz_borrow where to_char(issue_date,'yyyymm')between to_char(sysdate,'yyyy')||'01'and '${investStatTime}'
    )
  union all
    --H5071
@@ -387,7 +387,7 @@ union all
       and zhj_type=2
    group by to_char(project_complete_date,'yyyy')
    union all
-   select sum(project_scale)/10000,sum(invest_cou) from mdtxbi.dm_trading_ddz_borrow where to_char(issue_date,'yyyymm')between to_char(sysdate,'yyyy')||'01'and '${investStatTime}'
+   select sum(project_scale)/10000,sum(invest_cou) from mdtxbi.edw_trading_ddz_borrow where to_char(issue_date,'yyyymm')between to_char(sysdate,'yyyy')||'01'and '${investStatTime}'
    )
 union all
   --H5072-------------------
@@ -417,7 +417,7 @@ union all
    where to_char(project_complete_date,'yyyymm')between to_char(sysdate,'yyyy')||'01'and '${investStatTime}' and a.project_id = a.from_project_id and stage in (5,8)
       and zhj_type=2
    union all
-   select sum(project_scale)/10000,sum(invest_cou) from mdtxbi.dm_trading_ddz_borrow where to_char(issue_date,'yyyy')<=2016
+   select sum(project_scale)/10000,sum(invest_cou) from mdtxbi.edw_trading_ddz_borrow where to_char(issue_date,'yyyy')<=2016
    )
  union all
    --H5074
@@ -430,7 +430,7 @@ union all
    where to_char(project_complete_date,'yyyymm')between to_char(sysdate,'yyyy')||'01'and '${investStatTime}' and a.project_id = a.from_project_id and stage in (5,8)
       and zhj_type=2
    union all
-   select sum(project_scale)/10000,sum(invest_cou) from mdtxbi.dm_trading_ddz_borrow where to_char(issue_date,'yyyy')<=2016
+   select sum(project_scale)/10000,sum(invest_cou) from mdtxbi.edw_trading_ddz_borrow where to_char(issue_date,'yyyy')<=2016
    )
    union all
    
@@ -448,7 +448,7 @@ select a.project_id from mdtxbi.edw_trading_project a
      and a.zhj_type=2
  ) and tender_subject=1 and to_char(addtime,'yyyymmdd')<='${investDayTime}'
  union all
-select sum(project_scale)/10000 tender_sum from mdtxbi.dm_trading_ddz_borrow where to_char(issue_date,'yyyymmdd')='${investDayTime}'
+select sum(project_scale)/10000 tender_sum from mdtxbi.edw_trading_ddz_borrow where to_char(issue_date,'yyyymmdd')='${investDayTime}'
 )
 
 union all

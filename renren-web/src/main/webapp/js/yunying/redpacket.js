@@ -5,6 +5,7 @@ $(function () {
 	initEvent();
 	initSelectEvent();
 	initCountTableGrid();
+	initCunGuanTableGrid();
 });
 
 
@@ -16,9 +17,16 @@ function initSelectEvent(){
 		if(select == 'vip_detail'){
 			$("#vip_detail_div").show();
 			$("#vip_count_div").hide();
+			$("#cunguan_div").hide();
 		}else if(select == 'vip_count'){
 			$("#vip_detail_div").hide();
 			$("#vip_count_div").show();
+			$("#cunguan_div").hide();
+		}
+		else if(select == 'cunguan'){
+			$("#vip_detail_div").hide();
+			$("#vip_count_div").hide();
+			$("#cunguan_div").show();
 		}
 	});
 }
@@ -43,6 +51,9 @@ function initExportFunction(){
 			executePost('../yunying/hongbao/exportExcel', {'params' : JSON.stringify(params)});
 		}
 		else if(select == 'vip_count'){
+			executePost('../yunying/hongbao/exportExcel', {'params' : JSON.stringify(params)});
+		}
+		else if(select == 'cunguan'){
 			executePost('../yunying/hongbao/exportExcel', {'params' : JSON.stringify(params)});
 		}
 	});
@@ -128,6 +139,53 @@ function initCountTableGrid(){
     });
     $("#vip_count_div").hide();
 }
+function initCunGuanTableGrid(){
+    $("#jqGrid_cunguan").jqGrid({
+//        url: '../yunying/dmreportvipuser/list',
+        datatype: "json",
+        colModel: [
+			{ label: '渠道名称', name: 'NAME', index: '$TYPE', width: 90,align:'right' },
+			{ label: '券号NID/红包模板ID', name: 'ID', index: '$ID', width: 90 ,align:'right'}, 			
+			{ label: '发放人数', name: 'FAFANG', index: '$FAFANG', width: 90 ,align:'right'}, 
+			{ label: '使用人数', name: 'SHIYONG', index: '$SHIYONG', width: 90 ,align:'right'}, 			
+			{ label: '使用总金额(元)', name: 'ZMONEY', index: '$ZMONEY', width: 90 ,align:'right'}, 	
+			{ label: '用户前3次投资使用金额(元)', name: 'FIRSTMONEY', index: '$FIRSTMONEY', width: 90,align:'right' },
+			{ label: '红包所属系统', name: 'RED', index: '$RED', width: 90 ,align:'right'},		
+			{ label: '数据统计周期', name: 'TIME', index: '$TIME', width: 90 ,align:'right'},
+			{ label: '用途', name: 'YONGTU', index: '$YONGTU', width: 90,align:'right' },
+			{ label: '所属于部门', name: 'BUMEN', index: '$BUMEN', width: 90 ,align:'right'},		
+			{ label: '成本分摊方式', name: 'CHENGBEN', index: '$CHENGBEN', width: 90 ,align:'right'},
+			{ label: '市场部费用(元)', name: 'SHICHANGFEIYONG', index: '$SHICHANGFEIYONG', width: 90 ,align:'right'},
+			{ label: '运营部费用(元)', name: 'YUNYINGFEIYONG', index: '$YUNYINGFEIYONG', width: 90 ,align:'right'}
+				
+        ],
+		viewrecords: true,
+        height: $(window).height()-170,
+        rowNum: 1000,
+        rownumbers: true, 
+        autowidth:true,
+//        shrinkToFit: false,
+//        autoScroll: false,
+//        multiselect: false,
+        pager: "#jqGridPager_cunguan",
+        jsonReader : {
+            root: "page.list",
+            page: "page.currPage",
+            total: "page.totalPage",
+            records: "page.totalCount"
+        },
+        prmNames : {
+            page:"page", 
+            rows:"limit", 
+            order: "order"
+        },
+        gridComplete:function(){
+        	//隐藏grid底部滚动条
+        }
+    });
+    $("#cunguan_div").hide();
+}
+
 
 
 var vm = new Vue({
@@ -153,6 +211,13 @@ var vm = new Vue({
 				$("#jqGrid_count").jqGrid('setGridParam',{ 
 					datatype:'json', 
 					url: '../yunying/hongbao/ddylist',
+		            postData: getParams()
+	            }).trigger("reloadGrid");
+			}else if(select == 'cunguan'){
+				$("#jqGrid_cunguan").jqGrid("clearGridData");
+				$("#jqGrid_cunguan").jqGrid('setGridParam',{ 
+					datatype:'json', 
+					url: '../yunying/hongbao/ddylist2',
 		            postData: getParams()
 	            }).trigger("reloadGrid");
 			}
