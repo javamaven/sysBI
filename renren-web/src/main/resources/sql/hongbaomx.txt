@@ -1,0 +1,100 @@
+
+
+-- 存管版红包明细
+
+with pd as -- 有使用新手红包的投资情况
+(
+select
+a.id, 
+a.user_id,
+a.tender_capital,
+a.tend_vouche,
+row_number() over (partition by a.user_id order by a.addtime asc) ranks,
+a.borrow_period,
+a.addtime
+from mdtxbi.edw_trading_project_detail a
+where a.tender_account_status in (0,1) -- 改2017-8-31
+),
+hd as(
+select 
+uvl.user_id,
+uvl.prize_template_id,
+uvl.use_money as tend_vouche,
+uvl.use_time,
+pd.ranks
+from  mdtxbi.edw_reward_user_voucher_log uvl
+left join pd
+on pd.id=uvl.tender_detail_id
+where uvl.from_sys=1 and uvl.use_status in (0,1)
+),
+fafang as 
+(
+select  -- 发放的红包
+mv.prize_template_id,
+count(uv.user_id) fa
+from 
+mdtxbi.edw_reward_user_voucher uv
+left join mdtxbi.edw_reward_voucher mv
+on (mv.id=uv.voucher_id and mv.from_sys=uv.from_sys)
+where uv.from_sys=1 and to_char(RECEIVE_TIME,'yyyy-mm-dd') between '${investMonthTime}' and '${investEndTime}' 
+group by mv.prize_template_id
+),
+shiyong as 
+(
+select -- 按照红包分类的使用情况
+hd.prize_template_id,
+count(distinct(hd.user_id))  as v_num,-- 红包使用人数
+-- sum(nvl(hd.tend_vouche,0)) as sum_vouche,
+sum(nvl(hd.tend_vouche,0)) as sum_vouche, -- 改了这里
+sum(case when hd.ranks<=3 then nvl(hd.tend_vouche,0)else 0 end ) as ft_vouche,  -- 前3次投资使用的红包 -- 改了这里 2017-8-31
+sum(case when hd.ranks>3 then nvl(hd.tend_vouche,0)else 0 end ) as sc_vouche  -- 之后使用的红包 -- 改了这里  2017-8-31
+from hd
+where  to_char(hd.USE_TIME,'yyyy-mm-dd') between '${investMonthTime}' and '${investEndTime}'  -- 这里需要改 ，create_time 应该用USE_TIME
+group by 
+hd.prize_template_id
+order by 
+hd.prize_template_id
+),
+guisu as
+(
+SELECT 
+pt.id,
+pt.name,
+pt.DESCRIPTION,
+pt.purpose,
+pt.APPLY_USER,
+case
+  when pt.apply_user ='市场部' then '归属市场部'
+  when pt.apply_user ='电销部' and pt.name like '%新手%' then '归属市场部'  
+  when  pt.name like '%注册%' then '前3次投资归市场'
+  else '归属运营部'
+end attri_department
+FROM MDTXBI.ODS_MDTX_CG_prize_template@ora40 pt
+)
+select
+gg.name as NAME ,
+nvl(ff.prize_template_id,ss.prize_template_id) as ID,
+nvl(ff.fa,0)  as FAFANG ,
+nvl(ss.v_num,0) as SHIYONG,
+nvl(ss.sum_vouche,0) as ZMONEY,
+nvl(ss.ft_vouche,0) as FIRSTMONEY, -- 改2017-8-31
+'存管版' as RED,
+'${invest_month}' as TIME,
+gg.purpose as YONGTU, -- 将字段名从DESCRIPTION改为purpose
+gg.APPLY_USER as BUMEN,
+gg.attri_department as CHENGBEN,
+--ss.sum_vouche,
+case 
+when gg.attri_department='归属市场部' then nvl(ss.sum_vouche,0)
+-- when gg.attri_department='仅首投归市场' then nvl(ss.ft_vouche,0)
+when gg.attri_department='前3次投资归市场' then nvl(ss.ft_vouche,0)-- 改2017-8-31
+else 0 end as SHICHANGFEIYONG,
+case 
+when gg.attri_department='归属市场部' then 0
+-- when gg.attri_department='仅首投归市场' then nvl(ss.sc_vouche,0)
+when gg.attri_department='前3次投资归市场' then nvl(ss.sc_vouche,0)-- 改2017-8-31
+else nvl(ss.sum_vouche,0) end as YUNYINGFEIYONG
+from shiyong ss full join fafang ff on ss.prize_template_id=ff.prize_template_id
+left join guisu gg on  gg.id=nvl(ss.prize_template_id,ff.prize_template_id)
+where nvl(ff.prize_template_id,ss.prize_template_id) is not null
+
