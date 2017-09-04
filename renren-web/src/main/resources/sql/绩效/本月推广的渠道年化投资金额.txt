@@ -4,10 +4,7 @@ select -- 首投人数计算
 user_id, -- 用户唯一id
 REGISTER_TIME,--  注册时间
 IS_VALIDATE_IDCARD,
-case
-when nvl(NORMAL_FIRSTINVEST_TIME,to_date('2999-12-31','yyyy-mm-dd'))<nvl(DEPOSITORY_FIRSTINVEST_TIME,to_date('2999-12-31','yyyy-mm-dd')) then NORMAL_FIRSTINVEST_TIME
-when nvl(NORMAL_FIRSTINVEST_TIME,to_date('2999-12-31','yyyy-mm-dd'))>nvl(DEPOSITORY_FIRSTINVEST_TIME,to_date('2999-12-31','yyyy-mm-dd')) then DEPOSITORY_FIRSTINVEST_TIME
-end  as FIRSTINVEST_TIME --首投时间
+FIRSTINVEST_TIME --首投时间
 from mdtxbi.edw_user_basic
 where IS_BORROWER=0
 )
@@ -16,5 +13,5 @@ sum(case when pd.tender_subject=2 then pd.tend_cash else pd.tender_capital end) 
 from mdtxbi.dm_trading_project_detail pd
 where pd.user_id in --  首投时间在本月的用户
 (select user_id from duu where to_char(duu.FIRSTINVEST_TIME,'yyyymm')= '${month}' )
-and pd.tender_account_status=1
+and pd.tender_account_status in (0,1)
 and to_char(pd.addtime,'yyyymm')='${month}'

@@ -11,6 +11,12 @@ function initDateList(){
 	var year = currDay.substring(0, 4);
 	var month_ = currDay.substring(5, 7);
 	month_ = parseInt(month_);
+	if(month_ == 1){
+		year = parseInt(year) - 1;
+		month_ = 12;
+	}else{
+		month_ = month_ - 1;
+	}
 	var html = '';
 	for (var i = 1; i <= 12; i++) {
 		if(i <= 6){//7月份前的不允许查询
