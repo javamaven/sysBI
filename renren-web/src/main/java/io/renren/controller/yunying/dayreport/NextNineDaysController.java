@@ -196,15 +196,27 @@ public class NextNineDaysController {
       
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 
+	
+		
+		
 		String beforeDay="";
 		String beforeNineDay="";
 		String beforeDaywu="";
+		int sumday=0;
+		int oneDay=0;
+		String beforeOneDay="";
+		String day="";
 		if (StringUtils.isNotEmpty(begin_time)) {
 //			beforeDay = begin_time.replace("-", "");
 			beforeDay = DateUtil.getCurrDayBefore(begin_time, 1, "yyyy-MM-dd");
 			beforeDaywu = beforeDay.replace("-", "");
-			beforeNineDay = DateUtil.getCurrDayBefore(begin_time, 10, "yyyy-MM-dd");
+			sumday=DateUtil.differentDaysByMillisecond(begin_time, end_time);
+			day=sumday+"";
+			oneDay=sumday-1;
+			beforeOneDay=oneDay+"";
+			beforeNineDay = DateUtil.getCurrDayBefore(beforeDay, oneDay, "yyyy-MM-dd");
 			beforeNineDay=beforeNineDay.replace("-", "");
+//			String lastyeartime=Integer.parseInt(lastYearTime)-1+lastYearTime2;
 		}
 
 
@@ -214,6 +226,7 @@ public class NextNineDaysController {
 			String detail_sql;
 			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/nextNineDays.txt"));
 			detail_sql = detail_sql.replace("${end_time}", end_time);
+			detail_sql = detail_sql.replace("${day}", day);
 			detail_sql = detail_sql.replace("${begin_time}", begin_time);
 			detail_sql = detail_sql.replace("${beforeDay}", beforeDay);
 			detail_sql = detail_sql.replace("${beforeNineDay}", beforeNineDay);
@@ -247,7 +260,7 @@ public class NextNineDaysController {
 		headMap.put("CGB_REPAY_ACCOUNT_WAIT", "存管版回款");
 		headMap.put("REPAY_ACCOUNT_WAIT", "总回款");
 		headMap.put("UNLOCK_MONEY", "理财计划解锁金额");
-		headMap.put("LJ_UNLOCK_MONEY", "累计解锁未退出金额");
+//		headMap.put("LJ_UNLOCK_MONEY", "累计解锁未退出金额");
 		return headMap;
 
 	}
