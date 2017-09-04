@@ -204,7 +204,7 @@ from (
     and user_level = '新用户'
     and money_wait > 0
     and user_id in (
-        select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE where stat_peroid = '${currDay}' and user_level = '新用户' and money_wait = 0                
+        select user_id from MDTXBI.DM_REPORT_MDTX_ANALYZE where stat_peroid = '${currDay}'  and money_wait = 0                
     )
     union all
     select 

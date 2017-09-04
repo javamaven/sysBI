@@ -18,6 +18,6 @@ case when pd.tender_subject=2 then pd.tend_cash else pd.tender_capital end as "�
 from mdtxbi.dm_trading_project_detail pd
 where pd.user_id in --  首投时间在本月的用户
 (select user_id from duu where to_char(duu.FIRSTINVEST_TIME,'yyyymm')= '${month}' )
-and pd.tender_account_status=1
+and pd.tender_account_status in (0,1)
 and to_char(pd.addtime,'yyyymm')='${month}'
 order by pd.addtime
