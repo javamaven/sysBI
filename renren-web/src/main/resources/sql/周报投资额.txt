@@ -1,0 +1,42 @@
+
+-- 年化销售额 
+-- 销售资产（月悦升、智投乐、散标、省心投）按照销售金额、到期日期（或锁定日期）计算的年化投资额
+select * from (
+select
+to_char(pd.addtime,'yyyy-mm-dd') as d_day, -- 数据日期 
+to_char(round(sum(pd.tender_capital*pd.borrow_period)/3600000,2)) as sale_nian_tender, -- 年化销售额
+to_char(round(sum(pd.tender_capital)/10000,2)) as sale -- 销售额
+from mdtxbi.edw_trading_project_detail pd
+where to_char(pd.addtime,'yyyy-mm-dd') between '${invest_stat_time}' and '${invest_end_time}'
+and pd.tender_subject<>2
+and pd.tender_account_status in(0,1)
+group by to_char(pd.addtime,'yyyy-mm-dd')
+order by to_char(pd.addtime,'yyyy-mm-dd'))
+union all
+select 
+ '年化交易额',
+'当天项目年化投资额（万元）',
+'当天项目投资额（万元）' from dual
+union all
+select * from(
+select -- 当天项目年化投资额（万元）
+-- to_char(sysdate-1,'yyyy-mm-dd') d_day,
+to_char(project_complete_date,'yyyy-mm-dd') d_day,
+to_char(round(
+sum(
+    case
+      when pj.BORROW_TERM_UNIT=1 then -- 日标
+           pj.borrow_account*pj.BORROW_TERM/360-- 项目
+      when pj.BORROW_TERM_UNIT=2 then -- 年标
+           pj.borrow_account*30*pj.BORROW_TERM/360-- 项目
+      else 0
+    end
+        )/10000,2)) as nian_tender, -- 当天项目年化投资额（万元）
+to_char(round(sum(pj.borrow_account)/10000,2)) sum_tender -- 当天项目投资额（万元）
+from mdtxbi.edw_trading_project pj 
+where 
+ (to_char(project_complete_date,'yyyy-mm-dd') between '${invest_stat_time}' and '${invest_end_time}')
+and pj.project_id not like 'ZT%'
+group by to_char(project_complete_date,'yyyy-mm-dd')  -- 按照满标时间计算
+order by to_char(project_complete_date,'yyyy-mm-dd') 
+)

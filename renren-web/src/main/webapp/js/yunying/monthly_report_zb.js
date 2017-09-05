@@ -9,6 +9,7 @@ $(function () {
 	initCountTableGrid();
 	initDaiShouTableGrid();
 	initZiChanTableGrid();
+	initWeiZhiTableGrid();
 });
 
 var echartDivObj = document.getElementById('echart_div');
@@ -29,21 +30,32 @@ function initSelectEvent(){
 			$("#vip_count_div").hide();
 			$("#vip_daishou_div").hide();
 			$("#zichan_div").hide();
+			$("#weizhi_div").hide();
 		}else if(select == 'vip_count'){
 			$("#vip_detail_div").hide();
 			$("#vip_count_div").show();
 			$("#vip_daishou_div").hide();
 			$("#zichan_div").hide();
+			$("#weizhi_div").hide();
 		}else if(select == 'daishou'){
 			$("#vip_detail_div").hide();
 			$("#vip_count_div").hide();
 			$("#vip_daishou_div").show();
 			$("#zichan_div").hide();
+			$("#weizhi_div").hide();
 		}else if(select == 'zichan'){
 			$("#vip_detail_div").hide();
 			$("#vip_count_div").hide();
 			$("#vip_daishou_div").hide();
 			$("#zichan_div").show();
+			$("#weizhi_div").hide();
+		}
+		else if(select == 'weizhi'){
+			$("#vip_detail_div").hide();
+			$("#vip_count_div").hide();
+			$("#vip_daishou_div").hide();
+			$("#zichan_div").hide();
+			$("#weizhi_div").show();
 		}
 	});
 }
@@ -77,6 +89,11 @@ function initExportFunction(){
 		}else if(select == 'vip_count'){
 			executePost('../yunying/zbp2p/exportExcel', {'params' : JSON.stringify(params)});
 		}else if(select == 'daishou'){
+			executePost('../yunying/zbp2p/exportExcel', {'params' : JSON.stringify(params)});
+		}else if(select == 'zichan'){
+			executePost('../yunying/zbp2p/exportExcel', {'params' : JSON.stringify(params)});
+		}
+		else if(select == 'weizhi'){
 			executePost('../yunying/zbp2p/exportExcel', {'params' : JSON.stringify(params)});
 		}
 	});
@@ -228,6 +245,40 @@ function initZiChanTableGrid(){
     $("#zichan_div").hide();
 }
 
+function initWeiZhiTableGrid(){
+    $("#jqGrid_weizhi").jqGrid({
+        datatype: "json",
+        colModel: [			
+        	{ label: '日期', name: 'D_DAY', index: '$STAT_PERIOD', width: 100,align:'right' },
+			{ label: '年化销售额（万元）', name: 'SALE_NIAN_TENDER', index: '$MONTH_TENDER_COU', width: 100 ,align:'right'},
+        	{ label: '销售额（万元）', name: 'SALE', index: '$MONTH_TENDER_COU', width: 100 ,align:'right'}
+        ],
+		viewrecords: true,
+        height: $(window).height()-170,
+        rowNum: 100,
+//        rownumbers: true, 
+        autowidth:true,
+        pager: "#jqGridPager_weizhi",
+        jsonReader : {
+            root: "page.list",
+            page: "page.currPage",
+            total: "page.totalPage",
+            records: "page.totalCount"
+        },
+        prmNames : {
+            page:"page", 
+            rows:"limit", 
+            order: "order"
+        },
+        gridComplete:function(){
+        	//隐藏grid底部滚动条
+        }
+    });
+    $("#weizhi_div").hide();
+}
+
+
+
 
 function queryEchartData(){
 	var paramsUrl = '';
@@ -366,6 +417,15 @@ function reload(){
 		$("#jqGrid_zichan").jqGrid('setGridParam',{ 
 			datatype:'json', 
 			url: '../yunying/zbp2p/zichanlist',
+            postData: getParams()
+        }).trigger("reloadGrid");
+		
+	}
+	else if(select == 'weizhi'){
+		$("#jqGrid_weizhi").jqGrid("clearGridData");
+		$("#jqGrid_weizhi").jqGrid('setGridParam',{ 
+			datatype:'json', 
+			url: '../yunying/zbp2p/weizhilist',
             postData: getParams()
         }).trigger("reloadGrid");
 		
