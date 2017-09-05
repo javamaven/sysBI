@@ -4,7 +4,9 @@ import static io.renren.utils.ShiroUtils.getUserId;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sound.midi.SysexMessage;
 
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.lang.StringUtils;
@@ -31,6 +34,7 @@ import io.renren.service.UserBehaviorService;
 import io.renren.service.yunying.dayreport.DmReportVipUserService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
+import io.renren.util.MapUtil;
 import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
@@ -143,12 +147,33 @@ public class DmReportVipUserController {
 			list.add(map.get("OLD_PHONE") + "");
 			
 			list.add(map.get("AWAIT") + "");
-			list.add((int)Double.parseDouble(map.get("LV") + ""));
+			String lv = MapUtil.getValue(map, "LV");
+			if(StringUtils.isEmpty(lv)){
+				list.add(0);
+			}else{
+				list.add((int)Double.parseDouble(map.get("LV") + ""));
+			}
+			
 			list.add(map.get("OWNER") + "");
 			
 			list.add(null);
-			list.add(map.get("200W_AWAIT") + "");
+			String await_200w = MapUtil.getValue(map, "200W_AWAIT");
+			if(StringUtils.isEmpty(await_200w)){
+				list.add("");
+			}else{
+				list.add(await_200w);
+			}
 
+//			String sql = "insert into dm_report_vip_user_5 values(?,?,?,?,?,?,?,?,?,?,?,?)";
+//			if(i > 4000){
+//				try {
+//					new JdbcUtil(dataSourceFactory, "oracle26").execute(sql, list.get(0),list.get(1),list.get(2),list.get(3),list.get(4),list.get(5),
+//							list.get(6),list.get(7),list.get(8),list.get(9),list.get(10),list.get(11));
+//				} catch (SQLException e) {
+//					System.err.println(list + " ;i=" + i);
+//					e.printStackTrace();
+//				}
+//			}
 			dataList.add(list);
 		}
 		System.err.println(dayMap);
