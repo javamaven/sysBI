@@ -389,7 +389,8 @@ public class DimStaffAttendanceController {
 			} else if ("partment".equals(type)) {
 				query_sql = FileUtil.readAsString(new File(path + File.separator + "sql/人力资源/考勤信息-部门.txt"));
 			}
-			retList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, month);
+			query_sql = query_sql.replace("${month}", month);
+			retList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

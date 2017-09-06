@@ -1,43 +1,84 @@
 with clock as(
   select 
-    realname,
-    post,
-    sum(case when to_char(attend_time,'hh24:mi:ss') ='18:30:00' then clock_time-attend_time end ) as overtime,
-    sum(case when clock_result='迟到' then (clock_time-attend_time)+15/60/24 end ) as latetime,      --修正,迟到时间
-    sum(case when to_char(attend_time,'hh24:mi:ss') ='18:30:00' then 1 else 0 end ) as work_day,
-    sum(case when clock_result='迟到' then 1 else 0 end) as late_times
-  from  dim_staff_attendance sa
-  where sa.realname not like '%离职%'  --去除离职员工数据
-    and sa.clock_result is not null   --去除员工重复打卡的数据
-    and to_char(attend_time,'day') not in ('星期六','星期日')  --去除周六日考勤数据
-    and sa.clock_result in （'正常','迟到','外勤'）  -- 只算正常和迟到状态数据   --修正,添加外勤数据
-    and sa.clock_result in （'正常','迟到'）  -- 只算正常和迟到状态数据
-    and to_char(attend_time,'yyyymm') =?  --需求方的筛选条件为：月
-  group by realname,post
-)
+    wd.realname,
+    wd.post,
+    nvl(wk.overtime,0)+nvl(wd.overtime,0) as overtime,
+    wd.latetime,
+    wd.late_times
+    --select *
+  from (
+    select 
+      realname,
+      post,
+      sum(case when to_char(attend_time,'hh24:mi:ss') ='18:30:00' or to_char(attend_time,'hh24:mi:ss') ='18:00:00' or to_char(attend_time,'hh24:mi:ss') ='21:00:00' then
+          (case when clock_time-attend_time >-5/24 then clock_time-attend_time else 0 end) end ) +
+        sum(case when to_char(attend_time,'hh24:mi:ss') ='09:00:00' or to_char(attend_time,'hh24:mi:ss') ='12:00:00'  then 
+            (case when attend_time-clock_time >-3/24 then attend_time-clock_time else 0 end)
+           end ) as overtime,     
+      sum(case when clock_result='迟到' then (clock_time-attend_time)+15/60/24 end ) as latetime,      --修正,迟到时间
+      sum(case when clock_result='迟到' then 1 else 0 end) as late_times
+  
+    from  dim_staff_attendance sa
+    where sa.realname not like '%离职%'  --去除离职员工数据
+      and sa.clock_result is not null   --去除员工重复打卡的数据
+      and to_char(attend_time,'day') not in ('星期六','星期日')  --去除周六日考勤数据
+      and sa.clock_result not in ('请假','外出','出差'）  -- 去除极端状态数据
+      and to_char(attend_time,'yyyymm') =${month}  --需求方的筛选条件为：月
+    group by realname,post
+  )wd left join (
+    select
+      realname,
+      post,
+      sum(overtime) as overtime
+    from(
+      select
+        realname,
+        post,
+        to_char(attend_time,'yyyymmdd') as wtime,
+        (max(clock_time)-min(clock_time)) as overtime    
+      from dim_staff_attendance sa
+      where sa.realname not like '%离职%'  --去除离职员工数据
+        and sa.clock_result is not null   --去除员工重复打卡的数据
+        and to_char(attend_time,'day')  in ('星期六','星期日')  --去除周六日考勤数据
+        and to_char(attend_time,'yyyymm') =${month}  --需求方的筛选条件为：月
+      group by realname,post,to_char(attend_time,'yyyymmdd')
+    )group by realname,post
+  )wk  on( wd.realname=wk.realname and wd.post=wk.post)
+  
+), work_day as (
+    select count(1) as days from (
+        select to_char(attend_time, 'yyyy/MM/dd'),count(1) clock_times from dim_staff_attendance
+        where 1=1 
+        and to_char(attend_time,'yyyymm') =${month}
+        group by to_char(attend_time, 'yyyy/MM/dd')
+    ) s where 1=1  and clock_times > ( select count(distinct realname) from  dim_staff_attendance )
+) 
 
 --连dim_staff  通过realname 和 post匹配数据(1家小于1000人的公司姓名和职位同时相同的概率极低，出现此情况时另行对该员工打标记即可)
 select
   clock.realname, --员工姓名
-  decode(s1.department,null,decode(s2.department,null,'未录入员工信息',s2.department),s1.department) as department,--部门
-  decode(s1.post,null,decode(s2.department,null,'未录入员工信息',s2.post),s1.post) as post, --职位  --采用dim_staff表中的职位信息，促进需求方及时更新dim_staff信息
-  decode(s1.if_boss,null,decode(s2.department,null,'未录入员工信息',s2.if_boss),s1.if_boss) as if_boss, --是否副总监及以上职位
+  decode(s1.department,null,decode(s2.department,null,'未录入',s2.department),s1.department) as department,--部门
+  clock.post,
+  decode(s1.if_boss,null,decode(s2.department,null,'未录入',s2.if_boss),s1.if_boss) as if_boss, --是否副总监及以上职位
   round(overtime*24,2) as overtime,  --月度加班总工时
-  round(overtime*24/work_day,2) as day_overtime, --日均加班工时
+  round(overtime*24/(select days from work_day ),2) as day_overtime, --日均加班工时,所有人月工作日固定，8月23个工作日
   round(latetime*24,2) as latetime, --月度总迟到工时
   late_times, --月度迟到次数 
   row_number()over( order by nvl(overtime,0) desc) as rank  --加班工时排名   --修正,overtime 添加nvl
 from clock
   left join (
     select
+  
       realname,department,post,if_boss
-    from dim_staff 
+    from dim_staff ds
+    where ds.leave_time is null
     group by realname,department,post,if_boss having count(realname)=1
   )s1 on s1.realname=clock.realname
   left join (
     select
       realname,department,post,if_boss
-    from dim_staff 
+    from dim_staff ds
+    where ds.leave_time is null
     group by realname,department,post,if_boss having count(realname)>=2
   )s2 on ( s2.realname=clock.realname and s2.post=clock.post)
 order by  rank asc ,department asc  --修正，排序修改
