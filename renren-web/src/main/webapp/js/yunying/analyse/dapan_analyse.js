@@ -6,9 +6,14 @@ $(function () {
 
 function initExportFunction(){
 	$('#btn_exports').click(function(){
-		var day =  $("#stat_period").val();
-		if(!day){
-			alert('请先选择查询日期');
+		var day_last =  $("#stat_period_last").val();
+		if(!day_last){
+			alert('请先选择上期日期');
+			return;
+		}
+		var day_curr =  $("#stat_period_curr").val();
+		if(!day_curr){
+			alert('请先选择本期日期');
 			return;
 		}
 		var params = getParams();
@@ -25,7 +30,14 @@ function initCurrInvestEcharts() {
 }
 
 function initTimeCond(){
-    $("#stat_period").datetimepicker({
+    $("#stat_period_last").datetimepicker({
+        format: 'yyyy-mm-dd',
+        minView:'month',
+        language: 'zh-CN',
+        autoclose:true
+    }).on("click",function(){
+    });
+    $("#stat_period_curr").datetimepicker({
         format: 'yyyy-mm-dd',
         minView:'month',
         language: 'zh-CN',
@@ -37,9 +49,14 @@ function initTimeCond(){
 var table_html = '';
 function queryDapanAnalyse(){
 	table_html = '';
-	var day =  $("#stat_period").val();
-	if(!day){
-		alert('请先选择查询日期');
+	var day_last =  $("#stat_period_last").val();
+	if(!day_last){
+		alert('请先选择上期日期');
+		return;
+	}
+	var day_curr =  $("#stat_period_curr").val();
+	if(!day_curr){
+		alert('请先选择本期日期');
 		return;
 	}
 	
@@ -240,7 +257,7 @@ function buildTable(data_list){
 function getDaishouLastWeekHuanbi(lastweek, curr){
 	var html = '';
     html += '<tr>' +   
-    '	 <td>与上周环比</td>' +    
+    '	 <td>与上期环比</td>' +    
     '    <td>'+ formatNumber((curr.总投资用户待收资金-lastweek.总投资用户待收资金)*100/lastweek.总投资用户待收资金,2) +'%</td>' +   
     '    <td>'+ formatNumber((curr.总高净值用户待收资金-lastweek.总高净值用户待收资金)*100/lastweek.总高净值用户待收资金,2) +'%</td>' +   
     '    <td></td>' +  
@@ -262,7 +279,7 @@ function getDaishouLastWeekHuanbi(lastweek, curr){
 function getLastWeekHuanbi(lastweek, curr){
 	var html = '';
     html += '<tr>' +   
-    '	 <td>与上周环比</td>' +    
+    '	 <td>与上期环比</td>' +    
     '    <td>'+ formatNumber((curr.总投资用户-lastweek.总投资用户)*100/lastweek.总投资用户,2) +'%</td>' +   
     '    <td>'+ formatNumber((curr.总高净值用户-lastweek.总高净值用户)*100/lastweek.总高净值用户,2) +'%</td>' +   
     '    <td></td>' +  
@@ -349,7 +366,8 @@ function getTableHead(){
 
 function getParams(){
 	var params = {
-        	'statPeriod': $("#stat_period").val()
+        	'statPeriodLast': $("#stat_period_last").val(),
+        	'statPeriodCurr': $("#stat_period_curr").val()
 	};
 	return params;
 }

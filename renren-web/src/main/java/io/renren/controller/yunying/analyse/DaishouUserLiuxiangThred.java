@@ -10,23 +10,26 @@ import org.aspectj.util.FileUtil;
 
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
-import io.renren.util.DateUtil;
 
 public class DaishouUserLiuxiangThred implements Runnable {
 	private DataSourceFactory dataSourceFactory;
 	private List<Map<String, Object>> list;
 	private String statType;
-	private String statPeriod;
-	private String weekAgo;
+//	private String statPeriod;
+//	private String weekAgo;
+	private String statPeriodLast;
+	private String statPeriodCurr;
 	private String userLevel;
 	private boolean isCurrWeek;
 
-	public DaishouUserLiuxiangThred(String statType, DataSourceFactory dataSourceFactory, List<Map<String, Object>> list, String statPeriod, String userLevel, boolean isCurrWeek) {
+	public DaishouUserLiuxiangThred(String statType, DataSourceFactory dataSourceFactory, List<Map<String, Object>> list, String statPeriodLast,String statPeriodCurr, String userLevel, boolean isCurrWeek) {
 		this.statType = statType;
 		this.dataSourceFactory = dataSourceFactory;
 		this.list = list;
-		this.statPeriod = statPeriod;
-		this.weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
+//		this.statPeriod = statPeriod;
+//		this.weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
+		this.statPeriodLast = statPeriodLast;
+		this.statPeriodCurr = statPeriodCurr;
 		this.userLevel = userLevel;
 		this.isCurrWeek = isCurrWeek;
 	}
@@ -39,23 +42,23 @@ public class DaishouUserLiuxiangThred implements Runnable {
 			
 			if("daishou".equals(statType)){
 				detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/运营分析/待收用户动态流动/待收用户动态流动-待收资金.txt"));
-				list.addAll(new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql, statPeriod, weekAgo));
+				list.addAll(new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql, statPeriodCurr, statPeriodLast));
 			}else if("liuru".equals(statType)){
 				detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/运营分析/待收用户动态流动/待收用户动态流动-增量流入.txt"));
-				detail_sql = detail_sql.replace("${currDay}", statPeriod);
-				detail_sql = detail_sql.replace("${weekAgo}", weekAgo);
+				detail_sql = detail_sql.replace("${currDay}", statPeriodCurr);
+				detail_sql = detail_sql.replace("${weekAgo}", statPeriodLast);
 				list.addAll(new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql));
 			}else if("liuchu".equals(statType)){
 				detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/运营分析/待收用户动态流动/待收用户动态流动-减量流出.txt"));
-				detail_sql = detail_sql.replace("${currDay}", statPeriod);
-				detail_sql = detail_sql.replace("${weekAgo}", weekAgo);
+				detail_sql = detail_sql.replace("${currDay}", statPeriodCurr);
+				detail_sql = detail_sql.replace("${weekAgo}", statPeriodLast);
 				list.addAll(new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql));
 			}else if("mingxi".equals(statType)){
 				detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/运营分析/待收用户动态流动/待收用户动态流动-明细.txt"));
 				if(isCurrWeek){
-					list.addAll(new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql, weekAgo,statPeriod, userLevel));
+					list.addAll(new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql, statPeriodLast,statPeriodCurr, userLevel));
 				}else{
-					list.addAll(new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql, statPeriod,weekAgo, userLevel));
+					list.addAll(new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql, statPeriodCurr,statPeriodLast, userLevel));
 				}
 			}
 		} catch (IOException e) {

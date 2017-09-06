@@ -5,9 +5,14 @@ $(function () {
 
 function initExportFunction(){
 	$('#btn_exports').click(function(){
-		var day =  $("#stat_period").val();
-		if(!day){
-			alert('请先选择查询日期');
+		var day_last =  $("#stat_period_last").val();
+		if(!day_last){
+			alert('请先选择上期日期');
+			return;
+		}
+		var day_curr =  $("#stat_period_curr").val();
+		if(!day_curr){
+			alert('请先选择本期日期');
 			return;
 		}
 		var params = getParams();
@@ -18,7 +23,14 @@ function initExportFunction(){
 
 
 function initTimeCond(){
-    $("#stat_period").datetimepicker({
+    $("#stat_period_last").datetimepicker({
+        format: 'yyyy-mm-dd',
+        minView:'month',
+        language: 'zh-CN',
+        autoclose:true
+    }).on("click",function(){
+    });
+    $("#stat_period_curr").datetimepicker({
         format: 'yyyy-mm-dd',
         minView:'month',
         language: 'zh-CN',
@@ -28,9 +40,14 @@ function initTimeCond(){
 }
 
 function queryDapanAnalyse(){
-	var day =  $("#stat_period").val();
-	if(!day){
-		alert('请先选择查询日期');
+	var day_last =  $("#stat_period_last").val();
+	if(!day_last){
+		alert('请先选择上期日期');
+		return;
+	}
+	var day_curr =  $("#stat_period_curr").val();
+	if(!day_curr){
+		alert('请先选择本期日期');
 		return;
 	}
 	loading();
@@ -78,7 +95,7 @@ function buildTable(data_list){
 function getLastWeekHuanbi(lastweek, curr){
 	var html = '';
     html += '<tr>' +   
-    '	 <td>与上周环比</td>' +    
+    '	 <td>与上期环比</td>' +    
     '    <td>'+ formatNumber((curr.平台总投资用户-lastweek.平台总投资用户)*100/lastweek.平台总投资用户,2) +'%</td>' +   
     '    <td>'+ formatNumber((curr.平台总待收金额-lastweek.平台总待收金额)*100/lastweek.平台总待收金额,2) +'%</td>' +   
     '    <td>'+ formatNumber((curr.平台红包使用总金额-lastweek.平台红包使用总金额)*100/lastweek.平台红包使用总金额,2) +'%</td>' +  
@@ -123,7 +140,8 @@ function getTableHead(){
 
 function getParams(){
 	var params = {
-        	'statPeriod': $("#stat_period").val()
+        	'statPeriodLast': $("#stat_period_last").val(),
+        	'statPeriodCurr': $("#stat_period_curr").val()
 	};
 	return params;
 }

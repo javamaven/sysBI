@@ -66,18 +66,22 @@ public class AnalyseController {
 		String reportType="待收用户动态流动";
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
-		String statPeriod = params.get("statPeriod") + "";
-		if(StringUtils.isNotEmpty(statPeriod)){
-			statPeriod = statPeriod.replace("-", "");
+		String statPeriodLast = params.get("statPeriodLast") + "";
+		if(StringUtils.isNotEmpty(statPeriodLast)){
+			statPeriodLast = statPeriodLast.replace("-", "");
+		}
+		String statPeriodCurr = params.get("statPeriodCurr") + "";
+		if(StringUtils.isNotEmpty(statPeriodCurr)){
+			statPeriodCurr = statPeriodCurr.replace("-", "");
 		}
 		Map<String,Object> dataMap = new HashMap<String, Object>(); 
 		List<Map<String, Object>> daishouList = new ArrayList<>();
 		List<Map<String, Object>> liuruList = new ArrayList<>();
 		List<Map<String, Object>> liuchuList = new ArrayList<>();
 		try {
-			Thread thread1 = new Thread(new DaishouUserLiuxiangThred("daishou", dataSourceFactory, daishouList, statPeriod, "", false));
-			Thread thread2 = new Thread(new DaishouUserLiuxiangThred("liuru", dataSourceFactory, liuruList, statPeriod, "", false));
-			Thread thread3 = new Thread(new DaishouUserLiuxiangThred("liuchu", dataSourceFactory, liuchuList, statPeriod, "", false));
+			Thread thread1 = new Thread(new DaishouUserLiuxiangThred("daishou", dataSourceFactory, daishouList, statPeriodLast,statPeriodCurr, "", false));
+			Thread thread2 = new Thread(new DaishouUserLiuxiangThred("liuru", dataSourceFactory, liuruList, statPeriodLast,statPeriodCurr, "", false));
+			Thread thread3 = new Thread(new DaishouUserLiuxiangThred("liuchu", dataSourceFactory, liuchuList, statPeriodLast,statPeriodCurr, "", false));
 			thread1.start();thread2.start();thread3.start();
 			thread1.join();thread2.join();thread3.join();
 			
@@ -101,9 +105,9 @@ public class AnalyseController {
 		long l2 = System.currentTimeMillis();
 		System.err.println("++++++查詢耗時+++++++" + (l2-l1));
 		System.err.println(dataMap);
-		String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
-		dataMap.put("statPeriod", statPeriod);
-		dataMap.put("weekAgo", weekAgo);
+//		String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
+		dataMap.put("statPeriod", statPeriodCurr);
+		dataMap.put("weekAgo", statPeriodLast);
 		return R.ok().put("data_map", dataMap);
 	}
 	
@@ -125,17 +129,21 @@ public class AnalyseController {
 		
 		String query_sql = null;
 		List<Map<String, Object>> dataList = null;
-		String statPeriod = params.get("statPeriod") + "";
-		if(StringUtils.isNotEmpty(statPeriod)){
-			statPeriod = statPeriod.replace("-", "");
+		String statPeriodLast = params.get("statPeriodLast") + "";
+		if(StringUtils.isNotEmpty(statPeriodLast)){
+			statPeriodLast = statPeriodLast.replace("-", "");
+		}
+		String statPeriodCurr = params.get("statPeriodCurr") + "";
+		if(StringUtils.isNotEmpty(statPeriodCurr)){
+			statPeriodCurr = statPeriodCurr.replace("-", "");
 		}
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			query_sql = FileUtil.readAsString(new File(path + File.separator + "sql/运营分析/待收异动.txt"));
 			
-			String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
-			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, weekAgo);
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriod);
+//			String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
+			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriodLast);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriodCurr);
 			dataList.add(list.get(0));
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -157,17 +165,21 @@ public class AnalyseController {
 		
 		String query_sql = null;
 		List<Map<String, Object>> dataList = null;
-		String statPeriod = params.get("statPeriod") + "";
-		if(StringUtils.isNotEmpty(statPeriod)){
-			statPeriod = statPeriod.replace("-", "");
+		String statPeriodLast = params.get("statPeriodLast") + "";
+		if(StringUtils.isNotEmpty(statPeriodLast)){
+			statPeriodLast = statPeriodLast.replace("-", "");
+		}
+		String statPeriodCurr = params.get("statPeriodCurr") + "";
+		if(StringUtils.isNotEmpty(statPeriodCurr)){
+			statPeriodCurr = statPeriodCurr.replace("-", "");
 		}
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			query_sql = FileUtil.readAsString(new File(path + File.separator + "sql/运营分析/大额提现用户.txt"));
 			
-			String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
-			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, weekAgo);
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriod);
+//			String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
+			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriodLast);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriodCurr);
 			dataList.add(list.get(0));
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -266,17 +278,21 @@ public class AnalyseController {
 		
 		String query_sql = null;
 		List<Map<String, Object>> dataList = null;
-		String statPeriod = params.get("statPeriod") + "";
-		if(StringUtils.isNotEmpty(statPeriod)){
-			statPeriod = statPeriod.replace("-", "");
+		String statPeriodLast = params.get("statPeriodLast") + "";
+		if(StringUtils.isNotEmpty(statPeriodLast)){
+			statPeriodLast = statPeriodLast.replace("-", "");
+		}
+		String statPeriodCurr = params.get("statPeriodCurr") + "";
+		if(StringUtils.isNotEmpty(statPeriodCurr)){
+			statPeriodCurr = statPeriodCurr.replace("-", "");
 		}
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			query_sql = FileUtil.readAsString(new File(path + File.separator + "sql/运营分析/自然用户.txt"));
 			
-			String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
-			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, weekAgo);
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriod);
+//			String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
+			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriodLast);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriodCurr);
 			dataList.add(list.get(0));
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -299,17 +315,21 @@ public class AnalyseController {
 		
 		String query_sql = null;
 		List<Map<String, Object>> dataList = null;
-		String statPeriod = params.get("statPeriod") + "";
-		if(StringUtils.isNotEmpty(statPeriod)){
-			statPeriod = statPeriod.replace("-", "");
+		String statPeriodLast = params.get("statPeriodLast") + "";
+		if(StringUtils.isNotEmpty(statPeriodLast)){
+			statPeriodLast = statPeriodLast.replace("-", "");
+		}
+		String statPeriodCurr = params.get("statPeriodCurr") + "";
+		if(StringUtils.isNotEmpty(statPeriodCurr)){
+			statPeriodCurr = statPeriodCurr.replace("-", "");
 		}
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			query_sql = FileUtil.readAsString(new File(path + File.separator + "sql/运营分析/成熟用户.txt"));
 			
-			String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
-			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, weekAgo);
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriod);
+//			String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
+			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriodLast);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriodCurr);
 			dataList.add(list.get(0));
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -332,17 +352,21 @@ public class AnalyseController {
 		
 		String query_sql = null;
 		List<Map<String, Object>> dataList = null;
-		String statPeriod = params.get("statPeriod") + "";
-		if(StringUtils.isNotEmpty(statPeriod)){
-			statPeriod = statPeriod.replace("-", "");
+		String statPeriodLast = params.get("statPeriodLast") + "";
+		if(StringUtils.isNotEmpty(statPeriodLast)){
+			statPeriodLast = statPeriodLast.replace("-", "");
+		}
+		String statPeriodCurr = params.get("statPeriodCurr") + "";
+		if(StringUtils.isNotEmpty(statPeriodCurr)){
+			statPeriodCurr = statPeriodCurr.replace("-", "");
 		}
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			query_sql = FileUtil.readAsString(new File(path + File.separator + "sql/运营分析/新用户.txt"));
 			
-			String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
-			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, weekAgo);
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriod);
+//			String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
+			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriodLast);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriodCurr);
 			dataList.add(list.get(0));
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -364,17 +388,21 @@ public class AnalyseController {
 		
 		String query_sql = null;
 		List<Map<String, Object>> dataList = null;
-		String statPeriod = params.get("statPeriod") + "";
-		if(StringUtils.isNotEmpty(statPeriod)){
-			statPeriod = statPeriod.replace("-", "");
+		String statPeriodLast = params.get("statPeriodLast") + "";
+		if(StringUtils.isNotEmpty(statPeriodLast)){
+			statPeriodLast = statPeriodLast.replace("-", "");
+		}
+		String statPeriodCurr = params.get("statPeriodCurr") + "";
+		if(StringUtils.isNotEmpty(statPeriodCurr)){
+			statPeriodCurr = statPeriodCurr.replace("-", "");
 		}
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			query_sql = FileUtil.readAsString(new File(path + File.separator + "sql/运营分析/沉默用户.txt"));
 			
-			String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
-			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, weekAgo);
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriod);
+//			String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
+			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriodLast);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriodCurr);
 			dataList.add(list.get(0));
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -396,17 +424,21 @@ public class AnalyseController {
 		
 		String query_sql = null;
 		List<Map<String, Object>> dataList = null;
-		String statPeriod = params.get("statPeriod") + "";
-		if(StringUtils.isNotEmpty(statPeriod)){
-			statPeriod = statPeriod.replace("-", "");
+		String statPeriodLast = params.get("statPeriodLast") + "";
+		if(StringUtils.isNotEmpty(statPeriodLast)){
+			statPeriodLast = statPeriodLast.replace("-", "");
+		}
+		String statPeriodCurr = params.get("statPeriodCurr") + "";
+		if(StringUtils.isNotEmpty(statPeriodCurr)){
+			statPeriodCurr = statPeriodCurr.replace("-", "");
 		}
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			query_sql = FileUtil.readAsString(new File(path + File.separator + "sql/运营分析/高净值用户.txt"));
 			
-			String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
-			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, weekAgo);
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriod);
+//			String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
+			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriodLast);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriodCurr);
 			dataList.add(list.get(0));
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -424,17 +456,21 @@ public class AnalyseController {
 	public R queryDapanDaishouAnalyse(@RequestBody Map<String, Object> params) {
 		String query_sql = null;
 		List<Map<String, Object>> dataList = null;
-		String statPeriod = params.get("statPeriod") + "";
-		if(StringUtils.isNotEmpty(statPeriod)){
-			statPeriod = statPeriod.replace("-", "");
+		String statPeriodLast = params.get("statPeriodLast") + "";
+		if(StringUtils.isNotEmpty(statPeriodLast)){
+			statPeriodLast = statPeriodLast.replace("-", "");
+		}
+		String statPeriodCurr = params.get("statPeriodCurr") + "";
+		if(StringUtils.isNotEmpty(statPeriodCurr)){
+			statPeriodCurr = statPeriodCurr.replace("-", "");
 		}
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			query_sql = FileUtil.readAsString(new File(path + File.separator + "sql/运营分析/大盘分析-待收.txt"));
 			
-			String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
-			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, weekAgo);
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriod);
+//			String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
+			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriodLast);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriodCurr);
 			dataList.add(list.get(0));
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -456,17 +492,21 @@ public class AnalyseController {
 		
 		String query_sql = null;
 		List<Map<String, Object>> dataList = null;
-		String statPeriod = params.get("statPeriod") + "";
-		if(StringUtils.isNotEmpty(statPeriod)){
-			statPeriod = statPeriod.replace("-", "");
+		String statPeriodLast = params.get("statPeriodLast") + "";
+		if(StringUtils.isNotEmpty(statPeriodLast)){
+			statPeriodLast = statPeriodLast.replace("-", "");
+		}
+		String statPeriodCurr = params.get("statPeriodCurr") + "";
+		if(StringUtils.isNotEmpty(statPeriodCurr)){
+			statPeriodCurr = statPeriodCurr.replace("-", "");
 		}
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			query_sql = FileUtil.readAsString(new File(path + File.separator + "sql/运营分析/大盘分析.txt"));
 			
-			String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
-			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, weekAgo);
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriod);
+//			String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
+			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriodLast);
+			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql, statPeriodCurr);
 			dataList.add(list.get(0));
 		}catch (Exception e) {
 			e.printStackTrace();
@@ -497,7 +537,7 @@ public class AnalyseController {
 
 		List<Map<String,Object>> dataList = (List<Map<String, Object>>) ziranUserData.get("data_list");
 		OutputStream os = null;
-		String excelName = "自然用户-" + map.get("statPeriod");
+		String excelName = "自然用户-" + map.get("statPeriodCurr");
 		try {
 			HSSFWorkbook wb = new HSSFWorkbook();
 			
@@ -605,7 +645,7 @@ public class AnalyseController {
         	for (int i = 0; i < fields.length; i++) {
         		String field = fields[i];
         		if(i == 0){
-        			row_.createCell(i).setCellValue(new HSSFRichTextString("与上周环比"));
+        			row_.createCell(i).setCellValue(new HSSFRichTextString("与上期环比"));
         		}else{
         			if(Double.parseDouble(weekAgo.get(field)+"") == 0){
         				row_.createCell(i).setCellValue(new HSSFRichTextString("0%"));
@@ -653,7 +693,7 @@ public class AnalyseController {
 
 		List<Map<String,Object>> dataList = (List<Map<String, Object>>) highUserData.get("data_list");
 		OutputStream os = null;
-		String excelName = "高净值用户-" + map.get("statPeriod");
+		String excelName = "高净值用户-" + map.get("statPeriodCurr");
 		try {
 			HSSFWorkbook wb = new HSSFWorkbook();
 			
@@ -783,7 +823,7 @@ public class AnalyseController {
         	for (int i = 0; i < fields.length; i++) {
         		String field = fields[i];
         		if(i == 0){
-        			row_.createCell(i).setCellValue(new HSSFRichTextString("与上周环比"));
+        			row_.createCell(i).setCellValue(new HSSFRichTextString("与上期环比"));
         		}else{
         			if(Double.parseDouble(weekAgo.get(field)+"") == 0){
         				row_.createCell(i).setCellValue(new HSSFRichTextString("0%"));
@@ -832,7 +872,7 @@ public class AnalyseController {
 
 		List<Map<String,Object>> dataList = (List<Map<String, Object>>) chenshuUserData.get("data_list");
 		OutputStream os = null;
-		String excelName = "成熟用户-" + map.get("statPeriod");
+		String excelName = "成熟用户-" + map.get("statPeriodCurr");
 		try {
 			HSSFWorkbook wb = new HSSFWorkbook();
 			
@@ -1046,7 +1086,7 @@ public class AnalyseController {
 
 		List<Map<String,Object>> dataList = (List<Map<String, Object>>) newUserData.get("data_list");
 		OutputStream os = null;
-		String excelName = "新用户-" + map.get("statPeriod");
+		String excelName = "新用户-" + map.get("statPeriodCurr");
 		try {
 			HSSFWorkbook wb = new HSSFWorkbook();
 			
@@ -1140,7 +1180,7 @@ public class AnalyseController {
         	for (int i = 0; i < fields.length; i++) {
         		String field = fields[i];
         		if(i == 0){
-        			row_.createCell(i).setCellValue(new HSSFRichTextString("与上周环比"));
+        			row_.createCell(i).setCellValue(new HSSFRichTextString("与上期环比"));
         		}else{
         			if(Double.parseDouble(weekAgo.get(field)+"") == 0){
         				row_.createCell(i).setCellValue(new HSSFRichTextString("0%"));
@@ -1188,7 +1228,7 @@ public class AnalyseController {
 
 		List<Map<String,Object>> dataList = (List<Map<String, Object>>) chenmoData.get("data_list");
 		OutputStream os = null;
-		String excelName = "沉默用户-" + map.get("statPeriod");
+		String excelName = "沉默用户-" + map.get("statPeriodCurr");
 		try {
 			HSSFWorkbook wb = new HSSFWorkbook();
 			
@@ -1332,7 +1372,7 @@ public class AnalyseController {
         	for (int i = 0; i < fields.length; i++) {
         		String field = fields[i];
         		if(i == 0){
-        			row_.createCell(i).setCellValue(new HSSFRichTextString("与上周环比"));
+        			row_.createCell(i).setCellValue(new HSSFRichTextString("与上期环比"));
         		}else{
         			if(Double.parseDouble(weekAgo.get(field)+"") == 0){
         				row_.createCell(i).setCellValue(new HSSFRichTextString("0%"));
@@ -1382,7 +1422,7 @@ public class AnalyseController {
 
 		List<Map<String,Object>> dataList = (List<Map<String, Object>>) withdrawData.get("data_list");
 		OutputStream os = null;
-		String excelName = "大额提现用户-" + map.get("statPeriod");
+		String excelName = "大额提现用户-" + map.get("statPeriodCurr");
 		try {
 			HSSFWorkbook wb = new HSSFWorkbook();
 			
@@ -1470,7 +1510,7 @@ public class AnalyseController {
         	for (int i = 0; i < fields.length; i++) {
         		String field = fields[i];
         		if(i == 0){
-        			row_.createCell(i).setCellValue(new HSSFRichTextString("与上周环比"));
+        			row_.createCell(i).setCellValue(new HSSFRichTextString("与上期环比"));
         		}else{
         			if(Double.parseDouble(weekAgo.get(field)+"") == 0){
         				row_.createCell(i).setCellValue(new HSSFRichTextString("0%"));
@@ -1556,29 +1596,31 @@ public class AnalyseController {
 		List<Map<String,Object>> dataList4 = new ArrayList<>();
 		List<Map<String,Object>> dataList5 = new ArrayList<>();
 		List<Map<String,Object>> dataList6 = new ArrayList<>();
-		String statPeriod = map.get("statPeriod") + "";
-		statPeriod = statPeriod.replace("-", "");
-		String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
+		String statPeriodCurr = map.get("statPeriodCurr") + "";
+		statPeriodCurr = statPeriodCurr.replace("-", "");
+		String statPeriodLast = map.get("statPeriodLast") + "";
+		statPeriodLast = statPeriodLast.replace("-", "");
+//		String weekAgo = DateUtil.getCurrDayBefore(statPeriod,7, "yyyyMMdd");//一星期前
 		try {
-			Thread t1 = new Thread(new DaishouUserLiuxiangThred("mingxi", dataSourceFactory, dataList1, statPeriod, "高净值用户",true));
-			Thread t2 = new Thread(new DaishouUserLiuxiangThred("mingxi", dataSourceFactory, dataList2, statPeriod, "新用户",true));
-			Thread t3 = new Thread(new DaishouUserLiuxiangThred("mingxi", dataSourceFactory, dataList3, statPeriod, "成熟用户",true));
-			Thread t4 = new Thread(new DaishouUserLiuxiangThred("mingxi", dataSourceFactory, dataList4, statPeriod, "高净值用户",false));
-			Thread t5 = new Thread(new DaishouUserLiuxiangThred("mingxi", dataSourceFactory, dataList5, statPeriod, "新用户",false));
-			Thread t6 = new Thread(new DaishouUserLiuxiangThred("mingxi", dataSourceFactory, dataList6, statPeriod, "成熟用户",false));
+			Thread t1 = new Thread(new DaishouUserLiuxiangThred("mingxi", dataSourceFactory, dataList1, statPeriodLast,statPeriodCurr, "高净值用户",true));
+			Thread t2 = new Thread(new DaishouUserLiuxiangThred("mingxi", dataSourceFactory, dataList2, statPeriodLast,statPeriodCurr, "新用户",true));
+			Thread t3 = new Thread(new DaishouUserLiuxiangThred("mingxi", dataSourceFactory, dataList3, statPeriodLast,statPeriodCurr, "成熟用户",true));
+			Thread t4 = new Thread(new DaishouUserLiuxiangThred("mingxi", dataSourceFactory, dataList4, statPeriodLast,statPeriodCurr, "高净值用户",false));
+			Thread t5 = new Thread(new DaishouUserLiuxiangThred("mingxi", dataSourceFactory, dataList5, statPeriodLast,statPeriodCurr, "新用户",false));
+			Thread t6 = new Thread(new DaishouUserLiuxiangThred("mingxi", dataSourceFactory, dataList6, statPeriodLast,statPeriodCurr, "成熟用户",false));
 			t1.start();t2.start();t3.start();t4.start();t5.start();t6.start();
 			t1.join();t2.join();t3.join();t4.join();t5.join();t6.join();
 		} catch (InterruptedException e1) {
 			e1.printStackTrace();
 		}
 		//导出明细
-		String excelName = "待收用户动态流动-" + statPeriod;
-		String title1 = statPeriod + " 高净值";
-		String title2 = statPeriod + " 新用户";
-		String title3 = statPeriod + " 成熟用户";
-		String title4 = weekAgo + " 高净值";
-		String title5 = weekAgo + " 新用户";
-		String title6 = weekAgo + " 成熟用户";
+		String excelName = "待收用户动态流动-" + statPeriodCurr;
+		String title1 = statPeriodCurr + " 高净值";
+		String title2 = statPeriodCurr + " 新用户";
+		String title3 = statPeriodCurr + " 成熟用户";
+		String title4 = statPeriodLast + " 高净值";
+		String title5 = statPeriodLast + " 新用户";
+		String title6 = statPeriodLast + " 成熟用户";
 		List<String> titleList = new ArrayList<>();
 		titleList.add(title1);
 		titleList.add(title2);
@@ -1588,12 +1630,12 @@ public class AnalyseController {
 		titleList.add(title6);
 		
 		List<Map<String, String>> headMapList = new ArrayList<Map<String,String>>();
-		headMapList.add(getMingxiExcelFields(statPeriod, weekAgo, true));
-		headMapList.add(getMingxiExcelFields(statPeriod, weekAgo, true));
-		headMapList.add(getMingxiExcelFields(statPeriod, weekAgo, true));
-		headMapList.add(getMingxiExcelFields(statPeriod, weekAgo, false));
-		headMapList.add(getMingxiExcelFields(statPeriod, weekAgo, false));
-		headMapList.add(getMingxiExcelFields(statPeriod, weekAgo, false));
+		headMapList.add(getMingxiExcelFields(statPeriodCurr, statPeriodLast, true));
+		headMapList.add(getMingxiExcelFields(statPeriodCurr, statPeriodLast, true));
+		headMapList.add(getMingxiExcelFields(statPeriodCurr, statPeriodLast, true));
+		headMapList.add(getMingxiExcelFields(statPeriodCurr, statPeriodLast, false));
+		headMapList.add(getMingxiExcelFields(statPeriodCurr, statPeriodLast, false));
+		headMapList.add(getMingxiExcelFields(statPeriodCurr, statPeriodLast, false));
 		
 		// 查询列表数据
 		JSONArray arr1 = new JSONArray();
@@ -1770,7 +1812,7 @@ public class AnalyseController {
 		List<Map<String,Object>> dataList = (List<Map<String, Object>>) dapanAnalyseData.get("data_list");
 		List<Map<String,Object>> daishouDataList = (List<Map<String, Object>>) daishouData.get("data_list");
 		OutputStream os = null;
-		String excelName = "大盘分析-" + map.get("statPeriod");
+		String excelName = "大盘分析-" + map.get("statPeriodCurr");
 		try {
 			HSSFWorkbook wb = new HSSFWorkbook();
 			
@@ -1919,7 +1961,7 @@ public class AnalyseController {
 		Map<String, Object> weekAgo = dataList.get(0);
 		Map<String, Object> curr = dataList.get(1);
 		HSSFRow row_ = sheet.createRow(4); 
-		row_.createCell(0).setCellValue(new HSSFRichTextString("与上周环比"));
+		row_.createCell(0).setCellValue(new HSSFRichTextString("与上期环比"));
 		double totalInvestUser_curr = Double.parseDouble(curr.get("总投资用户")+"");
 		double totalInvestUser_week = Double.parseDouble(weekAgo.get("总投资用户")+"");
 		row_.createCell(1).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision((totalInvestUser_curr-totalInvestUser_week)*100/totalInvestUser_week, 2) + "%"));
@@ -2065,7 +2107,7 @@ public class AnalyseController {
 		Map<String, Object> weekAgo = dataList.get(0);
 		Map<String, Object> curr = dataList.get(1);
 		HSSFRow row_ = sheet.createRow(rowIndex + 4); 
-		row_.createCell(0).setCellValue(new HSSFRichTextString("与上周环比"));
+		row_.createCell(0).setCellValue(new HSSFRichTextString("与上期环比"));
 		double totalInvestUser_curr = Double.parseDouble(curr.get("总投资用户待收资金")+"");
 		double totalInvestUser_week = Double.parseDouble(weekAgo.get("总投资用户待收资金")+"");
 		row_.createCell(1).setCellValue(new HSSFRichTextString(NumberUtil.keepPrecision((totalInvestUser_curr-totalInvestUser_week)*100/totalInvestUser_week, 2) + "%"));
