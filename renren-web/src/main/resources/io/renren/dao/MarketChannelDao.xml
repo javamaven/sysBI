@@ -189,7 +189,12 @@
                 #{channelHead}
             </foreach>
         </if>
-
+		<if test="channelName_a!=null and channelName_a.size()!=0">
+            AND o.CHANNEL_NAME IN
+            <foreach item="channelName_a" collection="channelName_a" open="(" separator="," close=")">
+                #{channelName_a}
+            </foreach>
+        </if>
 
 	</select>
 
