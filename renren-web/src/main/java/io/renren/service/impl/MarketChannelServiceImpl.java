@@ -47,10 +47,10 @@ public class MarketChannelServiceImpl implements MarketChannelService {
 		
 		headMap.put("firstinvestCou", "首投人数");
 		headMap.put("firstinvestMoney", "首投金额");
-		headMap.put("firstinvestYMoney", "年化首投金额");
-		headMap.put("invCou", "投资人数");
+		headMap.put("firstinvestyearamount", "年化首投金额");
+		headMap.put("countUser", "投资人数");
 		headMap.put("invMoney", "投资金额");
-		headMap.put("invYMoney", "年化投资金额");
+		headMap.put("yearamount", "年化投资金额");
 //		headMap.put("ddzMoney", "点点赚购买金额");
 //		headMap.put("regCost", "注册成本");
 //		headMap.put("firstinvestCost", "首投成本");

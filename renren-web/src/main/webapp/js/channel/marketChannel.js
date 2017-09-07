@@ -145,7 +145,7 @@ function initTableGridNew(){
 					}
 				}
 			},
-			{ label: '年化首投金额', name: 'firstinvestYMoney', index: '$CZNUM', width: 100,align:'right' ,sortable:false 
+			{ label: '年化首投金额', name: 'firstinvestyearamount', index: '$CZNUM', width: 100,align:'right' ,sortable:false 
 				,formatter:function(cellvalue, options, rowObject){
 					if(cellvalue){
 						return formatNumber(cellvalue,2);
@@ -154,7 +154,7 @@ function initTableGridNew(){
 					}
 				}
 			},
-			{ label: '投资人数', name: 'invCou', index: '$CZMONEY', width: 120 ,align:'right',sortable:false },		
+			{ label: '投资人数', name: 'countUser', index: '$CZMONEY', width: 120 ,align:'right',sortable:false },		
 			{ label: '投资金额', name: 'invMoney', index: '$TXMONEY', width: 120 ,align:'right',sortable:false 
 				,formatter:function(cellvalue, options, rowObject){
 					if(cellvalue){
@@ -164,7 +164,7 @@ function initTableGridNew(){
 					}
 				}
 			},
-			{ label: '年化投资金额', name: 'invYMoney', index: '$CTMONEY', width: 120,align:'right' ,sortable:false 
+			{ label: '年化投资金额', name: 'yearamount', index: '$CTMONEY', width: 120,align:'right' ,sortable:false 
 				,formatter:function(cellvalue, options, rowObject){
 					if(cellvalue){
 						return formatNumber(cellvalue,2);
