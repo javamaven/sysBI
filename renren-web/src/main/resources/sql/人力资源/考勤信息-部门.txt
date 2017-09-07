@@ -15,7 +15,7 @@ with clock as(
         sum(case when to_char(attend_time,'hh24:mi:ss') ='09:00:00' or to_char(attend_time,'hh24:mi:ss') ='12:00:00'  then 
             (case when attend_time-clock_time >-3/24 then attend_time-clock_time else 0 end)
            end ) as overtime,     
-      sum(case when clock_result='迟到' then (clock_time-attend_time)+15/60/24 end ) as latetime,      --修正,迟到时间
+      sum(case when clock_result='迟到' then (clock_time-attend_time)-15/60/24 end ) as latetime,      --修正,迟到时间
       sum(case when clock_result='迟到' then 1 else 0 end) as late_times
   
     from  dim_staff_attendance sa

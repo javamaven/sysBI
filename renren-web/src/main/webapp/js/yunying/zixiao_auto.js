@@ -166,21 +166,25 @@ function inputCompleteValue(){
 	var select_time = $("#list_select").val();
 	var month = select_time.substring(5, 7);
 	month = parseInt(month) + '';
-    $.ajax({
-        type: "POST",
-        url: "../yunying/zixiao/inputCompleteValue",
-        data: JSON.stringify({'completeValue': value, 'month': month}),
-        contentType: "application/json;charset=utf-8",
-        success : function(msg) {
-           if(msg.code == 'success'){
-        	   alert('录入成功')
-        	   queryYunying();
-        	   $('#open_window').modal('hide');
-           }else{
-        	   alert('录入失败')
-           }
-        }
-     });
+	confirm('录入后无法更改,确定录入吗？', function(){
+		$.ajax({
+			type: "POST",
+			url: "../yunying/zixiao/inputCompleteValue",
+			data: JSON.stringify({'completeValue': value, 'month': month}),
+			contentType: "application/json;charset=utf-8",
+			success : function(msg) {
+				if(msg.code == 'success'){
+					alert('录入成功')
+					queryYunying();
+					$('#open_window').modal('hide');
+				}else{
+					alert('录入失败')
+				}
+			}
+		});
+		
+	});
+	
 }
 /**
  * 运营部确认
@@ -212,21 +216,23 @@ function yunyingQueren(){
 	var month = select_time.substring(5, 7);
 	month = parseInt(month);
 	curr_select_row.month = month;
-    $.ajax({
-        type: "POST",
-        url: "../yunying/zixiao/queren",
-        data: JSON.stringify(curr_select_row),
-        contentType: "application/json;charset=utf-8",
-        success : function(msg) {
-           if(msg.code == 'success'){
-        	   alert('确认成功')
-        	   queryYunying();
-        	   $('#open_window').modal('hide');
-           }else{
-        	   alert('确认失败')
-           }
-        }
-     });
+	confirm('确认成功后无法更改，确定保存吗？', function(){
+		$.ajax({
+			type: "POST",
+			url: "../yunying/zixiao/queren",
+			data: JSON.stringify(curr_select_row),
+			contentType: "application/json;charset=utf-8",
+			success : function(msg) {
+				if(msg.code == 'success'){
+					alert('确认成功')
+					queryYunying();
+					$('#open_window').modal('hide');
+				}else{
+					alert('确认失败')
+				}
+			}
+		});
+	});
 }
 
 function exportDetail(index_name, month){
@@ -287,21 +293,23 @@ function shichangQueren(){
 	}
 	
 	curr_select_row.description = $("#description").val();
-    $.ajax({
-        type: "POST",
-        url: "../yunying/zixiao/shichangQueren",
-        data: JSON.stringify(curr_select_row),
-        contentType: "application/json;charset=utf-8",
-        success : function(msg) {
-           if(msg.code == 'success'){
-        	   alert('确认成功')
-        	   queryRegFirstInvest();
-        	   $('#open_window').modal('hide');
-           }else{
-        	   alert('确认失败')
-           }
-        }
-     });
+	confirm('确认成功后无法更改，确定保存吗？', function(){
+		$.ajax({
+			type: "POST",
+			url: "../yunying/zixiao/shichangQueren",
+			data: JSON.stringify(curr_select_row),
+			contentType: "application/json;charset=utf-8",
+			success : function(msg) {
+				if(msg.code == 'success'){
+					alert('确认成功')
+					queryRegFirstInvest();
+					$('#open_window').modal('hide');
+				}else{
+					alert('确认失败')
+				}
+			}
+		});
+	});
 }
 function initYunyingTable(){
     $("#jqGrid").jqGrid({
