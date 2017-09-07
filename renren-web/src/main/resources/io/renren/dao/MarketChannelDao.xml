@@ -68,7 +68,7 @@
                 #{channelName_a}
             </foreach>
         </if>
-        order by o.stat_period desc
+        order by o.stat_period desc, o.REG_COU desc, o.FIRSTINVEST_COU desc
 	    <if test="page != null and limit != null">
             limit #{page}, #{limit}
         </if>
