@@ -64,7 +64,7 @@ function getOption2(){
 	var 
 	option2 = {
 			   title: {
-			       text: "项目期限与利率走势",
+//			       text: "项目期限与利率走势",
 			       x: "center"
 			   },
 			   tooltip: {
@@ -96,7 +96,11 @@ function getOption2(){
 			           },
 			         
 			           saveAsImage: {
-			               show: true
+			               show: true,
+			               title: {
+						       text: "项目期限与利率走势",
+						     
+						   }
 			           }
 			       }
 			   },
@@ -187,7 +191,7 @@ function getOption(rows){
 	}
 	var option = {
 			 title : {
-			        text: '累计交易金额(亿元)',
+//			        text: '累计交易金额(亿元)',
 			        x:'center'
 			    },
 	
@@ -477,7 +481,7 @@ function getOption4(rows) {
 	}
 	option4 = {
 			title : {
-		        text: '按还款方式（万元）',
+//		        text: '按还款方式（万元）',
 		        x:'center'
 		    },
 		    tooltip : {
@@ -575,7 +579,7 @@ function getOption3(rows) {
 	
 	option3 = {
 		    title : {
-		        text: '标的收益率',
+//		        text: '标的收益率',
 		        x:'center'
 		    },
 		    tooltip : {
@@ -658,7 +662,7 @@ function getOption5(rows) {
 	
 	option5 = {
 		    title : {
-		        text: '标的期限占比',
+//		        text: '标的期限占比',
 		        x:'center'
 		    },
 		    tooltip : {
@@ -729,7 +733,7 @@ function getOption6(rows) {
 	}
 	option6 = {
 		    title : {
-		        text: '产品组合',
+//		        text: '产品组合',
 		        x:'center'
 		    },
 		    tooltip : {
@@ -794,7 +798,7 @@ function getOption7(rows) {
 	
 	option7 = {
 		    title : {
-		        text: '按借款金额',
+//		        text: '按借款金额',
 		        x:'center'
 		    },
 		    tooltip : {
@@ -865,7 +869,7 @@ function getOption8(rows) {
 	
 	option8 = {
 		    title : {
-		        text: '按投资人数',
+//		        text: '按投资人数',
 		        x:'center'
 		    },
 		    tooltip : {
@@ -875,7 +879,8 @@ function getOption8(rows) {
 		    toolbox: {
 		        show : true,
 		        feature : {
-		            saveAsImage : {show: true}
+		            saveAsImage : {show: true,}
+		           
 		        }
 		    },   
 		    legend: {
@@ -937,7 +942,7 @@ function getOption9(rows) {
 	
 	option9 = {
 		    title : {
-		        text: '借款人年龄分布',
+//		        text: '借款人年龄分布',
 		        x:'center'
 		    },
 		    tooltip : {
@@ -947,7 +952,7 @@ function getOption9(rows) {
 		    toolbox: {
 		        show : true,
 		        feature : {
-		            saveAsImage : {show: true}
+		            saveAsImage : {show: true,title:'自定义'}
 		        }
 		    },   
 		    legend: {
@@ -1005,7 +1010,7 @@ function getOption10(rows) {
 	
 	option10 = {
 		    title : {
-		        text: '借款人性别分布',
+//		        text: '借款人性别分布',
 		        x:'center'
 		    },
 		    tooltip : {
@@ -1074,7 +1079,7 @@ function getOption11(rows) {
 	
 	option11 = {
 		    title : {
-		        text: '投资者年龄分布',
+		        
 		        x:'center'
 		    },
 		    tooltip : {
@@ -1142,7 +1147,7 @@ function getOption12(rows) {
 	
 	option12 = {
 		    title : {
-		        text: '投资者性别分布',
+//		        text: '投资者性别分布',
 		        x:'center'
 		    },
 		    tooltip : {

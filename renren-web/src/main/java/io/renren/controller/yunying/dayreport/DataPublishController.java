@@ -57,6 +57,7 @@ public class DataPublishController {
 	private  String reportType="官网数据披露";
 
 
+	
 	/**
 	 * 数据披露列表
 	 */
