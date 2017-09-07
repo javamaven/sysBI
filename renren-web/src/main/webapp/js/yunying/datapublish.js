@@ -97,10 +97,9 @@ function getOption2(){
 			         
 			           saveAsImage: {
 			               show: true,
-			               title: {
-						       text: "项目期限与利率走势",
-						     
-						   }
+//			               title:'自定义',//保存图片按钮名字
+			               name :'项目期限与利率走势'//保存的图片名字
+			               
 			           }
 			       }
 			   },
@@ -211,7 +210,9 @@ function getOption(rows){
 	    toolbox: {
 	        show : true,
 	        feature : {
-	            saveAsImage : {show: true}
+	            saveAsImage : {show: true,
+	            	name :'累计交易金额(亿元)'//保存的图片名字}
+	            }
 	        }
 	    },
 	    xAxis : [
@@ -501,7 +502,9 @@ function getOption4(rows) {
 //		            dataView : {show: true, readOnly: false},
 //		            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
 //		            restore : {show: true},
-		            saveAsImage : {show: true}
+		            saveAsImage : {show: true,
+		            	name :'按还款方式（万元）'//保存的图片名字
+		            }
 		        }
 		    },
 		    calculable : true,
@@ -593,7 +596,9 @@ function getOption3(rows) {
 //		            dataView : {show: true, readOnly: false},
 //		            magicType : {show: true, type: ['line', 'bar', 'stack', 'tiled']},
 //		            restore : {show: true},
-		            saveAsImage : {show: true}
+		            saveAsImage : {show: true,
+		            	name :'标的收益率'//保存的图片名字
+		            }
 		        }
 		    },
 		    legend: {
@@ -672,7 +677,10 @@ function getOption5(rows) {
 		    toolbox: {
 		        show : true,
 		        feature : {
-		            saveAsImage : {show: true}
+		            saveAsImage : {show: true,
+		            	name :'标的期限占比'//保存的图片名字
+		            
+		            	}
 		        }
 		    },    
 		    legend: {
@@ -743,7 +751,10 @@ function getOption6(rows) {
 		    toolbox: {
 		        show : true,
 		        feature : {
-		            saveAsImage : {show: true}
+		            saveAsImage : {show: true,
+		            	
+		            	name :'产品组合'//保存的图片名字
+		            }
 		        }
 		    },   
 		    legend: {
@@ -808,7 +819,9 @@ function getOption7(rows) {
 		    toolbox: {
 		        show : true,
 		        feature : {
-		            saveAsImage : {show: true}
+		            saveAsImage : {show: true,
+		            	name :'按借款金额'//保存的图片名字
+		            }
 		        }
 		    },   
 		    legend: {
@@ -879,7 +892,9 @@ function getOption8(rows) {
 		    toolbox: {
 		        show : true,
 		        feature : {
-		            saveAsImage : {show: true,}
+		            saveAsImage : {show: true,
+		            	name :'按投资人数'//保存的图片名字
+		            }
 		           
 		        }
 		    },   
@@ -952,7 +967,9 @@ function getOption9(rows) {
 		    toolbox: {
 		        show : true,
 		        feature : {
-		            saveAsImage : {show: true,title:'自定义'}
+		            saveAsImage : {show: true,
+		            	name :'借款人年龄分布'//保存的图片名字
+		            }
 		        }
 		    },   
 		    legend: {
@@ -1020,7 +1037,9 @@ function getOption10(rows) {
 		    toolbox: {
 		        show : true,
 		        feature : {
-		            saveAsImage : {show: true}
+		            saveAsImage : {show: true,
+		            	name :'借款人性别分布'//保存的图片名字
+		            }
 		        }
 		    },   
 		    legend: {
@@ -1089,7 +1108,9 @@ function getOption11(rows) {
 		    toolbox: {
 		        show : true,
 		        feature : {
-		            saveAsImage : {show: true}
+		            saveAsImage : {show: true,
+		            	name :'投资人年林分布'//保存的图片名字
+		            }
 		        }
 		    },   
 		    legend: {
@@ -1157,7 +1178,9 @@ function getOption12(rows) {
 		    toolbox: {
 		        show : true,
 		        feature : {
-		            saveAsImage : {show: true}
+		            saveAsImage : {show: true,
+		               	name :'投资者性别分布'//保存的图片名字
+		            }
 		        }
 		    },   
 		    legend: {
