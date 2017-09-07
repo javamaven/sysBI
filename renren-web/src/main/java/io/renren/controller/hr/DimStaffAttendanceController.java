@@ -36,7 +36,6 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
 import io.renren.entity.hr.DimStaffAttendanceEntity;
-import io.renren.entity.hr.DimStaffEntity;
 import io.renren.service.hr.DimStaffAttendanceService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcHelper;
@@ -383,6 +382,7 @@ public class DimStaffAttendanceController {
 		String path = this.getClass().getResource("/").getPath();
 		String query_sql = null;
 		List<Map<String, Object>> retList = new ArrayList<Map<String,Object>>();
+		System.err.println("++++考勤查询参数++++month=" + month + " ;type=" + type);
 		try {
 			if ("staff".equals(type)) {
 				query_sql = FileUtil.readAsString(new File(path + File.separator + "sql/人力资源/考勤信息-员工.txt"));
@@ -390,6 +390,7 @@ public class DimStaffAttendanceController {
 				query_sql = FileUtil.readAsString(new File(path + File.separator + "sql/人力资源/考勤信息-部门.txt"));
 			}
 			query_sql = query_sql.replace("${month}", month);
+			System.err.println("++++++执行sql++++++++" + query_sql);
 			retList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql);
 		} catch (SQLException e) {
 			e.printStackTrace();
