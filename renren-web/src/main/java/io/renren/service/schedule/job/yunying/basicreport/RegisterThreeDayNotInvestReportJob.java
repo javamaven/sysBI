@@ -139,7 +139,9 @@ public class RegisterThreeDayNotInvestReportJob implements Job {
 //				logVo.setEmailValue("查询没有返回数据");
 //			}
 			//将电销的数据，入库保存
-			insertPhoneSaleData(year+month+day, dataList);
+			if (ConfigProp.getIsSendEmail()) {
+				insertPhoneSaleData(year+month+day, dataList);
+			}
 			logVo.setSendResult("success");
 		} catch (Exception e) {
 			flag = false;

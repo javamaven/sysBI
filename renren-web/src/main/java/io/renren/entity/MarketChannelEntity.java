@@ -55,6 +55,25 @@ public class MarketChannelEntity implements Serializable {
 	private String firstinvestRot;
 	// 累计ROI
 	private String cumulativeRot;
+	
+	private String channelCost;
+	private String channelRecharge;
+	
+	public void setChannelCost(String channelCost) {
+		this.channelCost = channelCost;
+	}
+	
+	public String getChannelCost() {
+		return channelCost;
+	}
+	
+	public void setChannelRecharge(String channelRecharge) {
+		this.channelRecharge = channelRecharge;
+	}
+	
+	public String getChannelRecharge() {
+		return channelRecharge;
+	}
 
 	public void setChannelLabel(String channelLabel) {
 		this.channelLabel = channelLabel;

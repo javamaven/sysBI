@@ -29,6 +29,51 @@
 
 
 	<select id="queryList" resultType="io.renren.entity.MarketChannelEntity">
+		select
+			o.STAT_PERIOD,
+			d.CHANNEL_HEAD,
+			o.CHANNEL_NAME,
+			o.channel_label,
+			o.TYPE,
+			c.COST as channelCost,
+			c.RECHARGE as channelRecharge,
+			o.REG_COU,
+			o.FIRSTINVEST_COU,
+			o.FIRSTINVEST_MONEY,
+			o.FIRSTINVESTYEARAMOUNT,
+			o.COUNT_USER,
+			o.INV_MONEY,
+			o.YEARAMOUNT
+		from 
+		dm_report_channel_owner o
+		left join dim_channel d on (o.channel_label=d.CHANNEL_LABEL)
+		left join dim_channel_cost_new c on (c.CHANNEL_LABEL=o.channel_label and c.STAT_PERIOD=o.STAT_PERIOD)
+		where 1=1 
+<!-- 		and o.stat_period='20170906' -->
+	    <if test="reg_begindate != null and reg_begindate.trim() != '' and reg_enddate != null and reg_enddate.trim() != ''">
+            AND o.stat_period BETWEEN #{reg_begindate} AND #{reg_enddate}
+        </if>
+        <if test="channelHead != null and channelHead.trim() != ''">
+            AND d.CHANNEL_HEAD = #{channelHead}
+        </if>
+         <if test="channelHeadList !=null and channelHeadList.size() != 0 ">
+            AND d.CHANNEL_HEAD IN
+            <foreach item="channelHead" collection="channelHeadList" open="(" separator="," close=")">
+                #{channelHead}
+            </foreach>
+        </if>
+         <if test="channelName_a!=null and channelName_a.size()!=0">
+            AND o.CHANNEL_NAME IN
+            <foreach item="channelName_a" collection="channelName_a" open="(" separator="," close=")">
+                #{channelName_a}
+            </foreach>
+        </if>
+        order by o.stat_period desc
+	    <if test="page != null and limit != null">
+            limit #{page}, #{limit}
+        </if>
+	
+       <!-- 
         DROP TABLE IF EXISTS TMP_dm_report_channel_data_01;
         
         CREATE TEMPORARY TABLE TMP_dm_report_channel_data_01
@@ -96,9 +141,6 @@
         <if test="channelHead != null and channelHead.trim() != ''">
             AND CO.CHANNEL_HEAD = #{channelHead}
         </if>
-<!--         <if test="channelHeadList != null and channelHeadList.trim() != ''"> -->
-<!--             AND CO.CHANNEL_HEAD in (#{channelHeadList}) -->
-<!--         </if> -->
          <if test="channelHeadList !=null and channelHeadList.size() != 0 ">
             AND CO.CHANNEL_HEAD IN
             <foreach item="channelHead" collection="channelHeadList" open="(" separator="," close=")">
@@ -119,12 +161,36 @@
             limit #{page}, #{limit}
         </if>
         ;
+        -->
 	</select>
 
  	<select id="queryTotal" resultType="int">
-		select count(*)
-        FROM
-        TMP_dm_report_channel_data_01;
+<!-- 		select count(*) -->
+<!--         FROM -->
+<!--         TMP_dm_report_channel_data_01; -->
+
+
+		select
+			count(1)
+		from 
+		dm_report_channel_owner o
+		left join dim_channel d on (o.channel_label=d.CHANNEL_LABEL)
+		left join dim_channel_cost_new c on (c.CHANNEL_LABEL=o.channel_label and c.STAT_PERIOD=o.STAT_PERIOD)
+		where 1=1 
+	    <if test="reg_begindate != null and reg_begindate.trim() != '' and reg_enddate != null and reg_enddate.trim() != ''">
+            AND o.stat_period BETWEEN #{reg_begindate} AND #{reg_enddate}
+        </if>
+        <if test="channelHead != null and channelHead.trim() != ''">
+            AND d.CHANNEL_HEAD = #{channelHead}
+        </if>
+         <if test="channelHeadList !=null and channelHeadList.size() != 0 ">
+            AND d.CHANNEL_HEAD IN
+            <foreach item="channelHead" collection="channelHeadList" open="(" separator="," close=")">
+                #{channelHead}
+            </foreach>
+        </if>
+
+
 	</select>
 
 

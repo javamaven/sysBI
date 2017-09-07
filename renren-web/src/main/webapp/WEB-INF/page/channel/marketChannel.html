@@ -6,8 +6,51 @@
 </head>
 <body>
 
-<div class="content">
+	<div class="content">
+		<div class="grid-btn">
+			<table border="0">
+				<tr>
+					<td><label>渠道名称：</label></td>
+					<td>
+						<select id="id_select" multiple="multiple" class="form-control"></select>
+					</td>
+					<td width="100"></td>
+					<td><label>负责人名称：</label></td>
+					<td>
+						<input type="text" class="form-control" id="channelHead" placeholder="请输入要查询的用户名" />
+					</td>
+				</tr>
+				<tr height="10"></tr>
+				<tr>
+					<td><label>开始时间：</label></td>
+					<td>
+						<input type="text"class="form-control form_datetime_2" id="reg_begindate"  placeholder="请选择开始时间"/>
+					</td>
+					<td width="100"></td>
+					<td><label>结束时间：</label></td>
+					<td>
+						<input type="text"class="form-control form_datetime_2"  id="reg_enddate"  placeholder="请选择结束时间"/>
+					</td>
+				<td>
+					&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" id="searchButton" class="btn btn-primary"><i class="fa fa-search"></i>查询</button>
+					<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+					#if($shiro.hasPermission("schedulereporttask:addtask"))
+					<button class="btn btn-primary" data-toggle="modal" onclick="openTaskWin();" data-target="#schedule_add_task">添加定时任务</button>
+					#end					
+				</td>
+				
+			</tr>
+		</table>
+	</div>
 
+
+	<div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+	</div>
+
+
+<!--
 	<div style="padding: 10px 30px;">
 		<div class="panel panel-primary">
 			<div class="panel-heading">
@@ -78,7 +121,7 @@
 			</div>
 		</div>
 	</div>
-	
+	-->
 	<!-- 模态框（Modal） -->
 	<div class="modal fade" id="schedule_add_task" tabindex="-1" role="dialog"
 		aria-labelledby="myModalLabel" aria-hidden="true">

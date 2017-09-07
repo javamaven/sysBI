@@ -3,6 +3,7 @@ $(function(){
     initExportFunction();
     $(".spinners li").removeClass("active");
 	initEvent();
+	initTableGridNew();
 });
 function queryParams(params) {  //配置参数
     var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
@@ -101,6 +102,72 @@ function loadChannel(){
         }
      });
 };
+
+function initTableGridNew(){
+    $("#jqGrid").jqGrid({
+//        url: '../yunying/dmreportvipuser/list',
+        datatype: "json",
+        colModel: [
+        	{ label: '日期', name: 'statPeriod', index: '$CHANNELHEAD', width: 90,align:'right',sortable:false },
+			{ label: '负责人', name: 'channelHead', index: '$CHANNELHEAD', width: 90,align:'right',sortable:false },
+			{ label: '渠道类型', name: 'type', index: '$CHANNELNAME', width: 90 ,align:'right',sortable:false }, 		
+			{ label: '渠道名称', name: 'channelName', index: '$CHANNELNAME', width: 90 ,align:'right',sortable:false }, 			
+			{ label: '渠道标记', name: 'channelLabel', index: '$CHANNELLABEL', width: 90 ,align:'right',sortable:false }, 
+			
+			{ label: '渠道费用', name: 'channelCost', index: '$CHANNELNAME', width: 90 ,align:'right',sortable:false },
+			{ label: '渠道充值', name: 'channelRecharge', index: '$CHANNELNAME', width: 90 ,align:'right',sortable:false },
+			
+//			{ label: '实际消费', name: 'actualCost', index: '$CHANNELLABEL', width: 70 ,align:'right',sortable:false }, 
+			{ label: '注册人数', name: 'regCou', index: '$REGISTERED', width: 90 ,align:'right',sortable:false }, 		
+			{ label: '首投人数', name: 'firstinvestCou', index: '$REGISTERED', width: 90 ,align:'right',sortable:false },
+			{ label: '首投金额', name: 'firstinvestMoney', index: '$CGNUM', width: 90 ,align:'right',sortable:false }, 	
+			{ label: '年化首投金额', name: 'firstinvestYMoney', index: '$CZNUM', width: 100,align:'right' ,sortable:false },
+			{ label: '投资人数', name: 'invCou', index: '$CZMONEY', width: 120 ,align:'right',sortable:false },		
+			{ label: '投资金额', name: 'invMoney', index: '$TXMONEY', width: 120 ,align:'right',sortable:false },
+			{ label: '年化投资金额', name: 'invYMoney', index: '$CTMONEY', width: 120,align:'right' ,sortable:false },
+			
+			
+//			{ label: '点点赚购买金额', name: 'ddzMoney', index: '$INVESTNUM', width: 90 ,align:'right',sortable:false },	
+			
+//			{ label: '注册成本', name: 'regCost', index: '$INVESTNUM', width: 110 ,align:'right',sortable:false },
+//			{ label: '首投成本', name: 'firstinvestCost', index: '$INVESTNUM', width: 90 ,align:'right',sortable:false },
+//			{ label: '人均首投', name: 'avgFirstinvestMoney', index: '$INVESTNUM', width: 90 ,align:'right',sortable:false },
+			
+			
+//			{ label: '注册人投资转化率', name: 'regInvConversion', index: '$INVESTNUM', width: 90 ,align:'right',sortable:false },
+//			{ label: '首投ROI', name: 'firstinvestRot', index: '$INVESTMONEY', width: 90 ,align:'right',sortable:false },
+//			{ label: '累计ROI', name: 'cumulativeRot', index: '$INVESTMONEY', width: 110 ,align:'right',sortable:false }
+				
+        ],
+		viewrecords: true,
+        height: $(window).height()-170,
+        rowNum: 500,
+        rownumbers: true, 
+        autowidth:true,
+        shrinkToFit: false,
+//        autoScroll: false,
+//        multiselect: false,
+        pager: "#jqGridPager",
+        jsonReader : {
+            root: "page.list",
+            page: "page.currPage",
+            total: "page.totalPage",
+            records: "page.totalCount"
+        },
+        prmNames : {
+            page:"page", 
+            rows:"limit", 
+            order: "order"
+        },
+        gridComplete:function(){
+        	//隐藏grid底部滚动条
+        },
+        loadComplete:function(){
+        	 loaded();//去掉遮罩
+        }
+    });
+   
+}
 function initTableGrid(){
 	//初始化Table
     $('#reportTable').bootstrapTable({
@@ -166,8 +233,8 @@ function getQueryParams(){
 	return {
 	        page  :1,
 	        limit :20,
-	         channelName :getChannelName("id_select"),
-             channelName_a : getChannelName("id_select"),
+	         channelName : JSON.stringify(getChannelName("id_select")),
+             channelName_a : JSON.stringify(getChannelName("id_select")),
              channelHead :document.getElementById("channelHead").value,
              reg_begindate: document.getElementById("reg_begindate").value.replace(/-/g,""),
              reg_enddate:document.getElementById("reg_enddate").value.replace(/-/g,"")
@@ -183,11 +250,18 @@ function print(obj){
 
 
 $("#searchButton").click(function(){
-
+	console.info("+++++++++++++++++++++++++")
+	console.info(JSON.stringify(getQueryParams()))
+	$("#jqGrid").jqGrid("clearGridData");
+	$("#jqGrid").jqGrid('setGridParam',{ 
+		datatype:'json', 
+		url: '../market/list',
+        postData: getQueryParams()
+    }).trigger("reloadGrid");
     // 显示之前，先把当前表格销毁
-      $('#reportTable').bootstrapTable('destroy');
+//      $('#reportTable').bootstrapTable('destroy');
     //加载数据
-    initTableGrid();
+//    initTableGrid();
 });
 
 function initExportFunction(){

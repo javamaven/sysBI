@@ -27,7 +27,9 @@ import io.renren.service.shichang.ChannelHeadManagerService;
 import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.Constant;
 import io.renren.utils.ExcelUtil;
+import io.renren.utils.PageUtils;
 import io.renren.utils.Query;
+import io.renren.utils.R;
 
 
 /**
@@ -79,7 +81,7 @@ public class MarketChannelController {
 	@ResponseBody
 	@RequestMapping("/list")
 	@RequiresPermissions("marketChannel:list")
-	public Page list(Map<String, Object> params, Integer page, Integer limit, String reg_begindate,String reg_enddate,
+	public R list(Map<String, Object> params, Integer page, Integer limit, String reg_begindate,String reg_enddate,
 					 String channelHead,String channelName,String channelName_a) {
 		System.err.println("+++++++++++++++++++++++params+++++++++++++++++++++++++++++++++++" + params);
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
@@ -100,10 +102,10 @@ public class MarketChannelController {
 		List< MarketChannelEntity> dmReportDailyDataList = marketChannelDataService.queryList(query);
 		int total = marketChannelDataService.queryTotal(params);
 
-
-		Page page1 = new Page(total, dmReportDailyDataList);
-		return page1;
-
+		PageUtils pageUtils = new PageUtils(dmReportDailyDataList, total, query.getLimit(), query.getPage());
+		return R.ok().put("page", pageUtils);
+//		Page page1 = new Page(total, dmReportDailyDataList);
+//		return page1;
 
 	}
 
