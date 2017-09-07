@@ -111,20 +111,68 @@ function initTableGridNew(){
         	{ label: '日期', name: 'statPeriod', index: '$CHANNELHEAD', width: 90,align:'right',sortable:false },
 			{ label: '负责人', name: 'channelHead', index: '$CHANNELHEAD', width: 90,align:'right',sortable:false },
 			{ label: '渠道类型', name: 'type', index: '$CHANNELNAME', width: 90 ,align:'right',sortable:false }, 		
-			{ label: '渠道名称', name: 'channelName', index: '$CHANNELNAME', width: 90 ,align:'right',sortable:false }, 			
-			{ label: '渠道标记', name: 'channelLabel', index: '$CHANNELLABEL', width: 90 ,align:'right',sortable:false }, 
+			{ label: '渠道名称', name: 'channelName', index: '$CHANNELNAME', width: 120 ,align:'right',sortable:false }, 			
+			{ label: '渠道标记', name: 'channelLabel', index: '$CHANNELLABEL', width: 120 ,align:'right',sortable:false }, 
 			
-			{ label: '渠道费用', name: 'channelCost', index: '$CHANNELNAME', width: 90 ,align:'right',sortable:false },
-			{ label: '渠道充值', name: 'channelRecharge', index: '$CHANNELNAME', width: 90 ,align:'right',sortable:false },
+			{ label: '渠道费用', name: 'channelCost', index: '$CHANNELNAME', width: 90 ,align:'right',sortable:false
+				,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}
+			},
+			{ label: '渠道充值', name: 'channelRecharge', index: '$CHANNELNAME', width: 90 ,align:'right',sortable:false
+				,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}
+			},
 			
 //			{ label: '实际消费', name: 'actualCost', index: '$CHANNELLABEL', width: 70 ,align:'right',sortable:false }, 
 			{ label: '注册人数', name: 'regCou', index: '$REGISTERED', width: 90 ,align:'right',sortable:false }, 		
 			{ label: '首投人数', name: 'firstinvestCou', index: '$REGISTERED', width: 90 ,align:'right',sortable:false },
-			{ label: '首投金额', name: 'firstinvestMoney', index: '$CGNUM', width: 90 ,align:'right',sortable:false }, 	
-			{ label: '年化首投金额', name: 'firstinvestYMoney', index: '$CZNUM', width: 100,align:'right' ,sortable:false },
+			{ label: '首投金额', name: 'firstinvestMoney', index: '$CGNUM', width: 90 ,align:'right',sortable:false 
+				,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}
+			},
+			{ label: '年化首投金额', name: 'firstinvestYMoney', index: '$CZNUM', width: 100,align:'right' ,sortable:false 
+				,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}
+			},
 			{ label: '投资人数', name: 'invCou', index: '$CZMONEY', width: 120 ,align:'right',sortable:false },		
-			{ label: '投资金额', name: 'invMoney', index: '$TXMONEY', width: 120 ,align:'right',sortable:false },
-			{ label: '年化投资金额', name: 'invYMoney', index: '$CTMONEY', width: 120,align:'right' ,sortable:false },
+			{ label: '投资金额', name: 'invMoney', index: '$TXMONEY', width: 120 ,align:'right',sortable:false 
+				,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}
+			},
+			{ label: '年化投资金额', name: 'invYMoney', index: '$CTMONEY', width: 120,align:'right' ,sortable:false 
+				,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}
+			}
 			
 			
 //			{ label: '点点赚购买金额', name: 'ddzMoney', index: '$INVESTNUM', width: 90 ,align:'right',sortable:false },	
