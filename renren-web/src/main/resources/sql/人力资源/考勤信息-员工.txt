@@ -5,7 +5,7 @@ with clock as(
     nvl(wk.overtime,0)+nvl(wd.overtime,0) as overtime,
     wd.latetime,
     wd.late_times
-    --select *
+
   from (
     select 
       realname,
@@ -21,9 +21,9 @@ with clock as(
     from  dim_staff_attendance sa
     where sa.realname not like '%离职%'  --去除离职员工数据
       and sa.clock_result is not null   --去除员工重复打卡的数据
-      and to_char(attend_time,'day') not in ('星期六','星期日')  --去除周六日考勤数据
-      and sa.clock_result not in ('请假','外出','出差'）  -- 去除极端状态数据
-      and to_char(attend_time,'yyyymm') =${month}  --需求方的筛选条件为：月
+      and to_char(attend_time,'d') not in ('7','1')  --去除周六日考勤数据
+      and sa.clock_result not in ('请假','外出','出差')  -- 去除极端状态数据
+      and to_char(attend_time,'yyyymm') ='${month}'  --需求方的筛选条件为：月
     group by realname,post
   )wd left join (
     select
@@ -39,8 +39,8 @@ with clock as(
       from dim_staff_attendance sa
       where sa.realname not like '%离职%'  --去除离职员工数据
         and sa.clock_result is not null   --去除员工重复打卡的数据
-        and to_char(attend_time,'day')  in ('星期六','星期日')  --去除周六日考勤数据
-        and to_char(attend_time,'yyyymm') =${month}  --需求方的筛选条件为：月
+        and to_char(attend_time,'d')  in ('7','1')  --去除周六日考勤数据
+        and to_char(attend_time,'yyyymm') ='${month}'  --需求方的筛选条件为：月
       group by realname,post,to_char(attend_time,'yyyymmdd')
     )group by realname,post
   )wk  on( wd.realname=wk.realname and wd.post=wk.post)
@@ -49,7 +49,7 @@ with clock as(
     select count(1) as days from (
         select to_char(attend_time, 'yyyy/MM/dd'),count(1) clock_times from dim_staff_attendance
         where 1=1 
-        and to_char(attend_time,'yyyymm') =${month}
+        and to_char(attend_time,'yyyymm') = '${month}'
         group by to_char(attend_time, 'yyyy/MM/dd')
     ) s where 1=1  and clock_times > ( select count(distinct realname) from  dim_staff_attendance )
 ) 

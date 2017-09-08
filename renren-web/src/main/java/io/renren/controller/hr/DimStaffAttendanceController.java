@@ -351,7 +351,6 @@ public class DimStaffAttendanceController {
 		map.put("limit", limit);
 		List<Map<String, Object>> dataList = queryOracleDataList("staff", month);
 		PageUtils pageUtil = new PageUtils(dataList , dataList.size(), limit, page);
-		
 		return R.ok().put("page", pageUtil);
 	}
 	
@@ -392,6 +391,7 @@ public class DimStaffAttendanceController {
 			query_sql = query_sql.replace("${month}", month);
 			System.err.println("++++++执行sql++++++++" + query_sql);
 			retList = new JdbcUtil(dataSourceFactory, "oracle26").query(query_sql);
+//			System.err.println("++++返回数据+++++" + retList);
 		} catch (SQLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

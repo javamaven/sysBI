@@ -1,0 +1,60 @@
+with await as(
+  select
+    borrow_period,
+    sum(tender_capital) as capital,
+    sum(case when to_char(unlock_time,'yyyymmdd') < to_char(sysdate,'yyyymmdd') then tender_capital end ) as huoqi_capital
+  from edw_trading_project_detail pd
+  where tender_account_status in (0,1)
+    and tender_subject in (3)
+    and exit_time is null
+  group by borrow_period
+),
+--当月当日成交量
+jiaru as (
+  select
+    borrow_period,
+    sum(tender_capital) as m_j_capital,
+    sum(case when to_char(addtime,'yyyymmdd') ='${day}' then tender_capital end ) as d_j_capital
+  from edw_trading_project_detail pd
+  where tender_account_status in (0,1)
+    and tender_subject in (3)
+    and to_char(addtime,'yyyymm') ='${month}'
+  group by borrow_period
+),
+
+--当月当日退出总量
+tuichu as (
+  select
+    borrow_period,
+    sum(tender_capital) as m_tender_capital,
+    sum(case when to_char(addtime,'yyyymmdd') ='${day}' then tender_capital end ) as d_tender_capital
+  from edw_trading_project_detail pd
+  where tender_account_status in (0,1)
+    and tender_subject in (3)
+    and to_char(addtime,'yyyymm') ='${month}'
+  group by borrow_period
+)
+
+select 
+   '理财计划' as plan_type,
+   await.borrow_period,
+   await.capital,
+   null as total_rate, 
+   await.huoqi_capital as huoqi_capital,
+   case when 
+   		round(huoqi_capital/capital*100,2) is null then '' else 
+   		round(huoqi_capital/capital*100,2) || '%' end 
+   		as huoqi_capital_rate,
+   m_j_capital,
+   d_j_capital,
+   m_tender_capital,
+   d_tender_capital,
+   case when 
+   		round(d_tender_capital/huoqi_capital*100,2) is null then '' else 
+   		round(d_tender_capital/huoqi_capital*100,2) || '%' end as tuichu_rate
+
+from await 
+  left join jiaru on await.borrow_period = jiaru.borrow_period
+  left join tuichu on await.borrow_period = tuichu.borrow_period
+order by await.borrow_period asc
+
