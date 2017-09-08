@@ -98,6 +98,30 @@ public class LabeltagUserEntity implements Serializable {
 	private String marketingDay;
 	// 最后一次登录时间
 	private String lastLoginTime;
+	//最后一次回款时间
+	private String endRecoverTime;
+	//最后一次回款金额
+	private String endRecoverAmount;
+
+	
+
+	public String getEndRecoverTime() {
+		return endRecoverTime;
+	}
+
+	public void setEndRecoverTime(String endRecoverTime) {
+		this.endRecoverTime = endRecoverTime;
+	}
+
+
+
+	public String getEndRecoverAmount() {
+		return endRecoverAmount;
+	}
+
+	public void setEndRecoverAmount(String endRecoverAmount) {
+		this.endRecoverAmount = endRecoverAmount;
+	}
 
 	public String getLastLoginTime() {
 		return lastLoginTime;

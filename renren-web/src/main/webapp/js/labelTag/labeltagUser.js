@@ -159,7 +159,7 @@ function loadTableAjax(){
             '{field:"cumulativeInvMoney",title:"累计投资金额",align:"center",valign:"middle",sortable:"true"},'+
             '{field:"totalAssets",title:"当前待收金额",align:"center",valign:"middle",sortable:"true"},'+
             '{field:"cumulativeInvMoneyYear",title:"累计投资年化金额",align:"center",valign:"middle",sortable:"true"},'+
-            '{field:"balance",title:"账户可用余额",align:"center",valign:"middle",sortable:"true"},'+
+            '{field:"balance",title:"账户可用余额",align:"center",valign:"middle",sortable:"true"},'+   
             '{field:"lastInvMoney",title:"最近一笔投资金额",align:"center",valign:"middle",sortable:"true"},'+
             '{field:"invMaxMoney",title:"单笔投资最高金额",align:"center",valign:"middle",sortable:"true"},'+
             '{field:"useVoucherProportion",title:"使用优惠投资的比例",align:"center",valign:"middle",sortable:"true"},'+
@@ -178,7 +178,9 @@ function loadTableAjax(){
             '{field:"invCou",title:"投资综合次数",align:"center",valign:"middle",sortable:"true"},'+
             '{field:"voucherBalance",title:"账户可用优惠余额",align:"center",valign:"middle",sortable:"true"},'+
             '{field:"marketingDay",title:"距离上次营销天数",align:"center",valign:"middle",sortable:"true"},'+
-            '{field:"lastLoginTime",title:"最近一次登录时间",align:"center",valign:"middle",sortable:"true"}'+
+            '{field:"lastLoginTime",title:"最近一次登录时间",align:"center",valign:"middle",sortable:"true"},'+
+            '{field:"endRecoverTime",title:"最后一次回款时间",align:"center",valign:"middle",sortable:"true"},'+
+            '{field:"endRecoverAmount",title:"最后一次回款金额",align:"center",valign:"middle",sortable:"true"}'+
             ']';
 
             //加载数据

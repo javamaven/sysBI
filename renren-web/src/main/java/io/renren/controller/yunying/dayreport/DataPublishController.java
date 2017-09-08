@@ -188,6 +188,7 @@ public class DataPublishController {
 			List<Map<String, Object>> list2 = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list2);
 			String currDate =sdf.format(new Date());
+//			String currDate ="20180501";
 			int year = Integer.parseInt(currDate.substring(0,4));
 			int month = Integer.parseInt(currDate.substring(4,6));
 			System.err.println(month);
@@ -204,7 +205,7 @@ public class DataPublishController {
 						System.err.println("查询日期" + lastDayOfMonth);
 //					String path = this.getClass().getResource("/").getPath();
 
-					detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/projectHK.txt"));
+					detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/projectHk.txt"));
 					detail_sql = detail_sql.replace("${lastDayOfMonth}", lastDayOfMonth);
 					detail_sql = detail_sql.replace("${firstMonthDay}", firstMonthDay);
 					detail_sql = detail_sql.replace("${nian1}", nian1);
@@ -223,7 +224,7 @@ public class DataPublishController {
 						String yue1=yue+"";
 						System.err.println("查询日期" + lastDayOfMonth);
 //					String path = this.getClass().getResource("/").getPath();
-					detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/projectfuzhuHK.txt"));
+					detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/projectHK.txt"));
 					detail_sql = detail_sql.replace("${lastDayOfMonth}", lastDayOfMonth);
 					detail_sql = detail_sql.replace("${firstMonthDay}", firstMonthDay);
 					detail_sql = detail_sql.replace("${nian1}", nian1);

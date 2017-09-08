@@ -51,7 +51,8 @@
         <result property="labelContene" column="LABEL_CONTENE"/>
         <result property="labelLogic" column="LABEL_LOGIC"/>
         <result property="labelCondition" column="LABEL_CONDITION"/>
-
+        <result property="endRecoverTime" column="END_RECOVER_TIME"/>
+        <result property="endRecoverAmount" column="END_RECOVER_AMOUNT"/>
 
 
     </resultMap>
@@ -149,7 +150,9 @@
         IFNULL(INV_COU,'0')AS INV_COU,
         IFNULL(VOUCHER_BALANCE,'0') AS VOUCHER_BALANCE,
         IFNULL(MARKETING_DAY,'0') AS MARKETING_DAY,
-        IFNULL(LAST_LOGIN_TIME,'') AS LAST_LOGIN_TIME
+        IFNULL(LAST_LOGIN_TIME,'') AS LAST_LOGIN_TIME,
+        IFNULL(END_RECOVER_TIME,'') AS END_RECOVER_TIME,
+        IFNULL(END_RECOVER_AMOUNT,'0') AS END_RECOVER_AMOUNT
         FROM
         TMP_LABELTAG_USER
         ;

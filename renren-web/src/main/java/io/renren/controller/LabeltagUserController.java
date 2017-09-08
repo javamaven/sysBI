@@ -170,6 +170,8 @@ public class LabeltagUserController {
 			labeltagUser.setMarketingDay(LabeltagList.get(i).getMarketingDay());
 			labeltagUser.setLastLoginTime(LabeltagList.get(i).getLastLoginTime());
 //			labeltagUser.setTotalAssets(LabeltagList.get(i).getTotalAssets());
+			labeltagUser.setEndRecoverTime(LabeltagList.get(i).getEndRecoverTime());
+			labeltagUser.setEndRecoverAmount(LabeltagList.get(i).getEndRecoverAmount());
 			
 			ja.add(labeltagUser);
 		}
@@ -200,6 +202,7 @@ public class LabeltagUserController {
 		
 		headMap.put("cumulativeInvMoneyYear","累计投资年化金额");
 		headMap.put("balance","账户可用余额");
+		
 		headMap.put("lastInvMoney","最近一笔投资金额");
 		headMap.put("invMaxMoney","单笔投资最高金额");
 		headMap.put("useVoucherProportion","使用优惠投资的比例");
@@ -219,10 +222,25 @@ public class LabeltagUserController {
 		headMap.put("voucherBalance","账户可用优惠余额");
 		headMap.put("marketingDay","距离上次营销天数");
 		headMap.put("lastLoginTime","最近一次登录时间");
-
+		headMap.put("endRecoverTime","最后一次回款时间");
+		headMap.put("endRecoverAmount","最后一次回款金额");
 		String title = "用户标签";
 
 		Map<String, String> typeMap = new HashMap<String, String>();
+		typeMap.put("0", "int");//从0开始
+		typeMap.put("1", "int");//从0开始
+		typeMap.put("2", "int");//从0开始
+//		typeMap.put("3", "int");//从0开始
+//		typeMap.put("4", "int");//从0开始
+		
+		typeMap.put("6", "double");//从0开始
+		typeMap.put("7", "double");//从0开始
+		
+		typeMap.put("13", "double");//从0开始
+		typeMap.put("14", "double");//从0开始
+		typeMap.put("15", "double");//从0开始
+		typeMap.put("16", "double");//从0开始
+		
 		typeMap.put("17", "double");//从0开始
 		typeMap.put("18", "double");//从0开始
 		typeMap.put("19", "double");
@@ -232,6 +250,10 @@ public class LabeltagUserController {
 		typeMap.put("24", "double");
 		typeMap.put("25", "int");
 		typeMap.put("28", "double");
+
+		typeMap.put("29", "int");
+		typeMap.put("30", "int");
+		
 		typeMap.put("31", "double");
 		typeMap.put("32", "double");
 		typeMap.put("33", "double");
@@ -240,6 +262,11 @@ public class LabeltagUserController {
 		typeMap.put("36", "int");
 		typeMap.put("37", "double");
 		typeMap.put("38", "int");
+		typeMap.put("39", "int");
+
+		typeMap.put("41", "double");
+
+		
 		ExcelUtil.downloadExcelFile(title, headMap, ja, response, typeMap);
 //		ExcelUtil.downloadExcelFile(title,headMap,ja,response);
 	}

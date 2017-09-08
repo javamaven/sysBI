@@ -301,7 +301,7 @@ public class ExcelUtil {
 				SXSSFCell newCell = dataRow.createCell(i);
 
 				Object o = jo.get(properties[i]);
-				if (o == null){
+				if (o == null || o.toString().trim().equals("")){
 					newCell.setCellValue("");
 //				}else if (o instanceof Date){
 //					newCell.setCellValue(new SimpleDateFormat(datePattern).format(o));

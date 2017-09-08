@@ -1,10 +1,13 @@
 package io.renren.controller.yunying.dayreport;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +26,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
+import io.renren.service.UserBehaviorService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
+import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
@@ -36,7 +41,10 @@ public class UserRedPacketEqController {
 
 	@Autowired
 	private DataSourceFactory dataSourceFactory;
-
+	@Autowired
+	private UserBehaviorService userBehaviorService;
+	
+	private  String reportType="用户红包发放情况汇总表";
 	
 
 	/**
@@ -47,6 +55,8 @@ public class UserRedPacketEqController {
 	public R daylist(Integer page, Integer limit, String begin_time,String end_time,String huodong_name,
 			String hongbao_name,String hongbao_id, String user_type,String channelName, 
 			String userName,String userId,String touzi_begin, String touzi_end) {
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 //		Map<String,Object> params = new HashMap<String, Object>();
 		List<String> paramsList = new ArrayList<>();
 		
@@ -208,6 +218,8 @@ public class UserRedPacketEqController {
 	public R daylist1(Integer page, Integer limit, String begin_time2,String end_time2,String huodong_name2,
 			String hongbao_name2,String hongbao_id2, String user_type2,String channelName2, 
 			String userName,String userId2,String touzi_begin2, String touzi_end2) {
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		List<String> paramsList = new ArrayList<>();
 		long l1 = System.currentTimeMillis();
 		int start = (page - 1) * limit;
@@ -361,6 +373,8 @@ public class UserRedPacketEqController {
 	public R daylist2(Integer page, Integer limit, String begin_time3,String end_time3,String huodong_name3,
 			String hongbao_name3,String hongbao_id3, String rate,String hongbaoType, 
 			String money,String touzi_begin3, String touzi_end3) {
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		List<String> paramsList = new ArrayList<>();
 		long l1 = System.currentTimeMillis();
 		int start = (page - 1) * limit;
@@ -499,7 +513,8 @@ public class UserRedPacketEqController {
 	@RequestMapping("/exportExcel")
 	public void exportHbChannelExcel(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-		
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		
 		
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
@@ -559,7 +574,8 @@ public class UserRedPacketEqController {
 	public void exportQingKuangListExcel(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 		
-		
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String begin_time2=map.get("begin_time2") + "";
 		String end_time2=map.get("end_time2") + "";
@@ -596,7 +612,8 @@ public class UserRedPacketEqController {
 	@RequestMapping("/exportExcel3")
 	public void exportRateListExcel(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-		
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String begin_time3=map.get("begin_time3") + "";

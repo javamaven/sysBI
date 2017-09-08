@@ -1,10 +1,13 @@
 package io.renren.controller.yunying.dayreport;
 
+import static io.renren.utils.ShiroUtils.getUserId;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +26,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
+import io.renren.service.UserBehaviorService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
+import io.renren.util.UserBehaviorUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
@@ -37,7 +42,10 @@ public class UserRedPacketController {
 	@Autowired
 	private DataSourceFactory dataSourceFactory;
 
+	@Autowired
+	private UserBehaviorService userBehaviorService;
 	
+	private  String reportType="用户红包发放情况";
 
 	/**
 	 * P2P列表
@@ -48,6 +56,8 @@ public class UserRedPacketController {
 	public R daylist(Integer page, Integer limit, String begin_time,String end_time,String huodong_name,
 			String hongbao_name,String hongbao_id, String user_type,String channelName, 
 			String userName,String userId) {
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 //		Map<String,Object> params = new HashMap<String, Object>();
 		List<String> paramsList = new ArrayList<>();
 		
@@ -218,6 +228,8 @@ public class UserRedPacketController {
 	public R daylist1(Integer page, Integer limit, String yingxiao_begin,String yingxiao_end,String touzi_begin,
 			String touzi_end,String hongbao_begin, String hongbao_end,String channelName1, String userName1,
 			String userType,String userId1) {
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		List<String> paramsList = new ArrayList<>();
 		long l1 = System.currentTimeMillis();
 		int start = (page - 1) * limit;
@@ -444,7 +456,8 @@ public class UserRedPacketController {
 	public void exportMonthListExcel(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 		
-		
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String end_time = map.get("end_time") + "";
@@ -519,7 +532,8 @@ public class UserRedPacketController {
 	public void exportQingKuangListExcel(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 		
-		
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String hongbao_begin = map.get("hongbao_begin") + "";
