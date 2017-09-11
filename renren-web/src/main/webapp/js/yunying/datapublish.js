@@ -1109,7 +1109,7 @@ function getOption11(rows) {
 		        show : true,
 		        feature : {
 		            saveAsImage : {show: true,
-		            	name :'投资人年林分布'//保存的图片名字
+		            	name :'投资人年龄分布'//保存的图片名字
 		            }
 		        }
 		    },   
@@ -1179,7 +1179,7 @@ function getOption12(rows) {
 		        show : true,
 		        feature : {
 		            saveAsImage : {show: true,
-		               	name :'投资者性别分布'//保存的图片名字
+		               	name :'投资人性别分布'//保存的图片名字
 		            }
 		        }
 		    },   
