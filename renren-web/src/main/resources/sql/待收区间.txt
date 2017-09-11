@@ -1,0 +1,93 @@
+
+with tu as( 
+ select 
+    ac.user_id,
+    ac.NOR_RECOVER_CAPITAL_WAIT+ac.dep_RECOVER_CAPITAL_WAIT as await
+  from edw_user_acc_current ac
+  where  ac.NOR_RECOVER_CAPITAL_WAIT+ac.dep_RECOVER_CAPITAL_WAIT>0
+
+),
+
+await as (
+  select 
+    user_id,
+    await,
+    case when await>0 and await<3000 then '(0-0.3万)' 
+         when await>=3000 and await<10000 then '[0.3万-1万)' 
+         when await>=10000 and await<30000 then '[1万-3万)' 
+         when await>=30000 and await<100000 then '[3万-10万)'
+         when await>=100000 and await<300000 then '[10万-30万)' 
+         when await>=300000 and await<1000000 then '[30万-100万)'
+         when await>=1000000 and await<3000000 then '[100万-300万)' 
+         when await>=3000000  then '300万及以上' end as g_await,
+         
+    case when await>0 and await<3000 then 1
+         when await>=3000 and await<10000 then 2 
+         when await>=10000 and await<30000 then 3
+         when await>=30000 and await<100000 then 4
+         when await>=100000 and await<300000 then 5
+         when await>=300000 and await<1000000 then 6
+         when await>=1000000 and await<3000000 then 7
+         when await>=3000000  then 8 end as rank 
+  from tu 
+),
+inv as (
+  select 
+    await.user_id,
+    await,
+    g_await,
+    rank,
+    sum(recover_account_capital_wait*borrow_period)/sum(recover_account_capital_wait) as avg_period,
+    sum(recover_account_capital_wait*borrow_apr)/sum(recover_account_capital_wait) as avg_apr
+  from await 
+    left join edw_trading_project_detail pd on await.user_id=pd.user_id
+  where recover_account_capital_wait>0
+  group by await.user_id,await,g_await,rank
+),
+
+
+tmp as (
+  select 
+    g_await,
+    count(1) as num,
+    sum(await) as await,
+    round(sum(await*avg_period)/sum(await)/30,2) as avg_period,
+    round(sum(await*avg_apr)/sum(await)/100,4) as avg_apr
+  from inv
+  group by g_await ,rank
+  order by rank asc
+)    
+
+select 
+  g_await, --待收本金区间
+  num, --人数
+  round(num/(select sum(num) from tmp ),4) as num_rate, --人数占比
+  await, --待收本金
+  round(await/(select sum(await) from tmp ),4) as await_rate,--待收占比
+  round((select sum(await) from tmp )/num,2) as avg_await,  --人均待收
+  avg_period,
+  avg_apr,
+  round(await*avg_apr/365,2) as interest
+from tmp 
+
+union all
+
+select 
+  '汇总',
+  sum(num),
+  1.0000,
+  sum(await),
+  1.0000,
+  round(sum(await)/sum(num),2),
+  round(sum(await*avg_period)/sum(await),2) ,
+  round(sum(await*avg_apr)/sum(await),4),  
+  round(sum(await*avg_apr)/365,2) 
+from tmp 
+
+
+
+   
+    
+    
+    
+    
