@@ -130,7 +130,7 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 				String month = registerEndTime.substring(5 , 7);
 				String day = registerEndTime.substring(8 , 10);
 				String Hour = executeTime.substring(11 , 13);
-				title = "注册一小时未投资用户-W-" + month + day + "_" + Hour + "-" + dataList.size();
+				title = "注册1小时未投资用户(免费渠道)-W-" + month + day + "_" + Hour + "-" + dataList.size();
 				
 				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
 				log.info("+++++++++生成附件文件+++++++++++++" + attachFilePath);
