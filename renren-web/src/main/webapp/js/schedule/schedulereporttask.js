@@ -22,13 +22,16 @@ var jobType = {
     21:'持有点点赚用户数据',//ddz_user
     22:'活动渠道成本数据报告',//channel_cost
     23:'每日VIP用户数据报告',//vip_user
-    24:'注册1小时未投资用户',//register_not_invest
+    24:'注册1小时未投资(免费渠道)',//register_not_invest
     25:'注册3天未投资用户',//register_not_invest_day
     26:'首投3天未复投用户',//register_not_invest_day
     27:'普通版有待收但是未开通存的账户数据',//old_data
     28:'广州P2P月报数据',//monthly_report
     29:'每日报表数据',//Daily_Report_data 
-    30:'潜力VIP数据' //vip_pot
+    30:'潜力VIP数据', //vip_pot
+    31:'注册5天未投资(邀请渠道)', //phone_sale_send_data
+    32:'注册7天未投资(CPS渠道)',
+    33:'注册7天未投资(付费渠道)'
 };
 
 $(function () {

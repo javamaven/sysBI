@@ -1,60 +1,84 @@
+--理财计划待收、活期待收
 with await as(
   select
-    borrow_period,
+    is_novice,
+    borrow_type,
+    pd.borrow_period,
+    tp.borrow_term_unit,
+    tp.borrow_term,
     sum(tender_capital) as capital,
-    sum(case when to_char(unlock_time,'yyyymmdd') < to_char(sysdate,'yyyymmdd') then tender_capital end ) as huoqi_capital
+    sum(case when to_char(unlock_time,'yyyymmdd') <= '${day}' then tender_capital end ) as huoqi_capital
   from edw_trading_project_detail pd
+    left join edw_trading_project tp on tp.project_id = pd.project_id
   where tender_account_status in (0,1)
-    and tender_subject in (3)
-    and exit_time is null
-  group by borrow_period
+    and tender_subject  =3
+    and  to_char(addtime,'yyyymmdd') <= '${day}'
+    and (exit_time is null or to_char(exit_time,'yyyymmdd') > '${day}')
+  group by  is_novice,borrow_type,pd.borrow_period, tp.borrow_term_unit, tp.borrow_term
 ),
---当月当日成交量
-jiaru as (
+--当月当日成交量,退出量
+inv as(
   select
-    borrow_period,
-    sum(tender_capital) as m_j_capital,
-    sum(case when to_char(addtime,'yyyymmdd') ='${day}' then tender_capital end ) as d_j_capital
+    is_novice,
+    borrow_type,
+    pd.borrow_period,
+    sum(case when to_char(pd.addtime,'yyyymm') ='${month}' and to_char(pd.addtime,'yyyymmdd') <= '${day}' then tender_capital end) as m_join,
+    sum(case when to_char(pd.addtime,'yyyymmdd') ='${day}' then tender_capital end ) as d_join,
+    sum(case when to_char(pd.exit_time,'yyyymm') ='${month}' and to_char(pd.exit_time,'yyyymmdd') <= '${day}' then tender_capital end) as m_exit,
+    sum(case when to_char(pd.exit_time,'yyyymmdd') ='${day}' then tender_capital end ) as d_exit
+    --select *
   from edw_trading_project_detail pd
+    left join edw_trading_project tp on tp.project_id = pd.project_id
   where tender_account_status in (0,1)
-    and tender_subject in (3)
-    and to_char(addtime,'yyyymm') ='${month}'
-  group by borrow_period
+    and tender_subject =3
+  group by is_novice,borrow_type,pd.borrow_period
 ),
-
---当月当日退出总量
-tuichu as (
-  select
-    borrow_period,
-    sum(tender_capital) as m_tender_capital,
-    sum(case when to_char(addtime,'yyyymmdd') ='${day}' then tender_capital end ) as d_tender_capital
-  from edw_trading_project_detail pd
-  where tender_account_status in (0,1)
-    and tender_subject in (3)
-    and to_char(addtime,'yyyymm') ='${month}'
-  group by borrow_period
+ 
+tmp as (
+  select 
+     case when await.is_novice=1  then '新手标' when await.is_novice=0 and await.borrow_type='智投计划' then '智投乐'
+       else '月悦升' end as plan_type,
+     case when borrow_term_unit =1 then borrow_term || '天' else borrow_term || '月' end as borrow_period,
+     await.capital,
+     null as awiat_rate, 
+     await.huoqi_capital,
+     round(huoqi_capital/capital,4) as huoqi_rate,
+     m_join,
+     d_join,
+     m_exit,
+     d_exit,
+     round(d_exit/huoqi_capital,4) as exit_rate
+  from await 
+    left join inv on (await.is_novice=inv.is_novice and await.borrow_type=inv.borrow_type and await.borrow_period=inv.borrow_period ) 
+  order by await.is_novice desc, await.borrow_type asc , await.borrow_period asc
 )
+--select sum(capital) from tmp
+select
+  plan_type,
+  borrow_period,
+  capital,
+  round(capital/(select sum(capital) from tmp),4) as await_rate,
+  huoqi_capital,
+  huoqi_rate,
+  m_join,
+  d_join,
+  m_exit,
+  d_exit,
+  exit_rate
+from tmp 
+
+union all
 
 select 
-   '理财计划' as plan_type,
-   await.borrow_period,
-   await.capital,
-   null as total_rate, 
-   await.huoqi_capital as huoqi_capital,
-   case when 
-   		round(huoqi_capital/capital*100,2) is null then '' else 
-   		round(huoqi_capital/capital*100,2) || '%' end 
-   		as huoqi_capital_rate,
-   m_j_capital,
-   d_j_capital,
-   m_tender_capital,
-   d_tender_capital,
-   case when 
-   		round(d_tender_capital/huoqi_capital*100,2) is null then '' else 
-   		round(d_tender_capital/huoqi_capital*100,2) || '%' end as tuichu_rate
-
-from await 
-  left join jiaru on await.borrow_period = jiaru.borrow_period
-  left join tuichu on await.borrow_period = tuichu.borrow_period
-order by await.borrow_period asc
-
+  '汇总',
+  null,
+  sum(capital),
+  1.0000 ,
+  sum(huoqi_capital),
+  round(sum(huoqi_capital)/sum(capital),4),
+  sum(m_join),
+  sum(d_join),
+  sum(m_exit),
+  sum(d_exit),
+  round(sum(d_exit)/sum(huoqi_capital),4)
+from tmp

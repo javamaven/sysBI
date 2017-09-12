@@ -157,5 +157,14 @@ public class Constants {
 		 */
 		public static final String VIP_POT_DATA = "30";
 		
+		/**
+		 * 31:'注册5天未投资(邀请渠道)', //phone_sale_send_data
+		 * 32:'注册7天未投资(CPS渠道)',
+		 * 33:'注册7天未投资(付费渠道)'
+		 */
+		public static final String PHONE_SALE_INVITED_SEND = "31";
+		public static final String PHONE_SALE_CPS_SEND = "32";
+		public static final String PHONE_SALE_PAY_SEND = "33";
+		
 	}
 }

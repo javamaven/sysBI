@@ -23,6 +23,9 @@ function initTimeCond(){
         autoclose:true
     }).on("click",function(){
     });
+    
+    var yesterday= getYesterday();
+    $("#stat_period").val(yesterday);
 }
 
 function initTableGrid(){
@@ -31,17 +34,41 @@ function initTableGrid(){
 //        postData: getParams(),
         datatype: "json",
         colModel: [			
-			{ label: '计划类型', name: 'PLAN_TYPE', index: '$STAT_PERIOD', width: 80 },
-			{ label: '计划期限', name: 'BORROW_PERIOD', index: '$REG_NUM', width: 80 }, 			
-			{ label: '待收本金总量', name: 'CAPITAL', index: '$AUTH_NUM', width: 100 , formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}}, 			
-			{ label: '总量占比', name: 'TOTAL_RATE', index: '$FIRST_INV_NUM', width: 80 }, 			
-			{ label: '活期待收总量', name: 'HUOQI_CAPITAL', index: '$RE_NUM', width: 90 , formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}}, 			
-			{ label: '活期待收占比', name: 'HUOQI_CAPITAL_RATE', index: '$INV_NUM', width: 90 }, 			
-			{ label: '当月成交总量', name: 'M_J_CAPITAL', index: '$INV_FIRST_MONEY', width: 100 , formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}    }, 			
-			{ label: '当日成交总量', name: 'D_J_CAPITAL', index: '$Y_INV_FIRST_MONEY', width: 100, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }, 			
-			{ label: '当月退出总量', name: 'M_TENDER_CAPITAL', index: '$INV_MONEY', width: 90, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }, 			
-			{ label: '当日退出总量', name: 'D_TENDER_CAPITAL', index: '$Y_INV_MONEY', width: 100, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }, 			
-			{ label: '当日退出率', name: 'TUICHU_RATE', index: '$RE_AMOUNT', width: 100  } 			
+			{ label: '计划类型', name: 'PLAN_TYPE', index: '$STAT_PERIOD', width: 80 ,align:'right' },
+			{ label: '计划期限', name: 'BORROW_PERIOD', index: '$REG_NUM', width: 80,align:'right' }, 			
+			{ label: '待收本金总量', name: 'CAPITAL', index: '$AUTH_NUM', width: 100 ,align:'right', formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}}, 			
+			{ label: '总量占比', name: 'AWAIT_RATE', index: '$FIRST_INV_NUM', width: 80,align:'right', 
+				formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue*100,2) + '%';
+					}else{
+						return '';
+					}
+				} 
+			}, 			
+			{ label: '活期待收总量', name: 'HUOQI_CAPITAL', index: '$RE_NUM', width: 90 ,align:'right', formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}}, 			
+			{ label: '活期待收占比', name: 'HUOQI_RATE', index: '$INV_NUM', width: 90,align:'right',
+				formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue*100,2) + '%';
+					}else{
+						return '';
+					}
+				} 
+		    }, 			
+			{ label: '当月成交总量', name: 'M_JOIN', index: '$INV_FIRST_MONEY', width: 100 ,align:'right', formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}    }, 			
+			{ label: '当日成交总量', name: 'D_JOIN', index: '$Y_INV_FIRST_MONEY', width: 100,align:'right', formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }, 			
+			{ label: '当月退出总量', name: 'M_EXIT', index: '$INV_MONEY', width: 90,align:'right', formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }, 			
+			{ label: '当日退出总量', name: 'D_EXIT', index: '$Y_INV_MONEY', width: 100,align:'right', formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }, 			
+			{ label: '当日退出率', name: 'EXIT_RATE', index: '$RE_AMOUNT', width: 100,align:'right',
+				formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue*100,2) + '%';
+					}else{
+						return '';
+					}
+				} 
+			}		
         ],
         height:  $(window).height()-130,
         rowNum: 20,

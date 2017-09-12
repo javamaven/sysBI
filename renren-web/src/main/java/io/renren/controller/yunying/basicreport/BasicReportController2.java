@@ -52,7 +52,109 @@ public class BasicReportController2 {
 	DataSourceFactory dataSourceFactory;
 	@Autowired
 	private UserBehaviorService userBehaviorService;
+	
+	/**
+	 * 新规则电销数据推送
+	 * @param page
+	 * @param limit
+	 * * @param type 免费，付费，cps，邀请
+	 * @param registerStartTime
+	 * @param registerEndTime
+	 * @return
+	 */
+	@ResponseBody
+	@RequestMapping("/phoneSaleDataSend")
+	public R phoneSaleDataSend(Integer page, Integer limit, String type, String registerStartTime, String registerEndTime) {
+		String reportType="电销数据推送";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		Map<String, Object> params = new HashMap<>();
+		params.put("registerStartTime", registerStartTime);
+		params.put("registerEndTime", registerEndTime);
+		params.put("type", type);
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+		int start = (page - 1) * limit;
+		int end = start + limit;
+		PageUtils pageUtil = null;
+		if("free_channel".equals(type)){
+//			pageUtil = service.queryList(page, limit, registerStartTime, registerEndTime, start, end, "list");
+			pageUtil = service.queryFreeChannelList(page, limit, registerStartTime, registerEndTime, start, end, "list");
+		}else if("pay_channel".equals(type) || "cps_channel".equals(type)){
+			list = service.queryPayOrCpsChannelList(params);
+		}else if("invited_channel".equals(type)){
+			pageUtil = service.queryInvitedChannelList(page, limit, registerStartTime, registerEndTime, start, end, "list");
+		}
 
+		List<Map<String, Object>> retList = new ArrayList<Map<String, Object>>();
+		if (list.size() > 0) {
+			if (end > list.size()) {
+				retList.addAll(list.subList(start, list.size()));
+			} else {
+				retList.addAll(list.subList(start, end));
+			}
+		}
+		if("pay_channel".equals(type) || "cps_channel".equals(type)){
+			pageUtil = new PageUtils(retList, list.size(), limit, page);
+		}
+		if (retList.size() > 0) {
+			service.getAmontByUserId(retList);// 统计用户的账户余额
+		}
+		return R.ok().put("page", pageUtil);
+
+	}
+
+	/**
+	 * 新规则电销数据推送excel导出09-11
+	 * @param params
+	 * @param request
+	 * @param response
+	 * @throws IOException
+	 */
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping("/exportPhoneSaleSendDataExcel")
+	public void exportPhoneSaleSendDataExcel(String params, HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+		String reportType="电销数据推送";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
+		Map<String, Object> map = JSON.parseObject(params, Map.class);
+		String registerStartTime = map.get("registerStartTime") + "";
+		String registerEndTime = map.get("registerEndTime") + "";
+		String type = map.get("type") + "";
+		List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+		PageUtils pageUtil = null;
+		if("free_channel".equals(type)){
+//			pageUtil = service.queryList(page, limit, registerStartTime, registerEndTime, start, end, "list");
+			pageUtil = service.queryFreeChannelList(1, 100000, registerStartTime, registerEndTime, 0, 100000, "list");
+			dataList = (List<Map<String, Object>>) pageUtil.getList();
+		}else if("pay_channel".equals(type) || "cps_channel".equals(type)){
+			dataList = service.queryPayOrCpsChannelList(map);
+		}else if("invited_channel".equals(type)){
+			pageUtil = service.queryInvitedChannelList(1, 100000, registerStartTime, registerEndTime, 0, 100000, "list");
+			dataList = (List<Map<String, Object>>) pageUtil.getList();
+		}
+		// 查询列表数据
+		JSONArray va = new JSONArray();
+		for (int i = 0; i < dataList.size(); i++) {
+			va.add(dataList.get(i));
+		}
+		Map<String, String> headMap = service.getExcelFields();
+		String month = registerEndTime.substring(5 , 7);
+		String day = registerEndTime.substring(8 , 10);
+		String Hour = registerEndTime.substring(11 , 13);
+		String title = "";
+		if("free_channel".equals(type)){
+			title = "注册1小时未投资用户(免费渠道)-W-" + month + day + "_" + Hour + "-" + dataList.size();
+		}else if("pay_channel".equals(type)){
+			title = "注册7天未投资用户(付费渠道)-W-" + month + day + "-" + dataList.size();
+		}else if("invited_channel".equals(type)){
+			title = "注册5天未投资用户(邀请渠道)-W-" + month + day + "-" + dataList.size();
+		}else if("cps_channel".equals(type)){
+			title = "注册7天未投资用户(CPS渠道)-W-" + month + day + "-" + dataList.size();
+		}
+		ExcelUtil.downloadExcelFile(title, headMap, va, response);
+	}
 
 	
 	@ResponseBody
@@ -516,6 +618,7 @@ public class BasicReportController2 {
 
 		ExcelUtil.downloadExcelFile(title, headMap, va, response);
 	}
+	
 	
 	/**
 	 * 注册三天未投资导出

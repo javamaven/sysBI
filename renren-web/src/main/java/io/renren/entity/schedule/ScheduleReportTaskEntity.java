@@ -38,6 +38,9 @@ import io.renren.service.schedule.job.yunying.OldDataJob;
 import io.renren.service.schedule.job.yunying.VipPotData;
 import io.renren.service.schedule.job.yunying.VipUserDataReportJob;
 import io.renren.service.schedule.job.yunying.basicreport.FirstInvestThreeDayNotInvestReportJob;
+import io.renren.service.schedule.job.yunying.basicreport.PhoneSaleCpsChannelSendJob;
+import io.renren.service.schedule.job.yunying.basicreport.PhoneSaleInvitedChannelSendJob;
+import io.renren.service.schedule.job.yunying.basicreport.PhoneSalePayChannelSendJob;
 import io.renren.service.schedule.job.yunying.basicreport.RegisterOneHourNotInvestReportJob;
 import io.renren.service.schedule.job.yunying.basicreport.RegisterThreeDayNotInvestReportJob;
 
@@ -151,6 +154,12 @@ public class ScheduleReportTaskEntity implements Serializable {
 			jobVo.setJobClass(DailyReportDataJob.class);
 		}else if (Constants.TaskType.VIP_POT_DATA.equals(jobVo.getJobType())) { 
 			jobVo.setJobClass(VipPotData.class);
+		}else if (Constants.TaskType.PHONE_SALE_CPS_SEND.equals(jobVo.getJobType())){
+			jobVo.setJobClass(PhoneSaleCpsChannelSendJob.class);
+		}else if (Constants.TaskType.PHONE_SALE_PAY_SEND.equals(jobVo.getJobType())){
+			jobVo.setJobClass(PhoneSalePayChannelSendJob.class);
+		}else if (Constants.TaskType.PHONE_SALE_INVITED_SEND.equals(jobVo.getJobType())){
+			jobVo.setJobClass(PhoneSaleInvitedChannelSendJob.class);
 		}
 		
 		

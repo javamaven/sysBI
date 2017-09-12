@@ -78,18 +78,16 @@ public class LicaijihuaAwaitReceiveController extends AbstractController {
 		headMap.put( "BORROW_PERIOD","计划期限");
 		headMap.put("CAPITAL","待收本金总量");
 		
-		headMap.put("TOTAL_RATE","总量占比");
+		headMap.put("AWAIT_RATE","总量占比");
 		headMap.put("HUOQI_CAPITAL","活期待收总量");
-		headMap.put( "HUOQI_CAPITAL_RATE","活期待收占比");
-		headMap.put("M_J_CAPITAL","当月成交总量");
+		headMap.put( "HUOQI_RATE","活期待收占比");
+		headMap.put("M_JOIN","当月成交总量");
 		
-		headMap.put("D_J_CAPITAL","当日成交总量");
-		headMap.put("M_TENDER_CAPITAL","当月退出总量");
-		headMap.put( "D_TENDER_CAPITAL","当日退出总量");
-		headMap.put("TUICHU_RATE","当日退出率");
+		headMap.put("D_JOIN","当日成交总量");
+		headMap.put("M_EXIT","当月退出总量");
+		headMap.put( "D_EXIT","当日退出总量");
+		headMap.put("EXIT_RATE","当日退出率");
 		
-		
-
 		String title = reportType;
 		try {
 			ExcelUtil.exportExcel(title, headMap, va, response);

@@ -1,0 +1,55 @@
+SELECT
+	u.user_id 用户ID,
+	u2.user_name 用户名,
+	u2.phone 手机号,
+	u.register_time 注册时间,
+	CASE
+WHEN u.channel_id IS NULL
+OR u.channel_id = '' THEN
+	u.activity_tag
+ELSE
+	u.channel_id
+END 用户来源,
+ CASE
+WHEN u3.real_name IS NULL THEN
+	'否'
+ELSE
+	'是'
+END 实名认证,
+ u3.real_name 真实姓名,
+ '否' 是否投资,
+ 0 投资金额,
+ 0 投资次数,
+ '' 最近一次投资时间,
+ '' 最近一次投资期限,
+ ifnull(c.amount, 0) / 100 账户余额
+FROM
+	mdtx_user.user_ext_info u
+LEFT JOIN mdtx_user.user_basic_info u2 ON (u.user_id = u2.id)
+LEFT JOIN mdtx_user.user_auth_info u3 ON (u.user_id = u3.user_id)
+LEFT JOIN mdtx_business.account_tender c ON (u.user_id = c.user_id)
+WHERE
+	1 = 1
+AND u.register_time >= ?
+AND u.register_time <= ?
+AND u2.is_borrower = 0
+AND u2.phone IS NOT NULL
+AND u2.phone <> ''
+AND ifnull(c.amount, 0) / 100 <= 100
+AND NOT EXISTS (
+	SELECT DISTINCT
+		p.user_id
+	FROM
+		mdtx_business.project_tender_detail p
+	WHERE
+		1 = 1
+	AND p.user_id = u.user_id
+)
+AND NOT EXISTS (
+	SELECT
+		f.user_id
+	FROM
+		mdtx_user.user_referee f
+	WHERE
+		f.user_id = u.user_id
+)

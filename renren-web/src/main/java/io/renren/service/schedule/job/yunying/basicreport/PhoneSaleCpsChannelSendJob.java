@@ -15,6 +15,7 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.quartz.PersistJobDataAfterExecution;
 
+import com.alibaba.druid.pool.DruidDataSource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 
@@ -28,21 +29,24 @@ import io.renren.service.yunying.basicreport.BasicReportService;
 import io.renren.service.yunying.dayreport.DmReportVipSituationService;
 import io.renren.system.common.ConfigProp;
 import io.renren.system.common.SpringBeanFactory;
+import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
-import io.renren.utils.PageUtils;
 
 /**
- * 注册未投资用户
+ * 注册未投资用户，
  * 
  * @author Administrator
  *
  */
 @PersistJobDataAfterExecution
 @DisallowConcurrentExecution
-public class RegisterOneHourNotInvestReportJob implements Job {
+public class PhoneSaleCpsChannelSendJob implements Job {
 	public final Logger log = Logger.getLogger(this.getClass());
 	private ScheduleReportTaskService taskService = SpringBeanFactory.getBean(ScheduleReportTaskService.class);
+	
+	DruidDataSource dataSource = SpringBeanFactory.getBean(DruidDataSource.class);
+	DataSourceFactory dataSourceFactory = SpringBeanFactory.getBean(DataSourceFactory.class);
 	BasicReportService service = SpringBeanFactory.getBean(BasicReportService.class);
 	DmReportVipSituationService serviceTotal = SpringBeanFactory.getBean(DmReportVipSituationService.class);
 	private ScheduleReportTaskLogService logService = SpringBeanFactory.getBean(ScheduleReportTaskLogService.class);
@@ -50,7 +54,9 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 	private ScheduleReportTaskLogEntity logVo;
 	String title = "";
 	SimpleDateFormat dateFm = new SimpleDateFormat("EEEE");
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH");
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	
+	String type = "cps_channel";
 
 	@Override
 	public void execute(JobExecutionContext ctx) throws JobExecutionException {
@@ -63,19 +69,14 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 		if (!ConfigProp.getIsSendEmail()) {
 			return;
 		}
-		log.info("+++++++++保存发送日志+++++++++++++" + logVo);
 		logService.save(logVo);
-		log.info("+++++++++更改最后发送时间+++++++++++++");
 		updateRunningTime();
 	}
 
 	/**
-	 * 每天9点到16点，每个小时推送一遍 周六周日不推送
-	 * 
 	 * @param ctx
 	 * @return
 	 */
-	@SuppressWarnings({ "unchecked", "deprecation" })
 	private boolean run(JobExecutionContext ctx) {
 		boolean flag = true;
 		logVo = new ScheduleReportTaskLogEntity();
@@ -83,7 +84,7 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 		JobDataMap jobDataMap = ctx.getJobDetail().getJobDataMap();
 		JobVo jobVo = (JobVo) jobDataMap.get("jobVo");
 		ScheduleReportTaskEntity taskEntity = jobVo.getTaskEntity();
-		log.info("+++++++++电销每小时注册未投资任务启动+++++++++++++");
+		log.info("+++++++++PhoneSaleCpsChannelSendJob+++++++++++++" + taskEntity);
 		MailUtil mailUtil = new MailUtil();
 		JobUtil jobUtil = new JobUtil();
 		try {
@@ -91,66 +92,41 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 			String registerStartTime = "";
 			String registerEndTime = "";
 
-//			Date fireTime = ctx.getFireTime();
-			Date currDate = new Date();
-			String week = DateUtil.getWeekOfDate(currDate);
-			String executeTime = sdf.format(currDate);
-			log.info("+++++++++week+++++++++++++" + week);
-			if ("星期一".equals(week) && currDate.getHours() == 9) {
-				String currDayBefore = DateUtil.getCurrDayBefore(3, "yyyy-MM-dd");
-				registerStartTime = currDayBefore + " 17:00:00";
-				registerEndTime = DateUtil.getHourBefore(executeTime, "yyyy-MM-dd HH", 1, "yyyy-MM-dd") + " 07:59:59";
-			} else if(currDate.getHours() == 9){//其他星期的9点，推送昨天15点到现在
-				String currDayBefore = DateUtil.getCurrDayBefore(1, "yyyy-MM-dd");
-				registerStartTime = currDayBefore + " 17:00:00";
-				registerEndTime = DateUtil.getHourBefore(executeTime,"yyyy-MM-dd HH",1, "yyyy-MM-dd") + " 07:59:59";
-			}else {
-				registerStartTime = DateUtil.getHourBefore(executeTime, 2, "yyyy-MM-dd HH") + ":00:00";
-				registerEndTime = DateUtil.getHourBefore(executeTime, 2, "yyyy-MM-dd HH") + ":59:59";
-			}
-			
-//			registerStartTime = "2017-09-07 17:00:00";
-//			registerEndTime = "2017-09-11 12:59:59";
+			registerStartTime = DateUtil.getCurrDayBefore(7, "yyyy-MM-dd") + " 00:00:00";
+			registerEndTime = DateUtil.getCurrDayBefore(1, "yyyy-MM-dd") + " 23:59:59";
 			queryParams.put("registerStartTime", registerStartTime);
 			queryParams.put("registerEndTime", registerEndTime);
-			
+			queryParams.put("type", type);
 			logVo.setParams(JSON.toJSONString(queryParams));
-			log.info("+++++++++查询条件+++++++++++++" + queryParams);
-//			PageUtils page = service.queryList(1, 10000, registerStartTime, registerEndTime, 0, 10000, "");
-			PageUtils page = service.queryFreeChannelList(1, 10000, registerStartTime, registerEndTime, 0, 10000, "");
-			List<Map<String, Object>> dataList = (List<Map<String, Object>>) page.getList();
-			log.info("+++++++++查询返回结果+++++++++++++" + dataList);
+//			List<Map<String, Object>> dataList = service.queryRegisterThreeDaysNotInvestList(queryParams);
+			List<Map<String, Object>> dataList = service.queryPayOrCpsChannelList(queryParams);
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < dataList.size(); i++) {
 				Map<String, Object> entity = dataList.get(i);
 				dataArray.add(entity);
 			}
-//			if (dataList.size() > 0) {
-				String year = registerEndTime.substring(0 , 4);
-				String month = registerEndTime.substring(5 , 7);
-				String day = registerEndTime.substring(8 , 10);
-				String Hour = executeTime.substring(11 , 13);
-				title = "注册一小时未投资用户-W-" + month + day + "_" + Hour + "-" + dataList.size();
-				
-				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
-				log.info("+++++++++生成附件文件+++++++++++++" + attachFilePath);
-				mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
-						taskEntity.getChaosongEmailList(), attachFilePath);
-				log.info("+++++++++发送邮件结束+++++++++++++");
-				logVo.setEmailValue(attachFilePath);
-			//			} else {
-//				logVo.setEmailValue("查询没有返回数据");
-//			}
-		    //将电销的数据，入库保存
+			String year = registerEndTime.substring(0 , 4);
+			String month = registerEndTime.substring(5 , 7);
+			String day = registerEndTime.substring(8 , 10);
+			List<String> attachFilePathList = new ArrayList<>();
+			title = "注册7天未投资用户(CPS渠道)-W-" + month + day + "-" + dataList.size();
+//			title = "注册3天未投资用户-W-" + month + day + "-" + dataList.size();
+			
+			String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
+			
+			attachFilePathList.add(attachFilePath);
+			mailUtil.sendWithAttachs(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(), taskEntity.getChaosongEmailList(), attachFilePathList );
+			
+			logVo.setEmailValue(attachFilePath);
+			//将电销的数据，入库保存
 			if (ConfigProp.getIsSendEmail()) {
-				insertPhoneSaleData(year+month+day+Hour, dataList);
+				insertPhoneSaleData(year+month+day, dataList);
 			}
 			logVo.setSendResult("success");
 		} catch (Exception e) {
 			flag = false;
 			logVo.setSendResult("fail");
 			logVo.setDesc(JobUtil.getStackTrace(e));
-			log.info(logVo.getDesc());
 			e.printStackTrace();
 		} finally {
 			long l2 = System.currentTimeMillis();
@@ -171,7 +147,7 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 				Map<String, Object> map = dataList.get(i);
 				insert_map.put("data", JSON.toJSONString(map));
 				insert_map.put("cg_user_id", map.get("用户ID") + "");
-				insert_map.put("type", "hour");
+				insert_map.put("type", type);
 				insert_map.put("data_time", dataTime);
 				insert_data.add(insert_map);
 			}
@@ -182,7 +158,7 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 			e.printStackTrace();
 		}
 	}
-
+	
 	/**
 	 * 更新最后运行时间
 	 * 

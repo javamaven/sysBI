@@ -27,4 +27,6 @@ public interface BasicReportDao {
 	
 	public void batchInsertPhoneSaleJobSendData(List<Map<String, String>> dataList);
 
+	public List<Map<String, Object>> queryPayOrCpsChannelList(Map<String, Object> params);
+
 }

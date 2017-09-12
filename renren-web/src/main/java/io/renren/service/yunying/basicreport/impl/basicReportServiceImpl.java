@@ -449,6 +449,18 @@ public class basicReportServiceImpl implements BasicReportService {
 		List<Map<String, Object>> list = basicReportDao.queryRegisterThreeDaysNotInvestList(params);
 		return list;
 	}
+	
+	
+	/**
+	 * 查询注册7天未投资用户数据
+	 */
+	@Override
+	public List<Map<String, Object>> queryPayOrCpsChannelList(Map<String, Object> params) {
+		List<Map<String, Object>> list = basicReportDao.queryPayOrCpsChannelList(params);
+		getAmontByUserId(list);// 统计用户的账户余额
+		return list;
+	}
+
 
 	
 	
@@ -663,5 +675,87 @@ public class basicReportServiceImpl implements BasicReportService {
 		basicReportDao.batchInsertPhoneSaleJobSendData(dataList);
 	}
 
+
+	@Override
+	public PageUtils queryFreeChannelList(Integer page, Integer limit, String registerStartTime, String registerEndTime,
+			int start, int end, String queryType) {
+		JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		String path = this.getClass().getResource("/").getPath();
+		String detail_sql = null;
+		try {
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/电销数据推送/free_channel_send.txt"));
+			List<Map<String, Object>> resultList = util.query(detail_sql, registerStartTime, registerEndTime);
+			// 免费渠道
+			Map<String, String> channel_map = getChannelMap();
+			// 所有渠道
+			for (int i = 0; i < resultList.size(); i++) {
+				Map<String, Object> map = resultList.get(i);
+				String channel_label = map.get("用户来源") + "";
+				// 每小时推送免费的渠道 ,不包含invited，并且邀请人id未null
+				// 用户来源为null
+				if (channel_map.containsKey(channel_label) || StringUtils.isEmpty(channel_label)) {
+					map.put("用户来源", channel_map.get(channel_label));
+					list.add(map);
+					continue;
+				}
+			}
+
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		List<Map<String, Object>> retList = new ArrayList<Map<String, Object>>();
+		if (list.size() > 0) {
+			if (end > list.size()) {
+				retList.addAll(list.subList(start, list.size()));
+			} else {
+				retList.addAll(list.subList(start, end));
+			}
+		}
+		if (retList.size() > 0) {
+			getAmontByUserId(retList);// 统计用户的账户余额
+		}
+
+		PageUtils pageUtil = new PageUtils(retList, list.size(), limit, page);
+		return pageUtil;
+	}
+
+
+	@Override
+	public PageUtils queryInvitedChannelList(Integer page, Integer limit, String registerStartTime,
+			String registerEndTime, int start, int end, String string) {
+		// TODO Auto-generated method stub
+		JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		String path = this.getClass().getResource("/").getPath();
+		String detail_sql = null;
+		try {
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/电销数据推送/invited_channel_send.txt"));
+			list = util.query(detail_sql, registerStartTime, registerEndTime);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		List<Map<String, Object>> retList = new ArrayList<Map<String, Object>>();
+		if (list.size() > 0) {
+			if (end > list.size()) {
+				retList.addAll(list.subList(start, list.size()));
+			} else {
+				retList.addAll(list.subList(start, end));
+			}
+		}
+		if (retList.size() > 0) {
+			getAmontByUserId(retList);// 统计用户的账户余额
+		}
+
+		PageUtils pageUtil = new PageUtils(retList, list.size(), limit, page);
+		return pageUtil;
+	}
 	
 }

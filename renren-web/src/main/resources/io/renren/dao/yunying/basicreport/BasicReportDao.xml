@@ -261,5 +261,50 @@
 		and (d.use_type like '%付费%' or d.use_type like '%CPS%')
 		
 	</select>
+	
+	<!-- 电销新规则，09-11开始 ,付费渠道-->
+	<select id="queryPayOrCpsChannelList" resultType="java.util.HashMap">
+	
+		SELECT
+			case when u.CG_USER_ID is null then u.USER_ID else u.CG_USER_ID end 用户ID,
+			u.USERNAME 用户名,
+			u.PHONE 手机号,
+			u.REGISTER_TIME 注册时间,
+			d.CHANNEL_NAME 用户来源,
+			case when u.REALNAME is null then '否' else '是' end 实名认证,
+			u.REALNAME 真实姓名,
+			'否' 是否投资,
+			0 投资次数,
+			'' 最近一次投资时间,
+			'' 最近一次投资期限,
+			0 账户余额
+		FROM
+			edw_user_basic u
+		left join dim_channel d  on (u.ACTIVITY_TAG=d.CHANNEL_LABEL)
+		WHERE
+			1 = 1
+		<if test="registerStartTime != null and registerStartTime.trim() != '' ">
+		     <![CDATA[ and u.REGISTER_TIME >= #{registerStartTime}  ]]>
+		</if>
+		<if test="registerEndTime != null and registerEndTime.trim() != '' ">
+		     <![CDATA[ and u.REGISTER_TIME <= #{registerEndTime}  ]]>
+		</if>
+		
+		and u.DEPOSITORY_FIRSTINVEST_TIME is NULL
+		and u.NORMAL_FIRSTINVEST_TIME is null
+
+		
+		AND d.CHANNEL_NAME not LIKE '%触宝%'
+		AND d.CHANNEL_NAME not LIKE '%北瓜%'
+		AND d.CHANNEL_NAME not LIKE '%360摇一摇%'
+		
+		<if test="type != null and type.trim() == 'pay_channel' ">
+		     and d.use_type like '%付费%'
+		</if>
+		<if test="type != null and type.trim() == 'cps_channel' ">
+		     and ( d.use_type like '%CPS%' or d.use_type like '%cps%' )
+		</if>
+		
+	</select>
 
 </mapper>

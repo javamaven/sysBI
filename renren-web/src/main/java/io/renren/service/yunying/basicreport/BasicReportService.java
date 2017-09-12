@@ -34,4 +34,12 @@ public interface BasicReportService {
 	void updatePhoneSaleCgUserList(Map<String, Object> map);
 	
 	void batchInsertPhoneSaleJobSendData(List<Map<String, String>> dataList);
+
+	PageUtils queryFreeChannelList(Integer page, Integer limit, String registerStartTime, String registerEndTime,
+			int start, int end, String string);
+
+	List<Map<String, Object>> queryPayOrCpsChannelList(Map<String, Object> params);
+
+	PageUtils queryInvitedChannelList(Integer page, Integer limit, String registerStartTime, String registerEndTime,
+			int start, int end, String string);
 }

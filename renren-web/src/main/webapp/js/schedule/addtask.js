@@ -29,6 +29,9 @@
 //  28.Monthly_Report
 //	29.Daily_Report_data
 //  30.vip_pot
+//  31.phone_sale_invited_send 注册5天未投资(邀请渠道)
+//	32.phone_sale_cps_send注册7天未投资(CPS渠道)
+//	33.phone_sale_pay_send注册7天未投资(付费渠道)
 //};
 function addTask(taskType) {
 	var task_name = $("#task_name").val();
@@ -106,7 +109,8 @@ function addTask(taskType) {
 	};
 	var url = "../schedule/schedulereporttask/addTask"; 
 	if(taskType == 10 || taskType == 11 || taskType == 12 || taskType == 13 || taskType == 14 || taskType == 15
-			|| taskType == 24 || taskType == 25 || taskType == 26|| taskType == 27|| taskType == 29||taskType == 30){
+			|| taskType == 24 || taskType == 25 || taskType == 26|| taskType == 27|| taskType == 29||taskType == 30
+			|| taskType == 31 || taskType == 32|| taskType == 33 ){
 		url = "../../schedule/schedulereporttask/addTask"; 
 	}
 	$.ajax({
