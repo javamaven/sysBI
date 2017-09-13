@@ -166,7 +166,8 @@
 				AFTER_TENDER_SUBJECT,
 				SECOND_TENDER_BALANCE,
 				USE_HONGBAO_BALANCE,
-				SPREADS_USERID
+				SPREADS_USERID,
+				SEM_KEYWORD
 		 from dm_report_user_activate_daily
       	where 1=1
       	

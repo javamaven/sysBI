@@ -210,6 +210,7 @@ function initTable(){
 //				{ label: '统计日期', name: 'statPeriod', index: '$STAT_PERIOD', width: 80 },
 				{ label: '用户ID', name: 'userId', index: '$USER_ID', width: 80,align:'right' }, 
 				{ label: '邀请人ID', name: 'spreadsUserid', index: '$USER_ID', width: 80,align:'right' }, 	
+				{ label: 'SEM关键字', name: 'semKeyword', index: '$USER_ID', width: 110,align:'right' }, 	
 //				{ label: '用户名', name: 'username', index: '$USERNAME', width: 100,align:'right' }, 			
 //				{ label: '渠道ID', name: 'channelId', index: '$CHANNEL_ID', width: 80 }, 			
 //				{ label: '渠道负责人', name: 'channelHead', index: '$CHANNEL_NAME', width: 100,align:'right' }, 	

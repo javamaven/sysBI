@@ -71,6 +71,16 @@ public class DmReportUserActivateDailyEntity implements Serializable {
 	//邀请人ID
 	private Integer spreadsUserid;
 	
+	private String semKeyword;
+	
+	public void setSemKeyword(String semKeyword) {
+		this.semKeyword = semKeyword;
+	}
+	
+	public String getSemKeyword() {
+		return semKeyword;
+	}
+	
 	public void setSpreadsUserid(Integer spreadsUserid) {
 		this.spreadsUserid = spreadsUserid;
 	}
