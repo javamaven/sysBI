@@ -230,7 +230,7 @@ public class LabeltagUserController {
 		typeMap.put("0", "int");//从0开始
 		typeMap.put("1", "int");//从0开始
 		typeMap.put("2", "int");//从0开始
-//		typeMap.put("3", "int");//从0开始
+		typeMap.put("3", "double");//从0开始
 //		typeMap.put("4", "int");//从0开始
 		
 		typeMap.put("6", "double");//从0开始

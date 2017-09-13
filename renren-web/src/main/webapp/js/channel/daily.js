@@ -1,154 +1,115 @@
-$(function(){
-    initExportFunction();
-//    initTableGrid();
-});
-function queryParams(params) {  //配置参数
-    var temp = {   //这里的键的名字和控制器的变量名必须一直，这边改动，控制器也需要改成一样的
-      limit: params.pageSize,   //页面大小
-      page: params.pageNumber,  //页码
-      minSize: $("#leftLabel").val(),
-      maxSize: $("#rightLabel").val(),
-      minPrice: $("#priceleftLabel").val(),
-      maxPrice: $("#pricerightLabel").val(),
-      reg_begindate  : document.getElementById("reg_begindate").value.replace(/-/g,""),
-      reg_enddate : document.getElementById("reg_enddate").value.replace(/-/g,"")
-    };
-    return temp;
-  }
-function initTableGrid(){
-	//初始化Table
-    $('#reportTable').bootstrapTable({
-        url: "../channel/daily/black", //请求后台的URL（*）
-        data: JSON.stringify(getQueryParams()),
-        dataType: "json",
-        method: 'get',                      //请求方式（*）
-        //toolbar: '#toolbar',                //工具按钮用哪个容器
-        striped: true,                      //是否显示行间隔色
-        cache: false,                       //是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
-        pagination: true,                   //是否显示分页（*）
-        sortable: false,                     //是否启用排序
-        sortOrder: "asc",                   //排序方式
-        queryParams: queryParams, //参数
-        queryParamsType: "page", //参数格式,发送标准的RESTFul类型的参数请求
-        sidePagination: "server",           //分页方式：client客户端分页，server服务端分页（*）
-        pageNumber: 1,                       //初始化加载第一页，默认第一页
-        pageSize: 20,                       //每页的记录行数（*）并控制分页
-        pageList: [20, 50, 100, 200],        //可供选择的每页的行数（*）
-//        search: true,                       //是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大
-        strictSearch: true,
-//        showColumns: true,                  //是否显示所有的列
-//        showRefresh: true,                  //是否显示刷新按钮
-        minimumCountColumns: 2,             //最少允许的列数
-        clickToSelect: true,                //是否启用点击选中行
-        height: tableHeight(),                        //行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
-        uniqueId: "ID",                     //每一行的唯一标识，一般为主键列
-//        showToggle: true,                    //是否显示详细视图和列表视图的切换按钮
-//        cardView: false,                    //是否显示详细视图
-        detailView: false ,                  //是否显示父子表
-        formatNoMatches: function () {  //没有匹配的结果
-            return '无符合条件的记录';
-          },
-
-        columns:  [
-            {field:"statPeriod",title:"日期",align:"center",valign:"middle",sortable:"true"},//居中对齐
-            {field:"indicatorsName",title:"指标名字",align:"center",valign:"middle",sortable:"true"},//居中对齐
-            {field:"indicatorsValue",title:"指标值",align:"center",valign:"middle",sortable:"true"},//居中对齐
-            {field:"sequential",title:"环比",align:"center",valign:"middle",sortable:"true"},//居中对齐
-            {field:"compared",title:"同比",align:"center",valign:"middle",sortable:"true"},
-            {field:"monthMeanValue",title:"30天均值",align:"center",valign:"middle",sortable:"true"},
-            {field:"monthMeanValueThan",title:"30天均值比",align:"center",valign:"middle",sortable:"true"}
-        ]
-
-    });
-}
-
-
-
-//默认时间
-function getDate(datatype){
-    var today = new Date(new Date()-24*60*60*1000*1);
-    var halfYearAgo = new Date(new Date()-24*60*60*1000*182);
-    var startdate;
-    var enddate;
-    startdate = (today.getFullYear()) +"-" +
-        (today.getMonth() + 1 >9  ? (today.getMonth() + 1 ) : "0"+(today.getMonth() + 1 )) + "-" +
-        (today.getDate() > 9 ? today.getDate() : "0" + today.getDate());
-    enddate = (halfYearAgo.getFullYear()) +"-" +
-        (halfYearAgo.getMonth() + 1 >9  ? (halfYearAgo.getMonth() + 1 ) : "0"+(halfYearAgo.getMonth() + 1 ))+"-01";
-    return datatype==1 ? startdate : enddate;
-
-
-
-};
-//时间格式
-$(".form_datetime_2").
-    datetimepicker({
-    format: 'yyyy-mm-dd',
-    minView:'month',
-    language: 'zh-CN',
-    autoclose:true,
-    todayBtn : true,
-    setStartDate:new Date()
-});
-// 初始化时间
-document.getElementById("reg_begindate").value=getDate(1);
-document.getElementById("reg_enddate").value=getDate(1);
-
-
-// 自适应高度
-function tableHeight() {
-	return $(window).height();
-}
-
-
-function getQueryParams(){
-
-	return {
-	        page  :1,
-	        limit :20,
-	        reg_begindate  : document.getElementById("reg_begindate").value.replace(/-/g,""),
-            reg_enddate : document.getElementById("reg_enddate").value.replace(/-/g,"")
-	    };
-}
-
-
-
-function getParams(){
-	var params = {
-        	reg_begindate  : document.getElementById("reg_begindate").value.replace(/-/g,""),
-            reg_enddate : document.getElementById("reg_enddate").value.replace(/-/g,"")
-
-	};
-	return params;
-}
-
-
-
-function print(obj){
-	for(var key in obj){
-		alert(key + " = " + obj[key])
-	}
-}
-
-
-
-$("#searchButton").click(function(){
-	getQueryParams();
-    // 显示之前，先把当前表格销毁
-      $('#reportTable').bootstrapTable('destroy');
-
-
-    //加载数据
-    initTableGrid();
-
-
+$(function () {
+  initDetailTableGrid();
+  initTimeCond();
+  initExportFunction();
+  initEvent();
 });
 
 function initExportFunction(){
 	$('#btn_exports').click(function(){
 		var params = getParams();
-		executePost('../channel/daily/partExport', {'params' : JSON.stringify(params)});
+		executePost('../channel/daily/partExport', {'params' : JSON.stringify(params)});  
 	});
 
 }
 
+
+function initTimeCond(){
+    $("#begin_time").datetimepicker({
+        format: 'yyyy-mm-dd',
+        minView:'month',
+        language: 'zh-CN',
+        autoclose:true
+    }).on("click",function(){
+    });
+    $("#begin_time").val(addDate(getCurrDate(), -1));
+    
+    
+    
+    $("#end_time").datetimepicker({
+        format: 'yyyy-mm-dd',
+        minView:'month',
+        language: 'zh-CN',
+        autoclose:true
+    }).on("click",function(){
+    });
+    $("#end_time").val(addDate(getCurrDate(), -1));
+    
+}
+
+function initDetailTableGrid(){
+    $("#jqGrid").jqGrid({
+//        url: '../yunying/dmreportvipuser/list',
+        datatype: "json",
+        colModel: [			
+			{ label: '日期', name: 'statPeriod', index: '$INDICATORS_NAME', width: 50, key: true },
+			{ label: '指标名字', name: 'indicatorsName', index: '$INDICATORS_VALUE', width: 80 }, 			
+			{ label: '指标值', name: 'indicatorsValue', index: '$SEQUENTIAL', width: 80 }, 			
+			{ label: '环比', name: 'sequential', index: '$COMPARED', width: 80 }, 			
+			{ label: '同比', name: 'compared', index: '$MONTH_MEAN_VALUE', width: 80 }, 			
+			{ label: '30天均值', name: 'monthMeanValue', index: '$MONTH_MEAN_VALUE_THAN', width: 80 }, 			
+			{ label: '30天均值比', name: 'monthMeanValueThan', index: '$STAT_PERIOD', width: 80 }			
+        ],
+		viewrecords: true,
+        height: $(window).height()-130,
+        rowNum: 500,
+        rownumbers: true, 
+        autowidth:true,
+        shrinkToFit: true,
+//        autoScroll: false,
+//        multiselect: false,
+        pager: "#jqGridPager",
+        jsonReader : {
+            root: "page.list",
+            page: "page.currPage",
+            total: "page.totalPage",
+            records: "page.totalCount"
+        },
+        prmNames : {
+            page:"page", 
+            rows:"limit", 
+            order: "order"
+        },
+        gridComplete:function(){
+        	//隐藏grid底部滚动条
+        },
+        loadComplete:function(){
+        	 loaded();//去掉遮罩
+        }
+    });
+    
+   
+}
+
+var vm = new Vue({
+	el:'#rrapp',
+	data:{
+		showList: true,
+		title: null,
+		dmReportPotVip: {}
+	},
+	methods: {
+		query: function () {
+			vm.reload();
+		},
+		
+
+		reload: function (event) {
+			vm.showList = true;
+			$("#jqGrid").jqGrid("clearGridData");
+			$("#jqGrid").jqGrid('setGridParam',{ 
+				datatype:'json', 
+				url: '../channel/daily/list',
+	            postData: getParams()
+            }).trigger("reloadGrid");
+		}
+	}
+});
+
+function getParams(){
+	var params = {
+			'begin_time': $("#begin_time").val().replace(/-/g,""),
+			'end_time': $("#end_time").val().replace(/-/g,"")
+	};
+	return params;
+}

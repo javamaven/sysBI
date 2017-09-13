@@ -27,6 +27,7 @@ public class DailyServiceImpl implements DailyService {
 	public List<DailyEntity> queryList(Map<String, Object> map){return dailyDao.queryList(map);
 	}
 
+
 	@Override
 	public int queryTotal(Map<String, Object> map) {return dailyDao.queryTotal(map);
 	}

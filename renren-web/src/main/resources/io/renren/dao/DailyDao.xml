@@ -28,8 +28,8 @@
 		NUM
 		FROM mdtxbi.DM_REPORT_DAILY
 		WHERE 1=1
-		<if test="reg_begindate != null and reg_begindate.trim() != '' and reg_enddate != null and reg_enddate.trim() != ''">
-			AND STAT_PERIOD BETWEEN #{reg_begindate} AND #{reg_enddate}
+		<if test="begin_time != null and begin_time != '' and end_time != null and end_time != ''">
+			AND STAT_PERIOD BETWEEN #{begin_time} AND #{end_time}
 		</if>
 		;
 		SELECT *

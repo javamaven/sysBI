@@ -20,6 +20,5 @@ public interface DailyService {
 	void insert(UserBehaviorEntity logUserBehavior);
 
 
-
 }
 
