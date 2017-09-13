@@ -122,7 +122,9 @@ function initDayListTableGrid(){
 			{ label: '接通后-实际投资金额', name: '接通后-实际投资金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'},	
 			
 			{ label: '接通后-销售奖励金额', name: '接通后-销售奖励金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'},	
-			{ label: '接通后-年化投资金额', name: '接通后-年化投资金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'},	
+			{ label: '接通后-年化投资金额', name: '接通后-年化投资金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'},
+			{ label: '接通后-底层年化投资金额', name: '接通后-底层年化投资金额', index: '$BORROW_PERIOD', width: 170 ,align:'right'},	
+			
 			{ label: '接通后-投资次数', name: '接通后-投资次数', index: '$BORROW_PERIOD', width: 120 ,align:'right'},	
 			
 			{ label: '接通后-首次投资时间', name: '接通后-首次投资时间', index: '$BORROW_PERIOD', width: 150 ,align:'right'},	
@@ -130,7 +132,8 @@ function initDayListTableGrid(){
 			{ label: '接通前-实际投资金额', name: '接通前-实际投资金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'},	
 			
 			{ label: '接通前-销售奖励金额', name: '接通前-销售奖励金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'},	
-			{ label: '接通前-年化投资金额', name: '接通前-年化投资金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'},	
+			{ label: '接通前-年化投资金额', name: '接通前-年化投资金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'},
+			{ label: '接通前-底层年化投资金额', name: '接通前-底层年化投资金额', index: '$BORROW_PERIOD', width: 170 ,align:'right'},
 			{ label: '接通前-投资次数', name: '接通前-投资次数', index: '$BORROW_PERIOD', width: 120 ,align:'right'},	
 			
 			{ label: '接通前-首次投资时间', name: '接通前-首次投资时间', index: '$BORROW_PERIOD', width: 150 ,align:'right'},	
@@ -142,6 +145,7 @@ function initDayListTableGrid(){
 			{ label: '当月销售奖励金额', name: '当月销售奖励金额', index: '$BORROW_PERIOD', width: 130 ,align:'right'},	
 
 			{ label: '当月年化投资金额', name: '当月年化投资金额', index: '$BORROW_PERIOD', width: 130 ,align:'right'},
+			{ label: '当月底层年化投资金额', name: '当月底层年化投资金额', index: '$BORROW_PERIOD', width: 170 ,align:'right'},
 			{ label: '当月首次投资时间', name: '当月首次投资时间', index: '$BORROW_PERIOD', width: 130 ,align:'right'},
 			{ label: '当月末次投资时间', name: '当月末次投资时间', index: '$BORROW_PERIOD', width: 130 ,align:'right'},
 			
@@ -150,11 +154,12 @@ function initDayListTableGrid(){
 			{ label: '当天销售奖励金额', name: '当天销售奖励金额', index: '$BORROW_PERIOD', width: 130 ,align:'right'},	
 			
 			{ label: '当天年化投资金额', name: '当天年化投资金额', index: '$BORROW_PERIOD', width: 140 ,align:'right'},	
+			{ label: '当天底层年化投资金额', name: '当天底层年化投资金额', index: '$BORROW_PERIOD', width: 170 ,align:'right'},	
 			{ label: '当天投资次数', name: '当天投资次数', index: '$BORROW_PERIOD', width: 110 ,align:'right'}
 			
         ],
 		viewrecords: true,
-        height: $(window).height()-200,
+        height: $(window).height()-180,
         rowNum: 20,
 		rowList : [10,30,50],
         rownumbers: true, 
@@ -196,7 +201,8 @@ function initMonthListTableGrid(){
 			{ label: '接通后-实际投资金额', name: '接通后-实际投资金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'},	
 			
 			{ label: '接通后-销售奖励金额', name: '接通后-销售奖励金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'},	
-			{ label: '接通后-年化投资金额', name: '接通后-年化投资金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'},	
+			{ label: '接通后-年化投资金额', name: '接通后-年化投资金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'},
+			{ label: '接通后-底层年化投资金额', name: '接通后-底层年化投资金额', index: '$BORROW_PERIOD', width: 170 ,align:'right'},	
 			{ label: '接通后-投资次数', name: '接通后-投资次数', index: '$BORROW_PERIOD', width: 140 ,align:'right'},	
 			
 			{ label: '接通后-首次投资时间', name: '接通后-首次投资时间', index: '$BORROW_PERIOD', width: 150 ,align:'right'},	
@@ -204,7 +210,8 @@ function initMonthListTableGrid(){
 			{ label: '接通前-实际投资金额', name: '接通前-实际投资金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'},	
 			
 			{ label: '接通前-销售奖励金额', name: '接通前-销售奖励金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'},	
-			{ label: '接通前-年化投资金额', name: '接通前-年化投资金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'},	
+			{ label: '接通前-年化投资金额', name: '接通前-年化投资金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'},
+			{ label: '接通前-底层年化投资金额', name: '接通前-底层年化投资金额', index: '$BORROW_PERIOD', width: 170 ,align:'right'},	
 			{ label: '接通前-投资次数', name: '接通前-投资次数', index: '$BORROW_PERIOD', width: 140 ,align:'right'},	
 			
 			{ label: '接通前-首次投资时间', name: '接通前-首次投资时间', index: '$BORROW_PERIOD', width: 150 ,align:'right'},	
@@ -213,13 +220,15 @@ function initMonthListTableGrid(){
 			{ label: '当日投资次数', name: '当日投资次数', index: '$BORROW_PERIOD', width: 150 ,align:'right'}	,
 			{ label: '当日投资金额', name: '当日投资金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'}	,
 			{ label: '当日年化金额', name: '当日年化金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'}	,
+			{ label: '当日底层年化金额', name: '当日底层年化金额', index: '$BORROW_PERIOD', width: 170 ,align:'right'}	,
 			{ label: '当月投资次数', name: '当月投资次数', index: '$BORROW_PERIOD', width: 150 ,align:'right'}	,
 			{ label: '当月投资金额', name: '当月投资金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'}	,
-			{ label: '当月年化金额', name: '当月年化金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'}	
+			{ label: '当月年化金额', name: '当月年化金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'}	,
+			{ label: '当月底层年化金额', name: '当月底层年化金额', index: '$BORROW_PERIOD', width: 150 ,align:'right'}	
 			
         ],
 		viewrecords: true,
-        height:  $(window).height()-230,
+        height:  $(window).height()-210,
         rowNum: 20,
 		rowList : [10,30,50],
         rownumbers: true, 
@@ -258,25 +267,27 @@ function initMonthTotalTableGrid(){
         datatype: "json",
         colModel: [			
 			{ label: '电销人员', name: '电销人员', index: '$用户名', width: 90, key: true,align:'right' },
-			{ label: '客户总量(人)', name: '客户总量(人)', index: '$USER_ID', width: 90,align:'right' }, 			
-			{ label: '有效客户外呼数(人)', name: '有效客户外呼数(人)', index: '$是否双系统', width: 90,align:'right' }, 			
-			{ label: '投资人数(人)', name: '投资人数(人)', index: '$USERNAME', width: 90,align:'right' }, 			
-			{ label: '投资总额(元)', name: '投资总额(元)', index: '$PHONE', width: 100 ,align:'right'}, 			
-			{ label: '年化投资总额(元)', name: '年化投资总额(元)', index: '$PROJECT_ID', width: 100,align:'right' }, 			
-			{ label: '人均年化投资额(元)', name: '人均年化投资额(元)', index: '$MONEY', width: 80 ,align:'right'}, 			
+			{ label: '客户总量(人)', name: '客户总量(人)', index: '$USER_ID', width: 110,align:'right' }, 			
+			{ label: '有效客户外呼数(人)', name: '有效客户外呼数(人)', index: '$是否双系统', width: 140,align:'right' }, 			
+			{ label: '投资人数(人)', name: '投资人数(人)', index: '$USERNAME', width: 110,align:'right' }, 			
+			{ label: '投资总额(元)', name: '投资总额(元)', index: '$PHONE', width: 110 ,align:'right'}, 			
+			{ label: '年化投资总额(元)', name: '年化投资总额(元)', index: '$PROJECT_ID', width: 120,align:'right' }, 
+			{ label: '底层年化投资总额(元)', name: '底层年化投资总额(元)', index: '$PROJECT_ID', width: 150,align:'right' },
+			{ label: '人均年化投资额(元)', name: '人均年化投资额(元)', index: '$MONEY', width: 140 ,align:'right'}, 	
+			{ label: '人均底层年化投资额(元)', name: '人均底层年化投资额(元)', index: '$MONEY', width: 170 ,align:'right'}, 
 			{ label: '接通率', name: '接通率', index: '$BORROW_PERIOD', width: 80 ,align:'right'},	
 			
-			{ label: '有效外呼转化率', name: '有效外呼转化率', index: '$BORROW_PERIOD', width: 80 ,align:'right'},	
-			{ label: '总体转化率', name: '总体转化率', index: '$BORROW_PERIOD', width: 80 ,align:'right'}
+			{ label: '有效外呼转化率', name: '有效外呼转化率', index: '$BORROW_PERIOD', width: 110 ,align:'right'},	
+			{ label: '总体转化率', name: '总体转化率', index: '$BORROW_PERIOD', width: 100 ,align:'right'}
 
 		],
         viewrecords: true,
-		height:  $(window).height()-230,
+        height:  $(window).height()-210,
         rowNum: 20,
 		rowList : [10,30,50],
         rownumbers: true, 
         autowidth:true,
-        shrinkToFit: true,
+        shrinkToFit: false,
         autoScroll: false,
         multiselect: false,
         pager: "#jqGridPager_month_total",

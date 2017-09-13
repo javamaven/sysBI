@@ -91,7 +91,9 @@
 			OWNER, 
 			TOTAL_RECEIPT,
 			IS_HIGH_VALUE,
-			OLD_200W_AWAIT
+			OLD_200W_AWAIT,
+			DC_MONTH_TENDER_Y,
+			DC_DAY_TENDER_Y
 		
 		from dm_report_vip_user
         where 1=1

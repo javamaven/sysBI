@@ -35,8 +35,17 @@
     )A
     GROUP BY A.USER_NAME,A.USER_ID,A.call_person,A.call_result,
     A.call_date,A.mark,TIME_END,TIME_START
-    ),TMP_DETIAL AS (
+    ),
+    
+    TMP_DETIAL2 AS (
 			SELECT 
+			    pd.user_id,
+		        pd.id,
+		        pd.tender_subject,
+		        pd.tend_cash,
+		        pd.tender_capital,
+		        pd.borrow_period,
+		        pd.project_id,
 				TMP.USER_NAME,
 				MU.REALNAME,
 				TMP.call_person,
@@ -64,7 +73,42 @@
 								and  TO_CHAR(PD.ADDTIME,'yyyyMMDD') BETWEEN tmp.TIME_START AND tmp.TIME_END
 								)
 				left join EDW_USER_BASIC MU on (pd.user_id=MU.USER_ID)  
-			)
+			),
+			
+		TMP_DETIAL as (
+           select
+                 pd.user_id,pd.id,
+                 pd.user_name as user_name,
+                 pd.realname as realname,
+                 pd.call_person as call_person ,
+                 pd.call_result as call_result,
+                 pd.call_date as call_date,
+                 pd.money_invest as money_invest,
+                 pd.money_vouche as money_vouche,
+                 pd.money_year_invset as money_year_invset,
+                 pd.time_invest as time_invest,
+                 pd.from_sys as from_sys,
+                 pd.time_start as time_start,
+                 pd.time_end as time_end,
+                 pd.mark as mark,
+                 pd.RANK_DESC as RANK_DESC,
+                 pd.RANK_ASC as RANK_ASC,
+
+                sum( case when f.tender_detail_id is null then
+                          case when pd.tender_subject=2 then pd.tend_cash*pd.borrow_period/360 else pd.tender_capital*pd.borrow_period/360 end     
+                     else 
+                           f.tender_amount*f.borrow_period/360
+                     end ) as dc_year_invest_money-- 底层年化交易金额
+           from 
+           TMP_DETIAL2 pd
+           left join edw_trading_pro_detail_conf f on (pd.project_id=f.project_id and pd.user_id=f.user_id and f.tender_detail_id=pd.id)
+           --left join edw_trading_pro_detail_conf f on (pd.user_id=f.user_id and pd.project_id=f.project_id and f.tender_detail_id=pd.id)
+           where 1=1
+           group by pd.user_id, pd.id,pd.user_name,pd.realname,pd.call_person,pd.call_person,  pd.call_result,
+                    pd.call_date,pd.money_invest,pd.money_vouche,pd.money_year_invset,pd.time_invest,pd.from_sys,
+                    pd.time_start,pd.time_end,pd.mark,pd.RANK_DESC,pd.RANK_ASC
+      )
+			
 
 select ${selectSql} from (
 
@@ -81,11 +125,13 @@ ROWnum RN,
   "接通后-实际投资金额",
   "接通后-销售奖励金额",
   "接通后-年化投资金额",
+  "接通后-底层年化投资金额",
   "接通后-投资次数",
   CASE WHEN "接通后-首次投资时间" IS NOT NULL THEN SUBSTR("接通后-首次投资时间",1,4)||'/'||SUBSTR("接通后-首次投资时间",5,2)||'/'||SUBSTR("接通后-首次投资时间",7,2) ELSE "接通后-首次投资时间" END AS"接通后-首次投资时间",
   CASE WHEN "接通后-末次投资时间" IS NOT NULL THEN SUBSTR("接通后-末次投资时间",1,4)||'/'||SUBSTR("接通后-末次投资时间",5,2)||'/'||SUBSTR("接通后-末次投资时间",7,2) ELSE "接通后-末次投资时间" END AS"接通后-末次投资时间",  "接通前-实际投资金额",
   "接通前-销售奖励金额",
   "接通前-年化投资金额",
+  "接通前-底层年化投资金额",
   "接通前-投资次数",
   CASE WHEN "接通前-首次投资时间" IS NOT NULL THEN SUBSTR("接通前-首次投资时间",1,4)||'/'||SUBSTR("接通前-首次投资时间",5,2)||'/'||SUBSTR("接通前-首次投资时间",7,2) ELSE "接通前-首次投资时间" END AS"接通前-首次投资时间",
   CASE WHEN "接通前-末次投资时间" IS NOT NULL THEN SUBSTR("接通前-末次投资时间",1,4)||'/'||SUBSTR("接通前-末次投资时间",5,2)||'/'||SUBSTR("接通前-末次投资时间",7,2) ELSE "接通前-末次投资时间" END AS"接通前-末次投资时间",
@@ -93,9 +139,11 @@ ROWnum RN,
   "当日投资次数",
   round("当日投资金额",2) "当日投资金额",
   round("当日年化金额",2) "当日年化金额",
+  round("当日底层年化金额",2) "当日底层年化金额",
   "当月投资次数",
   round("当月投资金额",2) "当月投资金额",
-  round("当月年化金额",2) "当月年化金额"
+  round("当月年化金额",2) "当月年化金额",
+  round("当月底层年化金额",2) "当月底层年化金额"
 FROM (
 
 -- 接通数据
@@ -114,12 +162,14 @@ SELECT
   SUM(CASE WHEN TIME_INVEST>=CALL_DATE THEN MONEY_INVEST ELSE 0 END) AS "接通后-实际投资金额",
   SUM(CASE WHEN TIME_INVEST>=CALL_DATE THEN MONEY_VOUCHE ELSE 0 END) AS "接通后-销售奖励金额",
   ROUND(SUM(CASE WHEN TIME_INVEST>=CALL_DATE THEN MONEY_YEAR_INVSET ELSE 0 END),2) AS "接通后-年化投资金额",
+  ROUND(SUM(CASE WHEN TIME_INVEST>=CALL_DATE THEN dc_year_invest_money ELSE 0 END),2) AS "接通后-底层年化投资金额",
   SUM(CASE WHEN TIME_INVEST>=CALL_DATE THEN 1 ELSE 0 END) AS "接通后-投资次数",   
   MIN(CASE WHEN TIME_INVEST>=CALL_DATE THEN TIME_INVEST END) AS "接通后-首次投资时间",
   MAX(CASE WHEN TIME_INVEST>=CALL_DATE THEN TIME_INVEST END) AS "接通后-末次投资时间", 
   SUM(CASE WHEN TIME_INVEST<CALL_DATE THEN MONEY_INVEST ELSE 0 END) AS "接通前-实际投资金额",   
   SUM(CASE WHEN TIME_INVEST<CALL_DATE THEN MONEY_VOUCHE ELSE 0 END) AS "接通前-销售奖励金额",    
-  ROUND(SUM(CASE WHEN TIME_INVEST<CALL_DATE THEN MONEY_YEAR_INVSET ELSE 0 END),2) AS "接通前-年化投资金额",    
+  ROUND(SUM(CASE WHEN TIME_INVEST<CALL_DATE THEN MONEY_YEAR_INVSET ELSE 0 END),2) AS "接通前-年化投资金额",  
+  ROUND(SUM(CASE WHEN TIME_INVEST<CALL_DATE THEN dc_year_invest_money ELSE 0 END),2) AS "接通前-底层年化投资金额",  
   SUM(CASE WHEN TIME_INVEST<CALL_DATE THEN 1 ELSE 0 END) AS "接通前-投资次数",  
   MIN(CASE WHEN TIME_INVEST<CALL_DATE THEN TIME_INVEST END) AS "接通前-首次投资时间",
   MAX(CASE WHEN TIME_INVEST<CALL_DATE THEN TIME_INVEST END) AS "接通前-末次投资时间",
@@ -127,9 +177,11 @@ SELECT
   sum(case when time_invest = to_char(sysdate-1, 'yyyyMMdd') then 1 else 0 end) 当日投资次数,
   sum(case when time_invest = to_char(sysdate-1, 'yyyyMMdd') then MONEY_INVEST else 0 end) 当日投资金额,
   sum(case when time_invest = to_char(sysdate-1, 'yyyyMMdd') then MONEY_YEAR_INVSET else 0 end) 当日年化金额,
+  sum(case when time_invest = to_char(sysdate-1, 'yyyyMMdd') then dc_year_invest_money else 0 end) 当日底层年化金额,
   sum(case when time_invest between '${startDate}' and '${endDate}' then 1 else 0 end) 当月投资次数,
   sum(case when time_invest between '${startDate}' and '${endDate}' then MONEY_INVEST else 0 end) 当月投资金额,
-  sum(case when time_invest between '${startDate}' and '${endDate}' then MONEY_YEAR_INVSET else 0 end) 当月年化金额
+  sum(case when time_invest between '${startDate}' and '${endDate}' then MONEY_YEAR_INVSET else 0 end) 当月年化金额,
+  sum(case when time_invest between '${startDate}' and '${endDate}' then dc_year_invest_money else 0 end) 当月底层年化金额
 FROM TMP_DETIAL TD 
 WHERE MARK=2 -- 1-内部,2-外包
  AND CALL_RESULT IN ('接通','成功沟通','无兴趣（通话中挂机、贷款）','有兴趣（资金已准备到位）')
@@ -157,12 +209,14 @@ SELECT
   0 AS "接通后-实际投资金额",
   0 AS "接通后-销售奖励金额",
   0 AS "接通后-年化投资金额",
+  0 AS "接通后-底层年化投资金额",
   0 AS "接通后-投资次数",   
   '' AS "接通后-首次投资时间",
   '' AS "接通后-末次投资时间", 
   SUM(MONEY_INVEST) AS "接通前-实际投资金额",   
   SUM(MONEY_VOUCHE) AS "接通前-销售奖励金额",     
   ROUND(SUM(MONEY_YEAR_INVSET ),2) AS "接通前-年化投资金额", 
+  ROUND(SUM(dc_year_invest_money ),2) AS "接通前-底层年化投资金额", 
   COUNT(1) AS "接通前-投资次数",     
   MIN(TIME_INVEST) AS "接通前-首次投资时间",
   MAX(TIME_INVEST) AS "接通前-末次投资时间",
@@ -170,9 +224,11 @@ SELECT
   sum(case when time_invest = to_char(sysdate-1, 'yyyyMMdd') then 1 else 0 end) 当日投资次数,
   sum(case when time_invest = to_char(sysdate-1, 'yyyyMMdd') then MONEY_INVEST else 0 end) 当日投资金额,
   sum(case when time_invest = to_char(sysdate-1, 'yyyyMMdd') then MONEY_YEAR_INVSET else 0 end) 当日年化金额,
+  sum(case when time_invest = to_char(sysdate-1, 'yyyyMMdd') then dc_year_invest_money else 0 end) 当日底层年化金额,
   sum(case when time_invest between '${startDate}' and '${endDate}' then 1 else 0 end) 当月投资次数,
   sum(case when time_invest between '${startDate}' and '${endDate}' then MONEY_INVEST else 0 end) 当月投资金额,
-  sum(case when time_invest between '${startDate}' and '${endDate}' then MONEY_YEAR_INVSET else 0 end) 当月年化金额
+  sum(case when time_invest between '${startDate}' and '${endDate}' then MONEY_YEAR_INVSET else 0 end) 当月年化金额,
+  sum(case when time_invest between '${startDate}' and '${endDate}' then dc_year_invest_money else 0 end) 当月底层年化金额
 FROM TMP_DETIAL TD 
 WHERE MARK=2 -- 1-内部,2-外包
 AND CALL_RESULT IN ('无人接听','无法联系（停机、空号、关机、忙音）')

@@ -100,10 +100,12 @@ function initDetailTableGrid(){
 			{ label: '投资次数', name: 'invCou', index: '$INV_COU', width: 80 ,align:'right'}, 			
 			{ label: '平均投资期限', name: 'avgPeriod', index: '$AVG_PERIOD', width: 100,align:'right' }, 			
 			{ label: '当月投资金额', name: 'monthTender', index: '$MONTH_TENDER', width: 100,align:'right' }, 			
-			{ label: '当月年化金额', name: 'monthTenderY', index: '$MONTH_TENDER_Y', width: 100 ,align:'right'}, 			
+			{ label: '当月年化金额', name: 'monthTenderY', index: '$MONTH_TENDER_Y', width: 100 ,align:'right'}, 
+			{ label: '当月底层年化金额', name: 'dcMonthTenderY', index: '$MONTH_TENDER_Y', width: 130 ,align:'right'}, 	
 			{ label: '当月投资次数', name: 'monthTenderCou', index: '$MONTH_TENDER_COU', width: 100 ,align:'right'}, 			
 			{ label: '当天投资金额', name: 'dayTender', index: '$DAY_TENDER', width: 100 ,align:'right'}, 			
-			{ label: '当天年化金额', name: 'dayTenderY', index: '$DAY_TENDER_Y', width: 100 ,align:'right'}, 			
+			{ label: '当天年化金额', name: 'dayTenderY', index: '$DAY_TENDER_Y', width: 100 ,align:'right'}, 
+			{ label: '当天底层年化金额', name: 'dcDayTenderY', index: '$DAY_TENDER_Y', width: 100 ,align:'right'}, 	
 			{ label: '当天投资次数', name: 'dayTenderCou', index: '$DAY_TENDER_COU', width: 100 ,align:'right'} ,	
 //			{ label: '是否高净值挽留客户', name: 'isHighValue', index: '$DAY_TENDER_COU', width: 100 ,align:'right'}
 			{ label: '200万以上客户分配时待收', name: 'old200wAwait', index: '$DAY_TENDER_COU', width: 180 ,align:'right'}

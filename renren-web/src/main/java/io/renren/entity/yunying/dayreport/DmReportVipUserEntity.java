@@ -84,6 +84,25 @@ public class DmReportVipUserEntity implements Serializable {
 	//200万以上客户分配时待收
 	private String old200wAwait;
 	
+	private BigDecimal dcMonthTenderY;
+	private BigDecimal dcDayTenderY;
+	
+	public void setDcDayTenderY(BigDecimal dcDayTenderY) {
+		this.dcDayTenderY = dcDayTenderY;
+	}
+	
+	public BigDecimal getDcDayTenderY() {
+		return dcDayTenderY;
+	}
+	
+	public BigDecimal getDcMonthTenderY() {
+		return dcMonthTenderY;
+	}
+	
+	public void setDcMonthTenderY(BigDecimal dcMonthTenderY) {
+		this.dcMonthTenderY = dcMonthTenderY;
+	}
+	
 	public void setOld200wAwait(String old200wAwait) {
 		this.old200wAwait = old200wAwait;
 	}

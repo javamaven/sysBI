@@ -237,6 +237,7 @@ public class PhoneSaleController {
 		headMap.put("接通后-销售奖励金额", "接通后-销售奖励金额");
 
 		headMap.put("接通后-年化投资金额", "接通后-年化投资金额");
+		headMap.put("接通后-底层年化投资金额", "接通后-底层年化投资金额");
 		headMap.put("接通后-投资次数", "接通后-投资次数");
 		headMap.put("接通后-首次投资时间", "接通后-首次投资时间");
 
@@ -245,6 +246,7 @@ public class PhoneSaleController {
 		headMap.put("接通前-销售奖励金额", "接通前-销售奖励金额");
 
 		headMap.put("接通前-年化投资金额", "接通前-年化投资金额");
+		headMap.put("接通前-底层年化投资金额", "接通前-底层年化投资金额");
 		headMap.put("接通前-投资次数", "接通前-投资次数");
 		headMap.put("接通前-首次投资时间", "接通前-首次投资时间");
 		headMap.put("接通前-末次投资时间", "接通前-末次投资时间");
@@ -255,6 +257,7 @@ public class PhoneSaleController {
 		headMap.put("当月销售奖励金额", "当月销售奖励金额");
 
 		headMap.put("当月年化投资金额", "当月年化投资金额");
+		headMap.put("当月底层年化投资金额", "当月底层年化投资金额");
 		headMap.put("当月首次投资时间", "当月首次投资时间");
 		headMap.put("当月末次投资时间", "当月末次投资时间");
 
@@ -263,6 +266,7 @@ public class PhoneSaleController {
 		headMap.put("当天销售奖励金额", "当天销售奖励金额");
 
 		headMap.put("当天年化投资金额", "当天年化投资金额");
+		headMap.put("当天底层年化投资金额", "当天底层年化投资金额");
 		headMap.put("当天投资次数", "当天投资次数");
 
 		return headMap;
@@ -278,8 +282,10 @@ public class PhoneSaleController {
 		headMap.put("投资人数(人)", "投资人数(人)");
 		headMap.put("投资总额(元)", "投资总额(元)");
 		headMap.put("年化投资总额(元)", "年化投资总额(元)");
+		headMap.put("底层年化投资总额(元)", "底层年化投资总额(元)");
 
 		headMap.put("人均年化投资额(元)", "人均年化投资额(元)");
+		headMap.put("人均底层年化投资额(元)", "人均底层年化投资额(元)");
 		headMap.put("接通率", "接通率");
 		headMap.put("有效外呼转化率", "有效外呼转化率");
 
@@ -303,6 +309,7 @@ public class PhoneSaleController {
 		headMap.put("接通后-销售奖励金额", "接通后-销售奖励金额");
 
 		headMap.put("接通后-年化投资金额", "接通后-年化投资金额");
+		headMap.put("接通后-底层年化投资金额", "接通后-底层年化投资金额");
 		headMap.put("接通后-投资次数", "接通后-投资次数");
 		headMap.put("接通后-首次投资时间", "接通后-首次投资时间");
 
@@ -311,6 +318,7 @@ public class PhoneSaleController {
 		headMap.put("接通前-销售奖励金额", "接通前-销售奖励金额");
 
 		headMap.put("接通前-年化投资金额", "接通前-年化投资金额");
+		headMap.put("接通前-底层年化投资金额", "接通前-底层年化投资金额");
 		headMap.put("接通前-投资次数", "接通前-投资次数");
 		headMap.put("接通前-首次投资时间", "接通前-首次投资时间");
 
@@ -319,9 +327,11 @@ public class PhoneSaleController {
 		headMap.put("当日投资次数", "当日投资次数");
 		headMap.put("当日投资金额", "当日投资金额");
 		headMap.put("当日年化金额", "当日年化金额");
+		headMap.put("当日底层年化金额", "当日底层年化金额");
 		headMap.put("当月投资次数", "当月投资次数");
 		headMap.put("当月投资金额", "当月投资金额");
 		headMap.put("当月年化金额", "当月年化金额");
+		headMap.put("当月底层年化金额", "当月底层年化金额");
 		return headMap;
 	}
 
