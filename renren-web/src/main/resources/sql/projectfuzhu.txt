@@ -1,4 +1,4 @@
-
+/**
 select 
 '2015年'as DMONTH,
 '5月'as MONTH,
@@ -50,10 +50,12 @@ select
 0 as money,900,54000,600
 from dual
 union all
+*/
+
 select 
-'2016年'as time,
-'1月'as month,
-0 as money,200,29200,800
+'2016年'as DMONTH,
+'1月'as MONTH,
+0 as TIAN,200 as YUE,29200 as DAOQI,800 as BENXI
 from dual
 union all
 select 

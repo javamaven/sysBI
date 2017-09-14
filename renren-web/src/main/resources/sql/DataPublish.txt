@@ -1,80 +1,80 @@
-select 
-'2015年'as YEAR,
-'1月'as MONTH,
-1 as SUM
-from dual
-union all
-select 
-'2015年'as time,
-'2月'as month,
-1 as money
-from dual
-union all
-select 
-'2015年'as time,
-'3月'as month,
-2 as money
-from dual
-union all
-select 
-'2015年'as time,
-'4月'as month,
-3 as money
-from dual
-union all
-select 
-'2015年'as time,
-'5月'as month,
-4 as money
-from dual
-union all
-select 
-'2015年'as time,
-'6月'as month,
-5 as money
-from dual
-union all
-select 
-'2015年'as time,
-'7月'as month,
-6 as money
-from dual
-union all
-select 
-'2015年'as time,
-'8月'as month,
-7 as money
-from dual
-union all
-select 
-'2015年'as time,
-'9月'as month,
-10 as money
-from dual
-union all
-select 
-'2015年'as time,
-'10月'as month,
-12 as money
-from dual
-union all
-select 
-'2015年'as time,
-'11月'as month,
-16 as money
-from dual
-union all
-select 
-'2015年'as time,
-'12月'as month,
-21 as money
-from dual
+--select 
+--'2015年'as YEAR,
+--'1月'as MONTH,
+--1 as SUM
+--from dual
+--union all
+--select 
+--'2015年'as time,
+--'2月'as month,
+--1 as money
+--from dual
+--union all
+--select 
+--'2015年'as time,
+--'3月'as month,
+--2 as money
+--from dual
+--union all
+--select 
+--'2015年'as time,
+--'4月'as month,
+--3 as money
+--from dual
+--union all
+--select 
+--'2015年'as time,
+--'5月'as month,
+--4 as money
+--from dual
+--union all
+--select 
+--'2015年'as time,
+--'6月'as month,
+--5 as money
+--from dual
+--union all
+--select 
+--'2015年'as time,
+--'7月'as month,
+--6 as money
+--from dual
+--union all
+--select 
+--'2015年'as time,
+--'8月'as month,
+--7 as money
+--from dual
+--union all
+--select 
+--'2015年'as time,
+--'9月'as month,
+--10 as money
+--from dual
+--union all
+--select 
+--'2015年'as time,
+--'10月'as month,
+--12 as money
+--from dual
+--union all
+--select 
+--'2015年'as time,
+--'11月'as month,
+--16 as money
+--from dual
+--union all
+--select 
+--'2015年'as time,
+--'12月'as month,
+--21 as money
+--from dual
 
-union all
+--union all
 select 
-'2016年'as time,
-'1月'as month,
-24 as money
+'2016年'as YEAR,
+'1月'as MONTH,
+24 as SUM
 from dual
 union all
 select 
