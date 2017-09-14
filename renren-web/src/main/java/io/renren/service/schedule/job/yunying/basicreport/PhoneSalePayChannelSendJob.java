@@ -87,9 +87,15 @@ public class PhoneSalePayChannelSendJob implements Job {
 			Map<String, Object> queryParams = new HashMap<String, Object>();
 			String registerStartTime = "";
 			String registerEndTime = "";
-
-			registerStartTime = DateUtil.getCurrDayBefore(7, "yyyy-MM-dd") + " 00:00:00";
-			registerEndTime = DateUtil.getCurrDayBefore(7, "yyyy-MM-dd") + " 23:59:59";
+			Date currDate = new Date();
+			String week = DateUtil.getWeekOfDate(currDate);
+			if("星期一".equals(week)){
+				registerStartTime = DateUtil.getCurrDayBefore(9, "yyyy-MM-dd") + " 00:00:00";
+				registerEndTime = DateUtil.getCurrDayBefore(7, "yyyy-MM-dd") + " 23:59:59";
+			}else{
+				registerStartTime = DateUtil.getCurrDayBefore(7, "yyyy-MM-dd") + " 00:00:00";
+				registerEndTime = DateUtil.getCurrDayBefore(7, "yyyy-MM-dd") + " 23:59:59";
+			}
 			queryParams.put("registerStartTime", registerStartTime);
 			queryParams.put("registerEndTime", registerEndTime);
 			queryParams.put("type", type);
