@@ -49,6 +49,7 @@ function initTableGrid(){
         url: '../phonesalemonth/list',
         datatype: "json",
         colModel: [			
+        	{ label: '用户ID', name: 'userId', index: '$USER_NAME', width: 80, key: true },
 			{ label: '用户名', name: 'userName', index: '$USER_NAME', width: 80, key: true },
 			{ label: '是否外包', name: 'mark', index: '$MARK', width: 80 },
 			{ label: '电销类型', name: 'phoneType', index: '$MARK', width: 80 },

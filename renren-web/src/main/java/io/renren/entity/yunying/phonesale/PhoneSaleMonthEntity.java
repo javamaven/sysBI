@@ -1,7 +1,6 @@
 package io.renren.entity.yunying.phonesale;
 
 import java.io.Serializable;
-import java.util.Date;
 
 /**
  * 
@@ -31,6 +30,15 @@ public class PhoneSaleMonthEntity implements Serializable {
 	private String importUserId;
 	private String importTime;
 	private String phoneType;
+	private String userId;
+	
+	public void setUserId(String userId) {
+		this.userId = userId;
+	}
+	
+	public String getUserId() {
+		return userId;
+	}
 
 	public void setPhoneType(String phoneType) {
 		this.phoneType = phoneType;

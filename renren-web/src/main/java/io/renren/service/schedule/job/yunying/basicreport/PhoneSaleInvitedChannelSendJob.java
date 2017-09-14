@@ -90,7 +90,7 @@ public class PhoneSaleInvitedChannelSendJob implements Job {
 			String registerEndTime = "";
 
 			registerStartTime = DateUtil.getCurrDayBefore(5, "yyyy-MM-dd") + " 00:00:00";
-			registerEndTime = DateUtil.getCurrDayBefore(1, "yyyy-MM-dd") + " 23:59:59";
+			registerEndTime = DateUtil.getCurrDayBefore(5, "yyyy-MM-dd") + " 23:59:59";
 			queryParams.put("registerStartTime", registerStartTime);
 			queryParams.put("registerEndTime", registerEndTime);
 			queryParams.put("type", type);

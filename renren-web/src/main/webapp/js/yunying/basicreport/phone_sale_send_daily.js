@@ -17,7 +17,6 @@ function initSelectEvent(){
 }
 
 function initTimeCond(type){
-	console.info(type)
 	var format = '';
 	var view = '';
 	if(type == 'pay_channel' || type == 'invited_channel' || type == 'cps_channel'){
@@ -27,8 +26,6 @@ function initTimeCond(type){
 		 format = 'yyyy-mm-dd hh';
 		 view = 'day';
 	}
-	console.info("++++++format++++++++" + format)
-	console.info("++++++view++++++++" + view)
 	$('#registerStartTime').datetimepicker('remove');
 	$('#registerEndTime').datetimepicker('remove');
     $("#registerStartTime").datetimepicker({
@@ -48,21 +45,21 @@ function initTimeCond(type){
     
     if(type == 'pay_channel'){
     	$("#registerStartTime").val(addDate(getCurrDate(), -7));
-		$("#registerEndTime").val(addDate(getCurrDate(), -1));
+		$("#registerEndTime").val(addDate(getCurrDate(), -7));
 		$("#hour_task").hide();
 		$("#invited_task").hide();
 		$("#cps_task").hide();
 		$("#pay_task").show();
 	}else if( type == 'cps_channel'){
 		$("#registerStartTime").val(addDate(getCurrDate(), -7));
-		$("#registerEndTime").val(addDate(getCurrDate(), -1));
+		$("#registerEndTime").val(addDate(getCurrDate(), -7));
 		$("#hour_task").hide();
 		$("#invited_task").hide();
 		$("#cps_task").show();
 		$("#pay_task").hide();
 	}else if(type == 'invited_channel' ){
 		$("#registerStartTime").val(addDate(getCurrDate(), -5));
-		$("#registerEndTime").val(addDate(getCurrDate(), -1));
+		$("#registerEndTime").val(addDate(getCurrDate(), -5));
 		$("#hour_task").hide();
 		$("#invited_task").show();
 		$("#cps_task").hide();

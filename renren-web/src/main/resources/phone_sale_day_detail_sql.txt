@@ -11,7 +11,7 @@ SELECT
 FROM (
 select  
   CASE WHEN TUD.USER_NAME <> DU.USERNAME THEN DU2.PHONE ELSE TUD.USER_NAME END AS USER_NAME,
-  NVL(DU.USER_ID,DU2.USER_ID) AS USER_ID,
+  nvl(NVL(DU.USER_ID,DU2.USER_ID), tud.user_id) AS USER_ID,
   tud.call_person,
   call_result,
   TO_CHAR(tud.call_date,'yyyyMMdd') AS call_date,
@@ -38,7 +38,7 @@ SELECT
   pd.tender_capital,
   pd.borrow_period,
   pd.project_id,
-  pd.user_id,
+  nvl(pd.user_id, tmp.user_id) as user_id,
   TMP.USER_NAME,
   MU.REALNAME,
   TMP.call_person,
@@ -113,6 +113,7 @@ SELECT
 
 ROWNUM RN, 
   TO_CHAR(SYSDATE-1,'yyyy/MM/DD') AS "统计日期",
+  "用户ID",
   "用户名",
   "用户姓名",
   "是否双系统",
@@ -151,6 +152,7 @@ FROM (
 
 -- 接通数据
 SELECT 
+  user_id as "用户ID",
   USER_NAME AS "用户名",
   REALNAME AS "用户姓名",
   CASE WHEN SUM(FROM_SYS)>=0.01 
@@ -194,6 +196,7 @@ FROM TMP_DETIAL TD
 WHERE MARK=2 -- 1-内部,2-外包
 AND CALL_RESULT IN ('接通','成功沟通','无兴趣（通话中挂机、贷款）','有兴趣（资金已准备到位）')
 GROUP BY 
+  user_id,
   USER_NAME,
   REALNAME,
   CALL_PERSON,
@@ -203,6 +206,7 @@ GROUP BY
 UNION ALL
 -- 未接通数据
 SELECT 
+  user_id as "用户ID",
   USER_NAME AS "用户名",
   REALNAME AS "用户姓名",
   CASE WHEN SUM(FROM_SYS)>=0.01 
@@ -246,6 +250,7 @@ FROM TMP_DETIAL TD
 WHERE MARK=2 -- 1-内部,2-外包
 AND CALL_RESULT IN ('无人接听','无法联系（停机、空号、关机、忙音）')
 GROUP BY 
+  user_id,
   USER_NAME,
   REALNAME,
   CALL_PERSON,

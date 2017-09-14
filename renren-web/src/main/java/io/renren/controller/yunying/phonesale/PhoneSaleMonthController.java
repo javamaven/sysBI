@@ -96,7 +96,7 @@ public class PhoneSaleMonthController {
 				return R.error("导入文件不正确");
 			}
 			
-			String[] fields = { "number","user_name","real_name","register_time","call_person", "call_date", "call_result"};
+			String[] fields = { "number","user_id","user_name","real_name","register_time","call_person", "call_date", "call_result"};
 			Map<String, Object> retMap = ExcelUtil.parseExcel(multipartToFile(file), null, fields);
 			List<Map<String, Object>> list = (List<Map<String, Object>>) retMap.get("list");
 			UUID randomUUID = UUID.randomUUID();

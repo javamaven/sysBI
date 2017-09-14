@@ -12,6 +12,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.sound.midi.SysexMessage;
 
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.lang.StringUtils;
@@ -31,6 +32,7 @@ import com.alibaba.fastjson.JSONArray;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
 import io.renren.util.DateUtil;
+import io.renren.util.MapUtil;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
@@ -39,10 +41,35 @@ import io.renren.utils.RRException;
 @Controller
 @RequestMapping(value = "/yunying/phonesale")
 public class PhoneSaleController {
-
 	@Autowired
 	private DataSourceFactory dataSourceFactory;
-
+	
+	/**
+	 * 是否本地模式，本地连的是test数据库，则电销数据表是phone_sale_excel_data_local
+	 * 服务器连接的电销表是：phone_sale_excel_data
+	 * @return
+	 */
+	private boolean isLocalConnect(){
+		String mysqlUrl = dataSourceFactory.getMysqlUrl();
+		if(StringUtils.isNotEmpty(mysqlUrl) && mysqlUrl.contains("localhost")){//本地测试时，使用phone_sale_excel_data表
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * 是否本地模式，本地连的是test数据库，则电销数据表是phone_sale_excel_data_local
+	 * 服务器连接的电销表是：phone_sale_excel_data
+	 * @return
+	 */
+	private boolean isLocalConnect(DataSourceFactory dataSourceFactory){
+		String mysqlUrl = dataSourceFactory.getMysqlUrl();
+		if(StringUtils.isNotEmpty(mysqlUrl) && mysqlUrl.contains("localhost")){//本地测试时，使用phone_sale_excel_data表
+			return true;
+		}
+		return false;
+	}
+	
 	/**
 	 * 上传文件
 	 */
@@ -55,19 +82,23 @@ public class PhoneSaleController {
 			if (file.isEmpty()) {
 				throw new RRException("上传文件不能为空");
 			}
-			String[] fields = { "number", "user_name", "real_name", "register_time", "call_sale", "call_date",
+			String[] fields = { "number", "user_id","user_name", "real_name", "register_time", "call_sale", "call_date",
 					"call_result", "is_invest", "real_invest_amount", "sale_jiangli_amount", "year_invest_amount",
 					"first_invest_time" };
 			Map<String, Object> retMap = ExcelUtil.parseExcel(multipartToFile(file), null, fields);
 			List<Map<String, Object>> list = (List<Map<String, Object>>) retMap.get("list");
-
 			// 清空表
-			String tuncate_sql = "truncate table phone_sale_excel_data ";
-			new JdbcUtil(dataSourceFactory, "oracle26").execute(tuncate_sql);
 			// 插入表
-			String sql = "insert into phone_sale_excel_data values(?,?,?,?,?,?)";
+			String tuncate_sql = "truncate table phone_sale_excel_data ";
+			String insert_sql = "insert into phone_sale_excel_data values(?,?,?,?,?,?,?)";
+			if(isLocalConnect()){//本地测试时，使用phone_sale_excel_data表
+				tuncate_sql = "truncate table phone_sale_excel_data_local ";
+				insert_sql = "insert into phone_sale_excel_data_local values(?,?,?,?,?,?,?)";
+			}
+			new JdbcUtil(dataSourceFactory, "oracle26").execute(tuncate_sql);
+			
 			List<List<Object>> dataList = getInsertDataList(list);
-			new JdbcUtil(dataSourceFactory, "oracle26").batchInsert(sql, dataList);
+			new JdbcUtil(dataSourceFactory, "oracle26").batchInsert(insert_sql, dataList);
 		} catch (Exception e) {
 			e.printStackTrace();
 			return R.error(e.getMessage());
@@ -223,7 +254,7 @@ public class PhoneSaleController {
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
 
 		headMap.put("统计日期", "统计日期");
-
+		headMap.put("用户ID", "用户ID");
 		headMap.put("用户名", "用户名");
 		headMap.put("用户姓名", "用户姓名");
 		headMap.put("是否双系统", "是否双系统");
@@ -296,6 +327,7 @@ public class PhoneSaleController {
 
 	public Map<String, String> getMonthListExcelFields() {
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
+		headMap.put("用户ID", "用户ID");
 		headMap.put("用户名", "用户名");
 		headMap.put("用户姓名", "用户姓名");
 		headMap.put("是否双系统", "是否双系统");
@@ -396,12 +428,12 @@ public class PhoneSaleController {
 			try {
 				list.add(dateSdf.parse(map.get("call_date") + ""));
 			} catch (ParseException e) {
-				e.printStackTrace();
+				
 			}
 			list.add(map.get("call_result") + "");// 打电话结果
 			list.add(map.get("call_sale") + "");// 电销人员
 			list.add(null);
-
+			list.add(MapUtil.getValue(map, "user_id"));
 			dataList.add(list);
 		}
 		return dataList;
@@ -485,6 +517,14 @@ public class PhoneSaleController {
 				detail_sql = detail_sql.replace("${pageStartSql}", "and RN > " + start);
 				detail_sql = detail_sql.replace("${pageEndSql}", "and ROWNUM <= " + end);
 				detail_sql = detail_sql.replace("${investEndTime}", investEndTime);
+				if(isLocalConnect(dataSourceFactory)){
+					if(detail_sql.contains("PHONE_SALE_EXCEL_DATA")){
+						detail_sql = detail_sql.replace("PHONE_SALE_EXCEL_DATA", "phone_sale_excel_data_local");
+					}else{
+						detail_sql = detail_sql.replace("phone_sale_excel_data", "phone_sale_excel_data_local");
+					}
+				}
+				System.err.println("+++++++reportType=" + reportType + "+++++SQL+++++" + detail_sql);
 				List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 				resultList.addAll(list);
 			} catch (IOException e) {
@@ -533,6 +573,13 @@ public class PhoneSaleController {
 				detail_sql = detail_sql.replace("${pageStartSql}", "");
 				detail_sql = detail_sql.replace("${pageEndSql}", "");
 				detail_sql = detail_sql.replace("${investEndTime}", investEndTime);
+				if(isLocalConnect(dataSourceFactory)){
+					if(detail_sql.contains("PHONE_SALE_EXCEL_DATA")){
+						detail_sql = detail_sql.replace("PHONE_SALE_EXCEL_DATA", "phone_sale_excel_data_local");
+					}else{
+						detail_sql = detail_sql.replace("phone_sale_excel_data", "phone_sale_excel_data_local");
+					}
+				}
 				totalList.addAll(new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql));
 			} catch (IOException e) {
 				e.printStackTrace();

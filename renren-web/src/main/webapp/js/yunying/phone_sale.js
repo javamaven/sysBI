@@ -112,6 +112,7 @@ function initDayListTableGrid(){
         postData: getParams(),
         colModel: [			
         	{ label: '统计日期', name: '统计日期', index: '$用户名', width: 90, key: true,align:'right' },
+        	{ label: '用户ID', name: '用户ID', index: '$用户名', width: 100, key: true,align:'right' },
         	{ label: '用户名', name: '用户名', index: '$用户名', width: 100, key: true,align:'right' },
 			{ label: '用户姓名', name: '用户姓名', index: '$USER_ID', width: 90,align:'right' }, 			
 			{ label: '是否双系统', name: '是否双系统', index: '$是否双系统', width: 90,align:'right' }, 			
@@ -191,6 +192,7 @@ function initMonthListTableGrid(){
 //        url: '../yunying/phonesale/monthlist',
         datatype: "json",
         colModel: [			
+        	{ label: '用户ID', name: '用户ID', index: '$用户名', width: 100, key: true,align:'right' },
 			{ label: '用户名', name: '用户名', index: '$用户名', width: 90, key: true,align:'right' },
 			{ label: '用户姓名', name: '用户姓名', index: '$USER_ID', width: 90,align:'right' }, 			
 			{ label: '是否双系统', name: '是否双系统', index: '$是否双系统', width: 90,align:'right' }, 			

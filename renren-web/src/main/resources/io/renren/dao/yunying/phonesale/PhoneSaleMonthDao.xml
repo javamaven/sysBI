@@ -15,10 +15,11 @@
     
     <!-- 	 每月电销数据导入  -->
 	<insert id="batchInsertPhoneSaleMonthData" useGeneratedKeys="true" parameterType="java.util.List">  
-	    insert into phone_sale_month (user_name,mark, call_date, call_result, call_person, stat_month, import_time,import_user_id,batch_id, phone_type)   
+	    insert into phone_sale_month (user_id,user_name,mark, call_date, call_result, call_person, stat_month, import_time,import_user_id,batch_id, phone_type)   
 	    values  
 	    <foreach collection="list" item="item" index="index" separator="," >  
 	         ( 
+	            #{item.user_id}, 
 	         	#{item.user_name}, 
 	         	#{item.mark}, 
 	         	#{item.call_date},
@@ -40,6 +41,7 @@
 
 	<select id="queryList" resultType="io.renren.entity.yunying.phonesale.PhoneSaleMonthEntity">
 		SELECT
+		    p.user_id,
 			p.user_name,
 			case when p.mark ='1' then '否' when p.mark = '2' then '是' else '' end mark,
 			p.call_date,

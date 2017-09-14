@@ -93,7 +93,7 @@ public class PhoneSaleCpsChannelSendJob implements Job {
 			String registerEndTime = "";
 
 			registerStartTime = DateUtil.getCurrDayBefore(7, "yyyy-MM-dd") + " 00:00:00";
-			registerEndTime = DateUtil.getCurrDayBefore(1, "yyyy-MM-dd") + " 23:59:59";
+			registerEndTime = DateUtil.getCurrDayBefore(7, "yyyy-MM-dd") + " 23:59:59";
 			queryParams.put("registerStartTime", registerStartTime);
 			queryParams.put("registerEndTime", registerEndTime);
 			queryParams.put("type", type);
