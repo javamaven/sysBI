@@ -162,6 +162,7 @@ public class DmReportUserActivateDailyServiceImpl implements DmReportUserActivat
 		headMap.put("username", "用户名称");
 		headMap.put("channelName", "渠道名称");
 		headMap.put("channelMark", "渠道标记");
+		headMap.put("phone", "手机号码");
 		headMap.put("registerTime", "注册时间");
 		headMap.put("registerFrom", "操作平台");
 		headMap.put("isRealname", "实名");
@@ -179,7 +180,7 @@ public class DmReportUserActivateDailyServiceImpl implements DmReportUserActivat
 		headMap.put("totalInvestNumber", "累计投资次数");
 		headMap.put("changeInvestBalance", "债转投资金额");
 		headMap.put("totalCapital", "帐户总资产");
-		headMap.put("phone", "手机号码");
+		
 		return headMap;
 	}
 

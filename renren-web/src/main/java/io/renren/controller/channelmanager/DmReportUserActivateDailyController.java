@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -126,10 +127,13 @@ public class DmReportUserActivateDailyController {
 			va.add(entity);
 		}
 		Map<String, String> headMap = service.getExcelFields();
+		
+		Map<String, String> typeMap = new HashMap<String, String>();
+		typeMap.put("5", "double");//从0开始
 
 		String title = "用户激活情况";
-
-		ExcelUtil.downloadExcelFile(title, headMap, va, response);
+		ExcelUtil.downloadExcelFile(title, headMap, va, response, typeMap);
+		
 	}
 
 	/**
