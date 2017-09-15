@@ -3,7 +3,7 @@ $(function () {
 //	$("#mask").show();
 	loadChannel();
 	initExportFunction();
-	stataDay = getYesterday();
+	stataDay = getCurrDate();
 	document.getElementById("stat_day").value = stataDay;
 	initTimeCond();
 	initTable();
