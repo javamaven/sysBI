@@ -19,6 +19,19 @@
   <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
   <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
   <![endif]-->
+  
+  
+<!--   <script type="text/javascript" src="statics/plugins/jquery-easyui-1.5.3/jquery.easyui.min.js"></script> -->
+    <link rel="stylesheet" type="text/css" href="statics/plugins/jquery-easyui-1.5.3/themes/metro/easyui.css">
+    <link rel="stylesheet" type="text/css" href="statics/plugins/jquery-easyui-1.5.3/themes/icon.css">
+<!--     <link rel="stylesheet" type="text/css" href="../demo.css"> -->
+
+
+
+
+
+
+
 </head>
 <!-- ADD THE CLASS layout-boxed TO GET A BOXED LAYOUT -->
 <body class="hold-transition skin-blue sidebar-mini">
@@ -59,7 +72,7 @@
       <ul class="sidebar-menu">
         <li class="header">导航菜单</li>
         
-        <!-- vue生成的菜单 -->
+        <!-- vue生成的菜单 --> 
 		<menu-item :item="item" v-for="item in menuList"></menu-item>
       </ul>
     </section>
@@ -69,17 +82,34 @@
   <!-- Content Wrapper. Contains page content -->
   <div class="content-wrapper">
     <!-- Content Header (Page header) -->
-    <section class="content-header">
-      <ol class="breadcrumb" id="nav_title" style="position:static;float:none;">
-        <li class="active"><i class="fa fa-home" style="font-size:20px;position:relative;top:2px;left:-3px;"></i> &nbsp; 首页</li>
-        <li class="active">{{navTitle}}</li>
-      </ol>
-    </section>
+<!--     <section class="content-header"> -->
+<!--       <ol class="breadcrumb" id="nav_title" style="position:static;float:none;"> -->
+<!--         <li class="active"><i class="fa fa-home" style="font-size:20px;position:relative;top:2px;left:-3px;"></i> &nbsp; 首页</li> -->
+<!--         <li class="active">{{navTitle}}</li> -->
+<!--         <li class="active">abc</li> -->
+<!--       </ol> -->
+<!--     </section> -->
 
     <!-- Main content -->
-    <section class="content" style="background:#fff;">
-      <iframe scrolling="yes" frameborder="0" style="width:100%;min-height:200px;overflow:visible;background:#fff;" :src="main"></iframe>
-    </section>
+<!--     <section class="content" style="background:#fff;"> -->
+<!--       <iframe scrolling="yes" frameborder="0" style="width:100%;min-height:200px;overflow:visible;background:#fff;" :src="main"> -->
+<!--       </iframe> -->
+      
+      
+<!--       <div style="width: 100%;height: 100%;"> -->
+        <div class="easyui-tabs" style="width:100%;height:100%;" id="tabs">
+	        <div title="首页" data-options="closable:true" style="">
+<!-- 	             <iframe scrolling="no" frameborder="0"  src="sys/main_new.html" style="width:100%;height:100%;"></iframe> -->
+	        	
+	        	<div style="margin: 20px;">
+	        		欢迎使用经营分析系统！
+	        	</div>
+	        </div>
+	    </div>
+<!--       </div> -->
+      
+      
+<!--     </section> -->
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
@@ -126,6 +156,7 @@
 
 
 <script src="statics/libs/jquery.min.js"></script>
+<script type="text/javascript" src="statics/plugins/jquery-easyui-1.5.3/jquery.easyui.min.js"></script>
 <script src="statics/libs/vue.min.js"></script>
 <script src="statics/libs/router.js"></script>
 <script src="statics/libs/bootstrap.min.js"></script>
@@ -134,5 +165,13 @@
 <script src="statics/libs/app.js"></script>
 <script src="statics/plugins/layer/layer.js"></script>
 <script src="js/index.js"></script>
+<style type="text/css">
+.tabs-title{
+/* 	height: 37px; */
+/*     line-height: 35px; */
+}
+
+
+</style>
 </body>
 </html>
