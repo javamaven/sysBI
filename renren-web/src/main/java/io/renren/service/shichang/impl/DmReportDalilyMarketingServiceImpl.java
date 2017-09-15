@@ -1,5 +1,6 @@
 package io.renren.service.shichang.impl;
 
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -69,5 +70,5 @@ public class DmReportDalilyMarketingServiceImpl implements DmReportDalilyMarketi
 		// TODO Auto-generated method stub
 		return dmReportDalilyMarketingDao.queryTotalList(map);
 	}
-	
+
 }

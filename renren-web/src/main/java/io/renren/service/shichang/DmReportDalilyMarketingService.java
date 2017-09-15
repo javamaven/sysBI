@@ -33,4 +33,5 @@ public interface DmReportDalilyMarketingService {
 	List<DmReportDalilyMarketingEntity> queryMonthList(Map<String, Object> map);
 	
 	List<DmReportDalilyMarketingEntity> queryTotalList(Map<String, Object> map);
+
 }

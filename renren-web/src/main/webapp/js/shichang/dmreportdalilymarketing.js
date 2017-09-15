@@ -3,7 +3,18 @@ $(function () {
 	initMonthTable();
 	initTotalTable();
 	initSelectEvent();
+	initExportFunction();
 });
+
+function initExportFunction(){
+	$('#btn_exports').click(function(){
+		var params = getParams();
+		executePost('../dmreportdalilymarketing/exportExcel', {'params' : JSON.stringify(params)});
+	});
+
+}
+
+
 function initSelectEvent(){
 	$("#list_select").change(function(){
 		var select = $(this).children('option:selected').val();
@@ -312,5 +323,7 @@ var vm = new Vue({
 
 function getParams(){
 	var params = {};
+	var type = $("#list_select").children('option:selected').val();
+	params.type = type;
 	return params;
 }
