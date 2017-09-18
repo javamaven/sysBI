@@ -142,11 +142,9 @@ function routerList(router, menuList){
 		}else if(menu.type == 1){
 			router.add('#'+menu.url, function() {
 				var url = window.location.hash;
-				var menuName = $("a[href='"+url+"']").text();
+				var menuObj = $("a[href='"+url+"']");
+				var menuName = $("a[href='"+url+"']:first").text()
 				addTab(menuName, url.replace('#', ''));
-				console.info("+++++url+++++++++++" + url)
-				console.info(menu.name)
-				console.info(menu)
 				//替换iframe的url
 			    vm.main = url.replace('#', '');
 			    

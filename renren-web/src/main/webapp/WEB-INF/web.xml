@@ -17,7 +17,9 @@
 		<param-name>log4jRefreshInterval</param-name>
 		<param-value>600000</param-value>
 	</context-param>
-	
+	<session-config>
+		<session-timeout>14400</session-timeout>  
+	</session-config>
 	<context-param>
 		<param-name>webAppRootKey</param-name>
 		<param-value>webPath</param-value>

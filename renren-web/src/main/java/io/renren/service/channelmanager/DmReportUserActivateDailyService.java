@@ -40,4 +40,6 @@ public interface DmReportUserActivateDailyService {
 			String endRegisterTime, String bangCard, String realName, String channelName, String registerFrom,String phone);
 
 	Map<String, String> getExcelFields();
+
+	PageUtils queryRealTimePage(int i, int j, String startRegisterTime, String endRegisterTime, Object channelName);
 }

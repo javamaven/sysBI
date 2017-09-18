@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -52,6 +53,26 @@ public class DmReportUserActivateDailyController {
 	
 	@Autowired
 	private ChannelHeadManagerService channelHeadManagerService;
+	
+	/**
+	 * 用户激活实时查询
+	 */
+	@ResponseBody
+	@RequestMapping("/listRealTime")
+	@RequiresPermissions("dmreportuseractivatedaily:list")
+	public R listRealTime(Integer page, Integer limit, Map<String, Object> params, String params2, String statPeriod,
+			String afterInvestBalance_start, String afterInvestBalance_end, String startFirstInvestTime,
+			String endFirstInvestTime, String startTotalMoney, String endTotalMoney, String startTotalInvestAmount,
+			String endTotalInvestAmount, String startFirstInvestAmount, String endFirstInvestAmount,
+			String startRegisterTime, String endRegisterTime, String bangCard,String phone,
+			String realName, String channelName, String registerFrom) {
+
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"查看","用户激活情况表(实时)"," ");
+
+		PageUtils pageUtil = service.queryRealTimePage(page, limit, startRegisterTime, endRegisterTime, channelName);
+		return R.ok().put("page", pageUtil);
+	}
 
 	/**
 	 * 列表
@@ -133,6 +154,61 @@ public class DmReportUserActivateDailyController {
 
 		String title = "用户激活情况";
 		ExcelUtil.downloadExcelFile(title, headMap, va, response, typeMap);
+		
+	}
+	
+	
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping("/exportExcelRealTime")
+	public void exportExcelRealTime(String params, HttpServletRequest request, HttpServletResponse response) throws IOException {
+		Map<String, Object> map = JSON.parseObject(params, Map.class);
+		String statPeriod = map.get("statPeriod") + "";
+		if (StringUtils.isNotEmpty(statPeriod)) {
+			map.put("statPeriod", statPeriod.replace("-", ""));
+		}
+		String startRegisterTime = map.get("startRegisterTime") + "";
+		if (StringUtils.isNotEmpty(startRegisterTime)) {
+			map.put("startRegisterTime", startRegisterTime + " 00:00:00");
+		}
+		String endRegisterTime = map.get("endRegisterTime") + "";
+		if (StringUtils.isNotEmpty(endRegisterTime)) {
+			map.put("endRegisterTime", endRegisterTime + " 23:59:59");
+		}
+
+		Object channelName = map.get("channelName");
+		if (channelName == null || "".equals(channelName.toString().trim())) {
+			map.put("channelName", new ArrayList<>());
+		} else {
+			channelName = channelName.toString().substring(0, channelName.toString().length() - 1);
+			map.put("channelName", Arrays.asList(channelName.toString().split("\\^")));
+		}
+		//设置渠道权限查询条件
+		setChannelAuth(map);
+		System.err.println("++++++++++map: " + map);
+
+		PageUtils pageUtil = service.queryRealTimePage(1, 10000,startRegisterTime, endRegisterTime,channelName);
+		
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出","用户激活情况(实时)"," ");
+
+		// 查询列表数据
+		List<Map<String,Object>> dataList = (List<Map<String, Object>>) pageUtil.getList();
+		JSONArray va = new JSONArray();
+		for (int i = 0; i < dataList.size(); i++) {
+			Map<String,Object> entity = dataList.get(i);
+			va.add(entity);
+		}
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+		headMap.put("userId", "用户ID");
+		headMap.put("semKeyword", "SEM关键字");
+		headMap.put("username", "用户名称");
+		headMap.put("channelName", "渠道名称");
+		headMap.put("channelLabel", "渠道标记");
+		headMap.put("registerTime", "注册时间");
+		
+		String title = "用户激活情况(实时)";
+		ExcelUtil.downloadExcelFile(title, headMap, va, response);
 		
 	}
 

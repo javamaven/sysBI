@@ -2,6 +2,7 @@ package io.renren.service.channelmanager.impl;
 
 import static io.renren.utils.ShiroUtils.getUserId;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -10,14 +11,19 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.aspectj.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import io.renren.dao.channelmanager.DmReportUserActivateDailyDao;
+import io.renren.entity.DimChannelEntity;
 import io.renren.entity.channelmanager.DmReportUserActivateDailyEntity;
 import io.renren.entity.channelmanager.UserActiveInfoEntity;
+import io.renren.service.DimChannelService;
 import io.renren.service.channelmanager.DmReportUserActivateDailyService;
 import io.renren.service.shichang.ChannelHeadManagerService;
+import io.renren.system.jdbc.DataSourceFactory;
+import io.renren.system.jdbc.JdbcUtil;
 import io.renren.utils.Constant;
 import io.renren.utils.PageUtils;
 
@@ -27,6 +33,10 @@ public class DmReportUserActivateDailyServiceImpl implements DmReportUserActivat
 	private DmReportUserActivateDailyDao dmReportUserActivateDailyDao;
 	@Autowired
 	private ChannelHeadManagerService channelHeadManagerService;
+	@Autowired
+	private DataSourceFactory dataSourceFactory;
+	@Autowired
+	private DimChannelService dimChannelService;
 
 	@Override
 	public DmReportUserActivateDailyEntity queryObject(Integer statPeriod) {
@@ -182,6 +192,111 @@ public class DmReportUserActivateDailyServiceImpl implements DmReportUserActivat
 		headMap.put("totalCapital", "帐户总资产");
 		
 		return headMap;
+	}
+
+	private Map<String, String> getChannelMap(List<DimChannelEntity> channelList) {
+		Map<String,String> channelMap = new HashMap<>();
+		for (int i = 0; i < channelList.size(); i++) {
+			DimChannelEntity dimChannelEntity = channelList.get(i);
+			channelMap.put(dimChannelEntity.getChannelLabel(), dimChannelEntity.getChannelNameBack());
+		}
+		return channelMap;
+	}
+
+	private List<String> getChannelLabelsByName(List<DimChannelEntity> channelList , List<String> nameList) {
+		List<String> list = new ArrayList<String>();
+		for (int i = 0; i < channelList.size(); i++) {
+			DimChannelEntity dimChannelEntity = channelList.get(i);
+			for (int j = 0; j < nameList.size(); j++) {
+				if (dimChannelEntity.getChannelNameBack().equals(nameList.get(j))) {
+					if (!list.contains(dimChannelEntity.getChannelLabel())) {
+						list.add(dimChannelEntity.getChannelLabel());
+					}
+				}
+			}
+
+		}
+		return list;
+	}
+
+	@Override
+	public PageUtils queryRealTimePage(int page, int limit, String startRegisterTime, String endRegisterTime,
+			Object channelName) {
+		Map<String, Object> map = new HashMap<>();
+		map.put("offset", (page - 1) * limit);
+		int start = (page - 1) * limit;
+		map.put("limit", limit);
+		String registerTimeCond = "";
+		if (StringUtils.isNotEmpty(startRegisterTime)) {
+			map.put("startRegisterTime", startRegisterTime + " 00:00:00");
+			registerTimeCond += " and s.registerTime >= '" + startRegisterTime + " 00:00:00" + "' ";
+		}
+		if (StringUtils.isNotEmpty(endRegisterTime)) {
+			map.put("endRegisterTime", endRegisterTime + " 23:59:59");
+			registerTimeCond += " and s.registerTime <= '" + endRegisterTime + " 23:59:59" + "' ";
+		}
+
+		if (channelName == null || "".equals(channelName.toString().trim())) {
+			map.put("channelName", new ArrayList<>());
+		} else {
+			channelName = channelName.toString().substring(0, channelName.toString().length() - 1);
+			map.put("channelName", Arrays.asList(channelName.toString().split("\\^")));
+		}
+		
+		setChannelAuth(map);
+
+		System.err.println("++++++++++map: " + map);
+		List<DimChannelEntity> channelList = dimChannelService.queryChannelList(null);
+		Map<String,String> channelMap = getChannelMap(channelList);
+		Object channelObj = map.get("channelName");
+		String channelLabelCond = "";
+		if(channelObj != null){
+			List<String> channelNameList = (List<String>) channelObj;
+			List<String> channelLabels = getChannelLabelsByName(channelList, channelNameList);
+			for (int i = 0; i < channelLabels.size(); i++) {
+				String channelLabel = channelLabels.get(i);
+				channelLabelCond += "'" + channelLabel + "',";
+			}
+			if(channelLabelCond.endsWith(",")){
+				channelLabelCond = channelLabelCond.substring(0, channelLabelCond.length() - 1);
+			}
+		}
+		if(channelLabelCond.length() > 0){
+			channelLabelCond = " and channelLabel in (" + channelLabelCond + ")";
+		}
+		String path = this.getClass().getResource("/").getPath();
+		List<Map<String,Object>> dataList = null;
+		List<Map<String,Object>> totalList = null;
+		String querySql = null;
+		String totalSql = null;
+		try {
+			querySql = FileUtil.readAsString(new File(path + File.separator + "sql/市场部/用户激活实时查询.txt"));
+			totalSql = FileUtil.readAsString(new File(path + File.separator + "sql/市场部/用户激活实时查询总数.txt"));
+			querySql = querySql.replace("${channelLabelCond}", channelLabelCond);
+			querySql = querySql.replace("${registerTimeCond}", registerTimeCond);
+			totalSql = totalSql.replace("${channelLabelCond}", channelLabelCond);
+			totalSql = totalSql.replace("${registerTimeCond}", registerTimeCond);
+			dataList = new JdbcUtil(dataSourceFactory, "mysql").query(querySql, start, limit);
+			totalList = new JdbcUtil(dataSourceFactory, "mysql").query(totalSql);
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		// 查询列表数据
+//		List<DmReportUserActivateDailyEntity> dmReportUserActivateDailyList = queryList(map);
+		Map<String, Object> totalMap = totalList.get(0);
+		Object totalObj = totalMap.get("total");
+		int total = 0;
+		if(totalObj != null){
+			total = Integer.parseInt(totalObj.toString());
+		}
+
+		for (int i = 0; i < dataList.size(); i++) {
+			Map<String, Object> dataMap = dataList.get(i);
+			String channelLabel = dataMap.get("channelLabel") + "";
+			dataMap.put("channelName", channelMap.get(channelLabel));
+		}
+		PageUtils pageUtil = new PageUtils(dataList, total, limit, page);
+		return pageUtil;
 	}
 
 }

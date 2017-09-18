@@ -1,0 +1,23 @@
+select
+	count(1) as total
+from (
+		SELECT
+			u.user_id as userId,
+			u.register_time as registerTime,
+			ifnull(u.channel_id, u.activity_tag) as channelLabel,
+			CASE
+			WHEN locate('keyword=', u.from_url) > 0 THEN
+				substr(
+					u.from_url,locate('keyword=', u.from_url) + 8
+				)
+			END AS semKeyword,
+			u.from_url
+			
+		FROM
+			mdtx_user.user_ext_info u
+		WHERE
+			1 = 1
+) s
+where 1=1
+${channelLabelCond}
+${registerTimeCond}
