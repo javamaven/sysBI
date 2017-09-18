@@ -301,8 +301,18 @@
 		<if test="type != null and type.trim() == 'pay_channel' ">
 		     and d.use_type like '%付费%'
 		</if>
+		<!-- 微信公众号 -->
+		<if test="type != null and type.trim() == 'pay_channel_weixin' ">
+		     and d.channel_label in ('xha','qianyan1','ydsywx','HF-jrfby','GHM','HF-xha','HF-wzhf','HF-mryh','shaminnong2','HF-ntq')
+		</if>
+		<!-- 应用分发市场 -->
+		<if test="type != null and type.trim() == 'pay_channel_app_fenfa' ">
+		     and d.channel_label in ('HF-MZ','anzhi','HF-PPZS','HF-yybtg3','HF-Lianxiang','149','363xiaotu','bd-pc','HF-360','160','qudao3','156','161','baidu_tg2','YYB','HF-XM','HF-OPPO','HF-VIVO','HF-BDYY','151','118','taobao','yingyonghui','HF-PPZSTG','HF-WDJTG','HF-Sougou','114','162','HF-HW','HF-xbd-h5','yingyongbao','HF-wdj','HF-NBY','HF-wxz','126','yybtg3','oppo','113','360zhushou','yiyy','125','134','148','123','147','xiaomi','HF-YYBTG','157','124','116','115','136','huawei','meizu','HF-JL','153','159','152','120')
+		</if>
 		<if test="type != null and type.trim() == 'cps_channel' ">
-		     and ( d.use_type like '%CPS%' or d.use_type like '%cps%' )
+<!-- 		     and ( d.use_type like '%CPS%' or d.use_type like '%cps%' ) -->
+		     <!-- 2017-09-18 CPS只推返利网 -->
+			  and d.CHANNEL_LABEL='51fanli'
 		</if>
 		
 	</select>

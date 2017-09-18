@@ -31,6 +31,7 @@ import io.renren.system.common.SpringBeanFactory;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.util.DateUtil;
 import io.renren.util.MailUtil;
+import io.renren.utils.PageUtils;
 
 /**
  * @author Administrator
@@ -50,7 +51,8 @@ public class PhoneSalePayChannelSendJob implements Job {
 	private ScheduleReportTaskLogEntity logVo;
 	String title = "";
 	SimpleDateFormat dateFm = new SimpleDateFormat("EEEE");
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH");
+	
 	
 	String type = "pay_channel";
 
@@ -81,6 +83,8 @@ public class PhoneSalePayChannelSendJob implements Job {
 		JobVo jobVo = (JobVo) jobDataMap.get("jobVo");
 		ScheduleReportTaskEntity taskEntity = jobVo.getTaskEntity();
 		log.info("+++++++++PhoneSalePayChannelSendJob+++++++++++++" + taskEntity);
+		Map<String, Object> params = JSON.parseObject(taskEntity.getCondition(), Map.class);
+		type = params.get("type") + "";
 		MailUtil mailUtil = new MailUtil();
 		JobUtil jobUtil = new JobUtil();
 		try {
@@ -89,19 +93,50 @@ public class PhoneSalePayChannelSendJob implements Job {
 			String registerEndTime = "";
 			Date currDate = new Date();
 			String week = DateUtil.getWeekOfDate(currDate);
-			if("星期一".equals(week)){
-				registerStartTime = DateUtil.getCurrDayBefore(9, "yyyy-MM-dd") + " 00:00:00";
-				registerEndTime = DateUtil.getCurrDayBefore(7, "yyyy-MM-dd") + " 23:59:59";
-			}else{
-				registerStartTime = DateUtil.getCurrDayBefore(7, "yyyy-MM-dd") + " 00:00:00";
-				registerEndTime = DateUtil.getCurrDayBefore(7, "yyyy-MM-dd") + " 23:59:59";
+			String executeTime = sdf.format(currDate);
+			if("pay_channel_weixin".equals(type)){
+				if("星期一".equals(week)){
+					registerStartTime = DateUtil.getCurrDayBefore(9, "yyyy-MM-dd") + " 00:00:00";
+					registerEndTime = DateUtil.getCurrDayBefore(7, "yyyy-MM-dd") + " 23:59:59";
+				}else{
+					registerStartTime = DateUtil.getCurrDayBefore(7, "yyyy-MM-dd") + " 00:00:00";
+					registerEndTime = DateUtil.getCurrDayBefore(7, "yyyy-MM-dd") + " 23:59:59";
+				}
+			}else if("pay_channel_app_fenfa".equals(type)){
+				if("星期一".equals(week)){
+					registerStartTime = DateUtil.getCurrDayBefore(4, "yyyy-MM-dd") + " 00:00:00";
+					registerEndTime = DateUtil.getCurrDayBefore(2, "yyyy-MM-dd") + " 23:59:59";
+				}else{
+					registerStartTime = DateUtil.getCurrDayBefore(2, "yyyy-MM-dd") + " 00:00:00";
+					registerEndTime = DateUtil.getCurrDayBefore(2, "yyyy-MM-dd") + " 23:59:59";
+				}
+			}else if("pay_channel_sem_xinxiliu".equals(type)){
+				if ("星期一".equals(week) && currDate.getHours() == 9) {
+					String currDayBefore = DateUtil.getCurrDayBefore(3, "yyyy-MM-dd");
+					registerStartTime = currDayBefore + " 17:00:00";
+					registerEndTime = DateUtil.getHourBefore(executeTime, "yyyy-MM-dd HH", 1, "yyyy-MM-dd") + " 07:59:59";
+				} else if(currDate.getHours() == 9){//其他星期的9点，推送昨天15点到现在
+					String currDayBefore = DateUtil.getCurrDayBefore(1, "yyyy-MM-dd");
+					registerStartTime = currDayBefore + " 17:00:00";
+					registerEndTime = DateUtil.getHourBefore(executeTime,"yyyy-MM-dd HH",1, "yyyy-MM-dd") + " 07:59:59";
+				}else {
+					registerStartTime = DateUtil.getHourBefore(executeTime, 2, "yyyy-MM-dd HH") + ":00:00";
+					registerEndTime = DateUtil.getHourBefore(executeTime, 2, "yyyy-MM-dd HH") + ":59:59";
+				}
 			}
+			
 			queryParams.put("registerStartTime", registerStartTime);
 			queryParams.put("registerEndTime", registerEndTime);
 			queryParams.put("type", type);
 			logVo.setParams(JSON.toJSONString(queryParams));
-//			List<Map<String, Object>> dataList = service.queryRegisterThreeDaysNotInvestList(queryParams);
-			List<Map<String, Object>> dataList = service.queryPayOrCpsChannelList(queryParams);
+			List<Map<String, Object>> dataList = null;
+			if("pay_channel_weixin".equals(type) || "pay_channel_app_fenfa".equals(type)){
+				dataList = service.queryPayOrCpsChannelList(queryParams);
+			}else if("pay_channel_sem_xinxiliu".equals(type)){
+				PageUtils page = service.queryXinxiLiuList(1, 100000, registerStartTime, registerEndTime, 0, 100000);
+				dataList = (List<Map<String, Object>>) page.getList();
+			}
+			
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < dataList.size(); i++) {
 				Map<String, Object> entity = dataList.get(i);
@@ -111,7 +146,15 @@ public class PhoneSalePayChannelSendJob implements Job {
 			String month = registerEndTime.substring(5 , 7);
 			String day = registerEndTime.substring(8 , 10);
 			List<String> attachFilePathList = new ArrayList<>();
-			title = "注册7天未投资用户(付费渠道)-W-" + month + day + "-" + dataList.size();
+			
+			if("pay_channel_weixin".equals(type)){
+				title = "注册7天未投资用户(付费-微信公众号)-W-" + month + day + "-" + dataList.size();
+			}else if("pay_channel_app_fenfa".equals(type)){
+				title = "注册2天未投资用户(付费-应用分发市场)-W-" + month + day + "-" + dataList.size();
+			}else if("pay_channel_sem_xinxiliu".equals(type)){
+				title = "注册1小时未投资用户(付费-SEM)-W-" + month + day + "-" + dataList.size();
+			}
+			
 //			title = "注册3天未投资用户-W-" + month + day + "-" + dataList.size();
 			
 			String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());

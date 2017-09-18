@@ -83,6 +83,12 @@ public class BasicReportController2 {
 			list = service.queryPayOrCpsChannelList(params);
 		}else if("invited_channel".equals(type)){
 			pageUtil = service.queryInvitedChannelList(page, limit, registerStartTime, registerEndTime, start, end, "list");
+		}else if("pay_channel_weixin".equals(type)){
+			list = service.queryPayOrCpsChannelList(params);
+		}else if("pay_channel_sem_xinxiliu".equals(type)){
+			pageUtil = service.queryXinxiLiuList(page, limit, registerStartTime, registerEndTime, start, end);
+		}else if("pay_channel_app_fenfa".equals(type)){
+			list = service.queryPayOrCpsChannelList(params);
 		}
 
 		List<Map<String, Object>> retList = new ArrayList<Map<String, Object>>();
@@ -93,7 +99,7 @@ public class BasicReportController2 {
 				retList.addAll(list.subList(start, end));
 			}
 		}
-		if("pay_channel".equals(type) || "cps_channel".equals(type)){
+		if("pay_channel".equals(type) || "cps_channel".equals(type) || "pay_channel_weixin".equals(type) || "pay_channel_app_fenfa".equals(type)){
 			pageUtil = new PageUtils(retList, list.size(), limit, page);
 		}
 		if (retList.size() > 0) {
@@ -133,6 +139,12 @@ public class BasicReportController2 {
 		}else if("invited_channel".equals(type)){
 			pageUtil = service.queryInvitedChannelList(1, 100000, registerStartTime, registerEndTime, 0, 100000, "list");
 			dataList = (List<Map<String, Object>>) pageUtil.getList();
+		}else if("pay_channel_weixin".equals(type)){
+			dataList = service.queryPayOrCpsChannelList(map);
+		}else if("pay_channel_sem_xinxiliu".equals(type)){
+			pageUtil = service.queryXinxiLiuList(1, 100000, registerStartTime, registerEndTime, 0, 100000);
+		}else if("pay_channel_app_fenfa".equals(type)){
+			dataList = service.queryPayOrCpsChannelList(map);
 		}
 		// 查询列表数据
 		JSONArray va = new JSONArray();
@@ -152,6 +164,12 @@ public class BasicReportController2 {
 			title = "注册5天未投资用户(邀请渠道)-W-" + month + day + "-" + dataList.size();
 		}else if("cps_channel".equals(type)){
 			title = "注册7天未投资用户(CPS渠道)-W-" + month + day + "-" + dataList.size();
+		}else if("pay_channel_weixin".equals(type)){
+			title = "注册7天未投资用户(付费-微信公众号)-W-" + month + day + "-" + dataList.size();
+		}else if("pay_channel_sem_xinxiliu".equals(type)){
+			title = "注册1小时未投资用户(付费-SEM)-W-" + month + day + "_" + Hour + "-" + dataList.size();
+		}else if("pay_channel_app_fenfa".equals(type)){
+			title = "注册2天未投资用户(付费-应用分发市场)-W-" + month + day + "-" + dataList.size();
 		}
 		ExcelUtil.downloadExcelFile(title, headMap, va, response);
 	}

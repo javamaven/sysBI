@@ -757,5 +757,54 @@ public class basicReportServiceImpl implements BasicReportService {
 		PageUtils pageUtil = new PageUtils(retList, list.size(), limit, page);
 		return pageUtil;
 	}
+
+
+	@Override
+	public List<Map<String, Object>> queryAppFenfaShichang(Map<String, Object> queryParams) {
+		String path = this.getClass().getResource("/").getPath();
+		String detail_sql = null;
+		try {
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/电销数据推送/应用分发市场注册.txt"));
+			return new JdbcUtil(dataSourceFactory, "mysql").query(detail_sql);
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return new ArrayList<>();
+	}
+
+
+	@Override
+	public PageUtils queryXinxiLiuList(Integer page, Integer limit, String registerStartTime, String registerEndTime,
+			int start, int end) {
+		JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		String path = this.getClass().getResource("/").getPath();
+		String detail_sql = null;
+		try {
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/电销数据推送/SEM和信息流渠道.txt"));
+			list = util.query(detail_sql, registerStartTime, registerEndTime);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		List<Map<String, Object>> retList = new ArrayList<Map<String, Object>>();
+		if (list.size() > 0) {
+			if (end > list.size()) {
+				retList.addAll(list.subList(start, list.size()));
+			} else {
+				retList.addAll(list.subList(start, end));
+			}
+		}
+		if (retList.size() > 0) {
+			getAmontByUserId(retList);// 统计用户的账户余额
+		}
+
+		PageUtils pageUtil = new PageUtils(retList, list.size(), limit, page);
+		return pageUtil;
+	}
 	
 }

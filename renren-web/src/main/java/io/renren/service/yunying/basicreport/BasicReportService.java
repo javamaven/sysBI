@@ -42,4 +42,9 @@ public interface BasicReportService {
 
 	PageUtils queryInvitedChannelList(Integer page, Integer limit, String registerStartTime, String registerEndTime,
 			int start, int end, String string);
+
+	List<Map<String, Object>> queryAppFenfaShichang(Map<String, Object> queryParams);
+
+	PageUtils queryXinxiLiuList(Integer page, Integer limit, String registerStartTime, String registerEndTime,
+			int start, int end);
 }
