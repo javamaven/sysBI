@@ -4,6 +4,11 @@ function addTab(title, href, icon){
         tt.tabs('select', title);  
         refreshTab({tabTitle:title,url:href});  
     } else {  
+    	 var winSize = tt.tabs('tabs');  
+    	if(winSize && winSize.length > 7){
+    		alert('最多只能打开8个窗口');
+    		return;
+    	}
         if (href){  
             var content = '<iframe scrolling="yes" frameborder="0"  src="'+href+'" style="width:100%;height:96%;margin-top:10px;margin-left:0px;overflow: hidden;"></iframe>';  
         } else {  
