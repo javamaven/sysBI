@@ -5,7 +5,7 @@ function addTab(title, href, icon){
         refreshTab({tabTitle:title,url:href});  
     } else {  
         if (href){  
-            var content = '<iframe scrolling="no" frameborder="0"  src="'+href+'" style="width:100%;height:100%;margin-top:10px;margin-left:0px;"></iframe>';  
+            var content = '<iframe scrolling="yes" frameborder="0"  src="'+href+'" style="width:100%;height:96%;margin-top:10px;margin-left:0px;overflow: hidden;"></iframe>';  
         } else {  
             var content = '未实现';  
         }  
