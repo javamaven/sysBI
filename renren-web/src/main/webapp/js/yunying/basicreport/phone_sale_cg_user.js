@@ -55,6 +55,7 @@ function initTimeCond(){
     });
     
 //    $("#stat_period").val(addDate(getCurrDate(), -3));
+    $("#stat_period").datetimepicker("setEndDate",addDate(getCurrDate(), -3));
 }
 
 
