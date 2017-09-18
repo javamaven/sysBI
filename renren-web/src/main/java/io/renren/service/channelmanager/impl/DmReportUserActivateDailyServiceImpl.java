@@ -239,8 +239,12 @@ public class DmReportUserActivateDailyServiceImpl implements DmReportUserActivat
 		if (channelName == null || "".equals(channelName.toString().trim())) {
 			map.put("channelName", new ArrayList<>());
 		} else {
-			channelName = channelName.toString().substring(0, channelName.toString().length() - 1);
-			map.put("channelName", Arrays.asList(channelName.toString().split("\\^")));
+			if(channelName.toString().endsWith("\\^")){
+				channelName = channelName.toString().substring(0, channelName.toString().length() - 1);
+				map.put("channelName", Arrays.asList(channelName.toString().split("\\^")));
+			}else{
+				map.put("channelName", Arrays.asList(channelName.toString().split("\\^")));
+			}
 		}
 		
 		setChannelAuth(map);
