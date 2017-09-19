@@ -143,6 +143,7 @@ public class BasicReportController2 {
 			dataList = service.queryPayOrCpsChannelList(map);
 		}else if("pay_channel_sem_xinxiliu".equals(type)){
 			pageUtil = service.queryXinxiLiuList(1, 100000, registerStartTime, registerEndTime, 0, 100000);
+			dataList = (List<Map<String, Object>>) pageUtil.getList();
 		}else if("pay_channel_app_fenfa".equals(type)){
 			dataList = service.queryPayOrCpsChannelList(map);
 		}

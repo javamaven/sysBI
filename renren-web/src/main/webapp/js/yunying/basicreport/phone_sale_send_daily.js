@@ -192,16 +192,28 @@ function getParams(){
 	var select = $("#list_select").children('option:selected').val();
 	if(select == 'free_channel'){
 		params.type = 'free_channel';
+		params.registerStartTime = $("#registerStartTime").val() + ':00:00';
+		params.registerEndTime = $("#registerEndTime").val() + ':59:59';
 	}else if(select == 'pay_channel'){
 		params.type = 'pay_channel';
+		params.registerStartTime = $("#registerStartTime").val() + ' 00:00:00';
+		params.registerEndTime = $("#registerEndTime").val() + ' 23:59:59';
 	}else if(select == 'invited_channel'){
 		params.type = 'invited_channel';
+		params.registerStartTime = $("#registerStartTime").val() + ' 00:00:00';
+		params.registerEndTime = $("#registerEndTime").val() + ' 23:59:59';
 	}else if(select == 'cps_channel'){
 		params.type = 'cps_channel';
+		params.registerStartTime = $("#registerStartTime").val() + ' 00:00:00';
+		params.registerEndTime = $("#registerEndTime").val() + ' 23:59:59';
+	}else if(select == 'pay_channel_sem_xinxiliu'){
+		params.type = 'pay_channel_sem_xinxiliu';
+		params.registerStartTime = $("#registerStartTime").val() + ':00:00';
+		params.registerEndTime = $("#registerEndTime").val() + ':59:59';
 	}else{
 		params.type = select;
+		params.registerStartTime = $("#registerStartTime").val() + ' 00:00:00';
+		params.registerEndTime = $("#registerEndTime").val() + ' 23:59:59';
 	}
-	params.registerStartTime = $("#registerStartTime").val() + ' 00:00:00';
-	params.registerEndTime = $("#registerEndTime").val() + ' 23:59:59';
 	return params;
 }

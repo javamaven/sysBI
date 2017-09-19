@@ -99,7 +99,7 @@
 	</bean>
 	
 	<bean id="stat-filter" class="com.alibaba.druid.filter.stat.StatFilter">
-		<property name="slowSqlMillis" value="1000" />
+		<property name="slowSqlMillis" value="10000" />
 		<property name="logSlowSql" value="true" />
 		<property name="mergeSql" value="true" />
 	</bean>
