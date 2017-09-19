@@ -192,7 +192,8 @@ function initTableGridNew(){
         rowNum: 500,
         rownumbers: true, 
         autowidth:true,
-        shrinkToFit: false,
+        shrinkToFit: true,
+        
 //        autoScroll: false,
 //        multiselect: false,
         pager: "#jqGridPager",
