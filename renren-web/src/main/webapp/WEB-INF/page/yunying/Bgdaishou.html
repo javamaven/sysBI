@@ -1,0 +1,53 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>jquery表格展开折叠代码</title>
+<style>
+table{ border:0;border-collapse:collapse; font-family:serif;font-weight: bold;} 
+td{ font:normal 12px/17px Calibri;padding:2px;width:1000px;}
+th{ font:bold 12px/17px microsoft yahei;text-align:left;padding:4px;border-bottom:1px solid #333;width:1000px;}
+.parent{ background:#CCCCCC;cursor:pointer;font-family:serif;font-weight: bold;}  /* 偶数行样式*/
+.odd{ background:#FFFFEE;}  /* 奇数行样式*/
+.selected{ background:#FF6500;color:#fff;}
+</style>
+<!--   引入jQuery -->
+<script src="${rc.contextPath}/statics/libs/jquery.min.js"></script>
+<script type="text/javascript">
+
+</script>
+</head>
+<body>
+
+
+
+
+	<table border="1" >
+		<thead>
+			<tr style="background:#3C8DBC;"><th>日期</th><th>累计待收</th><th>新增待收</th><th>减少待收</th><th>待收投资人数</th></tr>
+		</thead>
+		<tbody id="table_html" >
+<!-- 			<tr class="parent" id="row_01"><td>20170830</td><td>100</td><td>108</td><td>122</td><td>133</td></tr> -->
+<!-- 			<tr class="child_row_01"><td>20170830</td><td>累计待收本金</td><td>新增待收本金</td><td>减少待收本金</td><td>各分层待收投资人数</td></tr> -->
+<!-- 			<tr class="child_row_01"><td>20170830</td><td>155</td><td>188</td><td>1552</td><td>12233</td></tr> -->
+<!-- 			<tr class="child_row_01"><td>20170830</td><td>累计待收利息</td><td>新增待收利息</td><td>减少待收利息</td><td>各分层待收</td></tr> -->
+<!-- 			<tr class="child_row_01"><td>20170830</td><td>15225</td><td>18338</td><td>14552</td><td>152233</td></tr> -->
+			
+			
+<!-- 			<tr class="parent" id="row_02"><td>20170831</td><td>100</td><td>108</td><td>122</td><td>133</td></tr> -->
+<!-- 			<tr class="child_row_02"><td>20170831</td><td>累计待收本金</td><td>新增待收本金</td><td>减少待收本金</td><td>各分层待收投资人数</td></tr> -->
+<!-- 			<tr class="child_row_02"><td>20170831</td><td>155</td><td>188</td><td>1552</td><td>12233</td></tr> -->
+<!-- 			<tr class="child_row_02"><td>20170831</td><td>累计待收利息</td><td>新增待收利息</td><td>减少待收利息</td><td>各分层待收</td></tr> -->
+<!-- 			<tr class="child_row_02"><td>20170831</td><td>15225</td><td>18338</td><td>14552</td><td>152233</td></tr> -->
+			
+			
+<!-- 			<tr class="parent" id="row_02"><td colspan="3">20170830</td></tr> -->
+<!-- 			<tr class="child_row_02"><td>王五</td><td>男</td><td>湖南长沙</td></tr> -->
+<!-- 			<tr class="child_row_02"><td>找六</td><td>男</td><td>浙江温州</td></tr> -->
+<!-- 			<tr class="parent" id="row_03"><td colspan="3">20170830</td></tr> -->
+<!-- 			<tr class="child_row_03"><td>Rain</td><td>男</td><td>浙江杭州</td></tr> -->
+<!-- 			<tr class="child_row_03"><td>MAXMAN</td><td>女</td><td>浙江杭州</td></tr> -->
+		</tbody>
+	</table>
+</body>
+<script src="${rc.contextPath}/js/yunying/Bgdaishou.js?_${date.systemTime}"></script>
+</html>
