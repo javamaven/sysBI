@@ -76,7 +76,7 @@ public class SysLoginController {
 //			e.printStackTrace();
 //		}
 		
-		
+		System.err.println("+++++++++++++登陆用户：" + username + " ,登录时间=" + sdf.format(new Date()));
 		try{
 			Subject subject = ShiroUtils.getSubject();
 			//sha256加密

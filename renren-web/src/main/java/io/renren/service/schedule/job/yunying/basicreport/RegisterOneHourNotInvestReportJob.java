@@ -116,31 +116,43 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 			
 			logVo.setParams(JSON.toJSONString(queryParams));
 			log.info("+++++++++查询条件+++++++++++++" + queryParams);
-//			PageUtils page = service.queryList(1, 10000, registerStartTime, registerEndTime, 0, 10000, "");
 			PageUtils page = service.queryFreeChannelList(1, 10000, registerStartTime, registerEndTime, 0, 10000, "");
 			List<Map<String, Object>> dataList = (List<Map<String, Object>>) page.getList();
+			
+			//sem付费渠道
+			PageUtils page_sem = service.queryXinxiLiuList(1, 100000, registerStartTime, registerEndTime, 0, 100000);
+			List<Map<String, Object>> dataList_sem = (List<Map<String, Object>>) page_sem.getList();
+			
 			log.info("+++++++++查询返回结果+++++++++++++" + dataList);
 			JSONArray dataArray = new JSONArray();
 			for (int i = 0; i < dataList.size(); i++) {
 				Map<String, Object> entity = dataList.get(i);
+				entity.put("channel_type", "免费渠道");
 				dataArray.add(entity);
 			}
-//			if (dataList.size() > 0) {
-				String year = registerEndTime.substring(0 , 4);
-				String month = registerEndTime.substring(5 , 7);
-				String day = registerEndTime.substring(8 , 10);
-				String Hour = executeTime.substring(11 , 13);
-				title = "注册1小时未投资用户(免费渠道)-W-" + month + day + "_" + Hour + "-" + dataList.size();
-				
-				String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, service.getExcelFields());
-				log.info("+++++++++生成附件文件+++++++++++++" + attachFilePath);
-				mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
-						taskEntity.getChaosongEmailList(), attachFilePath);
-				log.info("+++++++++发送邮件结束+++++++++++++");
-				logVo.setEmailValue(attachFilePath);
-			//			} else {
-//				logVo.setEmailValue("查询没有返回数据");
-//			}
+			//sem
+//			JSONArray dataArray_sem = new JSONArray();
+			for (int i = 0; i < dataList_sem.size(); i++) {
+				Map<String, Object> entity = dataList_sem.get(i);
+				entity.put("channel_type", "付费-SEM");
+//				dataArray_sem.add(entity);
+				dataArray.add(entity);
+			}
+			
+			String year = registerEndTime.substring(0 , 4);
+			String month = registerEndTime.substring(5 , 7);
+			String day = registerEndTime.substring(8 , 10);
+			String Hour = executeTime.substring(11 , 13);
+			title = "注册1小时未投资用户(免费+SEM渠道)-W-" + month + day + "_" + Hour + "-" + dataList.size();
+			
+			Map<String, String> excelFields = service.getExcelFields();
+			excelFields.put("channel_type", "渠道类别");
+			String attachFilePath = jobUtil.buildAttachFile(dataArray, title, title, excelFields);
+			log.info("+++++++++生成附件文件+++++++++++++" + attachFilePath );
+			mailUtil.sendWithAttach(title, "自动推送，请勿回复", taskEntity.getReceiveEmailList(),
+					taskEntity.getChaosongEmailList(), attachFilePath);
+			log.info("+++++++++发送邮件结束+++++++++++++");
+			logVo.setEmailValue(attachFilePath);
 		    //将电销的数据，入库保存
 			if (ConfigProp.getIsSendEmail()) {
 				insertPhoneSaleData(year+month+day+Hour, dataList);
