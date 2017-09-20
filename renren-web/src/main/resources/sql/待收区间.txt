@@ -64,7 +64,7 @@ select
   round(num/(select sum(num) from tmp ),4) as num_rate, --人数占比
   await, --待收本金
   round(await/(select sum(await) from tmp ),4) as await_rate,--待收占比
-  round((select sum(await) from tmp )/num,2) as avg_await,  --人均待收
+  round( await/num,2) as avg_await,  --人均待收 
   avg_period,
   avg_apr,
   round(await*avg_apr/365,2) as interest
