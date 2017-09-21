@@ -1,0 +1,120 @@
+select channel_name as 渠道名称,
+       ACTIVITY_TAG as 渠道标记,
+       count(distinct user_id) as 周期内提现用户,
+       sum(wait_amt) as 周期末日待收,
+       sum(out_amt) as 周期内提现金额,
+       sum(amt) as 周期内投资总金额,
+       round((sum(out_amt) / sum(amt)), 4) as 提现占投资比例,
+       round((sum(out_amt) / count(distinct user_id)), 2) as 人均提现金额,
+       round((sum(case
+                    when substr(first_dt, 1, 6) = substr(${startDate}, 1, 6) then
+                     1
+                    else
+                     0
+                  end) / count(distinct user_id)),
+             4) as 当月首投用户占比,
+       round((sum(case
+                    when substr(first_dt, 1, 6) =
+                         to_char(add_months(to_date(${startDate}, 'yyyy-mm-dd'), -1),
+                                 'yyyymm') then
+                     1
+                    else
+                     0
+                  end) / count(distinct user_id)),
+             4) as 上月首投用户占比,
+       round((sum(case
+                    when substr(first_dt, 1, 6) =
+                         to_char(add_months(to_date(${startDate}, 'yyyy-mm-dd'), -2),
+                                 'yyyymm') then
+                     1
+                    else
+                     0
+                  end) / count(distinct user_id)),
+             4) as 两月前首投用户占比,
+       round((sum(case
+                    when substr(first_dt, 1, 6) =
+                         to_char(add_months(to_date(${startDate}, 'yyyy-mm-dd'), -3),
+                                 'yyyymm') then
+                     1
+                    else
+                     0
+                  end) / count(distinct user_id)),
+             4) 三月前首投用户占比
+             
+      
+  from (
+       --用户表：
+       with dim_user as((select user_id,
+                                ACTIVITY_TAG,
+                                nvl(channel_name, '未知') channel_name,
+                                payment_way,
+                                use_type,
+                                IS_BORROWER,
+                                register_time,
+                                firstinvest_time
+                           From mdtxbi.edw_user_basic MD1
+                           left join mdtxbi.dim_channel MD2 on Md1.ACTIVITY_TAG =
+                                                               md2.channel_label
+                          where ACTIVITY_TAG is not null
+                            and IS_BORROWER = 0) union all (select user_id,
+                                                                   '自然来源',
+                                                                   '自然来源',
+                                                                   '',
+                                                                   '',
+                                                                   IS_BORROWER,
+                                                                   register_time,
+                                                                   firstinvest_time
+                                                              From mdtxbi.edw_user_basic MD1
+                                                             where ACTIVITY_TAG is null
+                                                               and IS_BORROWER = 0))
+         select t4.user_id,
+                channel_name,
+                activity_tag,
+                use_type,
+                payment_way,
+                to_char(register_time, 'yyyymmdd') reg_dt,
+                to_char(FIRSTINVEST_TIME, 'yyyymmdd') first_dt,
+                amt,
+                ord_cnt,
+                cpon_amt,
+                wait_amt,
+                out_amt,
+                wtdrw_cnt
+           from dim_user t1
+          inner join (
+                      --投资信息
+                      select user_id,
+                              sum(case
+                                    when tender_subject = 2 then
+                                     NVL(tend_cash, 0)
+                                    else
+                                     NVL(tender_capital, 0)
+                                  end) amt,
+                              count(id) ord_cnt,
+                              sum(tend_vouche) cpon_amt
+                        from mdtxbi.edw_trading_project_detail t1
+                       where TENDER_ACCOUNT_STATUS in ('0', '1')
+                         and to_char(addtime, 'yyyymmdd') between '${startDate}' and
+                             '${endDate}'
+                       group by user_id) t2 on t1.user_id = t2.user_id
+          inner join (
+                      --待收
+                      select AL.user_id,
+                              sum(AL.NOR_RECOVER_CAPITAL_WAIT_C +
+                                  AL.NOR_RECOVER_INTEREST_WAIT_C +
+                                  AL.DEP_RECOVER_CAPITAL_WAIT_C +
+                                  AL.DEP_RECOVER_INTEREST_WAIT_C) AS wait_amt
+                        from mdtxbi.edw_user_acc_log AL
+                       where stat_period = '${endDate}'
+                       group by user_id) t3 on t1.user_id = t3.user_id
+          inner join (
+                      --提现
+                      select user_id,
+                              sum(AMOUNT) out_amt, -- 累计提现金额
+                              count(id) wtdrw_cnt
+                        from mdtxbi.edw_money_acc_withdraw
+                       where DEDUCT_STATUS = 20
+                         and to_char(DEDUCT_TIME, 'yyyymmdd') between
+                             '${startDate}' and '${endDate}'
+                       group by user_id) t4 on t1.user_id = t4.user_id)
+          group by channel_name, ACTIVITY_TAG

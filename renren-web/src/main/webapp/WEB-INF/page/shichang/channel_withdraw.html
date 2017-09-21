@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+#parse("sys/header.html")
+<style type="text/css">
+.inputClass{
+	height: 30px;
+	width: 150px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+</style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<label>开始日期：</label>
+			<input type="text" class="inputClass form_datetime_2" id="start_date"  placeholder="请选择开始日期"/>
+			<label>结束日期：</label>
+			<input type="text" class="inputClass form_datetime_2" id="end_date"  placeholder="请选择结束日期"/>
+			
+			
+			&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
+			<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+		</div>
+    	<table id="jqGrid"></table>
+    	<div id="jqGridPager"></div>
+    </div>
+    
+   
+</div>
+
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/shichang/channel_withdraw.js?_${date.systemTime}"></script>
+</body>
+</html>

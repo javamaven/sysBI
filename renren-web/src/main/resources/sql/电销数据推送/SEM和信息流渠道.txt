@@ -62,6 +62,6 @@ from (
 where 1=1
 and s.用户来源  in 
 (
-'SEM-PC','qd9meng','shenma','MSEM15','sem_pc_10','xbd-m','sem_pc_15','baiduyddsp','360pzhuan','smss','cmh688','sem_pc_07','bd-mpz','HF-xxl','360pzhuan-2','360MF','baiducaifu','sem_pc_06','360tuijian','360xinxiliu','xinbaidum1','sem_pc_13','bd-dsp','xbd-pc','bd-pcpz','360pzhuan-3','360sem','sougouSEM','sem_pc_05','HF-yyy','150','360sousuoPC','360sousuoMB','bdxxl','HF-QQsousuo','yrt','semmobile','sem-mobile','bd-mobile','HF-bdm','bdtg','xinbaidupc1'
+'SEM-PC','qd9meng','shenma','MSEM15','sem_pc_10','xbd-m','sem_pc_15','baiduyddsp','360pzhuan','smss','cmh688','sem_pc_07','bd-mpz','HF-xxl','360pzhuan-2','360MF','baiducaifu','sem_pc_06','360tuijian','360xinxiliu','xinbaidum1','sem_pc_13','bd-dsp','xbd-pc','bd-pcpz','360pzhuan-3','360sem','sougouSEM','sem_pc_05','HF-yyy','150','360sousuoPC','360sousuoMB','bdxxl','HF-QQsousuo','yrt','semmobile','sem-mobile','bd-mobile','HF-bdm','bdtg','xinbaidupc1','appstore_dts','bdxxl2','JRTT2'
 )
 or s.用户来源 ='appstore'

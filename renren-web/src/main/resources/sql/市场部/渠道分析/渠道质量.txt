@@ -1,0 +1,145 @@
+--用户表：
+WITH dim_user AS ( 
+    (SELECT user_id,
+         ACTIVITY_TAG,
+        nvl(channel_name,
+        '未知') channel_name,payment_way,use_type,IS_BORROWER, register_time,firstinvest_time
+    FROM mdtxbi.edw_user_basic MD1
+    LEFT JOIN mdtxbi.dim_channel MD2
+        ON Md1.ACTIVITY_TAG=md2.channel_label
+    WHERE ACTIVITY_TAG is NOT null
+            AND is_borrower=0)
+    UNION
+    all 
+        (SELECT user_id,
+         '自然来源','自然来源','','',IS_BORROWER,register_time,firstinvest_time
+        FROM mdtxbi.edw_user_basic MD1
+        WHERE ACTIVITY_TAG is null
+                AND is_borrower=0))
+                
+                
+                
+    SELECT DISTINCT t6.ACTIVITY_TAG as 渠道标记,
+         t6.channel_name as 渠道名称,
+         t6.use_type as 类型,
+         t6.payment_way as 付费方式,
+         t1.reg_user_cnt as 注册用户,
+         nvl(t2.fst_user_cnt,0) fst_user_cnt,
+         case when nvl(t2.fst_user_cnt, 0) > 0 then round(nvl(t2.fst_user_cnt, 0)/t1.reg_user_cnt, 4) end as 首投用户占比,
+         t4.new_user 新手标用户 ,
+         t3.amt 首投用户投资金额,
+         t3.cpon_amt 首投用户红包使用金额,
+         t4.new_amt 新手标投资额,
+         t4.new_cpon_amt 新手标红包使用金额,
+         t3.cnt_id 首投用户投资次数,
+         t3.cpon_cnt 首投用户红包使用次数,
+         t5.wait_amt 周期内末日待收金额,
+         case when nvl(t2.fst_user_cnt, 0) > 0 then round(t5.wait_amt/nvl(t2.fst_user_cnt, 0),2) end as 人均待收金额,
+         case when nvl(t2.fst_user_cnt, 0) > 0 then round(t3.amt/nvl(t2.fst_user_cnt, 0),2) end as 人均投资金额,
+         case when nvl(t2.fst_user_cnt, 0) > 0 then round(t3.cpon_amt/nvl(t2.fst_user_cnt, 0),2) end as 人均红包使用金额
+FROM dim_user t6
+LEFT JOIN ( --注册人数
+        SELECT channel_name,
+                ACTIVITY_TAG,
+                use_type,
+                payment_way,
+                count(user_id) reg_user_cnt
+        FROM dim_user
+        WHERE IS_BORROWER=0
+                AND to_char(register_time,'yyyymmdd')
+            BETWEEN '${startDate}'
+                AND '${endDate}'
+        GROUP BY  channel_name,ACTIVITY_TAG,use_type,payment_way) t1
+            ON t6.ACTIVITY_TAG=t1.ACTIVITY_TAG
+LEFT JOIN ( --首投人数
+        SELECT ACTIVITY_TAG,
+                count(user_id) fst_user_cnt
+        FROM dim_user
+        WHERE to_char(firstinvest_time,'yyyymmdd')
+            BETWEEN '${startDate}'
+                AND '${endDate}'
+        GROUP BY  ACTIVITY_TAG) t2
+            ON t6.ACTIVITY_TAG=t2.ACTIVITY_TAG
+LEFT JOIN ( --首投用户投资信息
+        SELECT ACTIVITY_TAG,
+                count(distinct user_id) cnt_user,
+                 sum(case
+            WHEN tender_subject=2 THEN
+            NVL(tend_cash,0)
+            ELSE NVL(tender_capital,0) end) amt, count(id) cnt_id ,sum(tend_vouche) cpon_amt, count(case
+            WHEN tend_vouche=0 THEN
+            null
+            ELSE tend_vouche end) cpon_cnt
+        FROM 
+            (SELECT a1.user_id,
+                ACTIVITY_TAG,
+                tender_subject,
+                tend_cash,
+                tender_capital,
+                id,
+                tend_vouche
+            FROM mdtxbi.edw_trading_project_detail a1
+            INNER JOIN dim_user a2
+                ON a1.user_id=a2.user_id
+            WHERE TENDER_ACCOUNT_STATUS IN ('0','1')
+                    AND to_char(addtime,'yyyymmdd')
+                BETWEEN '${startDate}'
+                    AND '${endDate}'
+                    AND to_char(firstinvest_time,'yyyymmdd')
+                BETWEEN '${startDate}'
+                    AND '${endDate}')
+            GROUP BY  ACTIVITY_TAG) t3
+            ON t6.ACTIVITY_TAG=t3.ACTIVITY_TAG
+LEFT JOIN ( --新手标投资信息
+          SELECT ACTIVITY_TAG,
+                  count(distinct user_id) new_user,
+                   sum(case
+              WHEN tender_subject=2 THEN
+              NVL(tend_cash,0)
+              ELSE NVL(tender_capital,0) end) new_amt, sum(tend_vouche) new_cpon_amt, count(case
+              WHEN tend_vouche=0 THEN
+              null
+              ELSE tend_vouche end) new_cpon_cnt
+          FROM 
+              (SELECT a1.user_id,
+                  ACTIVITY_TAG,
+                  tender_subject,
+                  tend_cash,
+                  tender_capital,
+                  id,
+                  tend_vouche
+              FROM mdtxbi.edw_trading_project_detail a1
+              INNER JOIN dim_user a2
+                  ON a1.user_id=a2.user_id
+              WHERE TENDER_ACCOUNT_STATUS IN ('0','1')
+                      AND to_char(addtime,'yyyymmdd')
+                  BETWEEN '${startDate}'
+                      AND '${endDate}'
+                      AND to_char(firstinvest_time,'yyyymmdd')
+                  BETWEEN '${startDate}'
+                      AND '${endDate}'
+                      AND project_id IN 
+                  (SELECT project_id
+                  FROM mdtxbi.edw_trading_project
+                  WHERE IS_NOVICE=1))
+                  GROUP BY  ACTIVITY_TAG) t4
+                  ON t6.ACTIVITY_TAG=t4.ACTIVITY_TAG
+LEFT JOIN ( --首投用户待收
+SELECT ACTIVITY_TAG,
+        sum(wait_amt) wait_amt
+FROM 
+    (SELECT AL.user_id,
+        ACTIVITY_TAG,
+        sum( AL.NOR_RECOVER_CAPITAL_WAIT_C+ AL.NOR_RECOVER_INTEREST_WAIT_C+ AL.DEP_RECOVER_CAPITAL_WAIT_C+ AL.DEP_RECOVER_INTEREST_WAIT_C )AS wait_amt
+    FROM mdtxbi.edw_user_acc_log AL
+    INNER JOIN dim_user BL
+        ON AL.user_id=BL.user_id
+    WHERE stat_period='${endDate}'
+            AND to_char(FIRSTINVEST_TIME,'yyyymmdd')
+        BETWEEN '${startDate}'
+            AND '${endDate}'
+    GROUP BY  AL.user_id,ACTIVITY_TAG )
+    GROUP BY  ACTIVITY_TAG) t5
+    ON t6.ACTIVITY_TAG=t5.ACTIVITY_TAG
+WHERE fst_user_cnt is NOT null
+ORDER BY  fst_user_cnt desc

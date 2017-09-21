@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+#parse("sys/header.html")
+<style type="text/css">
+.inputClass{
+	height: 30px;
+	width: 150px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+</style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<label>渠道名称</label>
+<!-- 			<select id="id_select" multiple="multiple" class="form-control"></select> -->
+				<select id="list_select" class="inputClass" >
+				</select>
+			&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
+			<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+		</div>
+		<div id="day_div">
+	    	<table id="jqGrid_day"></table>
+	    	<div id="jqGridPager_day"></div>
+		</div>
+    </div>
+    
+   
+</div>
+
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/shichang/channel_st_dapan.js?_${date.systemTime}"></script>
+</body>
+</html>

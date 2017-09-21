@@ -1,0 +1,57 @@
+select 
+  t1.channel_name 渠道名称,
+  t1.activity_tag 渠道标记,
+  fst_user_cnt 当月新增首投用户,
+  round(thirty/fst_user_cnt,4) as "30天后",
+  round(sixty/fst_user_cnt,4) as "60天后",
+  round(ninety/fst_user_cnt,4) as "90天后",
+  round(one_two/fst_user_cnt,4) as "120天后",
+  round(one_five/fst_user_cnt,4) as "150天后",
+  round(one_A/fst_user_cnt,4) as "180天后",
+  round(two_svn/fst_user_cnt,4) as "270天后",
+  round(thr_six/fst_user_cnt,4) as "360天后"
+from (
+select channel_name,activity_tag,count(distinct user_id) fst_user_cnt From mdtxbi.DM_XT_USER_DATE
+where to_char(firstinvest_time,'yyyymm')='${month}' group by channel_name,activity_tag) t1
+left join (
+select activity_tag,count(distinct user_id) thirty From mdtxbi.DM_XT_USER_DATE
+where period=30 and wait_amt>=100 and to_char(firstinvest_time,'yyyymm')='${month}'
+group by activity_tag) t2
+on t1.activity_tag=t2.activity_tag
+left join (
+select activity_tag,count(distinct user_id) sixty From mdtxbi.DM_XT_USER_DATE
+where period=60 and wait_amt>=100 and to_char(firstinvest_time,'yyyymm')='${month}'
+group by activity_tag)t3
+on t1.activity_tag=t3.activity_tag
+left join (
+select activity_tag,count(distinct user_id) ninety From mdtxbi.DM_XT_USER_DATE
+where period=90 and wait_amt>=100 and to_char(firstinvest_time,'yyyymm')='${month}'
+group by activity_tag) t4
+on t1.activity_tag=t4.activity_tag
+left join (
+select activity_tag,count(distinct user_id) one_two From mdtxbi.DM_XT_USER_DATE
+where period=120 and wait_amt>=100 and to_char(firstinvest_time,'yyyymm')='${month}'
+group by activity_tag) t5
+on t1.activity_tag=t5.activity_tag
+left join (
+select activity_tag,count(distinct user_id) one_five From mdtxbi.DM_XT_USER_DATE
+where period=150 and wait_amt>=100 and to_char(firstinvest_time,'yyyymm')='${month}'
+group by activity_tag) t6
+on t1.activity_tag=t6.activity_tag
+left join (
+select activity_tag,count(distinct user_id) one_A From mdtxbi.DM_XT_USER_DATE
+where period=180 and wait_amt>=100 and to_char(firstinvest_time,'yyyymm')='${month}'
+group by activity_tag) t7
+on t1.activity_tag=t7.activity_tag
+left join (
+select activity_tag,count(distinct user_id) two_svn From mdtxbi.DM_XT_USER_DATE
+where period=270 and wait_amt>=100 and to_char(firstinvest_time,'yyyymm')='${month}'
+group by activity_tag) t8
+on t1.activity_tag=t8.activity_tag
+left join (
+select activity_tag,count(distinct user_id) thr_six From mdtxbi.DM_XT_USER_DATE
+where period=360 and wait_amt>=100 and to_char(firstinvest_time,'yyyymm')='${month}'
+group by activity_tag) t9
+on t1.activity_tag=t9.activity_tag
+order by fst_user_cnt desc
+

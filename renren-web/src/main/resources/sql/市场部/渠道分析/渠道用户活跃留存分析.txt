@@ -1,0 +1,214 @@
+select channel_name as 渠道名称,
+       activity_tag as 渠道标记,
+       count(distinct user_id) as 新增首投用户,
+       round(sum(cnt_cs) / count(distinct user_id), 0) as 首投用户30天内人均投资次数,
+       round(sum(cnt_cs_30) / count(distinct user_id), 0) as "30天后",
+       round(sum(cnt_cs_60) / count(distinct user_id), 0) as "60天后",
+       round(sum(cnt_cs_90) / count(distinct user_id), 0) as "90天后",
+       round(sum(cnt_cs_120) / count(distinct user_id), 0) as "120天后",
+       round(sum(cnt_cs_150) / count(distinct user_id), 0) as "150天后",
+       round(sum(cnt_cs_180) / count(distinct user_id), 0) as "180天后",
+       round(sum(cnt_cs_270) / count(distinct user_id), 0) as "270天后",
+       round(sum(cnt_cs_360) / count(distinct user_id), 0) as "360天后"
+  from (select channel_name,
+               activity_tag,
+               t1.user_id,
+               cnt_cs,
+               cnt_cs_30,
+               cnt_cs_60,
+               cnt_cs_90,
+               cnt_cs_120,
+               cnt_cs_150,
+               cnt_cs_180,
+               cnt_cs_270,
+               cnt_cs_360
+          from (
+                --30天内
+                select channel_name, activity_tag, user_id, cnt_cs
+                  From mdtxbi.DM_XT_USER_DATE
+                 where to_char(firstinvest_time, 'yyyymm') = '${month}'
+                   and period = 30) t1
+          left join (
+                    --30~60
+                    select a1.user_id,
+                            count(id) as cnt_cs_30,
+                            sum(case
+                                  when tender_subject = 2 then
+                                   NVL(tend_cash, 0)
+                                  else
+                                   NVL(tender_capital, 0)
+                                end) amt
+                      from mdtxbi.edw_trading_project_detail a1
+                     inner join (select user_id, FIRSTINVEST_TIME
+                                   from mdtxbi.edw_user_basic
+                                  where to_char(FIRSTINVEST_TIME, 'yyyymm') =
+                                        '${month}'
+                                    and is_borrower = 0) a2 on a1.user_id =
+                                                               a2.user_id
+                     where TENDER_ACCOUNT_STATUS in ('0', '1')
+                       and to_char(addtime, 'yyyymmdd') >
+                           to_char(FIRSTINVEST_TIME + 30, 'yyyymmdd')
+                       and to_char(addtime, 'yyyymmdd') <=
+                           to_char(FIRSTINVEST_TIME + 60, 'yyyymmdd')
+                     group by a1.user_id) t2 on t1.user_id = t2.user_id
+          left join (
+                    --60~90
+                    select a1.user_id,
+                            count(id) cnt_cs_60,
+                            sum(case
+                                  when tender_subject = 2 then
+                                   NVL(tend_cash, 0)
+                                  else
+                                   NVL(tender_capital, 0)
+                                end) amt
+                      from mdtxbi.edw_trading_project_detail a1
+                     inner join (select user_id, FIRSTINVEST_TIME
+                                   from mdtxbi.edw_user_basic
+                                  where to_char(FIRSTINVEST_TIME, 'yyyymm') =
+                                        '${month}'
+                                    and is_borrower = 0) a2 on a1.user_id =
+                                                               a2.user_id
+                     where TENDER_ACCOUNT_STATUS in ('0', '1')
+                       and to_char(addtime, 'yyyymmdd') >
+                           to_char(FIRSTINVEST_TIME + 60, 'yyyymmdd')
+                       and to_char(addtime, 'yyyymmdd') <=
+                           to_char(FIRSTINVEST_TIME + 90, 'yyyymmdd')
+                     group by a1.user_id) t3 on t1.user_id = t3.user_id
+          left join (
+                    --90~120
+                    select a1.user_id,
+                            count(id) cnt_cs_90,
+                            sum(case
+                                  when tender_subject = 2 then
+                                   NVL(tend_cash, 0)
+                                  else
+                                   NVL(tender_capital, 0)
+                                end) amt
+                      from mdtxbi.edw_trading_project_detail a1
+                     inner join (select user_id, FIRSTINVEST_TIME
+                                   from mdtxbi.edw_user_basic
+                                  where to_char(FIRSTINVEST_TIME, 'yyyymm') =
+                                        '${month}'
+                                    and is_borrower = 0) a2 on a1.user_id =
+                                                               a2.user_id
+                     where TENDER_ACCOUNT_STATUS in ('0', '1')
+                       and to_char(addtime, 'yyyymmdd') >
+                           to_char(FIRSTINVEST_TIME + 90, 'yyyymmdd')
+                       and to_char(addtime, 'yyyymmdd') <=
+                           to_char(FIRSTINVEST_TIME + 120, 'yyyymmdd')
+                     group by a1.user_id) t4 on t1.user_id = t4.user_id
+          left join (
+                    --120~150
+                    select a1.user_id,
+                            count(id) cnt_cs_120,
+                            sum(case
+                                  when tender_subject = 2 then
+                                   NVL(tend_cash, 0)
+                                  else
+                                   NVL(tender_capital, 0)
+                                end) amt
+                      from mdtxbi.edw_trading_project_detail a1
+                     inner join (select user_id, FIRSTINVEST_TIME
+                                   from mdtxbi.edw_user_basic
+                                  where to_char(FIRSTINVEST_TIME, 'yyyymm') =
+                                        '${month}'
+                                    and is_borrower = 0) a2 on a1.user_id =
+                                                               a2.user_id
+                     where TENDER_ACCOUNT_STATUS in ('0', '1')
+                       and to_char(addtime, 'yyyymmdd') >
+                           to_char(FIRSTINVEST_TIME + 120, 'yyyymmdd')
+                       and to_char(addtime, 'yyyymmdd') <=
+                           to_char(FIRSTINVEST_TIME + 150, 'yyyymmdd')
+                     group by a1.user_id) t5 on t1.user_id = t5.user_id
+          left join (
+                    --150~180
+                    select a1.user_id,
+                            count(id) cnt_cs_150,
+                            sum(case
+                                  when tender_subject = 2 then
+                                   NVL(tend_cash, 0)
+                                  else
+                                   NVL(tender_capital, 0)
+                                end) amt
+                      from mdtxbi.edw_trading_project_detail a1
+                     inner join (select user_id, FIRSTINVEST_TIME
+                                   from mdtxbi.edw_user_basic
+                                  where to_char(FIRSTINVEST_TIME, 'yyyymm') =
+                                        '${month}'
+                                    and is_borrower = 0) a2 on a1.user_id =
+                                                               a2.user_id
+                     where TENDER_ACCOUNT_STATUS in ('0', '1')
+                       and to_char(addtime, 'yyyymmdd') >
+                           to_char(FIRSTINVEST_TIME + 150, 'yyyymmdd')
+                       and to_char(addtime, 'yyyymmdd') <=
+                           to_char(FIRSTINVEST_TIME + 180, 'yyyymmdd')
+                     group by a1.user_id) t6 on t1.user_id = t6.user_id
+          left join (
+                    --180~270
+                    select a1.user_id,
+                            count(id) cnt_cs_180,
+                            sum(case
+                                  when tender_subject = 2 then
+                                   NVL(tend_cash, 0)
+                                  else
+                                   NVL(tender_capital, 0)
+                                end) amt
+                      from mdtxbi.edw_trading_project_detail a1
+                     inner join (select user_id, FIRSTINVEST_TIME
+                                   from mdtxbi.edw_user_basic
+                                  where to_char(FIRSTINVEST_TIME, 'yyyymm') =
+                                        '${month}'
+                                    and is_borrower = 0) a2 on a1.user_id =
+                                                               a2.user_id
+                     where TENDER_ACCOUNT_STATUS in ('0', '1')
+                       and to_char(addtime, 'yyyymmdd') >
+                           to_char(FIRSTINVEST_TIME + 180, 'yyyymmdd')
+                       and to_char(addtime, 'yyyymmdd') <=
+                           to_char(FIRSTINVEST_TIME + 270, 'yyyymmdd')
+                     group by a1.user_id) t7 on t1.user_id = t7.user_id
+          left join (
+                    --270~360
+                    select a1.user_id,
+                            count(id) cnt_cs_270,
+                            sum(case
+                                  when tender_subject = 2 then
+                                   NVL(tend_cash, 0)
+                                  else
+                                   NVL(tender_capital, 0)
+                                end) amt
+                      from mdtxbi.edw_trading_project_detail a1
+                     inner join (select user_id, FIRSTINVEST_TIME
+                                   from mdtxbi.edw_user_basic
+                                  where to_char(FIRSTINVEST_TIME, 'yyyymm') =
+                                        '${month}'
+                                    and is_borrower = 0) a2 on a1.user_id =
+                                                               a2.user_id
+                     where TENDER_ACCOUNT_STATUS in ('0', '1')
+                       and to_char(addtime, 'yyyymmdd') >
+                           to_char(FIRSTINVEST_TIME + 270, 'yyyymmdd')
+                       and to_char(addtime, 'yyyymmdd') <=
+                           to_char(FIRSTINVEST_TIME + 360, 'yyyymmdd')
+                     group by a1.user_id) t8 on t1.user_id = t8.user_id
+          left join (
+                    -->360
+                    select a1.user_id,
+                            count(id) cnt_cs_360,
+                            sum(case
+                                  when tender_subject = 2 then
+                                   NVL(tend_cash, 0)
+                                  else
+                                   NVL(tender_capital, 0)
+                                end) amt
+                      from mdtxbi.edw_trading_project_detail a1
+                     inner join (select user_id, FIRSTINVEST_TIME
+                                   from mdtxbi.edw_user_basic
+                                  where to_char(FIRSTINVEST_TIME, 'yyyymm') =
+                                        '${month}'
+                                    and is_borrower = 0) a2 on a1.user_id =
+                                                               a2.user_id
+                     where TENDER_ACCOUNT_STATUS in ('0', '1')
+                       and to_char(addtime, 'yyyymmdd') >
+                           to_char(FIRSTINVEST_TIME + 360, 'yyyymmdd')
+                     group by a1.user_id) t9 on t1.user_id = t9.user_id)
+ group by channel_name, activity_tag
+ order by count(distinct user_id) desc
