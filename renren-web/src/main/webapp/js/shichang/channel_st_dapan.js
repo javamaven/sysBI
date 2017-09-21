@@ -153,7 +153,7 @@ function initDataGrid(){
 //			{ label: '渠道充值', name: 'cRecharge', index: '$M_INV_MONEY', width: 160, formatter:function(cellvalue, options, rowObject){if(cellvalue){return formatNumber(cellvalue,2);}else{return '';}}  }
         ],
         height:  $(window).height()-130,
-        rowNum: 20,
+        rowNum: 1000,
 //		rowList : [10,30,50],
         rownumbers: true, 
         rownumWidth: 25, 
