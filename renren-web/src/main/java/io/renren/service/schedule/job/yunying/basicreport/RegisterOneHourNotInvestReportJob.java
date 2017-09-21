@@ -143,7 +143,7 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 			String month = registerEndTime.substring(5 , 7);
 			String day = registerEndTime.substring(8 , 10);
 			String Hour = executeTime.substring(11 , 13);
-			title = "注册1小时未投资用户(免费+SEM渠道)-W-" + month + day + "_" + Hour + "-" + dataList.size();
+			title = "注册1小时未投资用户(免费"+ dataList.size()+"+SEM渠道"+ dataList_sem.size()+")-W-" + month + day + "_" + Hour;
 			
 			Map<String, String> excelFields = service.getExcelFields();
 			excelFields.put("channel_type", "渠道类别");
