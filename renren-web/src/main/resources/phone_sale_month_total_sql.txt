@@ -22,8 +22,8 @@ select
 	${investStartTime} as TIME_START
 from 
  PHONE_SALE_EXCEL_DATA tud      
- left join EDW_USER_BASIC DU ON (tud.USER_NAME = DU.USERNAME)
- left join EDW_USER_BASIC DU2 ON (tud.USER_NAME = DU2.PHONE) 
+ left join EDW_USER_BASIC du on (tud.user_id=du.user_id)
+ left join EDW_USER_BASIC du2 on (tud.user_id=du2.cg_user_id)
 )A
 GROUP BY A.USER_NAME,A.USER_ID,A.call_person,A.call_result,
 A.call_date,A.mark,TIME_END,TIME_START
