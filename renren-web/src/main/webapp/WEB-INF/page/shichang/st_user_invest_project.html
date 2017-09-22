@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+#parse("sys/header.html")
+<style type="text/css">
+.inputClass{
+	height: 30px;
+	width: 150px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+}
+</style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+			<table style="margin-bottom: 10px;">
+				<tr>
+					<td>
+						<label>渠道名称</label>
+					</td>
+					<td>
+						<select id="id_select" multiple="multiple" width="200" class="inputClass"></select>
+					</td>
+					<td>
+						<label>开始日期：</label>
+					</td>
+					<td>
+						<input type="text" class="inputClass form_datetime_2" id="start_date" value="2017-07-01" placeholder="请选择开始日期"/>
+					</td>
+					<td>
+						<label>结束日期：</label>
+					</td>
+					<td>
+						<input type="text" class="inputClass form_datetime_2" id="end_date"  value="2017-07-31" placeholder="请选择结束日期"/>
+					</td>
+					<td>
+						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
+						<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+					</td>					
+				</tr>
+				
+			</table>
+			
+			
+			
+		<div id="day_div">
+	    	<table id="jqGrid_day"></table>
+	    	<div id="jqGridPager_day"></div>
+		</div>
+    </div>
+    
+   
+</div>
+
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/shichang/st_user_invest_project.js?_${date.systemTime}"></script>
+</body>
+</html>

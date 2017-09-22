@@ -48,6 +48,119 @@ public class ChannelAnalyseController {
 	@Autowired
 	UserBehaviorService userBehaviorService;
 	
+	@RequestMapping("/queryInvestProjectChannelList")
+	public R queryInvestProjectChannelList(@RequestBody Map<String, Object> params) {
+		List<Map<String, Object>> dataList = null;
+		String detail_sql = "";
+		try {
+			String startDate = MapUtil.getValue(params, "startDate");
+			String endDate = MapUtil.getValue(params, "endDate");
+			String path = this.getClass().getResource("/").getPath();
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/市场部/渠道分析/首投用户投资项目分布-渠道列表.txt"));
+			detail_sql = detail_sql.replace("${startDate}", startDate);
+			detail_sql = detail_sql.replace("${endDate}", endDate);
+			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		return R.ok().put("channel_list", dataList);
+	}
+	
+	@ResponseBody
+	@RequestMapping("/investProjectList")
+	public R investProjectList(Integer page, Integer limit, String startDate, String endDate, String channelName) {
+		List<Map<String, Object>> dataList = null;
+		String detail_sql = null;
+		try {
+			startDate = startDate.replace("-", "");
+			endDate = endDate.replace("-", "");
+			String path = this.getClass().getResource("/").getPath();
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/市场部/渠道分析/首投用户投资项目分布.txt"));
+			detail_sql = detail_sql.replace("${startDate}", startDate);
+			detail_sql = detail_sql.replace("${endDate}", endDate);
+			if("全部渠道".equals(channelName)){
+				detail_sql = detail_sql.replace("${channelCond}", "");
+			}else{
+				detail_sql = detail_sql.replace("${channelCond}", " and d.channel_name='"+channelName+"' ");
+			}
+			
+			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			double total_user = 0;
+            double total_invest = 0;
+            double total_hongbao_use = 0;
+            double total_user_project_type = 0;
+            double total_invest_project_type = 0;
+            double total_hongbao_use_project_type = 0;
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, Object> map = dataList.get(i);
+				String qixian = MapUtil.getValue(map, "项目期限");
+				if("<=30".equals(qixian) || "(30,90]".equals(qixian) || "(180,360]".equals(qixian) || 
+				   "(360,720]".equals(qixian) || "(90,180]".equals(qixian) || ">720".equals(qixian)){
+					total_user +=  MapUtil.getDoubleValue(map, "用户人数");
+					total_invest +=  MapUtil.getDoubleValue(map, "投资金额");
+					total_hongbao_use +=  MapUtil.getDoubleValue(map, "红包使用金额");
+				}else{
+					total_user_project_type +=  MapUtil.getDoubleValue(map, "用户人数");
+					total_invest_project_type +=  MapUtil.getDoubleValue(map, "投资金额");
+					total_hongbao_use_project_type +=  MapUtil.getDoubleValue(map, "红包使用金额");
+				}
+			}
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, Object> map = dataList.get(i);
+				String qixian = MapUtil.getValue(map, "项目期限");
+				double integerValue = MapUtil.getDoubleValue(map, "用户人数");
+				double doubleValue = MapUtil.getDoubleValue(map, "投资金额");
+				double doubleValue2 = MapUtil.getDoubleValue(map, "红包使用金额");
+				if("<=30".equals(qixian) || "(30,90]".equals(qixian) || "(180,360]".equals(qixian) || 
+						   "(360,720]".equals(qixian) || "(90,180]".equals(qixian) || ">720".equals(qixian)){
+					map.put("占总首投用户比例", NumberUtil.keepPrecision(integerValue/total_user*100, 2) + "%");
+					map.put("投资额占比", NumberUtil.keepPrecision(doubleValue/total_invest*100, 2) + "%");
+					map.put("红包金额占比", NumberUtil.keepPrecision(doubleValue2/total_hongbao_use*100, 2) + "%");
+				}else{
+					map.put("占总首投用户比例", NumberUtil.keepPrecision(integerValue/total_user_project_type*100, 2) + "%");
+					map.put("投资额占比", NumberUtil.keepPrecision(doubleValue/total_invest_project_type*100, 2) + "%");
+					map.put("红包金额占比", NumberUtil.keepPrecision(doubleValue2/total_hongbao_use_project_type*100, 2) + "%");
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		
+		//增加一行标题行
+		Map<String,Object> titleMap = new HashMap<>();
+		titleMap.put("项目期限", "项目类别");
+		titleMap.put("用户人数", "用户人数");
+		titleMap.put("占总首投用户比例", "占总首投用户比例");
+		titleMap.put("投资金额", "投资金额");
+		titleMap.put("投资额占比", "投资额占比");
+		titleMap.put("投资次数", "投资次数");
+		titleMap.put("红包使用金额", "红包使用金额");
+		titleMap.put("红包金额占比", "红包金额占比");
+		titleMap.put("红包使用次数", "红包使用次数");
+		
+		List<Map<String, Object>> qixianList = new ArrayList<>(); 
+		List<Map<String, Object>> projectList = new ArrayList<>();
+		for (int i = 0; i < dataList.size(); i++) {
+			Map<String, Object> map = dataList.get(i);
+			String qixian = MapUtil.getValue(map, "项目期限");
+			if("<=30".equals(qixian) || "(30,90]".equals(qixian) || "(180,360]".equals(qixian) || 
+					   "(360,720]".equals(qixian) || "(90,180]".equals(qixian) || ">720".equals(qixian)){
+				qixianList.add(map);
+			}else{
+				projectList.add(map);
+			}
+		}
+		qixianList.add(new HashMap<String, Object>());
+		qixianList.add(titleMap);
+		qixianList.addAll(projectList);
+		PageUtils pageUtil = new PageUtils(qixianList, qixianList.size(), limit, page);
+		return R.ok().put("page", pageUtil );
+	}
+	
 	@ResponseBody
 	@RequestMapping("/channelZhiliangList")
 	public R channelZhiliangList(Integer page, Integer limit, String startDate, String endDate) {
@@ -137,6 +250,44 @@ public class ChannelAnalyseController {
 		return R.ok().put("page", pageUtil );
 	}
 	
+	@ResponseBody
+	@RequestMapping("/channelWithdrawDetailList")
+	public R channelWithdrawDetailList(Integer page, Integer limit, String startDate, String endDate) {
+		List<Map<String, Object>> dataList = null;
+		List<Map<String, Object>> totalList = null;
+		String detail_sql = null;
+		int start = (page-1)*limit;
+		int end = start+limit;
+		try {
+			startDate = startDate.replace("-", "");
+			endDate = endDate.replace("-", "");
+			String path = this.getClass().getResource("/").getPath();
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/市场部/渠道分析/用户提现明细.txt"));
+			detail_sql = detail_sql.replace("${startDate}", startDate);
+			detail_sql = detail_sql.replace("${endDate}", endDate);
+			detail_sql = detail_sql.replace("${selectSql}", " s.* ");
+			detail_sql = detail_sql.replace("${pageStartSql}", " and s.rn > " + start);
+			detail_sql = detail_sql.replace("${pageEndSql}", " and rownum <= " + end);
+			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+			
+			String totalSql = FileUtil.readAsString(new File(path + File.separator + "sql/市场部/渠道分析/用户提现明细.txt"));
+			totalSql = totalSql.replace("${startDate}", startDate);
+			totalSql = totalSql.replace("${endDate}", endDate);
+			totalSql = totalSql.replace("${selectSql}", " count(1) as total ");
+			totalSql = totalSql.replace("${pageStartSql}", "");
+			totalSql = totalSql.replace("${pageEndSql}", "");
+			totalList = new JdbcUtil(dataSourceFactory, "oracle26").query(totalSql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		Object totalObj = totalList.get(0).get("TOTAL");
+		int total = Integer.parseInt(totalObj + "");
+		PageUtils pageUtil = new PageUtils(dataList, total, limit, page);
+		return R.ok().put("page", pageUtil );
+	}
+	
 	
 	@ResponseBody
 	@RequestMapping("/channelUserHuoyueLiuCunList")
@@ -215,7 +366,6 @@ public class ChannelAnalyseController {
 			}
 			retDataList = transData(dataMap, channelName);
 		} catch (SQLException e) {
-			System.err.println("++++++++error sql +++++++++++ " + querySql);
 			e.printStackTrace();
 		} 
 		
@@ -416,6 +566,54 @@ public class ChannelAnalyseController {
 		}
 	}
 	
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping("/exportWithdrawDetailExcel")
+	public void exportWithdrawDetailExcel(String params, HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+		String reportType="用户提现明细";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
+		
+		Map<String, Object> map = JSON.parseObject(params, Map.class);
+		
+		String startDate = map.get("startDate") + "";
+		String endDate = map.get("endDate") + "";
+		// 查询列表数据
+		R dataR = channelWithdrawDetailList(1, 10000, startDate, endDate);
+		PageUtils pageUtil = (PageUtils) dataR.get("page");
+		List<Map<String,Object>> dataList = (List<Map<String, Object>>) pageUtil.getList();
+//		 查询列表数据
+		JSONArray va = new JSONArray();
+		for (int i = 0; i < dataList.size(); i++) {
+			va.add(dataList.get(i));
+		}
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+		headMap.put("用户ID","用户ID");
+		headMap.put("渠道名称","渠道名称");
+		headMap.put("渠道标记","渠道标记");
+		
+		headMap.put("类型","类型");
+		headMap.put("付费方式","付费方式");
+		headMap.put("注册日期","注册日期");
+		
+		headMap.put("首投日期","首投日期");
+		headMap.put("周期内投资金额","周期内投资金额");
+		headMap.put("周期内投资次数","周期内投资次数");
+		
+		headMap.put("周期内红包使用金额","周期内红包使用金额");
+		headMap.put("周期末日待收","周期末日待收");
+		headMap.put("周期内提现金额","周期内提现金额");
+		
+		headMap.put("周期内提现次数","周期内提现次数");
+		String title = "用户提现明细";
+		try {
+			ExcelUtil.exportExcel(title, headMap, va, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	/**
 	 * 渠道用户留存分析导出
 	 * @param params
@@ -561,5 +759,47 @@ public class ChannelAnalyseController {
 	}
 
 
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping("/exportInvestProjectExcel")
+	public void exportInvestProjectExcel(String params, HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+		String reportType="首投用户投资项目分布";
+		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
+		
+		Map<String, Object> map = JSON.parseObject(params, Map.class);
+		
+		String startDate = MapUtil.getValue(map, "startDate");
+		String endDate = MapUtil.getValue(map, "endDate");
+		String channelName = MapUtil.getValue(map, "channelName");
+		// 查询列表数据
+		R dataR = investProjectList(1, 10000, startDate, endDate, channelName);
+		PageUtils pageUtil = (PageUtils) dataR.get("page");
+		List<Map<String,Object>> dataList = (List<Map<String, Object>>) pageUtil.getList();
+//		 查询列表数据
+		JSONArray va = new JSONArray();
+		for (int i = 0; i < dataList.size(); i++) {
+			va.add(dataList.get(i));
+		}
+		Map<String, String> headMap = new LinkedHashMap<String, String>();
+		headMap.put("项目期限","项目期限");
+		headMap.put("用户人数","用户人数");
+		headMap.put("占总首投用户比例","占总首投用户比例");
+		headMap.put("投资金额","投资金额");
+		headMap.put("投资额占比","投资额占比");
+		headMap.put("投资次数","投资次数");
+		headMap.put("红包使用金额","红包使用金额");
+		headMap.put("红包金额占比","红包金额占比");
+		headMap.put("红包使用次数","红包使用次数");
+		
+		
+		String title = "首投用户投资项目分布";
+		try {
+			ExcelUtil.exportExcel(title, headMap, va, response);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
 }

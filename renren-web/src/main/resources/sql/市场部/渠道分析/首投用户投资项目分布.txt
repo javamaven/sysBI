@@ -1,0 +1,83 @@
+--渠道用户表                
+with dim_user as (                      
+    select
+        u.user_id,
+        case when d.channel_label is null then '自然来源' else d.channel_name end as channel_name,
+        case when d.channel_label is null then 'ziran_liuliang' else d.channel_label end as channel_label,
+        u.firstinvest_time
+    from edw_user_basic u 
+    left join dim_channel d on (u.activity_tag=d.channel_label)
+    where 1=1
+    and u.is_borrower=0
+    and u.firstinvest_time >= to_date('${startDate} 00:00:00', 'yyyyMMdd hh24:mi:ss')
+    and u.firstinvest_time <= to_date('${endDate} 23:59:59', 'yyyyMMdd hh24:mi:ss')
+    ${channelCond}
+)
+,
+tender_tmp as (
+    select 
+        u.*,
+        p.addtime,
+        p.tender_subject,
+        p.tend_cash,
+        p.tend_vouche,
+        p.tender_capital,
+        case 
+            when p.borrow_period <= 30 then '<=30'
+            when p.borrow_period > 30 and p.borrow_period <= 90 then '(30,90]'
+            when p.borrow_period > 90 and p.borrow_period <= 180 then '(90,180]'
+            when p.borrow_period > 180 and p.borrow_period <= 360 then '(180,360]'
+            when p.borrow_period > 360 and p.borrow_period <= 720 then '(360,720]'
+            when p.borrow_period > 720 then '>720' else '' end as borrow_period
+    from dim_user u
+    left join edw_trading_project_detail p on (p.user_id=u.user_id)
+    where 1=1
+    and p.addtime >= to_date('${startDate} 00:00:00', 'yyyyMMdd hh24:mi:ss')
+    and p.addtime <= to_date('${endDate} 23:59:59', 'yyyyMMdd hh24:mi:ss')
+    and p.tender_account_status in (0,1)
+)
+,
+total_tmp as (
+    select
+        '全部期限' as 项目期限,
+        count(distinct t.user_id) as 用户人数,
+        -- 占总首投用户比例
+        sum(case when t.tender_subject=2 then t.tend_cash else t.tender_capital end) as 投资金额,
+        --投资额占比
+        count(1) as 投资次数,
+        sum(case when t.tender_subject<>2 then t.tend_vouche end) as 红包使用金额,
+        --红包金额占比
+        sum(case when t.tender_subject<>2 and t.tend_vouche > 0 then 1 else 0 end) as 红包使用次数
+    from tender_tmp t
+    where 1=1
+)
+
+select
+    t.borrow_period as 项目期限,
+    count(distinct t.user_id) as 用户人数,
+    -- 占总首投用户比例
+    sum(case when t.tender_subject=2 then t.tend_cash else t.tender_capital end) as 投资金额,
+    --投资额占比
+    count(1) as 投资次数,
+    sum(case when t.tender_subject<>2 then t.tend_vouche end) as 红包使用金额,
+    --红包金额占比
+    sum(case when t.tender_subject<>2 and t.tend_vouche > 0 then 1 else 0 end) as 红包使用次数
+from tender_tmp t
+where 1=1
+group by t.borrow_period
+
+union all
+select
+    case when p.tender_subject=1 then '普通散标'
+         when p.tender_subject=2 then '债转'
+         when p.tender_subject=3 then '理财计划(含新手标)'
+         when p.tender_subject=4 then '省心投'
+         else p.tender_subject||'' end as 项目类别,
+    count(distinct p.user_id) as 用户人数,
+    sum(case when p.tender_subject=2 then p.tend_cash else p.tender_capital end) as 投资金额,
+    count(1) as 投资次数,
+    sum(case when p.tender_subject<>2 then p.tend_vouche end) as 红包使用金额,
+    sum(case when p.tender_subject<>2 and p.tend_vouche > 0 then 1 else 0 end) as 红包使用次数
+from tender_tmp p
+where 1=1
+group by p.tender_subject

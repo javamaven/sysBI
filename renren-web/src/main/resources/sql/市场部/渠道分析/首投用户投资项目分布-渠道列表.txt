@@ -1,0 +1,5 @@
+select 
+	case when d.channel_label is null then '自然来源' else nvl(d.channel_name, '未知-' || d.channel_label) end as channel_name
+from dim_channel d
+union all
+select '全部渠道' from dual
