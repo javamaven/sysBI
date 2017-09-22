@@ -1,0 +1,3 @@
+
+
+SELECT count(1) as total FROM DM_REPORT_HIGH_USER A

@@ -1,0 +1,6 @@
+
+select * from (
+SELECT ROWNUM RN,A.* FROM DM_REPORT_HIGH_USER A
+)
+WHERE 1=1
+and RN>? AND RN<=?
