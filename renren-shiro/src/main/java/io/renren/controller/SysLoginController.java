@@ -84,18 +84,27 @@ public class SysLoginController {
 			UsernamePasswordToken token = new UsernamePasswordToken(username, password);
 			subject.login(token);
 		}catch (UnknownAccountException e) {
+			System.err.println("+++++++UnknownAccountException+++++++" + e.getMessage());
 			return R.error(e.getMessage());
 		}catch (IncorrectCredentialsException e) {
+			System.err.println("+++++++IncorrectCredentialsException+++++++" + e.getMessage());
 			return R.error(e.getMessage());
 		}catch (LockedAccountException e) {
+			System.err.println("+++++++LockedAccountException+++++++" + e.getMessage());
 			return R.error(e.getMessage());
 		}catch (AuthenticationException e) {
+			System.err.println("+++++++AuthenticationException+++++++" + "账户验证失败");
 			return R.error("账户验证失败");
 		}
 	    
-		HttpSession session = request.getSession();
-		session.setAttribute("userName", username);
-		session.setAttribute("loginTime", sdf.format(new Date()));
+		try {
+			HttpSession session = request.getSession();
+			session.setAttribute("userName", username);
+			session.setAttribute("loginTime", sdf.format(new Date()));
+		} catch (Exception e) {
+			System.err.println("++++++++HttpSession++++++++++" + e.getMessage());
+			throw e;
+		}
 		return R.ok();
 	}
 	

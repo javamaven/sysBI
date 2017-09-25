@@ -44,28 +44,62 @@ function initDataGrid(){
 //        url: '../channel/st/channelZhiliangList',
         datatype: "json",
         colModel: [			
-		    { label: '渠道名称', name: '渠道名称', width: 130, key: true },
-		    { label: '渠道标记', name: '渠道标记', width: 130, key: true },
-		    { label: '类型', name: '类型', width: 130, key: true },
-		    { label: '付费方式', name: '付费方式', width: 130, key: true },
-		    { label: '注册用户', name: '注册用户', width: 130, key: true },
+		    { label: '渠道名称', name: '渠道名称', width: 130, key: true,align: 'right' },
+		    { label: '渠道标记', name: '渠道标记', width: 110, key: true,align: 'right' },
+		    { label: '类型', name: '类型', width: 80, key: true,align: 'right' },
+		    { label: '付费方式', name: '付费方式', width: 90, key: true,align: 'right' },
+		    { label: '注册用户', name: '注册用户', width: 80, key: true,align: 'right' },
 //		    { label: '首投用户', name: '首投用户', width: 130, key: true },//fst_user_cnt
-		    { label: '首投用户', name: 'FST_USER_CNT', width: 130, key: true },
-        	{ label: '首投用户占比', name: '首投用户占比', width: 80, key: true},
+		    { label: '首投用户', name: 'FST_USER_CNT', width: 80, key: true,align: 'right' },
+        	{ label: '首投用户占比', name: '首投用户占比', width: 130, key: true,align: 'right',
+		    	formatter:function(cellvalue, options, rowObject){
+		    		return formatNumber(cellvalue * 100,2) + "%";
+		    	}
+        	},
+        	{ label: '新手标用户', name: '新手标用户', width: 100, key: true,align: 'right'},
+        	{ label: '首投用户投资金额', name: '首投用户投资金额', width: 130, key: true,align: 'right',
+        		formatter:function(cellvalue, options, rowObject){
+		    		return formatNumber(cellvalue ,2);
+		    	}
+        	},
+        	{ label: '首投用户红包使用金额', name: '首投用户红包使用金额', width: 160, key: true,align: 'right',
+        		formatter:function(cellvalue, options, rowObject){
+		    		return formatNumber(cellvalue ,2);
+		    	}
+        	},
+        	{ label: '新手标投资额', name: '新手标投资额', width: 130, key: true,align: 'right',
+        		formatter:function(cellvalue, options, rowObject){
+		    		return formatNumber(cellvalue ,2);
+		    	}
+        	},
+        	{ label: '新手标红包使用金额', name: '新手标红包使用金额', width: 150, key: true,align: 'right',
+        		formatter:function(cellvalue, options, rowObject){
+		    		return formatNumber(cellvalue ,2);
+		    	}
+        	},
+        	{ label: '首投用户投资次数', name: '首投用户投资次数', width: 130, key: true,align: 'right'},
+        	{ label: '首投用户红包使用次数', name: '首投用户红包使用次数', width: 160, key: true,align: 'right'},
         	
-        	{ label: '新手标用户', name: '新手标用户', width: 80, key: true},
-        	{ label: '首投用户投资金额', name: '首投用户投资金额', width: 80, key: true},
-        	{ label: '首投用户红包使用金额', name: '首投用户红包使用金额', width: 80, key: true},
-        	{ label: '新手标投资额', name: '新手标投资额', width: 80, key: true},
-        	
-        	{ label: '新手标红包使用金额', name: '新手标红包使用金额', width: 80, key: true},
-        	{ label: '首投用户投资次数', name: '首投用户投资次数', width: 80, key: true},
-        	{ label: '首投用户红包使用次数', name: '首投用户红包使用次数', width: 80, key: true},
-        	
-        	{ label: '周期内末日待收金额', name: '周期内末日待收金额', width: 80, key: true},
-        	{ label: '人均待收金额', name: '人均待收金额', width: 80, key: true},
-        	{ label: '人均投资金额', name: '人均投资金额', width: 80, key: true},
-        	{ label: '人均红包使用金额', name: '人均红包使用金额', width: 80, key: true}
+        	{ label: '周期内末日待收金额', name: '周期内末日待收金额', width: 150, key: true,align: 'right',
+        		formatter:function(cellvalue, options, rowObject){
+		    		return formatNumber(cellvalue ,2);
+		    	}
+        	},
+        	{ label: '人均待收金额', name: '人均待收金额', width: 130, key: true,align: 'right',
+        		formatter:function(cellvalue, options, rowObject){
+		    		return formatNumber(cellvalue ,2);
+		    	}
+        	},
+        	{ label: '人均投资金额', name: '人均投资金额', width: 130, key: true,align: 'right',
+        		formatter:function(cellvalue, options, rowObject){
+		    		return formatNumber(cellvalue ,2);
+		    	}
+        	},
+        	{ label: '人均红包使用金额', name: '人均红包使用金额', width: 130, key: true,align: 'right',
+        		formatter:function(cellvalue, options, rowObject){
+		    		return formatNumber(cellvalue ,2);
+		    	}
+        	}
         	
 //        	{ label: '201708', name: '201708', width: 80, key: true, 
 //		    	formatter:function(cellvalue, options, rowObject){
@@ -84,7 +118,7 @@ function initDataGrid(){
         height:  $(window).height()-130,
         rowNum: 1000,
 //		rowList : [10,30,50],
-        rownumbers: true, 
+//        rownumbers: true, 
         rownumWidth: 25, 
         autowidth:true,
         shrinkToFit: false,

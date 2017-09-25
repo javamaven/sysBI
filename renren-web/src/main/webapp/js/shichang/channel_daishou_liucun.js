@@ -33,9 +33,9 @@ function initDataGrid(){
     $("#jqGrid").jqGrid({
         datatype: "json",
         colModel: [			
-		    { label: '渠道名称', name: '渠道名称', width: 130, key: true },
-		    { label: '渠道标记', name: '渠道标记', width: 130, key: true },
-		    { label: '首投用户30天内投资额', name: '首投用户30天内投资额', width: 180, key: true,
+		    { label: '渠道名称', name: '渠道名称', width: 130, key: true,align: 'right' },
+		    { label: '渠道标记', name: '渠道标记', width: 130, key: true,align: 'right' },
+		    { label: '首投用户30天内投资额', name: '首投用户30天内投资额', width: 180, key: true,align: 'right',
 			    	formatter:function(cellvalue, options, rowObject){
 		    		if(cellvalue){
 		    			return formatNumber(cellvalue,2);
@@ -44,7 +44,7 @@ function initDataGrid(){
 		    		}
 		    	} 
 		    },
-		    { label: '30天后', name: '30天后', width: 130, key: true ,
+		    { label: '30天后', name: '30天后', width: 130, key: true,align: 'right' ,
 		    	formatter:function(cellvalue, options, rowObject){
 		    		
 		    		if(cellvalue){
@@ -54,7 +54,7 @@ function initDataGrid(){
 		    		}
 		    	} 
 		    },
-		    { label: '60天后', name: '60天后', width: 130, key: true,
+		    { label: '60天后', name: '60天后', width: 130, key: true,align: 'right',
 		    	formatter:function(cellvalue, options, rowObject){
 		    		
 		    		if(cellvalue){
@@ -64,7 +64,7 @@ function initDataGrid(){
 		    		}
 		    	} 
 		    },
-		    { label: '90天后', name: '90天后', width: 130, key: true,
+		    { label: '90天后', name: '90天后', width: 130, key: true,align: 'right',
 		    	formatter:function(cellvalue, options, rowObject){
 		    		
 		    		if(cellvalue){
@@ -74,7 +74,7 @@ function initDataGrid(){
 		    		}
 		    	} 
 		    },
-        	{ label: '120天后', name: '120天后', width: 80, key: true,
+        	{ label: '120天后', name: '120天后', width: 80, key: true,align: 'right',
 		    	formatter:function(cellvalue, options, rowObject){
 		    		
 		    		if(cellvalue){
@@ -85,7 +85,7 @@ function initDataGrid(){
 		    	} 
 		    },
         	
-        	{ label: '150天后', name: '150天后', width: 80, key: true,
+        	{ label: '150天后', name: '150天后', width: 80, key: true,align: 'right',
 		    	formatter:function(cellvalue, options, rowObject){
 		    		
 		    		if(cellvalue){
@@ -95,7 +95,7 @@ function initDataGrid(){
 		    		}
 		    	} 
 		    },
-        	{ label: '180天后', name: '180天后', width: 80, key: true,
+        	{ label: '180天后', name: '180天后', width: 80, key: true,align: 'right',
 		    	formatter:function(cellvalue, options, rowObject){
 		    		
 		    		if(cellvalue){
@@ -105,7 +105,7 @@ function initDataGrid(){
 		    		}
 		    	} 
 		    },
-        	{ label: '270天后', name: '270天后', width: 80, key: true,
+        	{ label: '270天后', name: '270天后', width: 80, key: true,align: 'right',
 		    	formatter:function(cellvalue, options, rowObject){
 		    		
 		    		if(cellvalue){
@@ -115,7 +115,7 @@ function initDataGrid(){
 		    		}
 		    	} 
 		    },
-        	{ label: '360天后', name: '360天后', width: 80, key: true,
+        	{ label: '360天后', name: '360天后', width: 80, key: true,align: 'right',
 		    	formatter:function(cellvalue, options, rowObject){
 		    		
 		    		if(cellvalue){
@@ -129,7 +129,7 @@ function initDataGrid(){
         height:  $(window).height()-130,
         rowNum: 1000,
 //		rowList : [10,30,50],
-        rownumbers: true, 
+//        rownumbers: true, 
         rownumWidth: 25, 
         autowidth:true,
         shrinkToFit: true,

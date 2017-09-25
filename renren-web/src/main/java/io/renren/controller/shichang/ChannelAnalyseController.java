@@ -384,7 +384,9 @@ public class ChannelAnalyseController {
 				"首投用户投资次数","首投用户人均投资次数","首投用户红包使用次数","首投用户红包成本","当月总用户红包总成本","首投用户成本占比","首投用户人均红包成本",
 				"新手标投资人数","新手标投资额","新手标投资次数","新手标用户占比","新手标占首投用户投资额","人均新手标投资额","新手标红包使用金额","新手标红包使用次数",
 				"首投用户30天内投资额","首投用户30天后待收","首投用户60天后待收","首投用户90天后待收","首投用户180天后待收","首投用户30天后留存率","首投用户60天后留存率",
-				"首投用户90天后留存率","首投用户180天后留存率","首投用户30天后有待收人数","首投用户60天后有待收人数","首投用户90天后有待收人数","首投用户180天后有待收人数"};
+				"首投用户90天后留存率","首投用户180天后留存率"};
+//				,
+//				"首投用户30天后有待收人数","首投用户60天后有待收人数","首投用户90天后有待收人数","首投用户180天后有待收人数"};
 		String[] fiedsArr = {"REG_USER_NUM","ST_USER_NUM","ST_TRAN_RATE","ST_USER_INV_MONEY","ALL_USER_INV_MONEY","ST_USER_INV_MONEY_RATE",
 				"ST_USER_AVG_INV_MONEY","ST_USER_INV_TIMES","ST_USER_AVG_INV_TIMES","ST_USER_USE_HONGBAO_TIMES","ST_USER_USE_HONGBAO",
 				"ALL_USER_USE_HONGBAO","ST_USER_CHENGBEN_RATE","ST_USER_AVG_HONGBAO","NEW_PROJECT_INV_USERS","NEW_PROJECT_INV_MONEY",
@@ -448,6 +450,10 @@ public class ChannelAnalyseController {
 		headMap.put("201706","201706");
 		headMap.put("201707","201707");
 		headMap.put("201708","201708");
+		headMap.put("201709","201709");
+		headMap.put("201710","201710");
+		headMap.put("201711","201711");
+		headMap.put("201712","201712");
 		String title = "渠道首投用户大盘全景";
 		try {
 			ExcelUtil.exportExcel(title, headMap, va, response);
@@ -626,7 +632,7 @@ public class ChannelAnalyseController {
 	@RequestMapping("/exportUserLiucunExcel")
 	public void exportUserLiucunExcel(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-		String reportType="渠道用户留存分析";
+		String reportType="渠道首投用户留存率";
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		
@@ -656,7 +662,7 @@ public class ChannelAnalyseController {
 		headMap.put("270天后","270天后");
 		headMap.put("360天后","360天后");
 		
-		String title = "渠道用户留存分析";
+		String title = "渠道首投用户留存率";
 		try {
 			ExcelUtil.exportExcel(title, headMap, va, response);
 		} catch (Exception e) {
@@ -676,7 +682,7 @@ public class ChannelAnalyseController {
 	@RequestMapping("/exportDaishouLiucunExcel")
 	public void exportDaishouLiucunExcel(String params, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
-		String reportType="渠道待收留存分析";
+		String reportType="渠道首投待收留存分析";
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		
@@ -706,7 +712,7 @@ public class ChannelAnalyseController {
 		headMap.put("270天后","270天后");
 		headMap.put("360天后","360天后");
 		
-		String title = "渠道待收留存分析";
+		String title = "渠道首投待收留存分析";
 		try {
 			ExcelUtil.exportExcel(title, headMap, va, response);
 		} catch (Exception e) {

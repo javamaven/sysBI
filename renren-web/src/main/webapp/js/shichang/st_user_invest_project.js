@@ -99,8 +99,8 @@ function initDataGrid(){
 //        url: '../channel/st/investProjectList',
         datatype: "json",
         colModel: [			
-		    { label: '项目期限', name: '项目期限', width: 80, key: true },
-        	{ label: '用户人数', name: '用户人数', width: 80, key: true, 
+		    { label: '项目期限', name: '项目期限', width: 80, key: true,align: 'right' },
+        	{ label: '用户人数', name: '用户人数', width: 80, key: true,align: 'right', 
 		    	formatter:function(cellvalue, options, rowObject){
 		    		if(cellvalue && cellvalue> 1000){
 		    			return formatNumber(cellvalue,2);
@@ -113,8 +113,8 @@ function initDataGrid(){
 		    		}
 		    	} 
 		    },
-        	{ label: '占总首投用户比例', name: '占总首投用户比例', width: 80, key: true},
-        	{ label: '投资金额', name: '投资金额', width: 80, key: true,
+        	{ label: '占总首投用户比例', name: '占总首投用户比例', width: 80, key: true,align: 'right'},
+        	{ label: '投资金额', name: '投资金额', width: 80, key: true,align: 'right',
 		    	formatter:function(cellvalue, options, rowObject){
 		    		if(cellvalue && cellvalue> 1000){
 		    			return formatNumber(cellvalue,2);
@@ -127,7 +127,7 @@ function initDataGrid(){
 		    		}
 		    	} 
 		    },
-		    { label: '投资额占比', name: '投资额占比', width: 80, key: true,
+		    { label: '投资额占比', name: '投资额占比', width: 80, key: true,align: 'right',
 		    	formatter:function(cellvalue, options, rowObject){
 		    		if(cellvalue && cellvalue> 1000){
 		    			return formatNumber(cellvalue,2);
@@ -140,7 +140,7 @@ function initDataGrid(){
 		    		}
 		    	} 
 		    },
-        	{ label: '投资次数', name: '投资次数', width: 80, key: true, 
+        	{ label: '投资次数', name: '投资次数', width: 80, key: true,align: 'right', 
 		    	formatter:function(cellvalue, options, rowObject){
 		    		if(cellvalue && cellvalue> 1000){
 		    			return formatNumber(cellvalue,2);
@@ -153,7 +153,7 @@ function initDataGrid(){
 		    		}
 		    	} 
 		    },
-        	{ label: '红包使用金额', name: '红包使用金额', width: 80, key: true, 
+        	{ label: '红包使用金额', name: '红包使用金额', width: 80, key: true,align: 'right', 
 		    	formatter:function(cellvalue, options, rowObject){
 		    		if(cellvalue && cellvalue> 1000){
 		    			return formatNumber(cellvalue,2);
@@ -166,7 +166,7 @@ function initDataGrid(){
 		    		}
 		    	} 
 		    },
-        	{ label: '红包金额占比', name: '红包金额占比', width: 80, key: true, 
+        	{ label: '红包金额占比', name: '红包金额占比', width: 80, key: true,align: 'right', 
 		    	formatter:function(cellvalue, options, rowObject){
 		    		if(cellvalue && cellvalue> 1000){
 		    			return formatNumber(cellvalue,2);
@@ -179,7 +179,7 @@ function initDataGrid(){
 		    		}
 		    	} 
 		    },
-        	{ label: '红包使用次数', name: '红包使用次数', width: 80, key: true,
+        	{ label: '红包使用次数', name: '红包使用次数', width: 80, key: true,align: 'right',
 		    	formatter:function(cellvalue, options, rowObject){
 		    		if(cellvalue && cellvalue> 1000){
 		    			return formatNumber(cellvalue,2);
@@ -196,7 +196,7 @@ function initDataGrid(){
         height:  $(window).height()-130,
         rowNum: 1000,
 //		rowList : [10,30,50],
-        rownumbers: true, 
+//        rownumbers: true, 
         rownumWidth: 25, 
         autowidth:true,
         shrinkToFit: true,

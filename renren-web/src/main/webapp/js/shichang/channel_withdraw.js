@@ -43,27 +43,90 @@ function initDataGrid(){
     $("#jqGrid").jqGrid({
         datatype: "json",
         colModel: [			
-		    { label: '渠道名称', name: '渠道名称', width: 130, key: true },
-		    { label: '渠道标记', name: '渠道标记', width: 130, key: true },
-		    { label: '周期内提现用户', name: '周期内提现用户', width: 130, key: true },
-		    { label: '周期末日待收', name: '周期末日待收', width: 130, key: true },
-		    { label: '周期内提现金额', name: '周期内提现金额', width: 130, key: true },
-        	{ label: '周期内投资总金额', name: '周期内投资总金额', width: 80, key: true},
+		    { label: '渠道名称', name: '渠道名称', width: 130, key: true,align: 'right',frozen:true },
+		    { label: '渠道标记', name: '渠道标记', width: 130, key: true,align: 'right',frozen:true  },
+		    { label: '周期内提现用户', name: '周期内提现用户', width: 130, key: true,align: 'right' },
+		    { label: '周期末日待收', name: '周期末日待收', width: 130, key: true,align: 'right',
+		    	formatter:function(cellvalue, options, rowObject){
+		    		return formatNumber(cellvalue,2);
+		    	} 
+		    },
+		    { label: '周期内提现金额', name: '周期内提现金额', width: 130, key: true,align: 'right',
+		    	formatter:function(cellvalue, options, rowObject){
+		    		return formatNumber(cellvalue,2);
+		    	} 
+		    },
+        	{ label: '周期内投资总金额', name: '周期内投资总金额', width: 130, key: true,align: 'right',
+		    	formatter:function(cellvalue, options, rowObject){
+		    		return formatNumber(cellvalue,2);
+		    	} 
+		    },
+        	{ label: '提现占投资比例', name: '提现占投资比例', width: 130, key: true,align: 'right',
+		    	formatter:function(cellvalue, options, rowObject){
+		    		if(cellvalue){
+		    			return formatNumber(cellvalue*100,2) + '%';
+		    		}else{
+		    			return '';
+		    		}
+		    	} 
+		    },
+        	{ label: '人均提现金额', name: '人均提现金额', width: 130, key: true,align: 'right',
+		    	formatter:function(cellvalue, options, rowObject){
+		    		return formatNumber(cellvalue,2);
+		    	} 
+		    },
+        	{ label: '当月首投用户占比', name: '当月首投用户占比', width: 130, key: true,align: 'right',
+		    	formatter:function(cellvalue, options, rowObject){
+		    		if(cellvalue){
+		    			return formatNumber(cellvalue*100,2) + '%';
+		    		}else{
+		    			return '';
+		    		}
+		    	} 
+		    },
+        	{ label: '上月首投用户占比', name: '上月首投用户占比', width: 130, key: true,align: 'right',
+		    	formatter:function(cellvalue, options, rowObject){
+		    		if(cellvalue){
+		    			return formatNumber(cellvalue*100,2) + '%';
+		    		}else{
+		    			return '';
+		    		}
+		    	} 
+		    },
         	
-        	{ label: '提现占投资比例', name: '提现占投资比例', width: 80, key: true},
-        	{ label: '人均提现金额', name: '人均提现金额', width: 80, key: true},
-        	{ label: '当月首投用户占比', name: '当月首投用户占比', width: 80, key: true},
-        	{ label: '上月首投用户占比', name: '上月首投用户占比', width: 80, key: true},
-        	
-        	{ label: '两月前首投用户占比', name: '两月前首投用户占比', width: 80, key: true},
-        	{ label: '三月前首投用户占比', name: '三月前首投用户占比', width: 80, key: true},
-        	{ label: '其他用户占比', name: '其他用户占比', width: 80, key: true}
+        	{ label: '两月前首投用户占比', name: '两月前首投用户占比', width: 140, key: true,align: 'right',
+		    	formatter:function(cellvalue, options, rowObject){
+		    		if(cellvalue){
+		    			return formatNumber(cellvalue*100,2) + '%';
+		    		}else{
+		    			return '';
+		    		}
+		    	} 
+		    },
+        	{ label: '三月前首投用户占比', name: '三月前首投用户占比', width: 140, key: true,align: 'right',
+		    	formatter:function(cellvalue, options, rowObject){
+		    		if(cellvalue){
+		    			return formatNumber(cellvalue*100,2) + '%';
+		    		}else{
+		    			return '';
+		    		}
+		    	} 
+		    },
+        	{ label: '其余', name: '其他用户占比', width: 80, key: true,align: 'right',
+		    	formatter:function(cellvalue, options, rowObject){
+		    		if(cellvalue){
+		    			return formatNumber(cellvalue*100,2) + '%';
+		    		}else{
+		    			return '';
+		    		}
+		    	} 
+        	}
         	
         ],
         height:  $(window).height()-130,
         rowNum: 1000,
 //		rowList : [10,30,50],
-        rownumbers: true, 
+//        rownumbers: true, 
         rownumWidth: 25, 
         autowidth:true,
         shrinkToFit: false,
@@ -88,6 +151,7 @@ function initDataGrid(){
         }
         
     });
+    $("#jqGrid").jqGrid('setFrozenColumns');
 }
 
 var vm = new Vue({

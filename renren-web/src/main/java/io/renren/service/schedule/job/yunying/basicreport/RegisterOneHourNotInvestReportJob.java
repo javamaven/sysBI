@@ -156,6 +156,7 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 		    //将电销的数据，入库保存
 			if (ConfigProp.getIsSendEmail()) {
 				insertPhoneSaleData(year+month+day+Hour, dataList);
+				insertPhoneSaleData(year+month+day+Hour, dataList_sem);
 			}
 			logVo.setSendResult("success");
 		} catch (Exception e) {

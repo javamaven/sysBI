@@ -40,108 +40,272 @@ function initDataGrid(){
         url: '../channel/st/list',
         datatype: "json",
         colModel: [			
-		    { label: '月份', name: '月份', width: 130, key: true },
-        	{ label: '201701', name: '201701', width: 80, key: true, 
+		    { label: '月份', name: '月份', width: 170, key: true,align: 'right',frozen:true },
+        	{ label: '201701', name: '201701', width: 120, key: true,align: 'right', 
 		    	formatter:function(cellvalue, options, rowObject){
 		    		var dataValue = rowObject['月份'];
 		    		if(dataValue.indexOf('率') > 0 || dataValue.indexOf('占') > 0 && cellvalue && cellvalue > 0){
-		    			return formatNumber(cellvalue * 100, 2) + "%";
+		    			var retValue = formatNumber(cellvalue * 100,2) + "%";
+		    			if(retValue == '%'){
+		    				return '';
+		    			}else{
+		    				return retValue;
+		    			}
 		    		}
 		    		if(cellvalue && cellvalue> 1000){
 		    			return formatNumber(cellvalue,2);
 		    		}else{
-		    			return cellvalue;
+		    			if(cellvalue){
+		    				return cellvalue;
+		    			}else{
+		    				return '';
+		    			}
 		    		}
 		    	} 
 		    },
-        	{ label: '201702', name: '201702', width: 80, key: true, 
+        	{ label: '201702', name: '201702', width: 120, key: true,align: 'right', 
 		    	formatter:function(cellvalue, options, rowObject){
 		    		var dataValue = rowObject['月份'];
 		    		if(dataValue.indexOf('率') > 0 || dataValue.indexOf('占') > 0 && cellvalue && cellvalue > 0){
-		    			return formatNumber(cellvalue * 100,2) + "%";
+		    			var retValue = formatNumber(cellvalue * 100,2) + "%";
+		    			if(retValue == '%'){
+		    				return '';
+		    			}else{
+		    				return retValue;
+		    			}
 		    		}
 		    		if(cellvalue && cellvalue> 1000){
 		    			return formatNumber(cellvalue,2);
 		    		}else{
-		    			return cellvalue;
+		    			if(cellvalue){
+		    				return cellvalue;
+		    			}else{
+		    				return '';
+		    			}
 		    		}
 		    	} 
 		    },
-        	{ label: '201703', name: '201703', width: 80, key: true,
+        	{ label: '201703', name: '201703', width: 120, key: true,align: 'right',
 		    	formatter:function(cellvalue, options, rowObject){
 		    		var dataValue = rowObject['月份'];
 		    		if(dataValue.indexOf('率') > 0 || dataValue.indexOf('占') > 0 && cellvalue && cellvalue > 0){
-		    			return formatNumber(cellvalue * 100,2) + "%";
+		    			var retValue = formatNumber(cellvalue * 100,2) + "%";
+		    			if(retValue == '%'){
+		    				return '';
+		    			}else{
+		    				return retValue;
+		    			}
 		    		}
 		    		if(cellvalue && cellvalue> 1000){
 		    			return formatNumber(cellvalue,2);
 		    		}else{
-		    			return cellvalue;
+		    			if(cellvalue){
+		    				return cellvalue;
+		    			}else{
+		    				return '';
+		    			}
 		    		}
 		    	} 
 		    },
-        	{ label: '201704', name: '201704', width: 80, key: true, 
+        	{ label: '201704', name: '201704', width: 120, key: true,align: 'right', 
 		    	formatter:function(cellvalue, options, rowObject){
 		    		var dataValue = rowObject['月份'];
 		    		if(dataValue.indexOf('率') > 0 || dataValue.indexOf('占') > 0 && cellvalue && cellvalue > 0){
-		    			return formatNumber(cellvalue * 100,2) + "%";
+		    			var retValue = formatNumber(cellvalue * 100,2) + "%";
+		    			if(retValue == '%'){
+		    				return '';
+		    			}else{
+		    				return retValue;
+		    			}
 		    		}
 		    		if(cellvalue && cellvalue> 1000){
 		    			return formatNumber(cellvalue,2);
 		    		}else{
-		    			return cellvalue;
+		    			if(cellvalue){
+		    				return cellvalue;
+		    			}else{
+		    				return '';
+		    			}
 		    		}
 		    	} 
 		    },
-        	{ label: '201705', name: '201705', width: 80, key: true, 
+        	{ label: '201705', name: '201705', width: 120, key: true,align: 'right', 
 		    	formatter:function(cellvalue, options, rowObject){
 		    		var dataValue = rowObject['月份'];
 		    		if(dataValue.indexOf('率') > 0 || dataValue.indexOf('占') > 0 && cellvalue && cellvalue > 0){
-		    			return formatNumber(cellvalue * 100,2) + "%";
+		    			var retValue = formatNumber(cellvalue * 100,2) + "%";
+		    			if(retValue == '%'){
+		    				return '';
+		    			}else{
+		    				return retValue;
+		    			}
 		    		}
 		    		if(cellvalue && cellvalue> 1000){
 		    			return formatNumber(cellvalue,2);
 		    		}else{
-		    			return cellvalue;
+		    			if(cellvalue){
+		    				return cellvalue;
+		    			}else{
+		    				return '';
+		    			}
 		    		}
 		    	} 
 		    },
-        	{ label: '201706', name: '201706', width: 80, key: true, 
+        	{ label: '201706', name: '201706', width: 120, key: true,align: 'right', 
 		    	formatter:function(cellvalue, options, rowObject){
 		    		var dataValue = rowObject['月份'];
 		    		if(dataValue.indexOf('率') > 0 || dataValue.indexOf('占') > 0 && cellvalue && cellvalue > 0){
-		    			return formatNumber(cellvalue * 100,2) + "%";
+		    			var retValue = formatNumber(cellvalue * 100,2) + "%";
+		    			if(retValue == '%'){
+		    				return '';
+		    			}else{
+		    				return retValue;
+		    			}
 		    		}
 		    		if(cellvalue && cellvalue> 1000){
 		    			return formatNumber(cellvalue,2);
 		    		}else{
-		    			return cellvalue;
+		    			if(cellvalue){
+		    				return cellvalue;
+		    			}else{
+		    				return '';
+		    			}
 		    		}
 		    	} 
 		    },
-        	{ label: '201707', name: '201707', width: 80, key: true,
+        	{ label: '201707', name: '201707', width: 120, key: true,align: 'right',
 		    	formatter:function(cellvalue, options, rowObject){
 		    		var dataValue = rowObject['月份'];
 		    		if(dataValue.indexOf('率') > 0 || dataValue.indexOf('占') > 0 && cellvalue && cellvalue > 0){
-		    			return formatNumber(cellvalue * 100,2) + "%";
+		    			var retValue = formatNumber(cellvalue * 100,2) + "%";
+		    			if(retValue == '%'){
+		    				return '';
+		    			}else{
+		    				return retValue;
+		    			}
 		    		}
 		    		if(cellvalue && cellvalue> 1000){
 		    			return formatNumber(cellvalue,2);
 		    		}else{
-		    			return cellvalue;
+		    			if(cellvalue){
+		    				return cellvalue;
+		    			}else{
+		    				return '';
+		    			}
 		    		}
 		    	} 
 		    },
-        	{ label: '201708', name: '201708', width: 80, key: true, 
+        	{ label: '201708', name: '201708', width: 120, key: true,align: 'right', 
 		    	formatter:function(cellvalue, options, rowObject){
 		    		var dataValue = rowObject['月份'];
 		    		if(dataValue.indexOf('率') > 0 || dataValue.indexOf('占') > 0 && cellvalue && cellvalue > 0){
-		    			return formatNumber(cellvalue * 100,2) + "%";
+		    			var retValue = formatNumber(cellvalue * 100,2) + "%";
+		    			if(retValue == '%'){
+		    				return '';
+		    			}else{
+		    				return retValue;
+		    			}
 		    		}
 		    		if(cellvalue && cellvalue> 1000){
 		    			return formatNumber(cellvalue,2);
 		    		}else{
-		    			return cellvalue;
+		    			if(cellvalue){
+		    				return cellvalue;
+		    			}else{
+		    				return '';
+		    			}
+		    		}
+		    	} 
+        	}
+		    ,
+        	{ label: '201709', name: '201709', width: 120, key: true, 
+		    	formatter:function(cellvalue, options, rowObject){
+		    		var dataValue = rowObject['月份'];
+		    		if(dataValue.indexOf('率') > 0 || dataValue.indexOf('占') > 0 && cellvalue && cellvalue > 0){
+		    			var retValue = formatNumber(cellvalue * 100,2) + "%";
+		    			if(retValue == '%'){
+		    				return '';
+		    			}else{
+		    				return retValue;
+		    			}
+		    		}
+		    		if(cellvalue && cellvalue> 1000){
+		    			return formatNumber(cellvalue,2);
+		    		}else{
+		    			if(cellvalue){
+		    				return cellvalue;
+		    			}else{
+		    				return '';
+		    			}
+		    		}
+		    	} 
+        	}
+		    ,
+        	{ label: '201710', name: '201710', width: 120, key: true, 
+		    	formatter:function(cellvalue, options, rowObject){
+		    		var dataValue = rowObject['月份'];
+		    		if(dataValue.indexOf('率') > 0 || dataValue.indexOf('占') > 0 && cellvalue && cellvalue > 0){
+		    			var retValue = formatNumber(cellvalue * 100,2) + "%";
+		    			if(retValue == '%'){
+		    				return '';
+		    			}else{
+		    				return retValue;
+		    			}
+		    		}
+		    		if(cellvalue && cellvalue> 1000){
+		    			return formatNumber(cellvalue,2);
+		    		}else{
+		    			if(cellvalue){
+		    				return cellvalue;
+		    			}else{
+		    				return '';
+		    			}
+		    		}
+		    	} 
+        	}
+		    ,
+        	{ label: '201711', name: '201711', width: 120, key: true, 
+		    	formatter:function(cellvalue, options, rowObject){
+		    		var dataValue = rowObject['月份'];
+		    		if(dataValue.indexOf('率') > 0 || dataValue.indexOf('占') > 0 && cellvalue && cellvalue > 0){
+		    			var retValue = formatNumber(cellvalue * 100,2) + "%";
+		    			if(retValue == '%'){
+		    				return '';
+		    			}else{
+		    				return retValue;
+		    			}
+		    		}
+		    		if(cellvalue && cellvalue> 1000){
+		    			return formatNumber(cellvalue,2);
+		    		}else{
+		    			if(cellvalue){
+		    				return cellvalue;
+		    			}else{
+		    				return '';
+		    			}
+		    		}
+		    	} 
+        	}
+		    ,
+        	{ label: '201712', name: '201712', width: 120, key: true, 
+		    	formatter:function(cellvalue, options, rowObject){
+		    		var dataValue = rowObject['月份'];
+		    		if(dataValue.indexOf('率') > 0 || dataValue.indexOf('占') > 0 && cellvalue && cellvalue > 0){
+		    			var retValue = formatNumber(cellvalue * 100,2) + "%";
+		    			if(retValue == '%'){
+		    				return '';
+		    			}else{
+		    				return retValue;
+		    			}
+		    		}
+		    		if(cellvalue && cellvalue> 1000){
+		    			return formatNumber(cellvalue,2);
+		    		}else{
+		    			if(cellvalue){
+		    				return cellvalue;
+		    			}else{
+		    				return '';
+		    			}
 		    		}
 		    	} 
         	}
@@ -155,10 +319,10 @@ function initDataGrid(){
         height:  $(window).height()-130,
         rowNum: 1000,
 //		rowList : [10,30,50],
-        rownumbers: true, 
+//        rownumbers: true, 
         rownumWidth: 25, 
         autowidth:true,
-        shrinkToFit: true,
+        shrinkToFit: false,
         autoScroll: false,
 		viewrecords: true,
 		rowList : [10,30,50],
@@ -176,10 +340,11 @@ function initDataGrid(){
         },
         gridComplete:function(){
         	//隐藏grid底部滚动条
-        	$("#jqGrid_day").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
+//        	$("#jqGrid_day").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
         }
         
     });
+    $("#jqGrid_day").jqGrid('setFrozenColumns');
 }
 
 var vm = new Vue({

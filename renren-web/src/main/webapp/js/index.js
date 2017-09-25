@@ -9,8 +9,11 @@ function addTab(title, href, icon){
     		alert('最多只能打开8个窗口');
     		return;
     	}
+    	var height = $(window).height();
+    	console.info('+++++height+++++++' + height)
+    	height = height-100 + 'px';
         if (href){  
-            var content = '<iframe scrolling="yes" frameborder="0"  src="'+href+'" style="width:100%;height:96%;margin-top:10px;margin-left:0px;overflow: hidden;"></iframe>';  
+            var content = '<iframe scrolling="yes" frameborder="0"  src="'+href+'" style="width:100%;height:'+height+';margin-top:10px;margin-left:0px;overflow: hidden;"></iframe>';  
         } else {  
             var content = '未实现';  
         }  

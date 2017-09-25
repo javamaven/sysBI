@@ -43,26 +43,46 @@ function initDataGrid(){
     $("#jqGrid").jqGrid({
         datatype: "json",
         colModel: [			
-        	{ label: '用户ID', name: '用户ID', width: 100, key: true },
-		    { label: '渠道名称', name: '渠道名称', width: 100, key: true },
-		    { label: '渠道标记', name: '渠道标记', width: 100, key: true },
-		    { label: '类型', name: '类型', width: 100, key: true },
-		    { label: '付费方式', name: '付费方式', width: 100, key: true },
-		    { label: '注册日期', name: '注册日期', width: 100, key: true },
-		    { label: '首投日期', name: '首投日期', width: 100, key: true },
-		    { label: '周期内投资金额', name: '周期内投资金额', width: 130, key: true},
-		    { label: '周期内投资次数', name: '周期内投资次数', width: 130, key: true},
-		    { label: '周期内红包使用金额', name: '周期内红包使用金额', width: 130, key: true},
+        	{ label: '用户ID', name: '用户ID', width: 100, key: true,align: 'right' },
+		    { label: '渠道名称', name: '渠道名称', width: 100, key: true,align: 'right' },
+		    { label: '渠道标记', name: '渠道标记', width: 100, key: true,align: 'right' },
+		    { label: '类型', name: '类型', width: 100, key: true,align: 'right' },
+		    { label: '付费方式', name: '付费方式', width: 100, key: true,align: 'right' },
+		    { label: '注册日期', name: '注册日期', width: 100, key: true,align: 'right' },
+		    { label: '首投日期', name: '首投日期', width: 100, key: true,align: 'right' },
+		    { label: '周期内投资金额', name: '周期内投资金额', width: 130, key: true,align: 'right',
+		    	formatter:function(cellvalue, options, rowObject){
+		    		return formatNumber(cellvalue,2);
+		    	} 
+		    },
+		    { label: '周期内投资次数', name: '周期内投资次数', width: 130, key: true,align: 'right'},
+		    { label: '周期内红包使用金额', name: '周期内红包使用金额', width: 150, key: true,align: 'right',
+		    	formatter:function(cellvalue, options, rowObject){
+		    		return formatNumber(cellvalue,2);
+		    	} 
+		    },
 		    
-		    { label: '周期末日待收', name: '周期末日待收', width: 130, key: true},
-		    { label: '周期内提现金额', name: '周期内提现金额', width: 130, key: true},
-		    { label: '周期内提现次数', name: '周期内提现次数', width: 130, key: true}
+		    { label: '周期末日待收', name: '周期末日待收', width: 130, key: true,align: 'right',
+		    	formatter:function(cellvalue, options, rowObject){
+		    		return formatNumber(cellvalue,2);
+		    	} 
+		    },
+		    { label: '周期内提现金额', name: '周期内提现金额', width: 130, key: true,align: 'right',
+		    	formatter:function(cellvalue, options, rowObject){
+		    		return formatNumber(cellvalue,2);
+		    	} 
+		    },
+		    { label: '周期内提现次数', name: '周期内提现次数', width: 130, key: true,align: 'right',
+		    	formatter:function(cellvalue, options, rowObject){
+		    		return cellvalue + '     ';
+		    	} 
+		    }
         	
         ],
         height:  $(window).height()-130,
         rowNum: 20,
 //		rowList : [10,30,50],
-        rownumbers: true, 
+//        rownumbers: true, 
         rownumWidth: 25, 
         autowidth:true,
         shrinkToFit: false,
