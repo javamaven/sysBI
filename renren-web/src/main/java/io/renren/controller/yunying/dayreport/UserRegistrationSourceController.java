@@ -46,11 +46,11 @@ public class UserRegistrationSourceController {
 
 	
 	/**
-	 * P2P列表
+	 * 用户注册来源
 	 */
 	@ResponseBody
 	@RequestMapping("/list")
-	public R daylist(Integer page, Integer limit ,String period) {
+	public R daylist(Integer page, Integer limit ,String period ,String sortorder ,String order) {
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		
@@ -97,7 +97,9 @@ public class UserRegistrationSourceController {
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String period = map.get("period") + "";
-		R r=daylist(1, 1000000, period);
+		String sortorder=map.get("sortorder")+"";
+		String order=map.get("order")+"";
+		R r=daylist(1, 1000000, period,sortorder , order);
 		PageUtils pageUtil = (PageUtils) r.get("page");	
 		
 		List<Map<String,Object>> resultList = (List<Map<String, Object>>) pageUtil.getList();
