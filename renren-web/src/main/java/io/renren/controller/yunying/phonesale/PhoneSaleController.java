@@ -395,6 +395,16 @@ public class PhoneSaleController {
 				detail_sql = detail_sql.replace("${investStartTime}", startTime);
 				detail_sql = detail_sql.replace("${investEndTime}", endTime);
 			}
+			
+			
+			if(isLocalConnect(dataSourceFactory)){
+				if(detail_sql.contains("PHONE_SALE_EXCEL_DATA")){
+					detail_sql = detail_sql.replace("PHONE_SALE_EXCEL_DATA", "phone_sale_excel_data_local");
+				}else{
+					detail_sql = detail_sql.replace("phone_sale_excel_data", "phone_sale_excel_data_local");
+				}
+			}
+			
 			resultList = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 		} catch (IOException e) {
 			e.printStackTrace();

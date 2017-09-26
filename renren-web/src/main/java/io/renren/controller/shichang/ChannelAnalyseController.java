@@ -68,6 +68,44 @@ public class ChannelAnalyseController {
 		return R.ok().put("channel_list", dataList);
 	}
 	
+	@RequestMapping("/queryInvestProjectDaishou")
+	public R queryInvestProjectDaishou(@RequestBody Map<String, Object> params) {
+		List<Map<String, Object>> dataList = null;
+		String detail_sql = "";
+		try {
+			String channelName = MapUtil.getValue(params, "channelName");
+			if(StringUtils.isEmpty(channelName) || "全部渠道".equals(channelName)){
+				channelName = "";
+			}else{
+				channelName = " and d.channel_name = '"+channelName+"' ";
+			}
+			String startDate = MapUtil.getValue(params, "startDate");
+			startDate = startDate.replace("-", "");
+			String endDate = MapUtil.getValue(params, "endDate");
+			endDate = endDate.replace("-", "");
+			String path = this.getClass().getResource("/").getPath();
+			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/市场部/渠道分析/首投用户投资项目分布-末日待收.txt"));
+			detail_sql = detail_sql.replace("${startDate}", startDate);
+			detail_sql = detail_sql.replace("${endDate}", endDate);
+			detail_sql = detail_sql.replace("${channelNameCond}", channelName);
+			dataList = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} 
+		Map<String, Object> waitMap = dataList.get(0);
+		Map<String, Object> investMoneyMap = dataList.get(1);
+		double wait = MapUtil.getDoubleValue(waitMap, "WAIT");
+		double investMoney = MapUtil.getDoubleValue(investMoneyMap, "WAIT");
+		if(investMoney == 0){
+			waitMap.put("liucun_rate", "-");
+		}else{
+			waitMap.put("liucun_rate", NumberUtil.keepPrecision(wait/investMoney*100, 2) + "%");
+		}
+		return R.ok().put("data", waitMap);
+	}
+	
 	@ResponseBody
 	@RequestMapping("/investProjectList")
 	public R investProjectList(Integer page, Integer limit, String startDate, String endDate, String channelName) {
@@ -102,9 +140,11 @@ public class ChannelAnalyseController {
 					total_invest +=  MapUtil.getDoubleValue(map, "投资金额");
 					total_hongbao_use +=  MapUtil.getDoubleValue(map, "红包使用金额");
 				}else{
-					total_user_project_type +=  MapUtil.getDoubleValue(map, "用户人数");
-					total_invest_project_type +=  MapUtil.getDoubleValue(map, "投资金额");
-					total_hongbao_use_project_type +=  MapUtil.getDoubleValue(map, "红包使用金额");
+					if(!"新手标".equals(qixian)){
+						total_user_project_type +=  MapUtil.getDoubleValue(map, "用户人数");
+						total_invest_project_type +=  MapUtil.getDoubleValue(map, "投资金额");
+						total_hongbao_use_project_type +=  MapUtil.getDoubleValue(map, "红包使用金额");
+					}
 				}
 			}
 			for (int i = 0; i < dataList.size(); i++) {
@@ -144,15 +184,67 @@ public class ChannelAnalyseController {
 		
 		List<Map<String, Object>> qixianList = new ArrayList<>(); 
 		List<Map<String, Object>> projectList = new ArrayList<>();
+		//要求排序
+		Map<String, Object> map30 = new HashMap<>();
+		Map<String, Object> map30_90 = new HashMap<>();
+		Map<String, Object> map90_180 = new HashMap<>();
+		Map<String, Object> map180_360 = new HashMap<>();
+		Map<String, Object> map360_720 = new HashMap<>();
+		Map<String, Object> map720 = new HashMap<>();
 		for (int i = 0; i < dataList.size(); i++) {
 			Map<String, Object> map = dataList.get(i);
 			String qixian = MapUtil.getValue(map, "项目期限");
-			if("<=30".equals(qixian) || "(30,90]".equals(qixian) || "(180,360]".equals(qixian) || 
-					   "(360,720]".equals(qixian) || "(90,180]".equals(qixian) || ">720".equals(qixian)){
-				qixianList.add(map);
+			if("<=30".equals(qixian)){
+				map30 = map;
+			}else if("(30,90]".equals(qixian)){
+				map30_90 = map;
+			}else if("(90,180]".equals(qixian)){
+				map90_180 = map;
+			}else if("(180,360]".equals(qixian)){
+				map180_360 = map;
+			}else if("(360,720]".equals(qixian)){
+				map360_720 = map;
+			}else if(">720".equals(qixian)){
+				map720 = map;
 			}else{
 				projectList.add(map);
 			}
+		}
+		if(!map30.containsKey("<=30")){
+			map30.put("项目期限", "<=30");
+			qixianList.add(map30);
+		}else{
+			qixianList.add(map30);
+		}
+		if(!map30_90.containsKey("(30,90]")){
+			map30_90.put("项目期限", "(30,90]");
+			qixianList.add(map30_90);
+		}else{
+			qixianList.add(map30_90);
+		}
+		if(!map90_180.containsKey("(90,180]")){
+			map90_180.put("项目期限", "(90,180]");
+			qixianList.add(map90_180);
+		}else{
+			qixianList.add(map90_180);
+		}
+		if(!map180_360.containsKey("(180,360]")){
+			map180_360.put("项目期限", "(180,360]");
+			qixianList.add(map180_360);
+		}else{
+			qixianList.add(map180_360);
+		}
+		if(!map360_720.containsKey("(360,720]")){
+			map360_720.put("项目期限", "(360,720]");
+			qixianList.add(map360_720);
+		}else{
+			qixianList.add(map360_720);
+		}
+		if(!map720.containsKey(">720")){
+			map720.put("项目期限", ">720");
+			qixianList.add(map720);
+		}else{
+			qixianList.add(map720);
 		}
 		qixianList.add(new HashMap<String, Object>());
 		qixianList.add(titleMap);

@@ -74,6 +74,25 @@ function loadChannel(){
 
 }
 
+function queryDaishou(){
+    $.ajax({
+        type: "POST",
+        url: "../channel/st/queryInvestProjectDaishou",
+        data: JSON.stringify(getParams()),
+        contentType: "application/json;charset=utf-8",
+        success : function(data) {
+        	console.info(data)
+        	var dataMap = data.data;
+        	var wait = dataMap.WAIT;
+        	var liucun_rate = dataMap.liucun_rate;
+        	$("#wait_div").html(formatNumber(wait, 2));
+        	$("#liucun_rate_div").html(liucun_rate);
+        	
+        }
+     });
+
+}
+
 function initExportFunction(){
 	$('#btn_exports').click(function(){
 		var params = getParams();
@@ -185,7 +204,7 @@ function initDataGrid(){
 		    			return formatNumber(cellvalue,2);
 		    		}else{
 		    			if(cellvalue){
-		    				return cellvalue;
+		    				return cellvalue + "  ";
 		    			}else{
 		    				return '';
 		    			}
@@ -193,7 +212,7 @@ function initDataGrid(){
 		    	} 
 		    }
         ],
-        height:  $(window).height()-130,
+        height:  $(window).height()-150,
         rowNum: 1000,
 //		rowList : [10,30,50],
 //        rownumbers: true, 
@@ -218,6 +237,15 @@ function initDataGrid(){
         gridComplete:function(){
         	//隐藏grid底部滚动条
         	$("#jqGrid_day").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
+        },
+        loadComplete: function (){
+        	var ids = $(this).getDataIDs();
+            for(var i=0;i<ids.length;i++){
+                var rowData = $(this).getRowData(ids[i]);
+                if(rowData.项目期限 == '新手标'){//如果等于新手标，则背景色置灰显示
+                    $('#'+ids[i]).find("td").addClass("SelectBG");
+                }
+            }
         }
         
     });
@@ -254,6 +282,7 @@ var vm = new Vue({
 				url: '../channel/st/investProjectList',
 	            postData: getParams()
             }).trigger("reloadGrid");
+			queryDaishou();
 		}
 	}
 });

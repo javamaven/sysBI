@@ -126,7 +126,7 @@ FROM (
   FROM
   (
     SELECT
-      USER_NAME AS "用户名",
+      nvl(USER_NAME, realname) AS "用户名",
       CALL_PERSON AS "电销人员",
       CALL_RESULT AS "电销结果",
       CASE WHEN SUM(MONEY_INVEST)>=100 THEN '是' ELSE '否' END AS "是否投资",

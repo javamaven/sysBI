@@ -1,9 +1,28 @@
 $(function () {
+
+//	var brow = $.browser;
+//	var bInfo = "";
+//	console.info(brow)
+//	if (brow.msie) {
+//		bInfo = "MicrosoftInternetExplorer" + brow.version;
+//	}
+//	if (brow.mozilla) {
+//		bInfo = "MozillaFirefox" + brow.version;
+//	}
+//	if (brow.safari) {
+//		bInfo = "AppleSafari" + brow.version;
+//	}
+//	if (brow.opera) {
+//		bInfo = "Opera" + brow.version;
+//	}
+//	alert(bInfo);
+	
+	browser = getBrowserType();
 	initDataGrid();
 	initExportFunction();
 	initTime();
 });
-
+var browser = "";
 function initTime(){
 	 $("#start_date").datetimepicker({
 	        format: 'yyyy-mm-dd',
@@ -148,11 +167,19 @@ function initDataGrid(){
         gridComplete:function(){
         	//隐藏grid底部滚动条
 //        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" }); 
+        },
+        loadComplete: function (){
+//        	 resetHeight("jqGrid");
+//        	 hackHeight("#jqGrid");
         }
         
     });
     $("#jqGrid").jqGrid('setFrozenColumns');
+//    resetHeight("jqGrid");
+//    hackHeight("#jqGrid");
 }
+
+
 
 var vm = new Vue({
 	el:'#rrapp',
@@ -184,6 +211,95 @@ var vm = new Vue({
 		}
 	}
 });
+
+/**
+ * 获取浏览器类型
+ * @returns
+ */
+function getBrowserType(){
+	var explorer = navigator.userAgent ;
+	//ie 
+	if (explorer.indexOf("MSIE") >= 0) {
+		return "ie";
+	}
+	//firefox 
+	else if (explorer.indexOf("Firefox") >= 0) {
+	    return "Firefox";
+	}
+	//Chrome
+	else if(explorer.indexOf("Chrome") >= 0){
+	 	return "Chrome";
+	}
+	//Opera
+	else if(explorer.indexOf("Opera") >= 0){
+		return "Opera";
+	}
+	//Safari
+	else if(explorer.indexOf("Safari") >= 0){
+		return "Safari";
+	} 
+	//Netscape
+	else if(explorer.indexOf("Netscape")>= 0) { 
+		return "Netscape";
+	} 
+}
+function hackHeight(listId) {
+	console.info(1111)
+    $(listId + '_frozen tr').slice(1).each(function() {
+ 
+        var rowId = $(this).attr('id');
+ 
+        var frozenTdHeight = parseFloat($('td:first', this).height());
+        var normalHeight = parseFloat($(listId + ' #' + $(this).attr('id')).find('td:first').height());
+ 
+        // 如果冻结的列高度小于未冻结列的高度则hack之
+        if (frozenTdHeight < normalHeight) {
+ 
+            $('td', this).each(function() {
+ 
+                /*
+                 浏览器差异高度hack
+                 */
+                var space = 0; // opera默认使用0就可以
+                if (browser == 'Chrome') {
+                    space = 0.6;
+                } else if (browser == 'ie') {
+                    space = -0.2;
+                } else if (browser == 'Firefox') {
+                    space = 0.5;
+                }
+ 
+                if (!$(this).attr('style') || $(this).attr('style').indexOf('height:') == -1) {
+                    $(this).attr('style', $(this).attr('style') + ";height:" + (normalHeight + space) + "px !important");
+                }
+            });
+        }
+    });
+}
+/**
+ * 冻结列导致高度不一致问题
+ * @param gridId
+ * @returns
+ */
+function resetHeight(gridId){
+	var browser = getBrowserType();
+    var divTop = -1;
+    var bdivTop = -1;
+//    divTop = -0.5;
+//    bdivTop = -0.5;
+    // opera 不需要hack
+//    if (browser == 'Opera') {
+        divTop = 0;
+        bdivTop = 0;
+//    }
+    console.info("+++++++browser+++++++"+browser)
+    $('#gview_' + gridId + ' .frozen-div').css({
+        top: $('#gview_' + gridId + ' .frozen-div').position().top + divTop
+    });
+    $('#gview_' + gridId + ' .frozen-bdiv').css({
+        top: $('#gview_' + gridId + ' .frozen-bdiv').position().top + bdivTop
+    });
+}
 
 //获取渠道信息
 function getChannelName(){

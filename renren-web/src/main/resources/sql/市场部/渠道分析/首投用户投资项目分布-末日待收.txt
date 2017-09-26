@@ -1,0 +1,36 @@
+
+
+--末日待收：
+--首投用户：
+select sum(
+      AL.NOR_RECOVER_CAPITAL_WAIT_C+
+      AL.NOR_RECOVER_INTEREST_WAIT_C+
+      AL.DEP_RECOVER_CAPITAL_WAIT_C+
+      AL.DEP_RECOVER_INTEREST_WAIT_C
+    ) AS  wait 
+    
+from edw_user_acc_log AL
+where user_id in 
+(
+	select u.user_id from edw_user_basic  u
+	left join dim_channel d on (u.activity_tag=d.channel_label)
+	where to_char(u.FIRSTINVEST_TIME,'yyyymmdd') between '${startDate}' and '${endDate}' and u.IS_BORROWER=0
+	${channelNameCond}
+
+)
+and stat_period='${endDate}'
+union all
+select
+    sum(case when p.tender_subject=2 then p.tend_cash else p.tender_capital end) as invest_money
+from 
+edw_trading_project_detail p
+left join edw_user_basic u on (p.user_id=u.user_id)
+left join dim_channel d on (u.activity_tag=d.channel_label)
+where 1=1
+and p.addtime >= to_date('${startDate} 00:00:00', 'yyyyMMdd hh24:mi:ss')
+and p.addtime <= to_date('${endDate} 23:59:59', 'yyyyMMdd hh24:mi:ss')
+and u.FIRSTINVEST_TIME >= to_date('${startDate} 00:00:00', 'yyyyMMdd hh24:mi:ss')
+and u.FIRSTINVEST_TIME <= to_date('${endDate} 23:59:59', 'yyyyMMdd hh24:mi:ss')
+and p.tender_account_status in (0,1)
+and u.is_borrower=0
+${channelNameCond}
