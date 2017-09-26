@@ -142,9 +142,11 @@ var vm = new Vue({
 
 
 function routerList(router, menuList){
+	//设置左边菜单栏高度，菜单过多时出现滚动条，不用将整个系统页面撑出滚动条
+	var height = $(window).height();
+	$("#menu_div").height(height-54);
 	for(var key in menuList){
 		var menu = menuList[key];
-		
 		if(menu.type == 0){
 			routerList(router, menu.list);
 		}else if(menu.type == 1){
@@ -155,7 +157,8 @@ function routerList(router, menuList){
 				addTab(menuName, url.replace('#', ''));
 				//替换iframe的url
 			    vm.main = url.replace('#', '');
-			    
+			    //设置左边菜单高度
+			   
 			    //导航菜单展开
 			    $(".treeview-menu li").removeClass("active");
 			    $("a[href='"+url+"']").parents("li").addClass("active");

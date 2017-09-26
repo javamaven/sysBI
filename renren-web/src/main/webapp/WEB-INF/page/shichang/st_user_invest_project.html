@@ -6,11 +6,15 @@
 <style type="text/css">
 .inputClass{
 	height: 30px;
-	width: 150px;
+	width: 200px;
 	border: 1px solid #ccc;
 	border-radius: 4px;
  	padding-left: 6px; 
 	vertical-align: middle;
+}
+.SelectBG{
+	font-weight:bold;
+    color: red;
 }
 </style>
 </head>
@@ -23,19 +27,19 @@
 						<label>渠道名称</label>
 					</td>
 					<td>
-						<select id="id_select" multiple="multiple" width="200" class="inputClass"></select>
+						<select id="id_select" multiple="multiple" width="300" class="inputClass"></select>
 					</td>
 					<td>
 						<label>开始日期：</label>
 					</td>
 					<td>
-						<input type="text" class="inputClass form_datetime_2" id="start_date" value="2017-07-01" placeholder="请选择开始日期"/>
+						<input type="text" class="inputClass form_datetime_2" id="start_date" value="" placeholder="请选择开始日期"/>
 					</td>
 					<td>
 						<label>结束日期：</label>
 					</td>
 					<td>
-						<input type="text" class="inputClass form_datetime_2" id="end_date"  value="2017-07-31" placeholder="请选择结束日期"/>
+						<input type="text" class="inputClass form_datetime_2" id="end_date"  value="" placeholder="请选择结束日期"/>
 					</td>
 					<td>
 						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
@@ -46,7 +50,11 @@
 			</table>
 			
 			
-			
+	    <div>
+	    	<label>周期内末日待收：</label>
+	    	<label id="wait_div">-</label>
+	    	<label>（末日留存率：<font id="liucun_rate_div">-</font>）</label>
+	    </div>
 		<div id="day_div">
 	    	<table id="jqGrid_day"></table>
 	    	<div id="jqGridPager_day"></div>
