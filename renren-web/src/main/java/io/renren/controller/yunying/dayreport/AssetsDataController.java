@@ -72,7 +72,7 @@ public class AssetsDataController {
 
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 		try {
-//			DecimalFormat df = new DecimalFormat("#,###.00"); 
+			DecimalFormat df = new DecimalFormat("#,###.00"); 
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql;
 			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/资产供应与成交.txt"));
@@ -82,9 +82,9 @@ public class AssetsDataController {
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 //			for (int i = 0; i < list.size(); i++) {
 //				Map<String, Object> map = list.get(i);
-//				map.get(key)
+//				String shuaibi = map.get("M_PUB")+"";
 //			}
-//			
+			
 			
 			resultList.addAll(list);
 		} catch (SQLException e) {

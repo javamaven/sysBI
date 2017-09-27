@@ -48,8 +48,19 @@ function initDetailTableGrid(){
 //        url: '../yunying/dmreportvipuser/list',
         datatype: "json",
         colModel: [
-        	{ label: '资产期限', name: 'PERIOD', frozen : true,index: 'PERIOD', width: 100,align:'left'},
-			{ label: '当月资产供应', name: 'M_PUB', index: 'M_PUB', width: 120 ,align:'right',
+        	{ label: '资产期限', name: 'PERIOD', frozen : true,index: 'PERIOD', width: 80,align:'left'},
+        	
+        	{ label: '当日资产供应', name: 'D_PUB', index: 'D_PUB', width: 100 ,align:'right',
+		    	formatter:function(cellvalue, options, rowObject){
+		    		if(cellvalue){
+		    			return formatNumber(cellvalue,2);
+		    		}else{
+		    			return '';
+		    		}
+		    	} 
+		    },
+        	
+			{ label: '当月资产供应', name: 'M_PUB', index: 'M_PUB', width: 100 ,align:'right',
 				formatter:function(cellvalue, options, rowObject){
 		    		if(cellvalue){
 		    			return formatNumber(cellvalue,2);
@@ -59,7 +70,7 @@ function initDetailTableGrid(){
 		    	} 
 		    },
 			
-			{ label: '期限占比', name: 'SUPPLY_RATE', index: 'SUPPLY_RATE', width: 100 ,align:'right',
+			{ label: '期限占比', name: 'SUPPLY_RATE', index: 'SUPPLY_RATE', width: 80 ,align:'right',
 				formatter: function(value, options, row){
 					 if(value == null || value == ''){
 						return '';
@@ -70,17 +81,9 @@ function initDetailTableGrid(){
 			},
 			
 			
-			{ label: '当日资产供应', name: 'D_PUB', index: 'D_PUB', width: 120 ,align:'right',
-		    	formatter:function(cellvalue, options, rowObject){
-		    		if(cellvalue){
-		    			return formatNumber(cellvalue,2);
-		    		}else{
-		    			return '';
-		    		}
-		    	} 
-		    },
+			
 		
-			{ label: '供应理财计划资产', name: 'M_PUB_FIN', index: 'M_PUB_FIN', width: 150 ,align:'right',
+			{ label: '供应理财计划资产', name: 'M_PUB_FIN', index: 'M_PUB_FIN', width: 130 ,align:'right',
 				formatter:function(cellvalue, options, rowObject){
 		    		if(cellvalue){
 		    			return formatNumber(cellvalue,2);
@@ -91,7 +94,7 @@ function initDetailTableGrid(){
 		    },
 			
 			
-			{ label: '期限占比', name: 'SUPPLY_FIN_RATE', index: 'SUPPLY_FIN_RATE', width: 100,align:'right',
+			{ label: '期限占比', name: 'SUPPLY_FIN_RATE', index: 'SUPPLY_FIN_RATE', width: 80,align:'right',
 				formatter: function(value, options, row){
 					 if(value == null || value == ''){
 						return '';
@@ -101,8 +104,18 @@ function initDetailTableGrid(){
 				} 
 			},
 			
+			{ label: '当日成交', name: 'D_INV', index: 'D_INV', width: 90 ,align:'right',
+				formatter:function(cellvalue, options, rowObject){
+		    		if(cellvalue){
+		    			return formatNumber(cellvalue,2);
+		    		}else{
+		    			return '';
+		    		}
+		    	} 
+		    },
 			
-			{ label: '当月成交', name: 'M_INV', index: 'M_INV', width: 100 ,align:'right',
+			
+			{ label: '当月成交', name: 'M_INV', index: 'M_INV', width: 90 ,align:'right',
 				formatter:function(cellvalue, options, rowObject){
 		    		if(cellvalue){
 		    			return formatNumber(cellvalue,2);
@@ -115,7 +128,7 @@ function initDetailTableGrid(){
 			
 			
 			
-			{ label: '期限占比', name: 'INV_RATE', index: 'INV_RATE', width: 120,align:'right',
+			{ label: '期限占比', name: 'INV_RATE', index: 'INV_RATE', width: 80,align:'right',
 				formatter: function(value, options, row){
 					 if(value == null || value == ''){
 						return '';
@@ -125,18 +138,9 @@ function initDetailTableGrid(){
 				} 
 			},
 			
-			{ label: '当日成交', name: 'D_INV', index: 'D_INV', width: 120 ,align:'right',
-				formatter:function(cellvalue, options, rowObject){
-		    		if(cellvalue){
-		    			return formatNumber(cellvalue,2);
-		    		}else{
-		    			return '';
-		    		}
-		    	} 
-		    },
+		
 			
-			
-			{ label: '当月散标成交', name: 'M_SAN', index: 'M_SAN', width: 150 ,align:'right' ,
+			{ label: '当日散标成交', name: 'D_SAN', index: 'D_SAN', width: 100 ,align:'right',
 		    	formatter:function(cellvalue, options, rowObject){
 		    		if(cellvalue){
 		    			return formatNumber(cellvalue,2);
@@ -146,8 +150,7 @@ function initDetailTableGrid(){
 		    	} 
 		    },
 			
-			
-			{ label: '当日散标成交', name: 'D_SAN', index: 'D_SAN', width: 150 ,align:'right',
+			{ label: '当月散标成交', name: 'M_SAN', index: 'M_SAN', width: 100 ,align:'right' ,
 		    	formatter:function(cellvalue, options, rowObject){
 		    		if(cellvalue){
 		    			return formatNumber(cellvalue,2);
@@ -155,9 +158,8 @@ function initDetailTableGrid(){
 		    			return '';
 		    		}
 		    	} 
-		    },
-			
-			{ label: '当月理财计划成交', name: 'M_FIN', index: 'M_FIN', width: 150,align:'right',
+		    },	    
+			{ label: '当日理财计划成交', name: 'D_FIN', index: 'D_FIN', width: 130 ,align:'right',
 		    	formatter:function(cellvalue, options, rowObject){
 		    		if(cellvalue){
 		    			return formatNumber(cellvalue,2);
@@ -165,21 +167,17 @@ function initDetailTableGrid(){
 		    			return '';
 		    		}
 		    	} 
-		    },
+			},
+			{ label: '当月理财计划成交', name: 'M_FIN', index: 'M_FIN', width: 130,align:'right',
+		    	formatter:function(cellvalue, options, rowObject){
+		    		if(cellvalue){
+		    			return formatNumber(cellvalue,2);
+		    		}else{
+		    			return '';
+		    		}
+		    	} 
+		    }
 
-			
-			{ label: '当日理财计划成交', name: 'D_FIN', index: 'D_FIN', width: 150 ,align:'right',
-		    	formatter:function(cellvalue, options, rowObject){
-		    		if(cellvalue){
-		    			return formatNumber(cellvalue,2);
-		    		}else{
-		    			return '';
-		    		}
-		    	} 
-			}
-			
-		
-	
         ],
 		viewrecords: true,
         height: $(window).height()-150,
@@ -210,7 +208,7 @@ function initDetailTableGrid(){
         	//隐藏grid底部滚动条
         }
     });
-    jQuery("#jqGrid").jqGrid('setFrozenColumns');  //冻结列
+//    jQuery("#jqGrid").jqGrid('setFrozenColumns');  //冻结列
 
 }
 

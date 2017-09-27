@@ -32,15 +32,17 @@ TMP AS(
 SELECT
   CASE WHEN SUPPLY.PERIOD IS NULL AND INV.PERIOD IS NULL THEN '无期限'
     ELSE DECODE(SUPPLY.PERIOD,NULL,INV.PERIOD || '月',SUPPLY.PERIOD || '月') END AS PERIOD,
-  M_PUB,
-  D_PUB,
-  M_PUB_FIN,
-  M_INV,
-  D_INV,
-  M_SAN,
-  D_SAN,
-  M_FIN,
-  D_FIN,
+    
+      round(m_pub,0)  as M_PUB,
+  round(d_pub,0) as D_PUB,
+  round(m_pub_fin,0) as M_PUB_FIN,
+  round(m_inv,0) as M_INV,
+  round(d_inv,0) as D_INV,
+  round(m_san,0) as M_SAN,
+  round(d_san,0) as D_SAN,
+  round(m_fin,0) as M_FIN,
+  round(d_fin,0) as D_FIN,
+  
   CASE WHEN SUPPLY.PERIOD IS NULL AND INV.PERIOD IS NULL THEN 100
     ELSE DECODE(SUPPLY.PERIOD,NULL,INV.PERIOD ,SUPPLY.PERIOD ) END AS RANK
 FROM SUPPLY
