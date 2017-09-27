@@ -55,7 +55,7 @@ case
   when trunc(sysdate-ub.firstinvest_time,0)>180 then 4 end as diff, --  用户经营时间分类 1 ：经营1-30天；2：经营31-90天；3：经营91-180天；4：经营181天及以上
 --trunc(sysdate-ub.firstinvest_time,0) as dif, -- 经营天数
 case when acc.money_wait>0 then 1 else 2 end as lc-- 是否留存 1 为留存 2 为流失
-from mdtxbi.temp_smzq tq 
+from mdtxbi.dm_user_smzq tq 
 left join mdtxbi.edw_user_basic ub 
 on tq.user_id=ub.user_id
 left join mdtxbi.DM_REPORT_MDTX_ANALYZE acc
