@@ -51,7 +51,7 @@ function initDetailTableGrid(){
 			{ label: '30天均值比', name: 'monthMeanValueThan', index: '$STAT_PERIOD', width: 80 }			
         ],
 		viewrecords: true,
-        height: $(window).height()-130,
+        height: $(window).height()-150,
         rowNum: 500,
         rownumbers: true, 
         autowidth:true,

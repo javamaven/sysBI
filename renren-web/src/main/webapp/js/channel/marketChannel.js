@@ -192,7 +192,7 @@ function initTableGridNew(){
         rowNum: 500,
         rownumbers: true, 
         autowidth:true,
-        shrinkToFit: true,
+        shrinkToFit: false,
         
 //        autoScroll: false,
 //        multiselect: false,

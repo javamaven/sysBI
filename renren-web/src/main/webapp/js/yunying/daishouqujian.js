@@ -73,6 +73,7 @@ function initDetailTableGrid(){
         rowNum: 20,
         rownumbers: true, 
         autowidth:true,
+     
 //        shrinkToFit: false,
 //        autoScroll: false,
 //        multiselect: false,

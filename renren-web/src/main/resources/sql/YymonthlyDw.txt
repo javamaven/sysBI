@@ -1,7 +1,7 @@
 --1.数据总览
 --平台累计交易额 
 select 
-'${invest_end_time}' as time,
+'${monthtime}' as time,
 '平台累计交易额' as zhibiao,
 round(A.project_scale+B.tender_capital,0) money
 from 
@@ -19,7 +19,7 @@ union all
 
 --累计为投资者赚取收益
 select
-'${invest_end_time}',
+'${monthtime}',
 '累计为投资者赚取收益',
  round(A.ri+B.RV+C.RIddz,0)
 from 
@@ -40,7 +40,7 @@ WHERE to_char(ddzb.ISSUE_DATE, 'yyyy-mm-dd')<='${invest_end_time}'
 union all
 --累计交易次数   (累计撮合交易次数，还需加上消金和小贷的数据) 
 select 
-'${invest_end_time}',
+'${monthtime}',
 '累计交易次数',
 sum(cou) from(
 select count(pd.user_id)cou from mdtxbi.edw_trading_project_detail pd where to_char(addtime,'yyyymmdd')<='${endtime}' -- and investment_status=20
@@ -151,6 +151,8 @@ select sum(db.invest_cou) cou from  mdtxbi.edw_trading_ddz_borrow db where to_ch
 
 union all
 
+
+
 select '${monthtime}' as d_month,
 '交易次数(同比)',
  sum(cou) from(
@@ -161,6 +163,70 @@ where to_char(addtime,'yyyymm')='${monthtime}'
 and pd.tender_account_status in (0,1)
 union all
 select sum(db.invest_cou) cou from  mdtxbi.edw_trading_ddz_borrow db where to_char(db.issue_date,'yyyymm')='${monthtime}')
+
+
+
+union all
+
+--借款额
+select 
+'${monthtime}',
+A.金额区间,
+round(A.标的数量/B.cou,4) 标的占比
+from 
+(
+select
+ case when borrow_account between 0.1 and 10000 then '金额1万以下标的'
+            when borrow_account between 10000.1 and 100000 then '金额1~10万标的'
+            when borrow_account between 100000.1 and 1000000 then '金额10~100万标的'
+            when borrow_account >1000000 then '金额100万以上标的' end 金额区间,count(1) 标的数量
+from  mdtxbi.edw_trading_project 
+where stage in (4,5,8)
+and to_char(project_complete_date, 'yyyymm') = '${monthtime}'
+group by case when borrow_account between 0.1 and 10000 then '金额1万以下标的'
+            when borrow_account between 10000.1 and 100000 then '金额1~10万标的'
+            when borrow_account between 100000.1 and 1000000 then '金额10~100万标的'
+            when borrow_account >1000000 then '金额100万以上标的' end 
+)A,
+(
+select count(1) cou
+from  mdtxbi.edw_trading_project 
+where stage in (4,5,8)
+and to_char(project_complete_date, 'yyyymm') = '${monthtime}'
+)B
+
+ union all    
+--用户数据
+--按投资金额分布
+
+select 
+'${monthtime}',
+A.投资金额区间,
+round(A.投资人次/B.cou,4) as 投资人次占比
+from
+(
+select
+ case when money between 0.1 and 10000 then '投资金额1万以下' 
+            when money between 10000.1 and 100000 then '投资金额1~10万'
+            when money between 100000.1 and 1000000 then '投资金额10~100万'
+            when money > 1000000 then '投资金额100万以上' end 投资金额区间,
+            count(user_id)  投资人次
+from (
+select user_id,sum(case when pd.tender_subject=2 then pd.tend_cash else tender_capital end) money from mdtxbi.edw_trading_project_detail pd
+where to_char(addtime,'yyyymm')='${monthtime}' and pd.tender_account_status in (0,1)
+group by user_id) 
+group by case when money between 0.1 and 10000 then '投资金额1万以下' 
+            when money between 10000.1 and 100000 then '投资金额1~10万'
+            when money between 100000.1 and 1000000 then '投资金额10~100万'
+            when money > 1000000 then '投资金额100万以上' end
+              
+)A,
+(
+select 
+count(distinct(pd.user_id)) cou
+from mdtxbi.edw_trading_project_detail pd
+where to_char(addtime,'yyyymm')='${monthtime}' and pd.tender_account_status in (0,1) 
+)B
 
 union all
 
