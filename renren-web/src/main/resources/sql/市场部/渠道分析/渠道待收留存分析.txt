@@ -13,45 +13,54 @@ select
 from (
 select channel_name,activity_tag,sum(amt) fst_user_cnt From mdtxbi.DM_XT_USER_DATE
 where to_char(firstinvest_time,'yyyymm')='${month}' and period=30
+and stat_period=(select max(stat_period) from DM_XT_USER_DATE)
 group by channel_name,activity_tag) t1
 left join (
 select activity_tag,sum(wait_amt) thirty From mdtxbi.DM_XT_USER_DATE
 where period=30  and to_char(firstinvest_time,'yyyymm')='${month}'
+and stat_period=(select max(stat_period) from DM_XT_USER_DATE)
 group by activity_tag) t2
 on t1.activity_tag=t2.activity_tag
 left join (
 select activity_tag,sum(wait_amt)  sixty From mdtxbi.DM_XT_USER_DATE
 where period=60 and to_char(firstinvest_time,'yyyymm')='${month}'
+and stat_period=(select max(stat_period) from DM_XT_USER_DATE)
 group by activity_tag)t3
 on t1.activity_tag=t3.activity_tag
 left join (
 select activity_tag,sum(wait_amt) ninety From mdtxbi.DM_XT_USER_DATE
 where period=90  and to_char(firstinvest_time,'yyyymm')='${month}'
+and stat_period=(select max(stat_period) from DM_XT_USER_DATE)
 group by activity_tag) t4
 on t1.activity_tag=t4.activity_tag
 left join (
 select activity_tag,sum(wait_amt) one_two From mdtxbi.DM_XT_USER_DATE
 where period=120 and to_char(firstinvest_time,'yyyymm')='${month}'
+and stat_period=(select max(stat_period) from DM_XT_USER_DATE)
 group by activity_tag) t5
 on t1.activity_tag=t5.activity_tag
 left join (
 select activity_tag,sum(wait_amt) one_five From mdtxbi.DM_XT_USER_DATE
 where period=150 and to_char(firstinvest_time,'yyyymm')='${month}'
+and stat_period=(select max(stat_period) from DM_XT_USER_DATE)
 group by activity_tag) t6
 on t1.activity_tag=t6.activity_tag
 left join (
 select activity_tag,sum(wait_amt) one_A From mdtxbi.DM_XT_USER_DATE
 where period=180 and to_char(firstinvest_time,'yyyymm')='${month}'
+and stat_period=(select max(stat_period) from DM_XT_USER_DATE)
 group by activity_tag) t7
 on t1.activity_tag=t7.activity_tag
 left join (
 select activity_tag,sum(wait_amt) two_svn From mdtxbi.DM_XT_USER_DATE
 where period=270 and to_char(firstinvest_time,'yyyymm')='${month}'
+and stat_period=(select max(stat_period) from DM_XT_USER_DATE)
 group by activity_tag) t8
 on t1.activity_tag=t8.activity_tag
 left join (
 select activity_tag,sum(wait_amt) thr_six From mdtxbi.DM_XT_USER_DATE
 where period=360 and to_char(firstinvest_time,'yyyymm')='${month}'
+and stat_period=(select max(stat_period) from DM_XT_USER_DATE)
 group by activity_tag) t9
 on t1.activity_tag=t9.activity_tag
 order by fst_user_cnt desc

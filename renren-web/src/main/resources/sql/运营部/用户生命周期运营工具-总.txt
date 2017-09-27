@@ -1,0 +1,43 @@
+-- 根据用户首投月份和用户类型的汇总表
+select 
+--user_level, 
+--diff, -- 经营时间分段
+case when diff=1 then '经营1-30天' when diff=2 then '经营31-90天' when diff=3 then '经营91-180天' when diff=4 then '经营181天及以上' end as 经营时间分段,
+--lc, -- 是否留存 1 为留存 2 为流失 （按照昨日待收是否为0）
+case when lc=1 then '留存' when lc=2 then '流失' end as 是否留存,
+case when pl_type=1 then '盈利' when pl_type=2 then '亏损' end as 是否盈利, -- 是否盈利 1 为盈利 2 为亏损
+count(1) as 人数, -- 人数
+round(sum(profit_loss)/10000,2) as "盈亏金额（万元）", -- 盈亏金额（万元）
+round(sum(money_wait)/10000,2) as "总待收（万元）" -- 总待收（万元）
+from 
+(
+select  -- 统计人数
+tq.*,
+acc.money_wait,
+case when tq.profit_loss>0 then 1 else 2 end as pl_type, -- 是否盈利
+ub.resource_kind,
+acc.user_level, -- 用户级别
+case 
+  when trunc(sysdate-ub.firstinvest_time,0)<=30 then 1
+  when trunc(sysdate-ub.firstinvest_time,0)>30 and trunc(sysdate-ub.firstinvest_time,0)<=90 then 2
+  when trunc(sysdate-ub.firstinvest_time,0)>90 and trunc(sysdate-ub.firstinvest_time,0)<=180 then 3
+  when trunc(sysdate-ub.firstinvest_time,0)>180 then 4 end as diff,
+--trunc(sysdate-ub.firstinvest_time,0) as dif, -- 经营天数
+case when acc.money_wait>0 then 1 else 2 end as lc-- 是否留存
+from mdtxbi.temp_smzq tq 
+left join mdtxbi.edw_user_basic ub 
+on tq.user_id=ub.user_id
+left join mdtxbi.DM_REPORT_MDTX_ANALYZE acc
+on acc.user_id=tq.user_id and acc.stat_peroid=to_char(sysdate-1,'yyyymmdd')
+)
+where 1=1
+and ft_month between ${first_invest_month_start} and ${first_invest_month_end} -- 筛选首投月份
+group by 
+--user_level,
+--diff,
+--lc,
+case when diff=1 then '经营1-30天' when diff=2 then '经营31-90天' when diff=3 then '经营91-180天' when diff=4 then '经营181天及以上' end,
+case when lc=1 then '留存' when lc=2 then '流失' end,
+case when pl_type=1 then '盈利' when pl_type=2 then '亏损' end  -- 是否盈利 1 为盈利 2 为亏损
+--pl_type
+

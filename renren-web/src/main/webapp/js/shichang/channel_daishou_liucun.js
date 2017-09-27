@@ -44,7 +44,7 @@ function initDataGrid(){
 		    		}
 		    	} 
 		    },
-		    { label: '30天后', name: '30天后', width: 130, key: true,align: 'right' ,
+		    { label: '30天后', name: '30天后', width: 80, key: true,align: 'right' ,
 		    	formatter:function(cellvalue, options, rowObject){
 		    		
 		    		if(cellvalue){
@@ -54,7 +54,7 @@ function initDataGrid(){
 		    		}
 		    	} 
 		    },
-		    { label: '60天后', name: '60天后', width: 130, key: true,align: 'right',
+		    { label: '60天后', name: '60天后', width: 80, key: true,align: 'right',
 		    	formatter:function(cellvalue, options, rowObject){
 		    		
 		    		if(cellvalue){
@@ -64,7 +64,7 @@ function initDataGrid(){
 		    		}
 		    	} 
 		    },
-		    { label: '90天后', name: '90天后', width: 130, key: true,align: 'right',
+		    { label: '90天后', name: '90天后', width: 80, key: true,align: 'right',
 		    	formatter:function(cellvalue, options, rowObject){
 		    		
 		    		if(cellvalue){

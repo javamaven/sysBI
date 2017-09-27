@@ -27,6 +27,7 @@ select channel_name as 渠道名称,
                 select channel_name, activity_tag, user_id, cnt_cs
                   From mdtxbi.DM_XT_USER_DATE
                  where to_char(firstinvest_time, 'yyyymm') = '${month}'
+                   and stat_period=(select max(stat_period) from DM_XT_USER_DATE)
                    and period = 30) t1
           left join (
                     --30~60

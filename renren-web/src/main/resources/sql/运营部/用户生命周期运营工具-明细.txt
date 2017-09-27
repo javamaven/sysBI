@@ -1,0 +1,71 @@
+-- 明细数据
+select
+ft_month, -- 首投月份
+user_id,-- 用户id
+USERNAME, --用户名
+REALNAME,-- 用户姓名
+phone, -- 用户手机号
+case when pl_type=1 then '是' else '否' end as pl_type,-- 是否盈利 
+user_level, -- 用户分类
+case 
+  when diff=1 then '经营1-30天'
+  when diff=2 then '经营31-90天'
+  when diff=3 then '经营91-180天'
+  when diff=4 then '经营180天及以上' end as diff, -- 经营时间分段
+case when lc=1 then '是' else '否' end as lc, -- 是否待收大于0
+case 
+  when resource_kind=1 then '渠道'
+  when resource_kind=2 then '经纪人邀请'
+  when resource_kind=3 then '自然流量' end as resource_kind, -- 用户来源
+channel_name, -- 渠道名称
+activity_tag, -- 渠道名称
+channel_cost, -- 渠道成本
+marking_voche_cost, -- 渠道成本
+operations_voche_cost, -- 运营红包成本
+rebate_cost, -- 返利成本
+increases_cost, -- 加息成本
+call_sall_cost_new, -- 拉新电销成本
+call_sall_cost_old, -- 召回电销成本
+create_profit, -- 利差收入
+cac, -- 获客总成本
+coc, -- 运营总成本
+ltv, -- 收益
+profit_loss, -- 盈亏金额
+sum_captial, -- 交易额
+sum_ncaptial, -- 年化交易额额
+cou_tender, -- 投资总次数
+cl_i, -- 创利系数
+coc_i, -- 运营系数
+bp, -- 盈亏平衡点
+money_wait -- 待收金额
+from
+(
+select  -- 统计人数
+tq.*,
+acc.money_wait,
+case when tq.profit_loss>0 then 1 else 2 end as pl_type, -- 是否盈利 1 盈利 2亏损
+acc.user_level, -- 用户级别
+ub.phone,
+ub.realname,
+ub.username,
+case 
+  when trunc(sysdate-ub.firstinvest_time,0)<=30 then 1
+  when trunc(sysdate-ub.firstinvest_time,0)>30 and trunc(sysdate-ub.firstinvest_time,0)<=90 then 2
+  when trunc(sysdate-ub.firstinvest_time,0)>90 and trunc(sysdate-ub.firstinvest_time,0)<=180 then 3
+  when trunc(sysdate-ub.firstinvest_time,0)>180 then 4 end as diff, --  用户经营时间分类 1 ：经营1-30天；2：经营31-90天；3：经营91-180天；4：经营181天及以上
+--trunc(sysdate-ub.firstinvest_time,0) as dif, -- 经营天数
+case when acc.money_wait>0 then 1 else 2 end as lc-- 是否留存 1 为留存 2 为流失
+from mdtxbi.temp_smzq tq 
+left join mdtxbi.edw_user_basic ub 
+on tq.user_id=ub.user_id
+left join mdtxbi.DM_REPORT_MDTX_ANALYZE acc
+on acc.user_id=tq.user_id and acc.stat_peroid=to_char(sysdate-1,'yyyymmdd')
+)
+where 1=1
+and ft_month between ${first_invest_month_start} and ${first_invest_month_end}
+--and user_level='成熟用户'
+${userTypeCond}
+${timeLimitCond}
+-- and diff=${timeLimit} --  用户经营时间分类 1 ：经营1-30天；2：经营31-90天；3：经营91-180天；4：经营181天及以上
+and lc=${isLiucun} -- 1 为留存 2 为流失
+and pl_type=${isYingli} -- 是否盈利 1 盈利 2亏损

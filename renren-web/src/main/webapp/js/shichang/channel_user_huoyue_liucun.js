@@ -37,9 +37,9 @@ function initDataGrid(){
 		    { label: '渠道标记', name: '渠道标记', width: 130, key: true,align: 'right' },
 		    { label: '新增首投用户', name: '新增首投用户', width: 130, key: true,align: 'right' },
 		    { label: '首投用户30天内人均投资次数', name: '首投用户30天内人均投资次数', width: 130, key: true,align: 'right'},
-		    { label: '30天后', name: '30天后', width: 130, key: true,align: 'right'},
-		    { label: '60天后', name: '60天后', width: 130, key: true,align: 'right'},
-		    { label: '90天后', name: '90天后', width: 130, key: true,align: 'right'},
+		    { label: '30天后', name: '30天后', width: 80, key: true,align: 'right'},
+		    { label: '60天后', name: '60天后', width: 80, key: true,align: 'right'},
+		    { label: '90天后', name: '90天后', width: 80, key: true,align: 'right'},
         	{ label: '120天后', name: '120天后', width: 80, key: true,align: 'right'},
         	
         	{ label: '150天后', name: '150天后', width: 80, key: true,align: 'right'},
