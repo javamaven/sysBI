@@ -370,7 +370,7 @@ function initYunyingTable(){
 			} } 			
         ],
 		viewrecords: true,
-        height: 120,
+        height: 150,
         rowNum: 20,
         rownumbers: true, 
         autowidth:true,

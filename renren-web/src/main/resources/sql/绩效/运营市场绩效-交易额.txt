@@ -37,3 +37,13 @@ left join mdtxbi.edw_trading_repay_detail rpd
 WHERE
 to_char(rpp.create_time,'yyyy-mm')=?
  -- to_char(rpp.create_time,'yyyy-mm-dd') between '2017-06-01' and '2017-06-30'
+ 
+ union all 
+--2017-09-28增加指标累计待收余额
+select
+    '累计待收余额' 指标,
+    d.all_await as 完成值,
+    '等待运营部确认' as 状态
+from DM_REPORT_BASIC_DAILY d
+where 1=1
+and d.stat_period=?
