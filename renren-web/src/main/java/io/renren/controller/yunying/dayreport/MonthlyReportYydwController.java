@@ -93,39 +93,44 @@ public class MonthlyReportYydwController {
 	public R daylist(Integer page, Integer limit, String invest_end_time) {
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
-		String endtime="";
-		String monthtime="";
-		String lastMonthTimeString="";
-		String lastYearTime="";
-		String lastYearTime2="";
-		String firstMonth="";
-		String lastYearX="";
-		String lastYearX2="";
+		
 		if (StringUtils.isNotEmpty(invest_end_time)) {
-			endtime = invest_end_time.replace("-", "");
-			firstMonth =invest_end_time.substring(0,8)+"01";
-			monthtime = invest_end_time.replace("-", "");	
-			monthtime=monthtime.substring(0,6);		
-			lastYearTime = invest_end_time.replace("-", "");
-			lastYearTime=lastYearTime.substring(0,4);	
-			lastYearTime2=invest_end_time.substring(5,7);
-			lastYearX = invest_end_time.substring(0,4);
-			lastYearX2=invest_end_time.substring(5,7);
+			invest_end_time=invest_end_time.replace("-", "");
 		}
 		
-		String lastyeartime=Integer.parseInt(lastYearTime)-1+lastYearTime2; //去年同一天yyyymm
-		lastMonthTimeString= Integer.parseInt(monthtime)-1+"";//上个月 yyyymm
-		String currDate = lastMonthTimeString+"";
-		String currDate2 = lastyeartime+"";
-		int year2 = Integer.parseInt(currDate2.substring(0,4));
-		int month2 = Integer.parseInt(currDate2.substring(4,6));
-		String time2 =DateUtil.getLastDayOfMonth(year2,month2);
-		String firstlasttime=time2;
-		String firstMonthTime=time2.substring(0,8)+"01";
-		int year = Integer.parseInt(currDate.substring(0,4));
-		int month = Integer.parseInt(currDate.substring(4,6));
-		String time =DateUtil.getLastDayOfMonth(year,month);
-		String firstTime=time.substring(0,8)+"01";
+//		String endtime="";
+//		String monthtime="";
+//		String lastMonthTimeString="";
+//		String lastYearTime="";
+//		String lastYearTime2="";
+//		String firstMonth="";
+//		String lastYearX="";
+//		String lastYearX2="";
+//		if (StringUtils.isNotEmpty(invest_end_time)) {
+//			endtime = invest_end_time.replace("-", "");
+//			firstMonth =invest_end_time.substring(0,8)+"01";
+//			monthtime = invest_end_time.replace("-", "");	
+//			monthtime=monthtime.substring(0,6);		
+//			lastYearTime = invest_end_time.replace("-", "");
+//			lastYearTime=lastYearTime.substring(0,4);	
+//			lastYearTime2=invest_end_time.substring(5,7);
+//			lastYearX = invest_end_time.substring(0,4);
+//			lastYearX2=invest_end_time.substring(5,7);
+//		}
+		
+//		String lastyeartime=Integer.parseInt(lastYearTime)-1+lastYearTime2; //去年同一天yyyymm
+//		lastMonthTimeString= Integer.parseInt(monthtime)-1+"";//上个月 yyyymm
+//		String currDate = lastMonthTimeString+"";
+//		String currDate2 = lastyeartime+"";
+//		int year2 = Integer.parseInt(currDate2.substring(0,4));
+//		int month2 = Integer.parseInt(currDate2.substring(4,6));
+//		String time2 =DateUtil.getLastDayOfMonth(year2,month2);
+//		String firstlasttime=time2;
+//		String firstMonthTime=time2.substring(0,8)+"01";
+//		int year = Integer.parseInt(currDate.substring(0,4));
+//		int month = Integer.parseInt(currDate.substring(4,6));
+//		String time =DateUtil.getLastDayOfMonth(year,month);
+//		String firstTime=time.substring(0,8)+"01";
 		
 
 		long l1 = System.currentTimeMillis();
@@ -137,15 +142,15 @@ public class MonthlyReportYydwController {
 			String detail_sql;
 			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/YymonthlyDw.txt"));
 			detail_sql = detail_sql.replace("${invest_end_time}", invest_end_time);
-			detail_sql = detail_sql.replace("${endtime}",endtime );
-			detail_sql = detail_sql.replace("${lastMonthTimeString}", lastMonthTimeString);
-			detail_sql = detail_sql.replace("${firstTime}", firstTime);
-			detail_sql = detail_sql.replace("${time}",time );
-			detail_sql = detail_sql.replace("${monthtime}", monthtime);
-			detail_sql = detail_sql.replace("${lastyeartime}", lastyeartime);
-			detail_sql = detail_sql.replace("${firstMonth}", firstMonth);
-			detail_sql = detail_sql.replace("${firstlasttime}", firstlasttime);
-			detail_sql = detail_sql.replace("${firstMonthTime}", firstMonthTime);
+//			detail_sql = detail_sql.replace("${endtime}",endtime );
+//			detail_sql = detail_sql.replace("${lastMonthTimeString}", lastMonthTimeString);
+//			detail_sql = detail_sql.replace("${firstTime}", firstTime);
+//			detail_sql = detail_sql.replace("${time}",time );
+//			detail_sql = detail_sql.replace("${monthtime}", monthtime);
+//			detail_sql = detail_sql.replace("${lastyeartime}", lastyeartime);
+//			detail_sql = detail_sql.replace("${firstMonth}", firstMonth);
+//			detail_sql = detail_sql.replace("${firstlasttime}", firstlasttime);
+//			detail_sql = detail_sql.replace("${firstMonthTime}", firstMonthTime);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
 		} catch (SQLException e) {
@@ -157,7 +162,7 @@ public class MonthlyReportYydwController {
 		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
 		long l2 = System.currentTimeMillis();
 
-		System.err.println("++++++++越秀P2P查询耗时：" + (l2 - l1));
+		System.err.println("++++++++对外运营报告查询耗时：" + (l2 - l1));
 		return R.ok().put("page", pageUtil);
 	}
 
@@ -174,67 +179,13 @@ public class MonthlyReportYydwController {
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
 		String invest_end_time = map.get("invest_end_time") + "";
 
+		R r=daylist(1, 1000000, invest_end_time);
+		PageUtils pageUtil = (PageUtils) r.get("page");	
 		
-		String endtime="";
-		String monthtime="";
-		String lastMonthTimeString="";
-		String lastYearTime="";
-		String lastYearTime2="";
-		String firstMonth="";
-		String lastYearX="";
-		String lastYearX2="";
-		if (StringUtils.isNotEmpty(invest_end_time)) {
-			endtime = invest_end_time.replace("-", "");
-			firstMonth =invest_end_time.substring(0,8)+"01";
-			monthtime = invest_end_time.replace("-", "");	
-			monthtime=monthtime.substring(0,6);		
-			lastYearTime = invest_end_time.replace("-", "");
-			lastYearTime=lastYearTime.substring(0,4);	
-			lastYearTime2=invest_end_time.substring(5,7);
-			lastYearX = invest_end_time.substring(0,4);
-			lastYearX2=invest_end_time.substring(5,7);
-		}
-		
-		String lastyeartime=Integer.parseInt(lastYearTime)-1+lastYearTime2; //去年同一天yyyymm
-		lastMonthTimeString= Integer.parseInt(monthtime)-1+"";//上个月 yyyymm
-		String currDate = lastMonthTimeString+"";
-		String currDate2 = lastyeartime+"";
-		int year2 = Integer.parseInt(currDate2.substring(0,4));
-		int month2 = Integer.parseInt(currDate2.substring(4,6));
-		String time2 =DateUtil.getLastDayOfMonth(year2,month2);
-		String firstlasttime=time2;
-		String firstMonthTime=time2.substring(0,8)+"01";
-		int year = Integer.parseInt(currDate.substring(0,4));
-		int month = Integer.parseInt(currDate.substring(4,6));
-		String time =DateUtil.getLastDayOfMonth(year,month);
-		String firstTime=time.substring(0,8)+"01";
-		
+		List<Map<String,Object>> resultList = (List<Map<String, Object>>) pageUtil.getList();
 
-		long l1 = System.currentTimeMillis();
 
-		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 
-		try {
-			String path = this.getClass().getResource("/").getPath();
-			String detail_sql;
-			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/YymonthlyDw.txt"));
-			detail_sql = detail_sql.replace("${invest_end_time}", invest_end_time);
-			detail_sql = detail_sql.replace("${endtime}",endtime );
-			detail_sql = detail_sql.replace("${lastMonthTimeString}", lastMonthTimeString);
-			detail_sql = detail_sql.replace("${firstTime}", firstTime);
-			detail_sql = detail_sql.replace("${time}",time );
-			detail_sql = detail_sql.replace("${monthtime}", monthtime);
-			detail_sql = detail_sql.replace("${lastyeartime}", lastyeartime);
-			detail_sql = detail_sql.replace("${firstMonth}", firstMonth);
-			detail_sql = detail_sql.replace("${firstlasttime}", firstlasttime);
-			detail_sql = detail_sql.replace("${firstMonthTime}", firstMonthTime);
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
-			resultList.addAll(list);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 		// 查询列表数据
 		JSONArray va = new JSONArray();
 		for (int i = 0; i < resultList.size(); i++) {
@@ -254,7 +205,7 @@ public class MonthlyReportYydwController {
 
 		headMap.put("TIME", "日期");
 		headMap.put("ZHIBIAO", "指标名字");
-		headMap.put("MONEY", "金额（数量）");
+		headMap.put("ZHIBIAOZHI", "指标值");
 		return headMap;
 
 	}

@@ -49,9 +49,9 @@ function initDetailTableGrid(){
 //        url: '../yunying/dmreportvipuser/list',
         datatype: "json",
         colModel: [
-			{ label: '日期', name: 'TIME', index: '$TYPE', width: 90,align:'right' },
-			{ label: '指标名字', name: 'ZHIBIAO', index: '$NUM', width: 90 ,align:'right'}, 			
-			{ label: '金额（数量）', name: 'MONEY', index: '$SUM', width: 90 ,align:'right'}
+			{ label: '日期', name: 'TIME', index: 'TIME', width: 90,align:'right' },
+			{ label: '指标名字', name: 'ZHIBIAO', index: 'ZHIBIAO', width: 90 ,align:'right'}, 			
+			{ label: '指标值', name: 'ZHIBIAOZHI', index: 'ZHIBIAOZHI', width: 90 ,align:'right'}
 
 				
         ],
