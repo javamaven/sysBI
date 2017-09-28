@@ -3,6 +3,7 @@ $(function () {
 	initExportFunction();
 	initEvent();
 	initSelectEvent();
+	initTimeCond();
 	initNianLinTableGrid();
 });
 
@@ -20,7 +21,17 @@ function initSelectEvent(){
 		}
 	});
 }
-'../yunying/daishouqujian/exportExcel'
+
+function initTimeCond(){
+    $("#statPeriod").datetimepicker({
+        format: 'yyyy-mm-dd',
+        minView:'month',
+        language: 'zh-CN',
+        autoclose:true
+    }).on("click",function(){
+    });
+    $("#statPeriod").val(addDate(getCurrDate(), -1));
+}
 
 
 function initExportFunction(){
@@ -207,7 +218,7 @@ var vm = new Vue({
 
 function getParams(){
 	var params = {
-        	
+			'statPeriod': $("#statPeriod").val()
 	};
 	return params;
 }

@@ -27,18 +27,32 @@
 				<td>
 						<label>报表类型：</label>
 					</td>
+					
 					<td>
 						<select id="list_select" class="inputClass2" >
 							<option value ="vip_detail" selected="selected">待收区间</option>
 							<option value ="nianlin" >年龄区间</option>
 						</select>
 					</td>
+					
+					
+				</tr>
+				<tr height="10px;"></tr>
+				<tr>
+				<tr>
+				<td>
+						<label>时间：</label>
+					</td>
+					<td>
+					
+						<input type="text" class="inputClass2 form_datetime_2" id="statPeriod"  placeholder="请选择日期"/>
+					</td>
+				
 					<td>
 						&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
 						<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
 						
 					</td>
-					
 				</tr>
 			</table>
 		</div>

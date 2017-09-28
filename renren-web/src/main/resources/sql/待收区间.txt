@@ -2,9 +2,11 @@
 with tu as( 
  select 
     ac.user_id,
-    ac.NOR_RECOVER_CAPITAL_WAIT+ac.dep_RECOVER_CAPITAL_WAIT as await
-  from edw_user_acc_current ac
-  where  ac.NOR_RECOVER_CAPITAL_WAIT+ac.dep_RECOVER_CAPITAL_WAIT>0
+    ac.NOR_RECOVER_CAPITAL_WAIT_C+ac.dep_RECOVER_CAPITAL_WAIT_C as await
+  from edw_user_acc_log ac
+  where  1=1
+  AND ac.NOR_RECOVER_CAPITAL_WAIT_C+ac.dep_RECOVER_CAPITAL_WAIT_C>0
+  AND stat_period='${statPeriod}' 
 
 ),
 

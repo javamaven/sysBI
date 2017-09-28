@@ -14,13 +14,16 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.aspectj.util.FileUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.mysql.jdbc.Util;
 
 import io.renren.service.UserBehaviorService;
 import io.renren.system.jdbc.DataSourceFactory;
@@ -49,10 +52,14 @@ public class DaiShouQuJianController {
 	 */
 	@ResponseBody
 	@RequestMapping("/list")
-	public R daylist(Integer page, Integer limit) {
+	public R daylist(Integer page, Integer limit, String statPeriod) {
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		
+		
+		if (StringUtils.isNotEmpty(statPeriod)) {
+			statPeriod = statPeriod.replace("-", "");
+		}
 		long l1 = System.currentTimeMillis();
 
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
@@ -61,6 +68,7 @@ public class DaiShouQuJianController {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql;
 			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/待收区间.txt"));
+			detail_sql = detail_sql.replace("${statPeriod}", statPeriod);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
 		} catch (SQLException e) {
@@ -79,10 +87,13 @@ public class DaiShouQuJianController {
 	
 	@ResponseBody
 	@RequestMapping("/ddylist")
-	public R ddylist(Integer page, Integer limit) {
+	public R ddylist(Integer page, Integer limit, String statPeriod) {
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		
+		if (StringUtils.isNotEmpty(statPeriod)) {
+			statPeriod = statPeriod.replace("-", "");
+		}
 		long l1 = System.currentTimeMillis();
 
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
@@ -91,6 +102,7 @@ public class DaiShouQuJianController {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql;
 			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/年龄区间.txt"));
+			detail_sql = detail_sql.replace("${statPeriod}", statPeriod);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
 		} catch (SQLException e) {
@@ -114,7 +126,9 @@ public class DaiShouQuJianController {
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		
-		R r=daylist(1, 10000);
+		Map<String, Object> map2 = JSON.parseObject(params, Map.class);
+		String  statPeriod = map2.get("statPeriod") + "";
+		R r=daylist(1, 10000, statPeriod);
 		PageUtils pageUtil = (PageUtils) r.get("page");	
 		
 		List<Map<String,Object>> resultList = (List<Map<String, Object>>) pageUtil.getList();
@@ -146,8 +160,9 @@ public class DaiShouQuJianController {
 			throws IOException {
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
-		
-		R r=ddylist(1, 10000);
+		Map<String, Object> map2 = JSON.parseObject(params, Map.class);
+		String  statPeriod = map2.get("statPeriod") + "";
+		R r=ddylist(1, 10000,statPeriod);
 		PageUtils pageUtil = (PageUtils) r.get("page");	
 		
 		List<Map<String,Object>> resultList = (List<Map<String, Object>>) pageUtil.getList();
