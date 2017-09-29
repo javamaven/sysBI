@@ -153,10 +153,13 @@ public class BasicReportController2 {
 			va.add(dataList.get(i));
 		}
 		Map<String, String> headMap = service.getExcelFields();
+		String year = registerEndTime.substring(0 , 4);
 		String month = registerEndTime.substring(5 , 7);
 		String day = registerEndTime.substring(8 , 10);
 		String Hour = registerEndTime.substring(11 , 13);
 		String title = "";
+		//将导出的数据记录到电销推送记录表
+		insertPhoneSaleData(year+month+day+Hour, dataList, type);
 		if("free_channel".equals(type)){
 			title = "注册1小时未投资用户(免费渠道)-W-" + month + day + "_" + Hour + "-" + dataList.size();
 		}else if("pay_channel".equals(type)){
@@ -175,6 +178,26 @@ public class BasicReportController2 {
 		ExcelUtil.downloadExcelFile(title, headMap, va, response);
 	}
 
+	
+	private void insertPhoneSaleData(String dataTime, List<Map<String, Object>> dataList, String type) {
+		try {
+			List<Map<String, String>> insert_data = new ArrayList<Map<String,String>>();
+			for (int i = 0; i < dataList.size(); i++) {
+				Map<String, String> insert_map = new HashMap<String, String>();
+				Map<String, Object> map = dataList.get(i);
+				insert_map.put("data", JSON.toJSONString(map));
+				insert_map.put("cg_user_id", map.get("用户ID") + "");
+				insert_map.put("type", type);
+				insert_map.put("data_time", dataTime);
+				insert_data.add(insert_map);
+			}
+			if(insert_data.size() > 0){
+				service.batchInsertPhoneSaleJobSendData(insert_data);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 	
 	@ResponseBody
 	@RequestMapping("/queryPhoneSaleCgUserList")
