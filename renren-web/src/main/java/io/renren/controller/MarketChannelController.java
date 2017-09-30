@@ -5,6 +5,7 @@ import static io.renren.utils.ShiroUtils.getUserId;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -147,8 +148,19 @@ public class MarketChannelController {
 
 		String title = "渠道负责人明细";
 
-		ExcelUtil.downloadExcelFile(title,headMap,va,response);
-
+//		ExcelUtil.downloadExcelFile(title,headMap,va,response);
+		Map<String, String> typeMap = new HashMap<String, String>();
+		typeMap.put("5", "int");
+		typeMap.put("6", "int");
+		typeMap.put("9", "int");
+		
+		typeMap.put("7", "double");
+		typeMap.put("8", "double");
+		typeMap.put("10", "double");
+		typeMap.put("11", "double");
+		typeMap.put("12", "double");
+		typeMap.put("13", "double");
+		ExcelUtil.downloadExcelFile(title, headMap, va, response, typeMap );
 
 
 	}

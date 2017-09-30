@@ -114,24 +114,6 @@ function initTableGridNew(){
 			{ label: '渠道名称', name: 'channelName', index: '$CHANNELNAME', width: 120 ,align:'right',sortable:false }, 			
 			{ label: '渠道标记', name: 'channelLabel', index: '$CHANNELLABEL', width: 120 ,align:'right',sortable:false }, 
 			
-			{ label: '渠道费用', name: 'channelCost', index: '$CHANNELNAME', width: 90 ,align:'right',sortable:false
-				,formatter:function(cellvalue, options, rowObject){
-					if(cellvalue){
-						return formatNumber(cellvalue,2);
-					}else{
-						return '';
-					}
-				}
-			},
-			{ label: '渠道充值', name: 'channelRecharge', index: '$CHANNELNAME', width: 90 ,align:'right',sortable:false
-				,formatter:function(cellvalue, options, rowObject){
-					if(cellvalue){
-						return formatNumber(cellvalue,2);
-					}else{
-						return '';
-					}
-				}
-			},
 			
 //			{ label: '实际消费', name: 'actualCost', index: '$CHANNELLABEL', width: 70 ,align:'right',sortable:false }, 
 			{ label: '注册人数', name: 'regCou', index: '$REGISTERED', width: 90 ,align:'right',sortable:false }, 		
@@ -165,6 +147,24 @@ function initTableGridNew(){
 				}
 			},
 			{ label: '年化投资金额', name: 'yearamount', index: '$CTMONEY', width: 120,align:'right' ,sortable:false 
+				,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}
+			},
+			{ label: '渠道费用', name: 'channelCost', index: '$CHANNELNAME', width: 90 ,align:'right',sortable:false
+				,formatter:function(cellvalue, options, rowObject){
+					if(cellvalue){
+						return formatNumber(cellvalue,2);
+					}else{
+						return '';
+					}
+				}
+			},
+			{ label: '渠道充值', name: 'channelRecharge', index: '$CHANNELNAME', width: 90 ,align:'right',sortable:false
 				,formatter:function(cellvalue, options, rowObject){
 					if(cellvalue){
 						return formatNumber(cellvalue,2);
