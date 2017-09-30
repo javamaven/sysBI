@@ -387,3 +387,24 @@ SUM(CASE WHEN TENDER_SUBJECT=2 THEN TEND_CASH ELSE TENDER_CAPITAL END)/10000  AS
  WHERE 
  PD.TENDER_ACCOUNT_STATUS IN (0,1)
  AND TO_CHAR(PD.ADDTIME,'yyyymmdd')BETWEEN SUBSTR(${invest_end_time},1,6)|| '01' AND '${invest_end_time}')B
+UNION ALL
+-- 最高单人单笔投资额
+select 
+SUBSTR(${invest_end_time},1,6),
+ SUBSTR(${invest_end_time},1,6) as d_month,
+'最高单人单笔投资额',
+max(case when tender_subject=2 then tend_cash else tender_capital end)/10000
+from mdtxbi.edw_trading_project_detail pd
+where pd.tender_account_status in(0,1)
+and to_char(pd.addtime,'yyyymm')=SUBSTR(${invest_end_time},1,6)
+
+union all
+-- 最快满标时间（秒）
+select
+SUBSTR(${invest_end_time},1,6),
+SUBSTR(${invest_end_time},1,6)as d_month,
+'最快满标时间（秒）',
+min(pj.project_complete_date-pj.time_show)*60*60*24
+from mdtxbi.edw_trading_project pj
+where  to_char(pj.project_complete_date,'yyyymm')=SUBSTR(${invest_end_time},1,6)
+
