@@ -65,7 +65,7 @@ function initDetailTableGrid(){
 //        url: '../yunying/dmreportvipuser/list',
         datatype: "json",
         colModel: [
-			{ label: '渠道名称', name: 'NAME', index: '$TYPE', width: 90,align:'right' },
+			{ label: '红包名称', name: 'NAME', index: '$TYPE', width: 90,align:'right' },
 			{ label: '券号NID/红包模板ID', name: 'ID', index: '$ID', width: 90 ,align:'right'}, 			
 			{ label: '发放人数', name: 'FAFANG', index: '$FAFANG', width: 90 ,align:'right'}, 
 			{ label: '使用人数', name: 'SHIYONG', index: '$SHIYONG', width: 90 ,align:'right'}, 			

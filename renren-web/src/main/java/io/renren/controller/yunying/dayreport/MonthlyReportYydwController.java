@@ -90,47 +90,14 @@ public class MonthlyReportYydwController {
 	@ResponseBody
 	@RequestMapping("/list")
 	@RequiresPermissions("phonesale:list")
-	public R daylist(Integer page, Integer limit, String invest_end_time) {
+	public R daylist(Integer page, Integer limit, String statPeriod) {
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
 		
-		if (StringUtils.isNotEmpty(invest_end_time)) {
-			invest_end_time=invest_end_time.replace("-", "");
+		if (StringUtils.isNotEmpty(statPeriod)) {
+			statPeriod=statPeriod.replace("-", "");
 		}
 		
-//		String endtime="";
-//		String monthtime="";
-//		String lastMonthTimeString="";
-//		String lastYearTime="";
-//		String lastYearTime2="";
-//		String firstMonth="";
-//		String lastYearX="";
-//		String lastYearX2="";
-//		if (StringUtils.isNotEmpty(invest_end_time)) {
-//			endtime = invest_end_time.replace("-", "");
-//			firstMonth =invest_end_time.substring(0,8)+"01";
-//			monthtime = invest_end_time.replace("-", "");	
-//			monthtime=monthtime.substring(0,6);		
-//			lastYearTime = invest_end_time.replace("-", "");
-//			lastYearTime=lastYearTime.substring(0,4);	
-//			lastYearTime2=invest_end_time.substring(5,7);
-//			lastYearX = invest_end_time.substring(0,4);
-//			lastYearX2=invest_end_time.substring(5,7);
-//		}
-		
-//		String lastyeartime=Integer.parseInt(lastYearTime)-1+lastYearTime2; //去年同一天yyyymm
-//		lastMonthTimeString= Integer.parseInt(monthtime)-1+"";//上个月 yyyymm
-//		String currDate = lastMonthTimeString+"";
-//		String currDate2 = lastyeartime+"";
-//		int year2 = Integer.parseInt(currDate2.substring(0,4));
-//		int month2 = Integer.parseInt(currDate2.substring(4,6));
-//		String time2 =DateUtil.getLastDayOfMonth(year2,month2);
-//		String firstlasttime=time2;
-//		String firstMonthTime=time2.substring(0,8)+"01";
-//		int year = Integer.parseInt(currDate.substring(0,4));
-//		int month = Integer.parseInt(currDate.substring(4,6));
-//		String time =DateUtil.getLastDayOfMonth(year,month);
-//		String firstTime=time.substring(0,8)+"01";
 		
 
 		long l1 = System.currentTimeMillis();
@@ -141,16 +108,7 @@ public class MonthlyReportYydwController {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql;
 			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/YymonthlyDw.txt"));
-			detail_sql = detail_sql.replace("${invest_end_time}", invest_end_time);
-//			detail_sql = detail_sql.replace("${endtime}",endtime );
-//			detail_sql = detail_sql.replace("${lastMonthTimeString}", lastMonthTimeString);
-//			detail_sql = detail_sql.replace("${firstTime}", firstTime);
-//			detail_sql = detail_sql.replace("${time}",time );
-//			detail_sql = detail_sql.replace("${monthtime}", monthtime);
-//			detail_sql = detail_sql.replace("${lastyeartime}", lastyeartime);
-//			detail_sql = detail_sql.replace("${firstMonth}", firstMonth);
-//			detail_sql = detail_sql.replace("${firstlasttime}", firstlasttime);
-//			detail_sql = detail_sql.replace("${firstMonthTime}", firstMonthTime);
+			detail_sql = detail_sql.replace("${statPeriod}", statPeriod);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
 		} catch (SQLException e) {
@@ -177,9 +135,9 @@ public class MonthlyReportYydwController {
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");
 		Map<String, Object> map = JSON.parseObject(params, Map.class);
-		String invest_end_time = map.get("invest_end_time") + "";
+		String statPeriod = map.get("statPeriod") + "";
 
-		R r=daylist(1, 1000000, invest_end_time);
+		R r=daylist(1, 1000000, statPeriod);
 		PageUtils pageUtil = (PageUtils) r.get("page");	
 		
 		List<Map<String,Object>> resultList = (List<Map<String, Object>>) pageUtil.getList();

@@ -23,15 +23,29 @@ function initSelectEvent(){
 	});
 }
 
+//function initTimeCond(){
+//    $("#statPeriod").datetimepicker({
+//        format: 'yyyy-mm',
+//        minView:'month',
+//        language: 'zh-CN',
+//        autoclose:true
+//    }).on("click",function(){
+//    });
+//}
+
 function initTimeCond(){
     $("#statPeriod").datetimepicker({
         format: 'yyyy-mm',
-        minView:'month',
-        language: 'zh-CN',
-        autoclose:true
+        weekStart: 1,  
+        autoclose: true,  
+        startView: 3,  
+        minView: 3,  
+        forceParse: false,  
+        language: 'zh-CN'  
     }).on("click",function(){
     });
 }
+
 
 
 function initExportFunction(){
@@ -54,8 +68,8 @@ function initDetailTableGrid(){
 //        url: '../yunying/dmreportvipuser/list',
         datatype: "json",
         colModel: [			
-			{ label: '指标明细', name: 'STAT_TYPE', index: '$STAT_TYPE', width: 90 ,align:'right'}, 			
-			{ label: '指标', name: 'STAT_NUM', index: '$STAT_NUM', width: 90 ,align:'right'} 			
+			{ label: '指标名称', name: 'ZHIBIAONAME', index: '$STAT_TYPE', width: 90 ,align:'right'}, 			
+			{ label: '指标值', name: 'ZHIBIAONUM', index: '$STAT_NUM', width: 90 ,align:'right'} 			
 				
         ],
 		viewrecords: true,

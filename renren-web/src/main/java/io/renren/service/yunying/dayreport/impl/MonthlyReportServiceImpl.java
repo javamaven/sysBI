@@ -48,8 +48,8 @@ public class MonthlyReportServiceImpl implements MonthlyReportService {
 	@Override
 	public Map<String, String> getExcelFields() {
 		Map<String, String> headMap = new LinkedHashMap<String, String>();
-		headMap.put("STAT_TYPE", "指标明细");
-		headMap.put("STAT_NUM", "指标");
+		headMap.put("ZHIBIAONAME", "指标明细");
+		headMap.put("ZHIBIAONUM", "指标");
 		return headMap;
 	}
 	@Override
@@ -62,22 +62,22 @@ public class MonthlyReportServiceImpl implements MonthlyReportService {
 
 	@Override
 	public PageUtils queryList(Integer page, Integer limit, String statPeriod) {
-//		if (StringUtils.isNotEmpty(invest_end_time)) {
-//			invest_end_time = invest_end_time.replace("-", "");
-//		}
-		int year = Integer.parseInt(statPeriod.substring(0,4));
-		int month = Integer.parseInt(statPeriod.substring(6,7));
-		String lastDayOfMonth = DateUtil.getLastDayOfMonth(year, month);
-		lastDayOfMonth = lastDayOfMonth.replace("-", "");
-		String firstDay= statPeriod.replace("-", "")+"01";
+		if (StringUtils.isNotEmpty(statPeriod)) {
+			statPeriod = statPeriod.replace("-", "");
+		}
+//		int year = Integer.parseInt(statPeriod.substring(0,4));
+//		int month = Integer.parseInt(statPeriod.substring(6,7));
+//		String lastDayOfMonth = DateUtil.getLastDayOfMonth(year, month);
+//		lastDayOfMonth = lastDayOfMonth.replace("-", "");
+//		String firstDay= statPeriod.replace("-", "")+"01";
 
 	
 		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
 		try {
 			String path = this.getClass().getResource("/").getPath();
 			String detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/P2P.txt"));
-			detail_sql = detail_sql.replace("${investEndTime}", lastDayOfMonth);
-			detail_sql = detail_sql.replace("${investStatTime}", firstDay);
+			detail_sql = detail_sql.replace("${statPeriod}", statPeriod);
+//			detail_sql = detail_sql.replace("${investStatTime}", firstDay);
 			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
 			resultList.addAll(list);
 		} catch (SQLException e) {

@@ -25,23 +25,19 @@ function initSelectEvent(){
 }
 
 function initTimeCond(){
-    $("#invest_end_time").datetimepicker({
-        format: 'yyyy-mm-dd',
-        minView:'month',
-        language: 'zh-CN',
-        autoclose:true
-    }).on("click",function(){
-    });
-}
-function initTimeCond1(){
-    $("#invest_month_time").datetimepicker({
+    $("#statPeriod").datetimepicker({
         format: 'yyyy-mm',
-        minView:'month',
-        language: 'zh-CN',
-        autoclose:true
+        weekStart: 1,  
+        autoclose: true,  
+        startView: 3,  
+        minView: 3,  
+        forceParse: false,  
+        language: 'zh-CN'  
     }).on("click",function(){
     });
 }
+
+
 
 function initExportFunction(){
 	$('#btn_exports').click(function(){
@@ -63,10 +59,10 @@ function initDetailTableGrid(){
 //        url: '../yunying/dmreportvipuser/list',
         datatype: "json",
         colModel: [
-			{ label: '指标编码', name: 'ITEMSCODE', index: '$ITEMSCODE', width: 90,align:'right' },
-			{ label: '指标名称', name: 'TYPENAME', index: '$TYPENAME', width: 90 ,align:'right'}, 			
-			{ label: '频度', name: 'MONTH', index: '$MONTH', width: 90 ,align:'right'}, 
-			{ label: '金额(数量)', name: 'MONEY', index: '$MONEY', width: 90 ,align:'right'}	
+			{ label: '指标编码', name: 'BIANMA', index: '$ITEMSCODE', width: 90,align:'right' },
+			{ label: '指标名称', name: 'ZHIBIAO', index: '$TYPENAME', width: 90 ,align:'right'}, 			
+			{ label: '频度', name: 'PERIOD', index: '$MONTH', width: 90 ,align:'right'}, 
+			{ label: '金额(数量)', name: 'DATA', index: '$MONEY', width: 90 ,align:'right'}	
 
 				
         ],
@@ -101,8 +97,8 @@ function initCountTableGrid(){
         colModel: [
 			{ label: '指标编码', name: 'BIANMA', index: '$ITEMSCODE', width: 90,align:'right' },
 			{ label: '指标名称', name: 'ZHIBIAO', index: '$TYPENAME', width: 90 ,align:'right'}, 			
-			{ label: '频度', name: 'TIME', index: '$MONTH', width: 90 ,align:'right'}, 
-			{ label: '金额(占比)', name: 'NUM1', index: '$MONEY', width: 90 ,align:'right'}	
+			{ label: '频度', name: 'PERIOD', index: '$MONTH', width: 90 ,align:'right'}, 
+			{ label: '金额(占比)', name: 'DATA', index: '$MONEY', width: 90 ,align:'right'}	
 
 				
         ],
@@ -163,8 +159,7 @@ var vm = new Vue({
 
 function getParams(){
 	var params = {
-        	'invest_end_time': $("#invest_end_time").val(),
-        	'invest_month_time': $("#invest_month_time").val()
+        	'statPeriod': $("#statPeriod").val()
 	};
 	return params;
 }

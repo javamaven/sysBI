@@ -23,14 +23,18 @@ function initSelectEvent(){
 }
 
 function initTimeCond(){
-    $("#invest_end_time").datetimepicker({
-        format: 'yyyy-mm-dd',
-        minView:'month',
-        language: 'zh-CN',
-        autoclose:true
+    $("#statPeriod").datetimepicker({
+        format: 'yyyy-mm',
+        weekStart: 1,  
+        autoclose: true,  
+        startView: 3,  
+        minView: 3,  
+        forceParse: false,  
+        language: 'zh-CN'  
     }).on("click",function(){
     });
 }
+
 
 function initExportFunction(){
 	$('#btn_exports').click(function(){
@@ -115,8 +119,7 @@ var vm = new Vue({
 
 function getParams(){
 	var params = {
-        	'invest_end_time': $("#invest_end_time").val(),
-        	'invest_month_time': $("#invest_month_time").val()
+        	'statPeriod': $("#statPeriod").val()
 	};
 	return params;
 }
