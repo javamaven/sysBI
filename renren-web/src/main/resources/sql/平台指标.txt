@@ -1,4 +1,4 @@
 SELECT * FROM dm_report_platform_data
 WHERE 1=1
 AND STAT_PERIOD='${statPeriod}'
-AND DATE_NAME NOT IN '注册人数（按照历史遗留）'
+AND DATE_NAME NOT IN '注册人数（按历史遗留）'
