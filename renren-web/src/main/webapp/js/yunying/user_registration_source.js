@@ -80,7 +80,7 @@ function initDataGrid(){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
 	    		}else{
-	    			return '';
+	    			return '0';
 	    		}
 	    	} 
 	    },	
@@ -90,7 +90,7 @@ function initDataGrid(){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
 	    		}else{
-	    			return '';
+	    			return '0';
 	    		}
 	    	} 
 	    },
@@ -101,7 +101,7 @@ function initDataGrid(){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
 	    		}else{
-	    			return '';
+	    			return '0';
 	    		}
 	    	} 
 	    },
@@ -111,7 +111,7 @@ function initDataGrid(){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
 	    		}else{
-	    			return '';
+	    			return '0';
 	    		}
 	    	} 
 	    },

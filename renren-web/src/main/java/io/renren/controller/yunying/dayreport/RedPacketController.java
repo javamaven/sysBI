@@ -271,10 +271,10 @@ public class RedPacketController {
 		}
 		
 		
-		R r=daylist2(1, 1000000, statPeriod);
-		PageUtils pageUtil = (PageUtils) r.get("page");	
-		
-		List<Map<String,Object>> resultList3 = (List<Map<String, Object>>) pageUtil.getList();
+//		R r=daylist2(1, 1000000, statPeriod);
+//		PageUtils pageUtil = (PageUtils) r.get("page");	
+//		
+//		List<Map<String,Object>> resultList3 = (List<Map<String, Object>>) pageUtil.getList();
 		
 		
 		// 查询列表数据
@@ -295,29 +295,29 @@ public class RedPacketController {
 		String title2 = "运营成本汇总";
 		
 		// 查询列表数据
-		JSONArray va3 = new JSONArray();
-		for (int i = 0; i < resultList.size(); i++) {
-			va3.add(resultList3.get(i));
-		}
-		Map<String, String> headMap3 = getDayListExcelFields3();
-		String title3 = "存管版红包明细-two";
+//		JSONArray va3 = new JSONArray();
+//		for (int i = 0; i < resultList.size(); i++) {
+//			va3.add(resultList3.get(i));
+//		}
+//		Map<String, String> headMap3 = getDayListExcelFields3();
+//		String title3 = "存管版红包明细-two";
 		
 		List<String> titleList = new ArrayList<>();
 		titleList.add(title);
 		titleList.add(title2);
-		titleList.add(title3);
+//		titleList.add(title3);
 
 		
 		List<Map<String, String>> headMapList = new ArrayList<Map<String,String>>();
 		headMapList.add(headMap);
 		headMapList.add(headMap2);
-		headMapList.add(headMap3);
+//		headMapList.add(headMap3);
 
 		
 		List<JSONArray> ja = new ArrayList<JSONArray>();
 		ja.add(va);
 		ja.add(va2);
-		ja.add(va3);
+//		ja.add(va3);
 
 
 		ExcelUtil.downloadExcelFile(titleList , headMapList, ja , response);

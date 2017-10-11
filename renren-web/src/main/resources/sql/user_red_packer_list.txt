@@ -86,8 +86,8 @@ sum(hd.tender_capital) as tender_capital, -- 使用红包投资金额
 round(sum(hd.tender_capital*hd.borrow_period/360),2) as n_sum_tender,-- 年化投资金额
 max(hd.used_money) as use_money, -- 使用红包金额 -- 改成了红包表中的使用金额
 
-round(sum(hd.tender_capital)/sum(hd.tend_vouche),2) as ROI,
-round(sum(hd.tender_capital*hd.borrow_period/360)/sum(hd.tend_vouche),2) as n_ROI,
+case when sum(hd.tend_vouche)>0 then round(sum(hd.tender_capital)/sum(hd.tend_vouche),2) end  as ROI,
+case when sum(hd.tend_vouche)>0 then round(sum(hd.tender_capital*hd.borrow_period/360)/sum(hd.tend_vouche),2)end  as n_ROI,
 min(receive_time) as receive_time,--获得红包时间
 min(rate) as rate, -- 杠杆
 min(used_times) as used_times, --使用红包次数
