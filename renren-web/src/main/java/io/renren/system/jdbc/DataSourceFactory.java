@@ -125,7 +125,12 @@ public class DataSourceFactory implements Serializable {
 			}
 			for (int i = 0; i < this.oracleInitSize; i++) {
 				try {
-					oracleConnectQueue.add(createOracleConnection());
+					long l1 = System.currentTimeMillis();
+					Connection createOracleConnection = createOracleConnection();
+					long l2 = System.currentTimeMillis();
+					System.err.println("++++创建oracle连接耗时[" + i + "]+++" + (l2-l1));
+					oracleConnectQueue.add(createOracleConnection);
+					
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
