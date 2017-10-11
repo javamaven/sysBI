@@ -27,7 +27,9 @@ import com.alibaba.fastjson.JSONArray;
 import io.renren.service.UserBehaviorService;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
+import io.renren.util.MapUtil;
 import io.renren.util.UserBehaviorUtil;
+import io.renren.utils.EasyUiPage;
 import io.renren.utils.ExcelUtil;
 import io.renren.utils.PageUtils;
 import io.renren.utils.R;
@@ -45,47 +47,126 @@ public class UserRegistrationSourceController {
 	private  String reportType="用户注册来源";
 
 	
-	/**
-	 * 用户注册来源
-	 */
-	@ResponseBody
-	@RequestMapping("/list")
-	public R daylist(Integer page, Integer limit ,String period ,String sortorder ,String order) {
-		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
-		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
-		
-		String month="";
-		
-		if (StringUtils.isNotEmpty(period)) {
-			period = period.replace("-", "");
-			month = period.substring(0,6);
-		}
-		
-		long l1 = System.currentTimeMillis();
-
-		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
-
-		try {
-			String path = this.getClass().getResource("/").getPath();
-			String detail_sql;
-			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/用户注册来源.txt"));
-			detail_sql = detail_sql.replace("${month}", month);
-			detail_sql = detail_sql.replace("${period}", period);
-			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
-			resultList.addAll(list);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		int total = resultList.size();
-		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
-		long l2 = System.currentTimeMillis();
-
-		System.err.println("+++++++用户注册来源数据查询耗时：" + (l2 - l1));
-		return R.ok().put("page", pageUtil);
-	}
+//	/**
+//	 * 用户注册来源
+//	 */
+//	@ResponseBody
+//	@RequestMapping("/list")
+//	public R daylist(Integer page, Integer limit ,String period ,String sortorder ,String order) {
+//		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+//		userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+//		
+//		String paixu="";
+//		if (StringUtils.isNotEmpty(sortorder)) {
+//			paixu="ORDER BY "+sortorder +" "+order;
+//		}
+//		
+//		
+//		String month="";
+//		
+//		if (StringUtils.isNotEmpty(period)) {
+//			period = period.replace("-", "");
+//			month = period.substring(0,6);
+//		}
+//		
+//		long l1 = System.currentTimeMillis();
+//
+//		List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+//		try {
+//			DecimalFormat df = new DecimalFormat("#,###.00"); 
+//			String path = this.getClass().getResource("/").getPath();
+//			String detail_sql;
+//			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/用户注册来源.txt"));
+//			detail_sql = detail_sql.replace("${month}", month);
+//			detail_sql = detail_sql.replace("${period}", period);
+//			detail_sql = detail_sql.replace("${paixu}", paixu);
+//			List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+////			for (int i = 0; i < list.size(); i++) {
+////				Map<String, Object> map = list.get(i);
+////				map.get(key)
+////			}
+////			
+//			
+//			resultList.addAll(list);
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//		int total = resultList.size();
+//		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
+//		long l2 = System.currentTimeMillis();
+//
+//		System.err.println("+++++++用户注册来源数据查询耗时：" + (l2 - l1));
+//		return R.ok().put("page", pageUtil);
+//	}
+//	
 	
+	  /**
+	   * 用户注册来源
+	   */
+	  @ResponseBody
+	  @RequestMapping("/list")
+	  public EasyUiPage daylist(Integer page, Integer limit ,String period ,String sortorder ,String order) {
+	    UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
+	    userBehaviorUtil.insert(getUserId(),new Date(),"查看",reportType," ");
+//	    period = "20170925";
+	    page = 1;
+	    limit = 100;
+	    String month="";
+	    
+	    if (StringUtils.isNotEmpty(period)) {
+	      period = period.replace("-", "");
+	      month = period.substring(0,6);
+	    }
+	    
+	    long l1 = System.currentTimeMillis();
+
+	    List<Map<String, Object>> resultList = new ArrayList<Map<String, Object>>();
+
+	    try {
+	      String path = this.getClass().getResource("/").getPath();
+	      String detail_sql;
+	      detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/用户注册来源.txt"));
+	      detail_sql = detail_sql.replace("${month}", month);
+	      detail_sql = detail_sql.replace("${period}", period);
+	      List<Map<String, Object>> list = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql);
+	      resultList.addAll(list);
+	    } catch (SQLException e) {
+	      e.printStackTrace();
+	    } catch (IOException e) {
+	      e.printStackTrace();
+	    }
+	    int total = resultList.size();
+	    PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
+	    long l2 = System.currentTimeMillis();
+
+	    System.err.println("+++++++用户注册来源数据查询耗时：" + (l2 - l1));
+	    //最終返回數據格式
+	    List<Map<String, Object>> retList = new ArrayList<Map<String, Object>>();
+	    int channelId = 0;
+	    for (int i = 0; i < resultList.size(); i++) {
+	      Map<String, Object> map = resultList.get(i);
+	      map.put("id", i+1);
+	      String huizongValue = MapUtil.getValue(map, "HUIZONG");
+	      if("渠道".equals(huizongValue)){
+	        channelId = i+1;
+	        retList.add(map);
+	      }else if("汇总".equals(huizongValue) || "邀请".equals(huizongValue) || "自然流量".equals(huizongValue)){
+	        retList.add(map);
+	      }else{
+	        map.put("_parentId", channelId);
+	        retList.add(map);
+	      }
+	    }
+	    
+//	    return R.ok().put("page", pageUtil);
+	    EasyUiPage pageObj = new EasyUiPage();
+	    pageObj.setRows(retList);
+	    pageObj.setTotal(retList.size());
+	    return pageObj;
+	  }
+	  
 	
 
 	@SuppressWarnings("unchecked")
@@ -99,21 +180,21 @@ public class UserRegistrationSourceController {
 		String period = map.get("period") + "";
 		String sortorder=map.get("sortorder")+"";
 		String order=map.get("order")+"";
-		R r=daylist(1, 1000000, period,sortorder , order);
-		PageUtils pageUtil = (PageUtils) r.get("page");	
-		
-		List<Map<String,Object>> resultList = (List<Map<String, Object>>) pageUtil.getList();
-
-		// 查询列表数据
-		JSONArray va = new JSONArray();
-		for (int i = 0; i < resultList.size(); i++) {
-			va.add(resultList.get(i));
-		}
+//		R r=daylist(1, 1000000, period,sortorder , order);
+//		PageUtils pageUtil = (PageUtils) r.get("page");	
+//		
+//		List<Map<String,Object>> resultList = (List<Map<String, Object>>) pageUtil.getList();
+//
+//		// 查询列表数据
+//		JSONArray va = new JSONArray();
+//		for (int i = 0; i < resultList.size(); i++) {
+//			va.add(resultList.get(i));
+//		}
 		Map<String, String> headMap = null;
 		String title = "用户注册来源";
 		headMap = getDayListExcelFields();
 
-		ExcelUtil.downloadExcelFile(title, headMap, va, response);
+//		ExcelUtil.downloadExcelFile(title, headMap, va, response);
 	}
 
 	

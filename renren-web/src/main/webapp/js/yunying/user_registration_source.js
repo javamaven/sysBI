@@ -1,9 +1,10 @@
 $(function () {
-	initDetailTableGrid();
+//	initDetailTableGrid();
 	initExportFunction();
 	initEvent();
 	initTimeCond();
 //	initSelectEvent();
+	initDataGrid();
 });
 
 
@@ -37,110 +38,172 @@ function initExportFunction(){
 	$('#btn_exports').click(function(){
 		var params = getParams();
 		
-		var select = $("#list_select").children('option:selected').val();
 			executePost('../yunying/source/exportExcel', {'params' : JSON.stringify(params)});
 		
 	});
 
 }
-function initDetailTableGrid(){
-    $("#jqGrid").jqGrid({
-//        url: '../yunying/dmreportvipuser/list',
-        datatype: "json",
-        colModel: [
-        	{ label: '注册来源', name: 'HUIZONG', frozen : true,index: 'HUIZONG', width: 100,align:'left'},
-			{ label: '注册人数', name: 'ALL_REG', index: 'ALL_REG', width: 100 ,align:'right'}, 			
-			{ label: '当月注册', name: 'M_REG', index: 'M_REG', width: 100 ,align:'right'}, 
-			
-			{ label: '当日注册', name: 'D_REG', index: 'D_REG', width: 100 ,align:'right'}, 			
-			{ label: '首投人数', name: 'ALL_FIRST', index: 'ALL_FIRST', width: 100 ,align:'right'}, 
-			
-			{ label: '当月首投人数', name: 'M_FIRST', index: 'M_FIRST', width: 100,align:'right'}, 			
-			{ label: '当日首投人数', name: 'D_FIRST', index: 'D_FIRST', width: 100 ,align:'right'} ,
-			
-			
-			{ label: '当月首投金额', name: 'M_FIRST_INV', index: 'M_FIRST_INV', width: 120,align:'right' },
-			{ label: '当日首投金额', name: 'D_FIRST_INV', index: 'D_FIRST_INV', width: 120 ,align:'right'}, 			
-			{ label: '当月充值', name: 'WEIZHI4', index: 'WEIZHI4', width: 120 ,align:'right'}, 
-			
-			{ label: '当月净充值', name: 'WEIZHI3', index: 'WEIZHI3', width: 120 ,align:'right'}, 
-			
-			{ label: '当日充值', name: 'WEIZHI2', index: 'WEIZHI2', width: 120,align:'right'}, 			
-			
-			
-			{ label: '当日净充值', name: 'WEIZHI1', index: 'WEIZHI1', width: 120 ,align:'right'}, 			
-			{ label: '当月投资', name: 'M_INV', index: 'M_INV', width: 120 ,align:'right'}, 
-			
-			{ label: '当日投资', name: 'D_INV', index: 'D_INV', width: 120,align:'right'}, 			
-			{ label: '待收本金', name: 'AWIAT', index: 'AWIAT', width: 120 ,align:'right'} 
-		
-	
-        ],
-		viewrecords: true,
-        height: $(window).height()-150,
-        rowNum: 1000,
-        rownumbers: true, 
-        autowidth:true,
-//        sortable:true,
-//        sortname:'sortorder',
-//        sortorder:'asc',
-        shrinkToFit: false,
-        showSummaryOnHide: true,
-//        autoScroll: false,
-//        multiselect: false,
-        pager: "#jqGridPager",
-        jsonReader : {
-            root: "page.list",
-            page: "page.currPage",
-            total: "page.totalPage",
-            records: "page.totalCount"
-        },
-        prmNames : {
-            page:"page", 
-            rows:"limit", 
-            order: "order",
-            sort:"sortorder"
-        },
-        gridComplete:function(){
-        	//隐藏grid底部滚动条
+
+
+function initDataGrid(){
+    $('#tt').treegrid({
+//        url:'../yunyingtool/list2?user_type=all_user',
+//        url: '../yunying/source/list?period=' + getParams().period ,
+        idField:'id',
+        loadMsg : '数据正在加载,请耐心的等待...',
+        treeField:'HUIZONG',
+        columns:[[
+//          {field:'id',title:'id',width:180},
+        {field:'HUIZONG',title:'用戶來源',width:80,align:'left'},
+        {field:'ALL_REG',title:'注册人数',width:70,align:'left',
+        	formatter:function(cellvalue, options, rowObject){
+	    		if(cellvalue){
+	    			return formatNumber(cellvalue,2);
+	    		}else{
+	    			return '';
+	    		}
+	    	} 
+	    },
+        {field:'M_REG',title:'当月注册',width:60,align:'left',
+	    	formatter:function(cellvalue, options, rowObject){
+	    		if(cellvalue){
+	    			return formatNumber(cellvalue,2);
+	    		}else{
+	    			return '';
+	    		}
+	    	} 
+	    },
+        
+        {field:'D_REG',title:'当日注册',width:60,align:'left'},
+        {field:'ALL_FIRST',title:'首投人数',width:60,align:'left',
+        	formatter:function(cellvalue, options, rowObject){
+	    		if(cellvalue){
+	    			return formatNumber(cellvalue,2);
+	    		}else{
+	    			return '';
+	    		}
+	    	} 
+	    },	
+
+        {field:'M_FIRST',title:'当月首投人数',width:80,align:'left',
+	    	formatter:function(cellvalue, options, rowObject){
+	    		if(cellvalue){
+	    			return formatNumber(cellvalue,2);
+	    		}else{
+	    			return '';
+	    		}
+	    	} 
+	    },
+        
+        {field:'D_FIRST',title:'当日首投人数',width:80 , align:'left'},
+        {field:'M_FIRST_INV',title:'当月首投金额',width:90,
+        	formatter:function(cellvalue, options, rowObject){
+	    		if(cellvalue){
+	    			return formatNumber(cellvalue,2);
+	    		}else{
+	    			return '';
+	    		}
+	    	} 
+	    },
+        
+        {field:'D_FIRST_INV',title:'当日首投金额',width:90,align:'left',
+	    	formatter:function(cellvalue, options, rowObject){
+	    		if(cellvalue){
+	    			return formatNumber(cellvalue,2);
+	    		}else{
+	    			return '';
+	    		}
+	    	} 
+	    },
+
+        {field:'WEIZHI4',title:'当月充值',width:90,align:'left',
+	    	formatter:function(cellvalue, options, rowObject){
+	    		if(cellvalue){
+	    			return formatNumber(cellvalue,2);
+	    		}else{
+	    			return '';
+	    		}
+	    	} 
+	    },
+        
+        {field:'WEIZHI3',title:'当月净充值',width:100,align:'left',
+	    	formatter:function(cellvalue, options, rowObject){
+	    		if(cellvalue){
+	    			return formatNumber(cellvalue,2);
+	    		}else{
+	    			return '';
+	    		}
+	    	} 
+	    },
+        
+        
+        {field:'WEIZHI2',title:'当日充值',width:100,align:'left',
+	    	formatter:function(cellvalue, options, rowObject){
+	    		if(cellvalue){
+	    			return formatNumber(cellvalue,2);
+	    		}else{
+	    			return '';
+	    		}
+	    	} 
+	    },
+        
+        {field:'WEIZHI1',title:'当日净充值',width:100,align:'left',
+	    	formatter:function(cellvalue, options, rowObject){
+	    		if(cellvalue){
+	    			return formatNumber(cellvalue,2);
+	    		}else{
+	    			return '';
+	    		}
+	    	} 
+	    },
+        
+        
+        {field:'M_INV',title:'当月投资',width:100,align:'left',
+	    	formatter:function(cellvalue, options, rowObject){
+	    		if(cellvalue){
+	    			return formatNumber(cellvalue,2);
+	    		}else{
+	    			return '';
+	    		}
+	    	} 
+	    },
+        
+        {field:'D_INV',title:'当日投资',width:100,align:'left',
+	    	formatter:function(cellvalue, options, rowObject){
+	    		if(cellvalue){
+	    			return formatNumber(cellvalue,2);
+	    		}else{
+	    			return '';
+	    		}
+	    	} 
+	    },
+        
+        
+        {field:'AWIAT',title:'待收本金',width:110,align:'left',
+	    	formatter:function(cellvalue, options, rowObject){
+	    		if(cellvalue){
+	    			return formatNumber(cellvalue,2);
+	    		}else{
+	    			return '';
+	    		}
+	    	} 
+	    }
+        
+        
+        
+        ]],
+        onLoadSuccess: function(row, data){
+            $(".tree-icon,.tree-file").removeClass("tree-icon tree-file");
+            $(".tree-icon,.tree-folder").removeClass("tree-icon tree-folder tree-folder-open tree-folder-closed"); 
         }
     });
-    jQuery("#jqGrid").jqGrid('setFrozenColumns');  //冻结列
-
+    
+  
+  
 }
 
 
 
-
-//var vm = new Vue({
-//	el:'#rrapp',
-//	data:{
-//		showList: true,
-//		title: null,
-//		dmReportDdzRemain: {}
-//	},
-//	methods: {
-//		reload: function (event) {
-//			vm.showList = true;
-//			var select = $("#list_select").children('option:selected').val();
-//			if(select == 'vip_detail'){
-//				$("#jqGrid").jqGrid("clearGridData");
-//				$("#jqGrid").jqGrid('setGridParam',{ 
-//					datatype:'json', 
-//					url: '../yunying/daishouqujian/list',
-//		            postData: getParams()
-//	            }).trigger("reloadGrid");
-//			}else if(select == 'nianlin'){
-//				$("#jqGrid_count").jqGrid("clearGridData");
-//				$("#jqGrid_count").jqGrid('setGridParam',{ 
-//					datatype:'json', 
-//					url: '../yunying/daishouqujian/ddylist',
-//		            postData: getParams()
-//	            }).trigger("reloadGrid");
-//			}
-//		}
-//	}
-//});
 
 
 var vm = new Vue({
@@ -151,16 +214,13 @@ var vm = new Vue({
 		dmReportDdzRemain: {}
 	},
 	methods: {
-		reload: function (event) {
+	    reload: function (event) {
+			console.info("aaaaa")
 			vm.showList = true;
-			var select = $("#list_select").children('option:selected').val();
-				$("#jqGrid").jqGrid("clearGridData");
-				$("#jqGrid").jqGrid('setGridParam',{ 
-					datatype:'json', 
-					url: '../yunying/source/list',
-		            postData: getParams()
-	            }).trigger("reloadGrid");
-			}
+		    var options = $('#tt').treegrid('options');
+		    options.url = '../yunying/source/list?period=' + getParams().period ;
+		    $('#tt').treegrid('reload');
+	   }
 		
 	}
 });
