@@ -56,7 +56,11 @@ function initTimeCond(){
 function initExportFunction(){
 	$('#btn_exports').click(function(){
 		var params = getParams();
-		
+		var statPeriod = $("#stat_period").val();
+		if(!statPeriod){
+			alert('请先选择日期');
+			return;
+		}
 		var select = $("#list_select").children('option:selected').val();
 		if(select == 'vip_detail'){
 			executePost('../yunying/dmreportvipuser/exportExcel', {'params' : JSON.stringify(params)});
@@ -81,7 +85,8 @@ function initDetailTableGrid(){
 			{ label: '性别', name: 'sex', index: '$SEX', width: 90,align:'right' }, 
 			{ label: '名单电话号码', name: 'oldPhone', index: '$OLD_PHONE', width: 110,align:'right' }, 			
 			{ label: '电话号码', name: 'phone', index: '$PHONE', width: 100,align:'right' }, 			
-			{ label: '名单总待收', name: 'await', index: '$AWAIT', width: 90 ,align:'right'}, 	
+//			{ label: '名单总待收', name: 'await', index: '$AWAIT', width: 90 ,align:'right'}, 	
+			{ label: '9月待收', name: 'await', index: '$AWAIT', width: 90 ,align:'right'}, 	
 			{ label: '当前总待收', name: 'totalReceipt', index: '$TOTAL_RECEIPT', width: 90 ,align:'right'}	,
 			{ label: '等级划分', name: 'lv', index: '$LV', width: 80 ,align:'right'}, 			
 			{ label: '所属人', name: 'owner', index: '$OWNER', width: 80 ,align:'right'}, 			
@@ -184,6 +189,11 @@ var vm = new Vue({
 		reload: function (event) {
 			vm.showList = true;
 			var select = $("#list_select").children('option:selected').val();
+			var statPeriod = $("#stat_period").val();
+			if(!statPeriod){
+				alert('请先选择日期');
+				return;
+			}
 			if(select == 'vip_detail'){
 				$("#jqGrid").jqGrid("clearGridData");
 				$("#jqGrid").jqGrid('setGridParam',{ 

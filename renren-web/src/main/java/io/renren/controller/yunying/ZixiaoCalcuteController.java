@@ -435,6 +435,7 @@ public class ZixiaoCalcuteController extends AbstractController {
 				}else{
 					month_last_day = DateUtil.getLastDayOfMonth(statPeriod.replace("-", ""));
 				}
+				month_last_day = month_last_day.replace("-", "");
 				retList = new JdbcUtil(dataSourceFactory, "oracle26").query(detail_sql, statPeriod, statPeriod + "-01", statPeriod, month_last_day  );
 			}
 			
