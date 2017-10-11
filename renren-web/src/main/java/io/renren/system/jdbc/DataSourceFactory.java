@@ -38,6 +38,14 @@ public class DataSourceFactory implements Serializable {
 	private String oracleUserName26;
 	private String oraclePassword26;
 	private String oracleDriver26;
+	
+	/** 客服crm系统 */
+	
+	private String crmUrl;
+	private String crmUserName;
+	private String crmPassword;
+	private String crmDriver;
+	
 
 	// private Connection[] mysqlConnections;// 保存数据库连接
 	// private String[] mysqlConnStatus;// 已连可用Y 已连不可用N 未连接X
@@ -217,6 +225,23 @@ public class DataSourceFactory implements Serializable {
 		return null;
 
 	}
+	
+	
+	/**
+	 * 获取crm克服数据库
+	 * 
+	 * @return
+	 */
+	public Connection getCrmMysqlConnection() {
+		try {
+			Class.forName(this.crmDriver);// 加载Oracle驱动程序
+			return DriverManager.getConnection(this.crmUrl, this.crmUserName, this.crmPassword);// 获取连接
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+
+	}
 
 	public String getMysqlUrl() {
 		return mysqlUrl;
@@ -346,4 +371,37 @@ public class DataSourceFactory implements Serializable {
 		this.oracleDriver26 = oracleDriver26;
 	}
 
+	
+	public void setCrmDriver(String crmDriver) {
+		this.crmDriver = crmDriver;
+	}
+	
+	public void setCrmPassword(String crmPassword) {
+		this.crmPassword = crmPassword;
+	}
+	
+	public void setCrmUrl(String crmUrl) {
+		this.crmUrl = crmUrl;
+	}
+	
+	public void setCrmUserName(String crmUserName) {
+		this.crmUserName = crmUserName;
+	}
+	
+	public String getCrmDriver() {
+		return crmDriver;
+	}
+	
+	public String getCrmPassword() {
+		return crmPassword;
+	}
+	
+	public String getCrmUrl() {
+		return crmUrl;
+	}
+	
+	public String getCrmUserName() {
+		return crmUserName;
+	}
+	
 }

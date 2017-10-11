@@ -96,6 +96,22 @@
 		<property name="oracleDriver26">
 			<value>${oracle26.jdbc.driver}</value>
 		</property>
+		
+		
+		<!-- 客服crm系统 -->
+		<property name="crmUrl">
+			<value>${mysql.jdbc.crm.url}</value>
+		</property>
+		<property name="crmUserName">
+			<value>${mysql.jdbc.crm.username}</value>
+		</property>
+		<property name="crmPassword">
+			<value>${mysql.jdbc.crm.password}</value>
+		</property>
+		<property name="crmDriver">
+			<value>${mysql.jdbc.crm.driver}</value>
+		</property>
+		
 	</bean>
 	
 	<bean id="stat-filter" class="com.alibaba.druid.filter.stat.StatFilter">

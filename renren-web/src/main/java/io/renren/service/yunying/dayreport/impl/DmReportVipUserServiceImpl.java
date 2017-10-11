@@ -53,7 +53,8 @@ public class DmReportVipUserServiceImpl implements DmReportVipUserService {
 		headMap.put("oldPhone", "名单电话号码");
 
 		headMap.put("phone", "电话号码");
-		headMap.put("await", "名单总待收");
+//		headMap.put("await", "名单总待收");
+		headMap.put("await", "9月待收");
 		headMap.put("totalReceipt", "当前总待收");
 		
 		headMap.put("lv", "等级划分");

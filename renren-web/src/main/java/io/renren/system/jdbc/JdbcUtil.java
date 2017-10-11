@@ -29,6 +29,8 @@ public class JdbcUtil {
 			this.connection = factory.getMysqlConnection();
 		} else if ("oracle26".equals(dbType)) {
 			this.connection = factory.getOracle26Connection();
+		} else if("crmMysql".equals(dbType)){
+			this.connection = factory.getCrmMysqlConnection();
 		}
 	}
 
@@ -54,6 +56,12 @@ public class JdbcUtil {
 		} else if ("mysql".equals(this.dbType)) {
 			factory.returnMysqlConnection(connection);
 		} else if ("oracle26".equals(this.dbType)) {
+			try {
+				this.connection.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		} else if ("crmMysql".equals(this.dbType)) {
 			try {
 				this.connection.close();
 			} catch (SQLException e) {
