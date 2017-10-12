@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>参数配置</title>
+#parse("sys/header.html")
+<style>
+       .title {
+           margin-top: 10px;
+           margin-left: 20px;
+       }
+       .content {
+       		margin-top: 10px;
+       		margin-left: 50px;
+       }
+       .left_blue {
+       		background-color: blue;
+       		width:5px;
+       		border: 0
+       }
+</style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList" class="container-fluid">
+		<div id="vip_config" class="row">
+			<div>
+				<a class="btn btn-default" @click="updateVipConfig">保存</a>
+			</div>
+			<div class="title"><input type="text" class="left_blue"/><span style="margin-left: 10px;">VIP配置</span></div>
+			<div class="content">
+				<span>上月月末待收></span>
+				<input type="text" v-model="vip_config.last_account_wait"></input>元
+			</div>
+			<div class="title"><input type="text" class="left_blue"/><span style="margin-left: 10px;">预警配置</span></div>
+			<div class="content">
+				<span>流失待收</span>
+				<input type="text" v-model="vip_config.loss_rate"></input>%
+			</div>
+		</div>
+		<!-- <div id="warning_config" class="row">
+		</div> -->
+		<div id="belongs_config" class="row">
+			<div class="title">
+				<input type="text" class="left_blue"/>
+				<span style="margin-left: 10px;">所属人:</span>
+				<!-- <input type="button" value="添加"/>&nbsp;&nbsp;
+				<input type="button" value="删除"/>&nbsp;&nbsp;
+				<input type="button" value="保存"/> -->
+			</div>
+			<div class="content container-fluid">
+				<div class="row">
+					<div class="col-md-6">
+						<table id="jqGrid"></table>
+						<div id="jqGridPager"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div id="value_class_config" class="row">
+			<div class="title">
+				<input type="text" class="left_blue"/>
+				<span style="margin-left: 10px;">价值分类、标签、通话状态:</span>
+			</div>
+			<div class="content container-fluid">
+				<div class="row">
+					<div class="col-md-3">
+						<div>价值分类</div>
+						<table id="jqGrid1"></table>
+						<div id="jqGridPager1"></div>
+					</div>
+					<div class="col-md-3">
+						<div>标签</div>
+						<table id="jqGrid2"></table>
+						<div id="jqGridPager2"></div>
+					</div>
+					<div class="col-md-3">
+						<div>通话状态</div>
+						<table id="jqGrid3"></table>
+						<div id="jqGridPager3"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<div id="url_config" class="row">
+			<div class="title">
+				<input type="text" class="left_blue"/>
+				<span style="margin-left: 10px;">话术设置:</span>
+			</div>
+		</div>
+	    <!-- <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div> -->
+    </div>
+</div>
+
+<script type="text/javascript">
+
+function delAdvisor(id){
+	$.ajax({
+        url:'../crm/config/del_financial_advisor',
+        data:{id:id},
+        dataType:'json',
+        success:function(r){
+            if(r.code == 0){
+            	//alert("删除成功");
+            	$("#jqGrid").trigger("reloadGrid");
+            }else{
+                alert(r.msg? r.msg : "未知错误");
+            }
+        },
+        error:function(){
+            alert("删除出现错误");
+        }
+    })
+}
+
+function delValueClass(id){
+	$.ajax({
+        url:'../crm/config/del_value_class',
+        data:{id:id},
+        dataType:'json',
+        success:function(r){
+            if(r.code == 0){
+            	//alert("删除成功");
+            	$("#jqGrid").trigger("reloadGrid");
+            }else{
+                alert(r.msg? r.msg : "未知错误");
+            }
+        },
+        error:function(){
+            alert("删除出现错误");
+        }
+    })
+}
+
+$(function () {
+    $("#jqGrid").jqGrid({
+        url: '../crm/config/query_financial_advisor',
+        datatype: "json",
+        colModel: [
+			{ label: 'ID', name: 'id',width: 20, editable:false},
+			{ label: '角色', name: 'role',width: 20, editable:true,edittype:"select",editoptions:{value:"1:管理员;2:理财顾问"},formatter: function(value, options, row){
+				return value==1?'管理员':'理财顾问';
+			}},
+			{ label: '姓名', name: 'real_name', width: 20, editable:true},
+			{ label: '经分系统账号', name: 'system_account', width: 40,editable:true},
+			{ label: '邮箱', name: 'email', width: 40, editable:true}/* ,
+			{ label: '操作', name: 'delete', width: 20, formatter: function(value, options, row){
+				if(row.id){
+					var span = "<input type='button' value='删除' onclick='delAdvisor(" + row.id + ")'></input>";
+					return span;
+				}
+				return '';
+			}} */
+        ],
+		//viewrecords: true,
+        //rownumbers: false, 
+        //rownumWidth: 25, 
+        autowidth:true,
+        //width:600,
+        multiselect: false,
+        editurl: '../crm/config/save_financial_advisor',
+        pager: "#jqGridPager",
+        pgbuttons: false,
+        pginput: false,
+        jsonReader : {
+            root: "list"
+        },
+        gridComplete:function(){
+        	//隐藏grid底部滚动条
+        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
+        	$(this).setGridHeight($(this).height());
+        }
+    });
+    
+    $.ajaxSetup({contentType: 'application/x-www-form-urlencoded'});
+    
+    $("#jqGrid").jqGrid('navGrid',"#jqGridPager",{edit:false,add:false,del:true,delfunc:function(id){
+    	if(id){delAdvisor(id);}
+    }},{}, {}, {},{});
+	var editId = null;
+	var editparameters = {
+			keys: true,
+            oneditfunc: function (id) { 
+            	console.log('oneditfunc' + id);
+            	editId = id;
+            },
+            successfunc: function (r) { 
+            	return reloadGridFunc(r);
+            },
+            url: "../crm/config/update_financial_advisor",
+            extraparam: {},
+            mtype: "POST"
+	};
+	var reloadGridFunc = function (response) {
+		console.log("successfunc");
+		var result = eval('(' + response.responseText + ')');
+		//保存成功
+        if (result.code == 0) {
+        	var $self = $(this);
+        	setTimeout(function () {
+        		$self.setGridParam({ datatype: 'json' });
+        		$self.trigger("reloadGrid");
+        		$self.setGridHeight($self.height());
+        	}, 500);
+        	return true;
+        }else {
+        	alert(result.msg);
+        	return false;
+        }
+	};
+	var addParams = {
+		useFormatter : false,
+        useDefValues: true,
+        addRowParams: {
+            keys: true,
+            successfunc: reloadGridFunc,
+            extraparam: {}
+        }                        
+    }
+	$("#jqGrid").jqGrid('inlineNav',"#jqGridPager",{addParams:addParams,editParams:editparameters});
+    
+    $("#jqGrid1").jqGrid({
+        url: '../crm/config/value_class_list?type=1',
+        datatype: "json",
+        colModel: [
+        	{ label: 'ID', name: 'id',width: 20,hidden: true},
+			{ label: '价值分类', name: 'name',width: 20,editable:true},
+			{ label: '说明', name: 'desc', width: 20,editable:true}
+        ],
+        rownumWidth: 25, 
+        autowidth:true,
+        multiselect: false,
+        editurl: '../crm/config/save_value_class?type=1',
+        pager: "#jqGridPager1",
+        pgbuttons: false,
+        pginput: false,
+        jsonReader : {
+            root: "list"
+        },
+        gridComplete:function(){
+        	//隐藏grid底部滚动条
+        	$("#jqGrid1").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
+        	$(this).setGridHeight($(this).height());
+        	console.log($(this).parent().width());
+        	//$(this).setGridWidth($(this).parent().width());
+        }
+    });
+    
+    $("#jqGrid1").jqGrid('navGrid',"#jqGridPager1",{edit:false,add:false,del:true,delfunc:function(id){
+    	if(id){delValueClass(id);}
+    }},{}, {}, {},{});
+	var editparameters1 = {
+			keys: true,
+            successfunc: function (r) { 
+            	return reloadGridFunc(r);
+            },
+            url: "../crm/config/update_value_class?type=1",
+            extraparam: {},
+            mtype: "POST"
+	};
+	var addParams1 = {
+			useFormatter : false,
+	        useDefValues: true,
+	        addRowParams: {
+	            keys: true,
+	            successfunc: reloadGridFunc,
+	            extraparam: {}
+	        }                        
+	    }
+	$("#jqGrid1").jqGrid('inlineNav',"#jqGridPager1",{addParams:addParams1,editParams:editparameters1});
+    
+    $("#jqGrid2").jqGrid({
+        url: '../crm/config/value_class_list?type=2',
+        datatype: "json",
+        colModel: [
+			{ label: 'ID', name: 'id',width: 20,hidden: true},
+			{ label: '标签', name: 'name',width: 20,editable:true}
+        ],
+        rownumWidth: 25, 
+        autowidth:true,
+        multiselect: false,
+        editurl: '../crm/config/save_value_class?type=2',
+        pager: "#jqGridPager2",
+        pgbuttons: false,
+        pginput: false,
+        jsonReader : {
+            root: "list"
+        },
+        gridComplete:function(){
+        	//隐藏grid底部滚动条
+        	$("#jqGrid2").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
+        	$(this).setGridHeight($(this).height());
+        }
+    });
+    
+    $("#jqGrid2").jqGrid('navGrid',"#jqGridPager2",{edit:false,add:false,del:true,delfunc:function(id){
+    	if(id){delValueClass(id);}
+    }},{}, {}, {},{});
+	var editparameters2 = {
+			keys: true,
+            successfunc: function (r) { 
+            	return reloadGridFunc(r);
+            },
+            url: "../crm/config/update_value_class?type=2",
+            extraparam: {},
+            mtype: "POST"
+	};
+	var addParams2 = {
+			useFormatter : false,
+	        useDefValues: true,
+	        addRowParams: {
+	            keys: true,
+	            successfunc: reloadGridFunc,
+	            extraparam: {}
+	        }                        
+	    }
+	$("#jqGrid2").jqGrid('inlineNav',"#jqGridPager2",{addParams:addParams2,editParams:editparameters2});
+    
+    $("#jqGrid3").jqGrid({
+        url: '../crm/config/value_class_list?type=3',
+        datatype: "json",
+        colModel: [
+        	{ label: 'ID', name: 'id',width: 20,hidden: true},
+			{ label: '通话状态', name: 'name',width: 20,editable:true}
+        ],
+        rownumWidth: 25, 
+        autowidth:true,
+        multiselect: false,
+        editurl: '../crm/config/save_value_class?type=3',
+        pager: "#jqGridPager3",
+        pgbuttons: false,
+        pginput: false,
+        jsonReader : {
+            root: "list"
+        },
+        gridComplete:function(){
+        	//隐藏grid底部滚动条
+        	$("#jqGrid3").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
+        	$(this).setGridHeight($(this).height());
+        }
+    });
+    
+    $("#jqGrid3").jqGrid('navGrid',"#jqGridPager3",{edit:false,add:false,del:true,delfunc:function(id){
+    	if(id){delValueClass(id);}
+    }},{}, {}, {},{});
+	var editparameters3 = {
+			keys: true,
+            successfunc: function (r) { 
+            	return reloadGridFunc(r);
+            },
+            url: "../crm/config/update_value_class?type=3",
+            extraparam: {},
+            mtype: "POST"
+	};
+	var addParams3 = {
+			useFormatter : false,
+	        useDefValues: true,
+	        addRowParams: {
+	            keys: true,
+	            successfunc: reloadGridFunc,
+	            extraparam: {}
+	        }                        
+	    }
+	$("#jqGrid3").jqGrid('inlineNav',"#jqGridPager3",{addParams:addParams3,editParams:editparameters3});
+});
+
+var vm = new Vue({
+	el:'#rrapp',
+	data:{
+		showList: true,
+		vip_config:{}
+	},
+	methods: {
+		getTask: function(){
+			$.get("../crm/config/getVipConfig", function(r){
+				vm.vip_config = r.vip_config;
+			});
+		},
+		updateVipConfig: function(){
+			$.ajax({
+		        url:'../crm/config/updateVipConfig',
+		        data:{last_account_wait:vm.vip_config.last_account_wait,loss_rate:vm.vip_config.loss_rate},
+		        dataType:'json',
+		        success:function(r){
+		            if(r.code == 0){
+		            	alert("保存成功");
+		            }else{
+		                alert(r.msg? r.msg : "未知错误");
+		            }
+		        },
+		        error:function(){
+		            alert("保存出现错误");
+		        }
+		    })
+		}
+	}
+});
+
+vm.getTask();
+</script>
+</body>
+</html>

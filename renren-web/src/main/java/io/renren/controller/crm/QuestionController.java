@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.renren.annotation.SysLog;
 import io.renren.system.jdbc.DataSourceFactory;
 import io.renren.system.jdbc.JdbcUtil;
 import io.renren.utils.PageUtils;
@@ -21,9 +22,8 @@ import io.renren.utils.R;
 /**
  * CRM问题管理
  *
- * @author chenshun
- * @email sunlightcs@gmail.com
- * @date 2017-04-05 15:30:24
+ * @author shihuaguo
+ * @date 2017-10-12
  */
 @RestController
 @RequestMapping("/crm/question")
@@ -71,6 +71,7 @@ public class QuestionController {
 	/**
 	 * 添加问题选项
 	 */
+	@SysLog("添加问题选项")
 	@ResponseBody
 	@RequestMapping("/add")
 	@RequiresPermissions("crm:question:add")
@@ -96,6 +97,7 @@ public class QuestionController {
 	/**
 	 * 删除问题选项
 	 */
+	@SysLog("删除问题选项")
 	@ResponseBody
 	@RequestMapping("/del")
 	@RequiresPermissions("crm:question:del")
@@ -122,6 +124,7 @@ public class QuestionController {
 	/**
 	 * 更新问题
 	 */
+	@SysLog("更新问题")
 	@ResponseBody
 	@RequestMapping("/updateQ")
 	@RequiresPermissions("crm:question:update")
@@ -143,6 +146,7 @@ public class QuestionController {
 	/**
 	 * 更新问题选项
 	 */
+	@SysLog("更新问题")
 	@ResponseBody
 	@RequestMapping("/updateItem")
 	@RequiresPermissions("crm:question:update")
