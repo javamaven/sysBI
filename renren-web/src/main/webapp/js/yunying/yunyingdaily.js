@@ -54,12 +54,12 @@ function initExportFunction(){
 
 
 function initDataGrid(){
-    $('#tt').treegrid({
+    $('#tt').datagrid({
 //        url:'../yunyingtool/list2?user_type=all_user',
 //        url: '../yunying/source/list?period=' + getParams().period ,
-        idField:'id',
+//        idField:'id',
         loadMsg : '数据正在加载,请耐心的等待...',
-        treeField:'HUIZONG',
+//        treeField:'HUIZONG',
         frozenColumns:[[
         	{field:'STAT_PERIOD',title:'日期',width:80,align:'right',halign :'left'}
     	]],
@@ -319,8 +319,8 @@ function initDataGrid(){
         
         ]],
         onLoadSuccess: function(row, data){
-            $(".tree-icon,.tree-file").removeClass("tree-icon tree-file");
-            $(".tree-icon,.tree-folder").removeClass("tree-icon tree-folder tree-folder-open tree-folder-closed"); 
+//            $(".tree-icon,.tree-file").removeClass("tree-icon tree-file");
+//            $(".tree-icon,.tree-folder").removeClass("tree-icon tree-folder tree-folder-open tree-folder-closed"); 
         }
     });
     
@@ -343,9 +343,9 @@ var vm = new Vue({
 	    reload: function (event) {
 			console.info("aaaaa")
 			vm.showList = true;
-		    var options = $('#tt').treegrid('options');
+		    var options = $('#tt').datagrid('options');
 		    options.url = '../yunying/yunyingdaily/list?beginTime=' + getParams().beginTime +'&&'+'endTime='+getParams().endTime;
-		    $('#tt').treegrid('reload');
+		    $('#tt').datagrid('reload');
 	   }
 		
 	}
