@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>问题管理</title>
+#parse("sys/header.html")
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList">
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+function addItem(divId){
+	//console.log(divId);
+	//console.log($('#'+divId));
+	//console.log($('#'+divId).children());
+	//var qid = divId.split("\_")[1];
+	//console.log(qid);
+	var div = $('#'+divId);
+	div.append("<div><input type='checkbox'><input type='text' class='unsaved'></div>");
+}
+
+function saveItem(divId){
+	var tid = divId.split("\_")[1];
+	var div = $('#'+divId);
+	var unsaved = div.children().find(".unsaved");
+	if(unsaved == null || unsaved.length <= 0){
+		return;
+	}
+	//console.log(unsaved);
+	var items = [];
+	for(var i = 0; i < unsaved.length; i++){
+		if($.trim(unsaved[i].value) == ''){
+			alert("请输入问题选项");
+			return;
+		}
+		items.push(unsaved[i].value);
+	}
+	$.ajax({
+        url:'../crm/question/add',
+        data:{tid:tid,items:items.join("__")},
+        dataType:'json',
+        success:function(r){
+            if(r.code == 0){
+            	//alert("同步成功");
+            	$("#jqGrid").trigger("reloadGrid");
+            }else{
+                alert(r.msg? r.msg : "未知错误");
+            }
+        },
+        error:function(){
+            alert("保存出现错误");
+        }
+    })
+}
+
+function delItem(divId){
+	var div = $('#'+divId);
+	var checked = div.find(":checked");
+	if(checked == null || checked.length <= 0){
+		alert("请选择需要删除的选项");
+		return;
+	}
+	var iidArr = [];
+	checked.each(function(){
+		//console.log($(this).parent());
+		//console.log($(this).parent().attr('id'));
+		var parent = $(this).parent();
+		var iids = parent.attr('id');
+		if(!iids){
+			parent.remove();
+		}else {
+			var iid = iids.split("\_")[1];
+			iidArr.push(iid);
+		}
+	});
+	//远程删除
+	if(iidArr.length > 0){
+		$.ajax({
+	        url:'../crm/question/del',
+	        data:{iidArr:iidArr.join("__")},
+	        dataType:'json',
+	        success:function(r){
+	            if(r.code == 0){
+	            	//alert("同步成功");
+	            	$("#jqGrid").trigger("reloadGrid");
+	            }else{
+	                alert(r.msg? r.msg : "未知错误");
+	            }
+	        },
+	        error:function(){
+	            alert("保存出现错误");
+	        }
+	    })
+	}
+}
+
+$(function () {
+    $("#jqGrid").jqGrid({
+        url: '../crm/question/list',
+        datatype: "json",
+        colModel: [
+			{ label: '序号', name: 'no', index: "no_id", width: 20},
+			{ label: 'ID', name: 'id', width: 20 },
+			{ label: '问题类型', name: 'type', width: 20,formatter: function(value, options, row){
+				return value==1?'单选':'多选';
+			}},
+			{ label: '所属模块', name: 'module', width: 40 },
+			{ label: '问题', name: 'desc', width: 80},
+			{ label: '选项', name: 'items', width: 80,formatter: function(value, options, row){
+				//console.log(value);
+				var divId = divId = "tid_" + row.id;;
+				var arr = [
+					'<div style="margin-bottom:5px;">',
+					'    <input type="button" value="新增" onclick="addItem(\'' + divId + '\')"/>',
+					'    <input type="button" value="删除" onclick="delItem(\'' + divId + '\')"/>',
+					'    <input type="button" value="保存" onclick="saveItem(\'' + divId + '\')"/>',
+					'</div>',
+				];
+				arr.push('<div id="tid_' + row.id + '"style="border:1px solid gray">');
+				if(value.length > 0){
+					for(var i = 0; i < value.length; i++){
+						arr.push('<div id="iid_' + value[i].id + '"><input type="checkbox">' + value[i].desc + '</input></div>');
+					}
+				}
+				arr.push('</div>');
+				return arr.join('');
+			}}
+        ],
+		viewrecords: true,
+        height: 485,
+        rowNum: 10,
+		rowList : [10,30,50],
+        rownumbers: false, 
+        rownumWidth: 25, 
+        autowidth:true,
+        multiselect: false,
+        pager: "#jqGridPager",
+        jsonReader : {
+            root: "page.list",
+            page: "page.currPage",
+            total: "page.totalPage",
+            records: "page.totalCount"
+        },
+        prmNames : {
+            page:"page", 
+            rows:"limit", 
+            order: "order"
+        },
+        gridComplete:function(){
+        	//隐藏grid底部滚动条
+        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
+        	//console.log($("#jqGrid").height());
+        	$("#jqGrid").setGridHeight($("#jqGrid").height()+10);
+        }
+    });
+});
+
+var vm = new Vue({
+	el:'#rrapp',
+	data:{
+		showList: true
+	},
+	methods: {
+	}
+});
+</script>
+</body>
+</html>

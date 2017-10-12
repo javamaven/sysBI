@@ -78,6 +78,11 @@ public class SysPageController {
 	public String hr(@PathVariable("url") String url){
 		return "hr/" + url + ".html";
 	}
+	
+	@RequestMapping("crm/{url}.html")
+	public String crm(@PathVariable("url") String url){
+		return "crm/" + url + ".html";
+	}
 
 
 	@RequestMapping("property/{url}.html")
