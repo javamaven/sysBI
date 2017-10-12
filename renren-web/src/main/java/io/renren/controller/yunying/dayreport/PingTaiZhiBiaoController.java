@@ -48,7 +48,7 @@ public class PingTaiZhiBiaoController {
 
 	
 	/**
-	 * P2P列表
+	 * 平台指标列表
 	 */
 	@ResponseBody
 	@RequestMapping("/list")
@@ -80,7 +80,7 @@ public class PingTaiZhiBiaoController {
 		PageUtils pageUtil = new PageUtils(resultList, total, limit, page);
 		long l2 = System.currentTimeMillis();
 
-		System.err.println("++++++++待收区间查询耗时：" + (l2 - l1));
+		System.err.println("++++++++平台指标查询耗时：" + (l2 - l1));
 		return R.ok().put("page", pageUtil);
 	}
 	

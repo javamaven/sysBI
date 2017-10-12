@@ -1,0 +1,37 @@
+
+select
+  do.stat_period, --日期
+  round(add_inv,0) as add_inv,--净增投资
+  round(inv,0) as inv ,--投资金额
+  round(san_inv,0) as san_inv, --散标投资
+  round(tran_inv,0) as tran_inv, --债转投资
+            --存管债转投资
+  round(add_inv-san_inv+san_repay_capital+exits,0) as fin_inv, --理财计划投资
+  round(project_scale,0) as project_scale,--点点赚余额
+  do.num as num  ,--投资人数
+  do.inv_num as inv_num , --投资次数 
+  round(dm.re_amount,0) as re_amount, --充值金额
+  round(dm.wi_amount,0) as wi_amount,  --提现金额
+  round(dm.re_amount-dm.wi_amount,0) as ct, --净充值
+  round(san_repay_capital,0) as san_repay_capital,  --散标回款本金
+  round(san_repay,0) as san_repay, --散标回款
+  round(exits,0) as exits, --理财计划退出本金
+        --沉淀资金
+  round(vouche,0) as vouche, --红包成本
+  round(interest_extra,0) as interest_extra,    --加息成本
+  round(rebate_money,0) as rebate_money, --返利成本
+  await_num, --有待收人数
+  round(old_await,0) as old_await,  --旧版待收本金  
+  round(await,0) as await,  --待收本金
+  round(repay_account_wait,0) as repay_account_wait, -- 待收金额
+  round(borrow_account,0) as borrow_account,--底层资产成交
+  round(year_borrow_account,0) as year_borrow_account, --底层资产年化
+  round(m_repay_account_wait,0) as m_repay_account_wait, -- 本月新增年后还款待收
+  round(y_repay_account_wait,0) as y_repay_account_wait, -- 年后还款待收
+  round(schedule_money,0) as schedule_money,  --可排期项目
+  round(no_match_capitil_wait,0) as no_match_capitil_wait --理财计划预约资金  
+from dm_report_daily_operations do
+  left join dm_report_daily_marketing dm on do.stat_period = dm.stat_period
+where 1=1
+${time}
+order by  stat_period desc

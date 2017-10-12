@@ -54,8 +54,8 @@ function initDataGrid(){
         treeField:'HUIZONG',
         columns:[[
 //          {field:'id',title:'id',width:180},
-        {field:'HUIZONG',title:'用戶來源',width:80,align:'left'},
-        {field:'ALL_REG',title:'注册人数',width:70,align:'left',
+        {field:'HUIZONG',title:'用戶來源',width:80,align:'right',halign :'left'},
+        {field:'ALL_REG',title:'注册人数',width:70,align:'right',halign :'left',
         	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
@@ -64,7 +64,7 @@ function initDataGrid(){
 	    		}
 	    	} 
 	    },
-        {field:'M_REG',title:'当月注册',width:60,align:'left',
+        {field:'M_REG',title:'当月注册',width:60,align:'right',halign :'left',
 	    	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
@@ -74,8 +74,8 @@ function initDataGrid(){
 	    	} 
 	    },
         
-        {field:'D_REG',title:'当日注册',width:60,align:'left'},
-        {field:'ALL_FIRST',title:'首投人数',width:60,align:'left',
+        {field:'D_REG',title:'当日注册',width:60,align:'right',halign :'left'},
+        {field:'ALL_FIRST',title:'首投人数',width:60,align:'right',halign :'left',
         	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
@@ -85,7 +85,7 @@ function initDataGrid(){
 	    	} 
 	    },	
 
-        {field:'M_FIRST',title:'当月首投人数',width:80,align:'left',
+        {field:'M_FIRST',title:'当月首投人数',width:80,align:'right',halign :'left',
 	    	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
@@ -95,7 +95,7 @@ function initDataGrid(){
 	    	} 
 	    },
         
-        {field:'D_FIRST',title:'当日首投人数',width:80 , align:'left'},
+        {field:'D_FIRST',title:'当日首投人数',width:80 , align:'right',halign :'left'},
         {field:'M_FIRST_INV',title:'当月首投金额',width:90,
         	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
@@ -106,7 +106,7 @@ function initDataGrid(){
 	    	} 
 	    },
         
-        {field:'D_FIRST_INV',title:'当日首投金额',width:90,align:'left',
+        {field:'D_FIRST_INV',title:'当日首投金额',width:90,align:'right',halign :'left',
 	    	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
@@ -116,7 +116,7 @@ function initDataGrid(){
 	    	} 
 	    },
 
-        {field:'WEIZHI4',title:'当月充值',width:90,align:'left',
+        {field:'WEIZHI4',title:'当月充值',width:90,align:'right',halign :'left',
 	    	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
@@ -126,28 +126,7 @@ function initDataGrid(){
 	    	} 
 	    },
         
-        {field:'WEIZHI3',title:'当月净充值',width:100,align:'left',
-	    	formatter:function(cellvalue, options, rowObject){
-	    		if(cellvalue){
-	    			return formatNumber(cellvalue,2);
-	    		}else{
-	    			return '';
-	    		}
-	    	} 
-	    },
-        
-        
-        {field:'WEIZHI2',title:'当日充值',width:100,align:'left',
-	    	formatter:function(cellvalue, options, rowObject){
-	    		if(cellvalue){
-	    			return formatNumber(cellvalue,2);
-	    		}else{
-	    			return '';
-	    		}
-	    	} 
-	    },
-        
-        {field:'WEIZHI1',title:'当日净充值',width:100,align:'left',
+        {field:'WEIZHI3',title:'当月净充值',width:100,align:'right',halign :'left',
 	    	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
@@ -158,7 +137,7 @@ function initDataGrid(){
 	    },
         
         
-        {field:'M_INV',title:'当月投资',width:100,align:'left',
+        {field:'WEIZHI2',title:'当日充值',width:100,align:'right',halign :'left',
 	    	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
@@ -168,7 +147,7 @@ function initDataGrid(){
 	    	} 
 	    },
         
-        {field:'D_INV',title:'当日投资',width:100,align:'left',
+        {field:'WEIZHI1',title:'当日净充值',width:100,align:'right',halign :'left',
 	    	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
@@ -179,7 +158,28 @@ function initDataGrid(){
 	    },
         
         
-        {field:'AWIAT',title:'待收本金',width:110,align:'left',
+        {field:'M_INV',title:'当月投资',width:100,align:'right',halign :'left',
+	    	formatter:function(cellvalue, options, rowObject){
+	    		if(cellvalue){
+	    			return formatNumber(cellvalue,2);
+	    		}else{
+	    			return '';
+	    		}
+	    	} 
+	    },
+        
+        {field:'D_INV',title:'当日投资',width:100,align:'right',halign :'left',
+	    	formatter:function(cellvalue, options, rowObject){
+	    		if(cellvalue){
+	    			return formatNumber(cellvalue,2);
+	    		}else{
+	    			return '';
+	    		}
+	    	} 
+	    },
+        
+        
+        {field:'AWIAT',title:'待收本金',width:110,align:'right',halign :'left',
 	    	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);

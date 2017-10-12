@@ -58,7 +58,7 @@ function initDetailTableGrid(){
 		viewrecords: true,
         height: $(window).height()-150,
         rowNum: 20,
-        rownumbers: true, 
+//        rownumbers: true, 
         autowidth:true,
      
 //        shrinkToFit: false,
