@@ -45,3 +45,29 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+/.settings
+/renren-web/.settings
+/renren-shiro/.project
+/renren-shiro/.settings
+/renren-shiro/.classpath
+/renren-shiro/.gitignore
+/renren-schedule/.project
+/renren-schedule/.settings
+/renren-schedule/.classpath
+/renren-schedule/.gitignore
+/renren-gen/.project
+/renren-gen/.settings
+/renren-gen/.classpath
+/renren-gen/.gitignore
+/renren-common/.project
+/renren-common/.settings
+/renren-common/.classpath
+/renren-common/.gitignore
+/renren-api/.project
+/renren-api/.settings
+/renren-api/.classpath
+/renren-api/.gitignore
+/renren-web/.classpath
+/renren-web/.gitignore
+/renren-web/.project
+/.project
