@@ -82,6 +82,7 @@ public class QuestionController {
 			sql.append("(").append(tid).append(",'").append(itemArr[i]).append("'),");
 		}
 		sql.setLength(sql.length() - 1);
+		logger.info("添加问题选项,执行SQL={}", sql.toString());
 		JdbcUtil ju = new JdbcUtil(dataSourceFactory, "crmMysql");
 		try {
 			ju.execute(sql.toString());
@@ -107,6 +108,7 @@ public class QuestionController {
 		}
 		sql.setLength(sql.length() - 1);
 		sql.append(")");
+		logger.info("删除问题选项,执行SQL={}", sql.toString());
 		JdbcUtil ju = new JdbcUtil(dataSourceFactory, "crmMysql");
 		try {
 			ju.execute(sql.toString());
@@ -114,6 +116,48 @@ public class QuestionController {
 		} catch (SQLException e) {
 			logger.error("删除问题选项失败", e);
 			return R.error("删除问题选项失败");
+		}
+	}
+	
+	/**
+	 * 更新问题
+	 */
+	@ResponseBody
+	@RequestMapping("/updateQ")
+	@RequiresPermissions("crm:question:update")
+	public R updateQuestion(Integer tid, String desc){
+		logger.info("更新问题描述,tid={},desc={}", tid, desc);
+		StringBuilder sql = new StringBuilder("update `question_type` ");
+		sql.append("set `desc`='").append(desc).append("' where id=").append(tid);
+		logger.info("更新问题描述,执行SQL={}", sql.toString());
+		JdbcUtil ju = new JdbcUtil(dataSourceFactory, "crmMysql");
+		try {
+			ju.execute(sql.toString());
+			return R.ok();
+		} catch (SQLException e) {
+			logger.error("更新问题描述失败", e);
+			return R.error("更新问题描述失败");
+		}
+	}
+	
+	/**
+	 * 更新问题选项
+	 */
+	@ResponseBody
+	@RequestMapping("/updateItem")
+	@RequiresPermissions("crm:question:update")
+	public R updateQuestionItem(Integer tid, String desc){
+		logger.info("更新问题选项,tid={},desc={}", tid, desc);
+		StringBuilder sql = new StringBuilder("update `question_item` ");
+		sql.append("set `desc`='").append(desc).append("' where id=").append(tid);
+		logger.info("更新问题选项,执行SQL={}", sql.toString());
+		JdbcUtil ju = new JdbcUtil(dataSourceFactory, "crmMysql");
+		try {
+			ju.execute(sql.toString());
+			return R.ok();
+		} catch (SQLException e) {
+			logger.error("更新问题选项失败", e);
+			return R.error("更新问题选项失败");
 		}
 	}
 	

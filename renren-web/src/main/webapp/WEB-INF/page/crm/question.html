@@ -99,6 +99,86 @@ function delItem(divId){
 	}
 }
 
+function onQuestionDbClick(span,tid){
+	//console.log(span);
+	//console.log($(span).text());
+	//console.log($(span).parent());
+	//console.log(tid);
+	var p = $(span).parent();
+	var text = $(span).text();
+	$(span).remove();
+	//处理enter健事件
+	p.append("<input id='input_" + tid + "' type='text' value='" + text + "' style='width:300px;'/>");
+	$("#input_"+tid).keydown(function(e){
+		var value = $("#input_"+tid).val();
+		if(e.keyCode==13) {
+			//console.log(value);
+			if($.trim(value) == ''){
+				alert("问题不能为空");
+				return;
+			}
+			$.ajax({
+		        url:'../crm/question/updateQ',
+		        data:{tid:tid,desc:value},
+		        dataType:'json',
+		        success:function(r){
+		            if(r.code == 0){
+		            	//$("#jqGrid").trigger("reloadGrid");
+						$("#input_"+tid).remove();
+						p.append("<span ondblclick='onQuestionDbClick(this" + "," + tid + ")'>" + value + "</span>");
+		            }else{
+		                alert(r.msg? r.msg : "未知错误");
+		            }
+		        },
+		        error:function(){
+		            alert("更新出现错误");
+		        }
+		    })
+	    }else if(e.keyCode==27) {
+	    	$("#input_"+tid).remove();
+			p.append("<span ondblclick='onQuestionDbClick(this" + "," + tid + ")'>" + value + "</span>");
+	    }
+	});
+}
+
+function onItemDbClick(span,vid){
+	var p = $(span).parent();
+	var text = $(span).text();
+	$(span).remove();
+	//处理enter健事件
+	p.append("<input id='input_" + vid + "' type='text' value='" + text + "' style='width:200px;'/>");
+	$("#input_"+vid).keydown(function(e){
+		var value = $("#input_"+vid).val();
+		if(e.keyCode==13) {
+			//console.log(value);
+			if($.trim(value) == ''){
+				alert("问题选项不能为空");
+				return;
+			}
+			$.ajax({
+		        url:'../crm/question/updateItem',
+		        data:{tid:vid,desc:value},
+		        dataType:'json',
+		        success:function(r){
+		            if(r.code == 0){
+		            	//$("#jqGrid").trigger("reloadGrid");
+						$("#input_"+vid).remove();
+						p.append("<span ondblclick='onItemDbClick(this" + "," + vid + ")'>" + value + "</span>");
+		            }else{
+		                alert(r.msg? r.msg : "未知错误");
+		            }
+		        },
+		        error:function(){
+		            alert("更新出现错误");
+		        }
+		    })
+	    }else if(e.keyCode==27) {
+	    	$("#input_"+vid).remove();
+			p.append("<span ondblclick='onItemDbClick(this" + "," + vid + ")'>" + value + "</span>");
+	    }
+	});
+}
+
 $(function () {
     $("#jqGrid").jqGrid({
         url: '../crm/question/list',
@@ -110,7 +190,11 @@ $(function () {
 				return value==1?'单选':'多选';
 			}},
 			{ label: '所属模块', name: 'module', width: 40 },
-			{ label: '问题', name: 'desc', width: 80},
+			{ label: '问题', name: 'desc', width: 80,formatter: function(value, options, row){
+				var span = "<span ondblclick='onQuestionDbClick(this" + "," + row.id + ")'>" + value + "</span>";
+				//return "<input type='text' value='" + value + "' readOnly='readOnly'/>";
+				return span;
+			}},
 			{ label: '选项', name: 'items', width: 80,formatter: function(value, options, row){
 				//console.log(value);
 				var divId = divId = "tid_" + row.id;;
@@ -124,7 +208,11 @@ $(function () {
 				arr.push('<div id="tid_' + row.id + '"style="border:1px solid gray">');
 				if(value.length > 0){
 					for(var i = 0; i < value.length; i++){
-						arr.push('<div id="iid_' + value[i].id + '"><input type="checkbox">' + value[i].desc + '</input></div>');
+						arr.push('<div id="iid_');
+						arr.push(value[i].id);
+						arr.push('"><input type="checkbox"/>');
+						arr.push("<span ondblclick='onItemDbClick(this" + "," + value[i].id + ")'>" + value[i].desc + "</span>");
+						arr.push('</div>');
 					}
 				}
 				arr.push('</div>');
