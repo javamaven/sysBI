@@ -352,8 +352,8 @@ public class ZixiaoCalcuteController extends AbstractController {
 			}
 		}else if(shichang_curr_month_roi.equals(index) || shichang_curr_month_channel_year_invest.equals(index)){
 			if("等待市场部确认".equals(currStatus)){
-				return "等待财务部确认";
-			}else if("等待财务部确认".equals(currStatus)){
+//				return "等待财务部确认";
+//			}else if("等待财务部确认".equals(currStatus)){
 				return "已完成";
 			}else{
 				return "等待市场部确认";
