@@ -184,7 +184,7 @@ public class DataSourceFactory implements Serializable {
 	/**
 	 * 将连接全部释放掉，重新生成连接池
 	 */
-	public void reInitConnectionPoll() {
+	public synchronized void reInitConnectionPoll() {
 		try {
 			close();
 		} catch (Exception e) {

@@ -1,0 +1,9 @@
+select
+    t.user_id AS USER_ID,
+    round(sum(t.recover_account_capital_wait + t.recover_account_interest_wait),2) as WAIT -- 普通版待收
+from mjkf_p2p.diyou_borrow_tender t
+where 1=1
+and t.status in (0,1)
+and t.user_id=${userId}
+
+group by t.user_id

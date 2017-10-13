@@ -42,8 +42,8 @@ to_char(rpp.create_time,'yyyy-mm')=?
 --2017-09-28增加指标累计待收余额
 select
     '累计待收余额' 指标,
-    d.all_await as 完成值,
+    round(d.REPAY_account_WAIT/10000, 2) as 完成值,
     '等待运营部确认' as 状态
-from DM_REPORT_BASIC_DAILY d
+from dm_report_daily_operations d
 where 1=1
 and d.stat_period=?
