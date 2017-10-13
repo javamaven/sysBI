@@ -120,7 +120,7 @@ function delAdvisor(id){
     })
 }
 
-function delValueClass(id){
+function delValueClass(id,jqGrid){
 	$.ajax({
         url:'../crm/config/del_value_class',
         data:{id:id},
@@ -128,7 +128,7 @@ function delValueClass(id){
         success:function(r){
             if(r.code == 0){
             	//alert("删除成功");
-            	$("#jqGrid").trigger("reloadGrid");
+            	jqGrid.trigger("reloadGrid");
             }else{
                 alert(r.msg? r.msg : "未知错误");
             }
@@ -254,7 +254,7 @@ $(function () {
     });
     
     $("#jqGrid1").jqGrid('navGrid',"#jqGridPager1",{edit:false,add:false,del:true,delfunc:function(id){
-    	if(id){delValueClass(id);}
+    	if(id){delValueClass(id,$("#jqGrid1"));}
     }},{}, {}, {},{});
 	var editparameters1 = {
 			keys: true,
@@ -301,7 +301,7 @@ $(function () {
     });
     
     $("#jqGrid2").jqGrid('navGrid',"#jqGridPager2",{edit:false,add:false,del:true,delfunc:function(id){
-    	if(id){delValueClass(id);}
+    	if(id){delValueClass(id,$("#jqGrid2"));}
     }},{}, {}, {},{});
 	var editparameters2 = {
 			keys: true,
@@ -348,7 +348,7 @@ $(function () {
     });
     
     $("#jqGrid3").jqGrid('navGrid',"#jqGridPager3",{edit:false,add:false,del:true,delfunc:function(id){
-    	if(id){delValueClass(id);}
+    	if(id){delValueClass(id,$("#jqGrid3"));}
     }},{}, {}, {},{});
 	var editparameters3 = {
 			keys: true,

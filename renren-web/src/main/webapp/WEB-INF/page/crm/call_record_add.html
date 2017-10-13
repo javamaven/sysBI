@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>新增通话记录</title>
+#parse("sys/header.html")
+<style>
+       .div-add-call {
+       		height: 34px;
+       		margin-top: 2px;
+       		border: 0
+       }
+</style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+    <div v-show="showList" class="panel panel-default">
+		<!-- <div class="panel-heading">{{title}}</div> -->
+		<form>
+			<div class="container-fluid">
+				<div class="row">
+					<div class="col-md-8">
+						<div class="col-md-6 div-add-call">
+							<div class="col-md-2 control-label">用户名</div>
+							<div class="col-md-4 control-label">{{vip.user_name}}</div>
+							<div class="col-md-2 control-label">状态</div>
+							<div class="col-md-4 control-label">
+								<select v-model="new_call_record.status" class="form-control">  
+								  	<option v-for="sl in statusList" v-bind:value="sl.id">  
+				   						{{ sl.name }}  
+				 						</option>  
+								</select>
+							</div>
+						</div>
+						<div class="col-md-6 div-add-call">
+							<div class="col-md-4 control-label">本次通话时间</div>
+							<div class="col-md-8 control-label">
+								<input type="text" class="form-control" v-model="new_call_record.call_time" />
+							</div>
+						</div>
+						
+						<div class="col-md-6 div-add-call">
+							<div class="col-md-2 control-label">姓名</div>
+							<div class="col-md-4 control-label">{{vip.real_name}}</div>
+							<div class="col-md-2 control-label">类型</div>
+							<div class="col-md-4 control-label">
+								<select v-model="new_call_record.call_type" class="form-control">  
+								  	<option v-for="sl in call_type_list" v-bind:value="sl.id">  
+				   						{{ sl.name }}  
+				 						</option>  
+								</select>
+							</div>
+						</div>
+						<div class="col-md-6 div-add-call">
+							<div class="col-md-4 control-label">通话时待收</div>
+							<div class="col-md-8 control-label">{{wait}}元</div>
+						</div>
+						
+						<div class="col-md-6 div-add-call">
+							<div class="col-md-2 control-label">用户ID</div>
+							<div class="col-md-4 control-label">{{vip.user_id}}</div>
+							<div class="col-md-3 control-label">通话次数</div>
+							<div class="col-md-3 control-label">{{call_count}}</div>
+						</div>
+						<div class="col-md-6 div-add-call">
+							<div class="col-md-4 control-label">上次通话时待收</div>
+							<div class="col-md-8 control-label">{{pre_call_info.account_wait}}元</div>
+						</div>
+						
+						<div class="col-md-6 div-add-call">
+							<div class="col-md-2 control-label">存管ID</div>
+							<div class="col-md-4 control-label">{{vip.dep_user_id}}</div>
+							<div class="col-md-3 control-label">本次通话时长</div>
+							<div class="col-md-3 control-label">
+								<div style="float: left;">
+									<input type="text" class="form-control" style="width:50px;" v-model="new_call_record.call_duration" />
+								</div>
+								<div style="height: 34px;">分钟</div>
+							</div>
+						</div>
+						<div class="col-md-6 div-add-call">
+							<div class="col-md-4 control-label">上次通话时间</div>
+							<div class="col-md-8 control-label">{{pre_call_info.call_time}}</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-8">
+						<div class="col-md-4 div-add-call" style="height: auto;">
+							<div>产品反馈</div>
+							<div id="q_type_1" style="border:1px solid gray"></div>
+						</div>
+						<div class="col-md-4 div-add-call" style="height: auto;">
+							<div>活动、利率、红包类</div>
+							<div id="q_type_2" style="border:1px solid gray"></div>
+						</div>
+						<div class="col-md-4 div-add-call" style="height: auto;">
+							<div>服务、安全类</div>
+							<div id="q_type_3" style="border:1px solid gray"></div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-8">
+						<div class="col-md-6 div-add-call" style="height: auto;">
+							<div class="col-md-3 control-label">沟通备忘:</div>
+							<div class="col-md-9 control-label">
+								<textarea class="form-control" v-model="new_call_record.comm_remark" rows="10"></textarea>
+							</div>
+						</div>
+						<div class="col-md-6 div-add-call" style="height: auto;">
+							<div class="col-md-3 control-label">备忘:</div>
+							<div class="col-md-9 control-label">
+								<textarea class="form-control" v-model="new_call_record.remark" rows="10"></textarea>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-8">
+						<div class="col-md-8 div-add-call" style="height: auto;">
+							<div class="col-md-2 control-label">话术:</div>
+							<div class="col-md-10 control-label"><img id="huashuImg" src="../crm/config/huashu" /></div>
+						</div>
+					</div>
+				</div>
+				<div class="row">
+					<div class="col-md-8" style="text-align: right;">
+						<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
+						&nbsp;&nbsp;
+						<input type="button" class="btn btn-warning" @click="close" value="返回"/>
+					</div> 
+				</div>
+			</div>
+		</form>
+	</div>
+</div>
+
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script type="text/javascript">
+var vm1 = new Vue({
+	el:'#rrapp',
+	data:{
+		q:{
+		},
+		title:'新增通话记录',
+		call_record:{},
+		new_call_record:{call_time:(new Date()).Format("yyyy-MM-dd hh:mm:ss")},
+		wait:{},			//通话时的待收
+		call_count:{},		//通话次数
+		pre_call_info:{},	//上一次通话时信息
+		vip:{},
+		statusList:[],
+		call_type_list:[{id:1,name:'呼出'},{id:1,name:'呼入'}],
+		showList: true
+	},
+	methods: {
+		getBelongs: function(){
+			$.get("../crm/config/query_financial_advisor", function(r){
+				vm1.belongs = r.list;
+				//console.log(r.list);
+			});
+		},
+		getStatusList: function(){
+			$.get("../crm/config/value_class_list?type=3", function(r){
+				vm1.statusList = r.list;
+			});
+		},
+		getVipInfo: function(user_id,id){
+			$.get("../crm/callrecord/getVipInfo?user_id="+user_id+"&id="+id, function(r){
+				vm1.call_record = r.call_record;
+				vm1.vip = r.vip;
+				vm1.call_count = r.call_count;
+				$.get("../crm/callrecord/getAccountWait?oldUserId="+r.vip.old_user_id+"&cgUserId="+r.vip.dep_user_id, function(r){
+					vm1.wait = r.wait;
+				});
+			});
+		},
+		getQuestion: function(){
+			$.get("../crm/question/list",{page:1,limit:100}, function(r){
+				console.log(r);
+				var qlist = r.page.list;
+				for(var i = 0; i < qlist.length; i++){
+					var divId = "q_type_" + (i+1);
+					if(qlist[i].items){
+						var items = qlist[i].items;
+						if(items.length > 0){
+							var arr = [
+							];
+							for(var j = 0; j < items.length; j++){
+								arr.push('<div id="iid_');
+								arr.push(j);
+								arr.push('"><input type="checkbox"/>');
+								arr.push("<span>" + items[j].desc + "</span>");
+								arr.push('</div>');
+							}
+							$("#" + divId).append(arr.join(''));
+						}
+					}
+				}
+			});
+		},
+		saveOrUpdate: function (event) {
+			var url = vm1.call_record.userId == null ? "../sys/user/save" : "../sys/user/update";
+			$.ajax({
+				type: "POST",
+			    url: url,
+			    data: JSON.stringify(vm1.user),
+			    success: function(r){
+			    	if(r.code === 0){
+						alert('操作成功', function(index){
+							//vm1.reload();
+						});
+					}else{
+						alert(r.msg);
+					}
+				}
+			});
+		},
+		close: function(){
+			window.close();
+		}
+	}
+});
+
+//获取url中的参数
+function getUrlParam(name) {
+    var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)"); //构造一个含有目标参数的正则表达式对象
+    var r = window.location.search.substr(1).match(reg);  //匹配目标参数
+    if (r != null) return unescape(r[2]); return null; //返回参数值
+}
+
+$(document).ready(function(){
+	var user_id = getUrlParam("user_id");
+	var id = getUrlParam("id");
+	vm1.getVipInfo(user_id,id);
+	vm1.getStatusList();
+	vm1.getQuestion();
+});
+</script>
+</body>
+</html>

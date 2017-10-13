@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>通话记录列表</title>
+#parse("sys/header.html")
+<style>
+       .search-label {
+           float: left;
+           line-height: 34px;
+           height: 34px;
+       }
+</style>
+</head>
+<body>
+<div id="crm-call-record" v-cloak>
+	<div v-show="showList">
+		<div class="grid-btn">
+			<span class="control-label search-label">所属人</span>
+			<div class="form-group col-sm-1" >
+				<select v-model="q.belongs_to" class="form-control">  
+				  	<option v-for="bl in belongs" v-bind:value="bl.id">  
+   						{{ bl.real_name }}  
+ 						</option>  
+				</select>
+			</div>
+			<span class="control-label search-label">用户ID</span>
+			<div class="form-group col-sm-1">
+				<input type="text" class="form-control" v-model="q.user_id" placeholder="用户ID">
+			</div>
+			<span class="control-label search-label">存管ID</span>
+			<div class="form-group col-sm-1">
+				<input type="text" class="form-control" v-model="q.dep_user_id" placeholder="存管ID">
+			</div>
+			<span class="control-label search-label">通话状态</span>
+			<div class="form-group col-sm-1" >
+				<select v-model="q.status" class="form-control">  
+				  	<option v-for="sl in statusList" v-bind:value="sl.id">  
+   						{{ sl.name }}  
+ 						</option>  
+				</select>
+			</div>
+			<span class="control-label search-label">时间</span>
+			<div class="form-group col-sm-1" >
+				<select v-model="q.call_time_type" class="form-control" @change="change_call_time_type(q.call_time_type)">  
+				  	<option v-for="ctt in call_time_type" v-bind:value="ctt.id">  
+   						{{ ctt.value }}  
+ 					</option>  
+				</select>
+			</div>
+			<div id="div_call_time_s" class="form-group col-sm-1" style="display: none;">
+				<input type="text"class="form-control form_datetime_2" id="call_time_s" v-model="q.call_time_s"  placeholder="请选择开始时间"/>
+			</div>
+			<div id="div_call_time_e" class="form-group col-sm-1" style="display: none;">
+				<input type="text"class="form-control form_datetime_2" id="call_time_e" v-model="q.call_time_e" placeholder="请选择结束时间"/>
+			</div>
+			<a class="btn btn-default" @click="query">查询</a>
+			#if($shiro.hasPermission("crm:callrecord:save"))
+			<a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			#end
+		</div>
+	    <table id="jqGrid"></table>
+	    <div id="jqGridPager"></div>
+    </div>
+    
+</div>
+
+<script type="text/javascript">
+//时间格式
+function initDatetimepicker(){
+	$(".form_datetime_2").datetimepicker({
+	    format: 'yyyy-mm-dd',
+	    minView:'month',
+	    language: 'zh-CN',
+	    autoclose:true,
+	    todayBtn : true,
+	    setStartDate:new Date()
+	});
+}
+
+function initGrid() {
+    $("#jqGrid").jqGrid({
+        url: '../crm/callrecord/list',
+        datatype: "json",
+        colModel: [			
+			{ label: 'ID', name: 'id', width: 25, key: true,hidden: true },
+			{ label: '时间', name: 'call_time', width: 65, key: false },
+			{ label: '用户ID', name: 'user_id', width: 45, key: false },
+			{ label: '存管用户ID', name: 'dep_user_id', width: 45},
+			{ label: '用户名', name: 'user_name', width: 45 },
+			{ label: '姓名', name: 'real_name', width: 45 },
+			{ label: '性别', name: 'gender', width: 45,formatter: function(value, options, row){
+				return value == 0 ? '男': '女';
+			}},
+			{ label: '手机号', name: 'phone', width: 55 },
+			{ label: '标记分类', name: 'value_type', width: 45 },
+			{ label: '等级划分', name: 'level', width: 45 },
+			{ label: '通话状态', name: 'status', width: 45,formatter: function(value, options, row){
+				for(var i = 0; i < vm1.statusList.length; i++){
+					if(vm1.statusList[i].id=value)return vm1.statusList[i].name;
+				}
+				return value;
+			}},
+			{ label: '通话时待收', name: 'account_wait', width: 45 },
+			{ label: '通话时待收增比', name: 'account_wait_inc_rate', width: 45 },
+			{ label: '所属人', name: 'belong_real_name', width: 45 },
+			{ label: '备忘记录', name: 'remark', width: 80}
+        ],
+		viewrecords: true,
+        height: 385,
+        rowNum: 10,
+		rowList : [10,30,50],
+        rownumbers: true, 
+        rownumWidth: 25, 
+        autowidth:true,
+        multiselect: false,
+        pager: "#jqGridPager",
+        jsonReader : {
+            root: "page.list",
+            page: "page.currPage",
+            total: "page.totalPage",
+            records: "page.totalCount"
+        },
+        prmNames : {
+            page:"page", 
+            rows:"limit", 
+            order: "order"
+        },
+        gridComplete:function(){
+        	//隐藏grid底部滚动条
+        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
+        }
+    });
+};
+
+var vm1 = new Vue({
+	el:'#crm-call-record',
+	data:{
+		q:{
+			user_id: null,
+			belongs_to: null,
+			dep_user_id: null,
+			status: null,
+			call_time_type: null,
+			call_time_s:null,
+			call_time_e:null
+		},
+		showList: true,
+		statusList:[],
+		belongs:[],
+		call_time_type:[{id:1,value:'过去60天'},{id:2,value:'过去30天'},{id:3,value:'过去7天'},{id:4,value:'自选'}]
+	},
+	methods: {
+		query: function () {
+			vm1.reload();
+		},
+		add: function(){
+			//获取被选中的行
+			var row = $("#jqGrid").jqGrid('getGridParam','selrow');
+			if(!row){
+				alert("请选中一行后再进行操作");
+				return;
+			}
+			console.log(row);
+			var rowdata = $("#jqGrid").jqGrid('getRowData',row);
+			console.log(rowdata);
+			parent.addTab("新增通话记录","./crm/call_record_add.html?user_id="+rowdata.user_id+"&id="+rowdata.id,"");
+			//vm1.showList = false;
+			//vm1.title = "新增通话记录";
+		},
+		getBelongs: function(){
+			$.get("../crm/config/query_financial_advisor", function(r){
+				vm1.belongs = r.list;
+				//console.log(r.list);
+			});
+		},
+		getStatusList: function(){
+			$.get("../crm/config/value_class_list?type=3", function(r){
+				vm1.statusList = r.list;
+				//console.log(r.list);
+				initGrid();
+				initDatetimepicker();
+			});
+		},
+		change_call_time_type: function(call_time_type){
+			if(call_time_type == 4){
+				$("#div_call_time_s").show();
+				$("#div_call_time_e").show();
+			}else {
+				$("#div_call_time_s").hide();
+				vm1.q.call_time_s = null;
+				$("#div_call_time_e").hide();
+				vm1.q.call_time_e = null;
+			}
+		},
+		reload: function (event) {
+			vm1.showList = true;
+			var page = $("#jqGrid").jqGrid('getGridParam','page');
+			$("#jqGrid").jqGrid('setGridParam',{ 
+                postData:{
+               		'user_id': vm1.q.user_id,
+               		'belongs_to':vm1.q.belongs_to,
+               		'dep_user_id':vm1.q.dep_user_id,
+               		'status':vm1.q.status,
+               		'call_time_type':vm1.q.call_time_type,
+               		'call_time_s':$("#call_time_s").val(),
+               		'call_time_e':$("#call_time_e").val()
+                },
+                page:page
+            }).trigger("reloadGrid");
+		}
+	}
+});
+
+$(document).ready(function(){
+	vm1.getBelongs();
+	vm1.getStatusList();
+});
+</script>
+</body>
+</html>
