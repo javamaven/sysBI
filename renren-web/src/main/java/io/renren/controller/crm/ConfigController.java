@@ -1,17 +1,29 @@
 package io.renren.controller.crm;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import io.renren.annotation.SysLog;
 import io.renren.system.jdbc.DataSourceFactory;
@@ -288,6 +300,42 @@ private static final Logger logger = LoggerFactory.getLogger(ConfigController.cl
 		} catch (SQLException e) {
 			logger.error("删除价值分类、标签或通话状态失败", e);
 			return R.error("删除价值分类、标签或通话状态失败");
+		}
+	}
+	
+	/**
+	 * 上传话术文件
+	 */
+	@ResponseBody
+	@RequestMapping("/upload")
+	public R upload(@RequestParam("file") MultipartFile file, HttpServletRequest request) {
+		String oriFileName = file.getOriginalFilename();
+		logger.info("导入文件:{}", oriFileName);
+		//String ext = oriFileName.split("\\.")[1];
+		File f = new File("huashu");
+		try (InputStream is = file.getInputStream();OutputStream os = new FileOutputStream(f)){
+			IOUtils.copy(is, os);
+			logger.info("文件保存成功,路径={}", f.getAbsolutePath());
+		} catch (IOException e) {
+			logger.error("保存文件失败", e);
+			return R.error(e.getMessage());
+		}
+		return R.ok();
+	}
+	
+	/**
+	 * 话术图片
+	 * @param res
+	 */
+	@RequestMapping("/huashu")
+	public void huashu(HttpServletResponse res){
+		File f = new File("huashu");
+		if(f.exists()){
+			try (InputStream is = new FileInputStream(f);OutputStream os = res.getOutputStream()){
+				IOUtils.copy(is, os);
+			} catch (Exception e) {
+				logger.error("", e);
+			} 
 		}
 	}
 

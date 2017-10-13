@@ -87,6 +87,12 @@
 				<input type="text" class="left_blue"/>
 				<span style="margin-left: 10px;">话术设置:</span>
 			</div>
+			<div class="content">
+				<div><a class="btn btn-primary" id="upload"><i class="fa fa-plus"></i>话术图片导入</a></div>
+				<div><img id="huashuImg" src="../crm/config/huashu" /></div>
+			</div>
+			<div style="height: 200px;">
+			</div>
 		</div>
 	    <!-- <table id="jqGrid"></table>
 	    <div id="jqGridPager"></div> -->
@@ -398,6 +404,28 @@ var vm = new Vue({
 });
 
 vm.getTask();
+
+new AjaxUpload('#upload', {
+    action: '../crm/config/upload',
+    name: 'file',
+    autoSubmit:true,
+    responseType:"json",
+    onSubmit:function(file, extension){
+    	if (!(extension && /^(jpg|jpeg|png|gif)$/.test(extension.toLowerCase()))){
+            alert('只支持jpg、png、gif格式的图片！');
+            return false;
+        }
+    },
+    onComplete : function(file, r){
+    	console.info(r);
+        if(r.code == 0){
+            alert('导入成功');
+            $("#huashuImg").attr('src', '../crm/config/huashu?t='+Math.random());  
+        }else{
+            alert(r.msg);
+        }
+    }
+});
 </script>
 </body>
 </html>
