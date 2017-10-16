@@ -56,6 +56,7 @@
 			<a class="btn btn-default" @click="query">查询</a>
 			#if($shiro.hasPermission("crm:callrecord:save"))
 			<a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
+			<a class="btn btn-primary" @click="view"><i class="fa fa-search"></i>&nbsp;查看</a>
 			#end
 		</div>
 	    <table id="jqGrid"></table>
@@ -166,6 +167,18 @@ var vm1 = new Vue({
 			parent.addTab("新增通话记录","./crm/call_record_add.html?user_id="+rowdata.user_id+"&id="+rowdata.id,"");
 			//vm1.showList = false;
 			//vm1.title = "新增通话记录";
+		},
+		view: function(){
+			//获取被选中的行
+			var row = $("#jqGrid").jqGrid('getGridParam','selrow');
+			if(!row){
+				alert("请选中一行后再进行操作");
+				return;
+			}
+			console.log(row);
+			var rowdata = $("#jqGrid").jqGrid('getRowData',row);
+			console.log(rowdata);
+			parent.addTab("查看通话记录","./crm/call_record_add.html?user_id="+rowdata.user_id+"&id="+rowdata.id+"&flag=1","");
 		},
 		getBelongs: function(){
 			$.get("../crm/config/query_financial_advisor", function(r){

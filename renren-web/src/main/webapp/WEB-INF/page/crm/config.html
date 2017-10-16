@@ -381,12 +381,13 @@ var vm = new Vue({
 		getTask: function(){
 			$.get("../crm/config/getVipConfig", function(r){
 				vm.vip_config = r.vip_config;
+				vm.vip_config.last_account_wait = vm.vip_config.last_account_wait/100.0;
 			});
 		},
 		updateVipConfig: function(){
 			$.ajax({
 		        url:'../crm/config/updateVipConfig',
-		        data:{last_account_wait:vm.vip_config.last_account_wait,loss_rate:vm.vip_config.loss_rate},
+		        data:{last_account_wait:vm.vip_config.last_account_wait*100,loss_rate:vm.vip_config.loss_rate},
 		        dataType:'json',
 		        success:function(r){
 		            if(r.code == 0){

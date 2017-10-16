@@ -24,7 +24,7 @@
 							<div class="col-md-4 control-label">{{vip.user_name}}</div>
 							<div class="col-md-2 control-label">状态</div>
 							<div class="col-md-4 control-label">
-								<select v-model="new_call_record.status" class="form-control">  
+								<select id="sel_status" v-model="new_call_record.status" class="form-control">  
 								  	<option v-for="sl in statusList" v-bind:value="sl.id">  
 				   						{{ sl.name }}  
 				 						</option>  
@@ -43,7 +43,7 @@
 							<div class="col-md-4 control-label">{{vip.real_name}}</div>
 							<div class="col-md-2 control-label">类型</div>
 							<div class="col-md-4 control-label">
-								<select v-model="new_call_record.call_type" class="form-control">  
+								<select id="sel_call_type" v-model="new_call_record.call_type" class="form-control">  
 								  	<option v-for="sl in call_type_list" v-bind:value="sl.id">  
 				   						{{ sl.name }}  
 				 						</option>  
@@ -63,7 +63,7 @@
 						</div>
 						<div class="col-md-6 div-add-call">
 							<div class="col-md-4 control-label">上次通话时待收</div>
-							<div class="col-md-8 control-label">{{pre_call_info.account_wait}}元</div>
+							<div class="col-md-8 control-label">{{pre_call_info.account_wait/100.0}}元</div>
 						</div>
 						
 						<div class="col-md-6 div-add-call">
@@ -72,7 +72,7 @@
 							<div class="col-md-3 control-label">本次通话时长</div>
 							<div class="col-md-3 control-label">
 								<div style="float: left;">
-									<input type="text" class="form-control" style="width:50px;" v-model="new_call_record.call_duration" />
+									<input id="input_call_duration" type="text" class="form-control" style="width:50px;" v-model="new_call_record.call_duration" />
 								</div>
 								<div style="height: 34px;">分钟</div>
 							</div>
@@ -80,6 +80,17 @@
 						<div class="col-md-6 div-add-call">
 							<div class="col-md-4 control-label">上次通话时间</div>
 							<div class="col-md-8 control-label">{{pre_call_info.call_time}}</div>
+						</div>
+					</div>
+					<div v-show="flag==1" class="col-md-4">
+						<div style="margin-top: 8px;">
+							<a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增通话</a>
+						</div>
+						<div style="margin-top: 8px;">
+							<a class="btn btn-primary" @click="pre"><i class="fa fa-arrow-left"></i>&nbsp;上一条</a>
+						</div>
+						<div style="margin-top: 8px;">
+							<a class="btn btn-primary" @click="next"><i class="fa fa-arrow-right"></i>&nbsp;下一条</a>
 						</div>
 					</div>
 				</div>
@@ -104,13 +115,13 @@
 						<div class="col-md-6 div-add-call" style="height: auto;">
 							<div class="col-md-3 control-label">沟通备忘:</div>
 							<div class="col-md-9 control-label">
-								<textarea class="form-control" v-model="new_call_record.comm_remark" rows="10"></textarea>
+								<textarea id="input_comm_remark" class="form-control" v-model="new_call_record.comm_remark" rows="10"></textarea>
 							</div>
 						</div>
 						<div class="col-md-6 div-add-call" style="height: auto;">
 							<div class="col-md-3 control-label">备忘:</div>
 							<div class="col-md-9 control-label">
-								<textarea class="form-control" v-model="new_call_record.remark" rows="10"></textarea>
+								<textarea id="input_remark" class="form-control" v-model="new_call_record.remark" rows="10"></textarea>
 							</div>
 						</div>
 					</div>
@@ -123,11 +134,16 @@
 						</div>
 					</div>
 				</div>
-				<div class="row">
+				<div class="row" v-show="flag!=1">
 					<div class="col-md-8" style="text-align: right;">
 						<input type="button" class="btn btn-primary" @click="saveOrUpdate" value="确定"/>
 						&nbsp;&nbsp;
 						<input type="button" class="btn btn-warning" @click="close" value="返回"/>
+					</div> 
+				</div>
+				<div class="row" v-show="flag==1">
+					<div class="col-md-8" style="text-align: center;">
+						<input type="button" class="btn btn-primary" @click="close" value="关闭"/>
 					</div> 
 				</div>
 			</div>
@@ -137,90 +153,226 @@
 
 <script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
 <script type="text/javascript">
-var vm1 = new Vue({
-	el:'#rrapp',
-	data:{
-		q:{
+
+var vm1;
+function init(){
+	vm1 = new Vue({
+		el:'#rrapp',
+		data:{
+			q:{
+			},
+			title:'新增通话记录',
+			call_record:{},
+			new_call_record:{call_time:(new Date()).Format("yyyy-MM-dd hh:mm:ss")},
+			wait:'loading...',			//通话时的待收
+			call_count:{},		//通话次数
+			pre_call_info:{},	//上一次通话时信息
+			vip:{},
+			statusList:[],
+			call_type_list:[{id:1,name:'呼出'},{id:1,name:'呼入'}],
+			showList: true,
+			flag: flag,
+			p: 0				//0-当前 1-上一条 2-下一条
 		},
-		title:'新增通话记录',
-		call_record:{},
-		new_call_record:{call_time:(new Date()).Format("yyyy-MM-dd hh:mm:ss")},
-		wait:{},			//通话时的待收
-		call_count:{},		//通话次数
-		pre_call_info:{},	//上一次通话时信息
-		vip:{},
-		statusList:[],
-		call_type_list:[{id:1,name:'呼出'},{id:1,name:'呼入'}],
-		showList: true
-	},
-	methods: {
-		getBelongs: function(){
-			$.get("../crm/config/query_financial_advisor", function(r){
-				vm1.belongs = r.list;
-				//console.log(r.list);
-			});
-		},
-		getStatusList: function(){
-			$.get("../crm/config/value_class_list?type=3", function(r){
-				vm1.statusList = r.list;
-			});
-		},
-		getVipInfo: function(user_id,id){
-			$.get("../crm/callrecord/getVipInfo?user_id="+user_id+"&id="+id, function(r){
-				vm1.call_record = r.call_record;
-				vm1.vip = r.vip;
-				vm1.call_count = r.call_count;
-				$.get("../crm/callrecord/getAccountWait?oldUserId="+r.vip.old_user_id+"&cgUserId="+r.vip.dep_user_id, function(r){
-					vm1.wait = r.wait;
+		methods: {
+			getStatusList: function(){
+				/* $.get("../crm/config/value_class_list?type=3", function(r){
+					vm1.statusList = r.list;
+				}); */
+				$.ajax({ 
+					type : "get",    
+			          url : "../crm/config/value_class_list?type=3",    
+			          async : false,    
+			          success : function(r){    
+			        	  vm1.statusList = r.list;
+			          }
 				});
-			});
-		},
-		getQuestion: function(){
-			$.get("../crm/question/list",{page:1,limit:100}, function(r){
-				console.log(r);
-				var qlist = r.page.list;
-				for(var i = 0; i < qlist.length; i++){
-					var divId = "q_type_" + (i+1);
-					if(qlist[i].items){
-						var items = qlist[i].items;
-						if(items.length > 0){
-							var arr = [
-							];
-							for(var j = 0; j < items.length; j++){
-								arr.push('<div id="iid_');
-								arr.push(j);
-								arr.push('"><input type="checkbox"/>');
-								arr.push("<span>" + items[j].desc + "</span>");
-								arr.push('</div>');
+			},
+			getVipInfo: function(user_id,id){
+				$.get("../crm/callrecord/getVipInfo?user_id="+user_id+"&id="+id+"&p="+vm1.p, function(r){
+					if(r.code != 0){
+						alert(r.msg);
+						return;
+					}
+					vm1.call_record = r.call_record;
+					vm1.vip = r.vip;
+					vm1.call_count = r.call_count;
+					vm1.pre_call_info = r.pre_call_info;
+					if($.trim(r.pre_call_info.question_item_json) != ''){
+						var selIds = r.pre_call_info.question_item_json.split(",");
+						if(selIds.length > 0){
+							for(var j = 0; j < selIds.length; j++){
+								for(var i = 1; i <= 3; i++){
+									var divId = "q_type_" + i;
+									var checkbox = $("#"+divId).find(":checkbox");
+									checkbox.each(function(){
+										var item_id = $(this).attr('id');
+										var iid = item_id.split("_")[1];
+										if(iid == selIds[j]){
+											$(this).attr("checked","true"); 
+										}
+									});
+								}
 							}
-							$("#" + divId).append(arr.join(''));
 						}
 					}
-				}
-			});
-		},
-		saveOrUpdate: function (event) {
-			var url = vm1.call_record.userId == null ? "../sys/user/save" : "../sys/user/update";
-			$.ajax({
-				type: "POST",
-			    url: url,
-			    data: JSON.stringify(vm1.user),
-			    success: function(r){
-			    	if(r.code === 0){
-						alert('操作成功', function(index){
-							//vm1.reload();
+					/* $.get("../crm/callrecord/getAccountWait?oldUserId="+r.vip.old_user_id+"&cgUserId="+r.vip.dep_user_id, function(r){
+						vm1.wait = r.wait;
+					}); */
+					if(vm1.flag != 1){
+						$.ajax({ 
+							type : "get",    
+					          url : "../crm/callrecord/getAccountWait?oldUserId="+r.vip.old_user_id+"&cgUserId="+r.vip.dep_user_id,    
+					          async : true,    
+					          success : function(r){    
+					        	  vm1.wait = r.wait;
+					          }
 						});
-					}else{
-						alert(r.msg);
 					}
+					vm1.getStatusList();
+					vm1.initView();
+				});
+			},
+			getQuestion: function(){
+				$.ajax({    
+			          type : "get",    
+			          url : "../crm/question/list",    
+			          data : {page:1,limit:100},    
+			          async : false,    
+			          success : function(r){    
+						var qlist = r.page.list;
+						for(var i = 0; i < qlist.length; i++){
+							var divId = "q_type_" + (i+1);
+							if(qlist[i].items){
+								var items = qlist[i].items;
+								if(items.length > 0){
+									var arr = [
+									];
+									for(var j = 0; j < items.length; j++){
+										arr.push('<div id="iid_');
+										arr.push(j);
+										arr.push('"><input type="checkbox" id="ck_' + items[j].id + '"/>');
+										arr.push("<span>" + items[j].desc + "</span>");
+										arr.push('</div>');
+									}
+									$("#" + divId).append(arr.join(''));
+								}
+							}
+						}
+			          }    
+			      });  
+				/* $.get("../crm/question/list",{page:1,limit:100}, function(r){
+					
+				}); */
+			},
+			saveOrUpdate: function (event) {
+				var url = vm1.new_call_record.id == null ? "../crm/callrecord/save" : "../crm/callrecord/update";
+				//检查表单的值
+				if($.trim(vm1.new_call_record.status) == ''){
+					alert("请选择状态", function(){
+						$("#sel_status").focus();
+					});
+					return;
 				}
-			});
-		},
-		close: function(){
-			window.close();
+				if($.trim(vm1.new_call_record.call_type) == ''){
+					alert("请选择通话类型", function(){
+						$("#sel_call_type").focus();
+					});
+					return;
+				}
+				if($.trim(vm1.new_call_record.call_duration) == ''){
+					alert("请输入通话时长", function(){
+						$("#input_call_duration").focus();
+					});
+					return;
+				}
+				if($.trim(vm1.new_call_record.comm_remark) == ''){
+					alert("请输入沟通备忘", function(){
+						$("#input_comm_remark").focus();
+					});
+					
+					return;
+				}
+				if($.trim(vm1.new_call_record.remark) == ''){
+					alert("请输入备忘", function(){
+						$("#input_remark").focus();
+					});
+					return;
+				}
+				//赋值用户ID和通话时待收
+				vm1.new_call_record.user_id = vm1.vip.user_id;
+				vm1.new_call_record.account_wait = vm1.wait*100;
+				//问题选项
+				var question_checked = [];
+				for(var i = 1; i <= 3; i++){
+					var divId = "q_type_" + i;
+					var checked = $("#"+divId).find(":checked");
+					checked.each(function(){
+						var item_id = $(this).attr('id');
+						question_checked.push(item_id.split("_")[1]);
+					});
+				}
+				//console.log("question_checked=" + question_checked);
+				if(question_checked.length <= 0){
+					alert("请选择问题选项");
+					return;
+				}
+				vm1.new_call_record.question_item_json = question_checked.join(",");
+				//$.ajaxSetup({contentType: 'application/x-www-form-urlencoded'});
+				$.ajax({
+					type: "POST",
+				    url: url,
+				    data: JSON.stringify(vm1.new_call_record),
+				    success: function(r){
+				    	if(r.code === 0){
+							alert('操作成功', function(index){
+								//vm1.reload();
+								parent.closeSelectTab();
+							});
+						}else{
+							alert(r.msg);
+						}
+					}
+				});
+			},
+			add: function(){
+				this.flag = 0;
+				//如果点击新增按钮,初始化一些信息
+				vm1.new_call_record.call_time = new Date().Format("yyyy-MM-dd hh:mm:ss");
+				vm1.wait = 'loading...';
+				$.get("../crm/callrecord/getAccountWait?oldUserId="+vm1.vip.old_user_id+"&cgUserId="+vm1.vip.dep_user_id, function(r){
+					vm1.wait = r.wait;
+				});
+			},
+			next: function(){
+				vm1.p = 2;
+				//loading();
+				this.getVipInfo(vm1.vip.user_id,vm1.call_record.id);
+			},
+			pre: function(){
+				vm1.p = 1;
+				//loading();
+				this.getVipInfo(vm1.vip.user_id,vm1.call_record.id);
+			},
+			initView: function(){
+				//如果是查看
+				if(vm1.flag == 1){
+					vm1.new_call_record.status = vm1.call_record.status;
+					vm1.new_call_record.call_type = vm1.call_record.call_type;
+					vm1.new_call_record.call_duration = vm1.call_record.call_duration;
+					vm1.new_call_record.call_time = vm1.call_record.call_time;
+					vm1.new_call_record.comm_remark = vm1.call_record.comm_remark;
+					vm1.new_call_record.remark = vm1.call_record.remark;
+					vm1.wait = vm1.call_record.account_wait/100.0;
+				}
+				//loaded();
+			},
+			close: function(){
+				parent.closeSelectTab();
+			}
 		}
-	}
-});
+	});
+}
 
 //获取url中的参数
 function getUrlParam(name) {
@@ -229,12 +381,20 @@ function getUrlParam(name) {
     if (r != null) return unescape(r[2]); return null; //返回参数值
 }
 
+var flag = 0;	//默认为添加
+
 $(document).ready(function(){
 	var user_id = getUrlParam("user_id");
 	var id = getUrlParam("id");
-	vm1.getVipInfo(user_id,id);
-	vm1.getStatusList();
+	flag = getUrlParam("flag");
+	if(!flag){
+		flag == 0;
+	}
+	//$.ajaxSetup({async: false});
+	init();
 	vm1.getQuestion();
+	vm1.getVipInfo(user_id,id);
+	//vm1.getStatusList();
 });
 </script>
 </body>
