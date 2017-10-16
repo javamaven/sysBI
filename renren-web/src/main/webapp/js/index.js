@@ -25,7 +25,24 @@ function addTab(title, href, icon){
 //            iconCls:icon||'icon-default'  
         });  
     }  
-}  
+}
+/**
+ * 关闭当前选择的菜单页
+ * @returns
+ */
+function closeSelectTab(){
+	 var tab = $('#tabs').tabs('getSelected');//获取当前选中tabs  
+	 var index = $('#tabs').tabs('getTabIndex',tab);//获取当前选中tabs的index  
+	 $('#tabs').tabs('close',index);//关闭对应index的tabs  
+}
+/**
+ * 关闭对应名字tab页
+ * @returns
+ */
+function closeTab(tabName){
+	 $('#tabs').tabs('close',tabName);//关闭对应index的tabs  
+}
+
 /**     
  * 刷新tab 
  * @cfg  

@@ -50,7 +50,7 @@ public class MarketChannelController {
 	@Autowired
 	private ChannelHeadManagerService channelHeadManagerService;
 	
-	private  String reportType="渠道负责人表";
+	private  String reportType="渠道每日数据";
 	static class Page{
 		private int total;
 		private List<?> rows;
