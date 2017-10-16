@@ -91,12 +91,62 @@ public class DimStaffController {
 					Date workTimeDate = null;
 					Date leaveTimeDate = null;
 					if(StringUtils.isNotEmpty(workTime)){
-						java.util.Date parse = dateSdf.parse(workTime);
-						workTimeDate = new Date(parse.getTime());
+						try {
+							java.util.Date parse = dateSdf.parse(workTime);
+							workTimeDate = new Date(parse.getTime());
+						} catch (Exception e) {
+							String[] split = workTime.split("/");
+							if(split.length != 3){
+								continue;
+							}
+							String yearStr = split[0];
+							String monthStr = "";
+							String dayStr = "";
+							int month = Integer.parseInt(split[1]);
+							if(month < 10){
+								monthStr = "0" + month;
+							}else{
+								monthStr = "" + month;
+							}
+							int day = Integer.parseInt(split[2]);
+							if(day < 10){
+								dayStr = "0" + day;
+							}else{
+								dayStr = "" + day;
+							}
+							workTime = yearStr + "-" + monthStr + "-" + dayStr;
+							java.util.Date parse = dateSdf.parse(workTime);
+							workTimeDate = new Date(parse.getTime());
+						}
 					}
 					if(StringUtils.isNotEmpty(leaveTime)){
-						java.util.Date parse = dateSdf.parse(leaveTime);
-						leaveTimeDate =  new Date(parse.getTime());
+						try {
+							java.util.Date parse = dateSdf.parse(leaveTime);
+							leaveTimeDate =  new Date(parse.getTime());
+						} catch (Exception e) {
+							String[] split = leaveTime.split("/");
+							if(split.length != 3){
+								continue;
+							}
+							String yearStr = split[0];
+							String monthStr = "";
+							String dayStr = "";
+							int month = Integer.parseInt(split[1]);
+							if(month < 10){
+								monthStr = "0" + month;
+							}else{
+								monthStr = "" + month;
+							}
+							int day = Integer.parseInt(split[2]);
+							if(day < 10){
+								dayStr = "0" + day;
+							}else{
+								dayStr = "" + day;
+							}
+							leaveTime = yearStr + "-" + monthStr + "-" + dayStr;
+							java.util.Date parse = dateSdf.parse(leaveTime);
+							leaveTimeDate = new Date(parse.getTime());
+						}
 					}
 					DimStaffEntity dimStaff = new DimStaffEntity(realname, cardId, phone, department, part, post, ifBoss,
 							workTime, leaveTime);
