@@ -466,10 +466,17 @@ public class MainController {
 	public R queryTotalInvestAmount() {
 		double total_amount = 0;
 		try {
+			long l1 = System.currentTimeMillis();
 			total_amount += queryPutongTotalInvestAmount();
+			long l2 = System.currentTimeMillis();
 //			total_amount += queryChangeTotalInvestAmount();
 			total_amount += queryDdzTotalInvestAmount();
+			long l3 = System.currentTimeMillis();
 			total_amount += queryCgTotalInvestAmount();
+			long l4 = System.currentTimeMillis();
+			System.err.println("+++++耗时1++++" + (l2-l1));
+			System.err.println("+++++耗时2++++" + (l3-l2));
+			System.err.println("+++++耗时3++++" + (l4-l3));
 		} catch (Exception e) {
 //			dataSourceFactory.reInitConnectionPoll();
 			e.printStackTrace();
@@ -676,7 +683,7 @@ public class MainController {
 			String month_start =  year + "-" + month  + "-" +  "01 00:00:00";
 			String month_end = last_day_of_month + " 00:00:00";
 			//当月存管版投资额
-			List<Map<String, Object>> list_month_cg = util.query(SqlConstants.last_month_cg_invest_sql, month_start, month_end, month_start, month_end);
+			List<Map<String, Object>> list_month_cg = util.query(SqlConstants.last_month_cg_invest_sql, month_start, month_end, month_start, month_end, month_start, month_end);
 			last_month_total_invest_amount = Double.parseDouble(list_month_cg.get(0).get("MONEY") + "");
 			
 			JdbcUtil util2 = new JdbcUtil(dataSourceFactory, "oracle");
@@ -686,7 +693,7 @@ public class MainController {
 			
 			//昨天存管版投资额
 			JdbcUtil yes_day_util_cg = new JdbcUtil(dataSourceFactory, "mysql");
-			List<Map<String, Object>> yes_day_cg = yes_day_util_cg.query(SqlConstants.last_month_cg_invest_sql, yesterday_start, yesterday_end, yesterday_start, yesterday_end);
+			List<Map<String, Object>> yes_day_cg = yes_day_util_cg.query(SqlConstants.last_month_cg_invest_sql, yesterday_start, yesterday_end, yesterday_start, yesterday_end, yesterday_start, yesterday_end);
 			yesterday_total_invest_amount = Double.parseDouble(yes_day_cg.get(0).get("MONEY") + "");
 			
 			JdbcUtil util_yes_day_pt = new JdbcUtil(dataSourceFactory, "oracle");
