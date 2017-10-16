@@ -125,6 +125,7 @@ function queryTotalInfo(stataDay){
 	        contentType: "application/json;charset=utf-8",
 	        success : function(retData) {
 	        	var data = retData.data;
+	        	loaded();
 	        	$("#register_user_num").html(data.registerUserNum);
 	        	$("#invest_user_num").html(data.investUserNum);
 	        	$("#first_invest_rate").html((data.firstInvestRate*100).toFixed(2) + "%");
@@ -280,7 +281,7 @@ function initTable(){
 				
 	        ],
 			viewrecords: true,
-	        height:  $(window).height()-310,
+	        height:  $(window).height()-340,
 	        rowNum: 20,
 //			rowList : [10,30,50],
 	        rownumbers: true, 
@@ -311,6 +312,7 @@ function initTable(){
 	        },
 	        loadComplete: function(){
 //	        	$("#mask").hide();
+	        	
 	        }
 	    });
 }
@@ -389,6 +391,7 @@ var vm = new Vue({
 		reload: function (event) {
 //			$("#mask").show();
 			vm.showList = true;
+			loading();
 			resetTotalInfo();
 			$("#query_cond").attr({"disabled":"disabled"});
 			$("#jqGrid").jqGrid("clearGridData");

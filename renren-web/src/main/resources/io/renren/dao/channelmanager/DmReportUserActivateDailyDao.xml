@@ -56,7 +56,36 @@
 	</select>
 	
 	<select id="queryTotalList" resultType="io.renren.entity.channelmanager.UserActiveInfoEntity">
+		SELECT
+		   s.registerUserNum,
+		   s.investUserNum,
+		   case when s.registerUserNum > 0 then s.investUserNum/s.registerUserNum else 0 end as firstInvestRate,
+		   s.totalInvestAmount,
+		   s.firstInvestAmount,
+		   s.changeInvestAmount,
+		   s.multiInvestUserNum,
+		   s.multiInvestAmount,
+		   case when s.investUserNum > 0 then s.multiInvestUserNum/s.investUserNum else 0 end as multiInvestRate
+		from 
+		(
+				SELECT
+					count(d.user_id) as registerUserNum,
+					sum(case when d.FIRST_INVEST_TIME is not null then 1 else 0 end) as investUserNum,
+					sum(d.TOTAL_INVEST_BALANCE) totalInvestAmount,
+					sum(d.FIRST_INVEST_BALANCE) firstInvestAmount,
+					sum(d.CHANGE_INVEST_BALANCE) changeInvestAmount,
+					sum(case when d.AFTER_INVEST_NUMBER > 0 then 1 else 0 end) multiInvestUserNum,
+					sum(case when d.AFTER_INVEST_NUMBER > 0 then d.AFTER_INVEST_BALANCE else 0 end) multiInvestAmount
+				FROM
+					dm_report_user_activate_daily d
+				WHERE
+					1 = 1
+			    <include refid="cond"/>
+		) s
+		
+	</select>
 	
+	<select id="queryTotalList_20171016" resultType="io.renren.entity.channelmanager.UserActiveInfoEntity">
 	select 
 		max(s.registerUserNum) registerUserNum,
 		max(s.investUserNum) investUserNum,
@@ -270,9 +299,9 @@
 	</delete>
 	
 	<sql id="cond">
-		<if test="statPeriod != null and statPeriod.trim() != '' ">
-		     <![CDATA[ and STAT_PERIOD =  #{statPeriod}  ]]>
-		</if>
+<!-- 		<if test="statPeriod != null and statPeriod.trim() != '' "> -->
+<!-- 		     <![CDATA[ and STAT_PERIOD =  #{statPeriod}  ]]> -->
+<!-- 		</if> -->
 		<if test="phone != null and phone.trim() != '' ">
 		     <![CDATA[ and PHONE =  #{phone}  ]]>
 		</if>
