@@ -98,9 +98,10 @@
 				<span class="control-label search-label">所属人</span>
 				<div class="form-group col-sm-1" >
 					<select v-model="q1.belongs_to" class="form-control">  
+					  	<option value="">全部</option>
 					  	<option v-for="bl in belongs" v-bind:value="bl.id">  
 	   						{{ bl.real_name }}  
-	 						</option>  
+ 						</option>  
 					</select>
 				</div>
 				<span class="control-label search-label">时间</span>
