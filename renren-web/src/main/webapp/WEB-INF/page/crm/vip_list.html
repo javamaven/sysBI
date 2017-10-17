@@ -246,15 +246,17 @@ var vm1 = new Vue({
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			$("#jqGrid").jqGrid('setGridParam',{ 
                 postData:{
+                	
                		'user_id': vm1.q.user_id,
                		'dep_user_id':vm1.q.dep_user_id,
+               		'remark':vm1.q.remark,
+               		'comm_remark':vm1.q.comm_remark,
+               		'comm_count':vm1.q.comm_count,
+               		'level':vm1.q.level,
                		'belongs_to':vm1.q.belongs_to,
                		'value_class':vm1.q.value_class,
                		'tags':vm1.q.tags,
-               		'status':vm1.q.status,
-               		'call_time_type':vm1.q.call_time_type,
-               		'call_time_s':$("#call_time_s").val(),
-               		'call_time_e':$("#call_time_e").val()
+               		'vip_select':vm1.q.vip_select
                 },
                 page:page
             }).trigger("reloadGrid");

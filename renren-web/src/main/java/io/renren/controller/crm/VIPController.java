@@ -42,19 +42,19 @@ public class VIPController {
 	@ResponseBody
 	@RequestMapping("/list")
 	@RequiresPermissions("crm:vip:list")
-	public R list(CallrecordQueryParam param, Integer page, Integer limit){
+	public R list(VIPQueryParam param, Integer page, Integer limit){
 		logger.info("查询VIP记录,param={},page={},limit={}",JSON.toJSONString(param),page,limit);
 		String[] selectSql = new String[] {
 				"SELECT vu.user_id, vu.dep_user_id, vu.user_name, vu.real_name, vu.gender, vu.phone,",
-				"vub.recover_account_wait,vui.recover_account_wait,vui.account_balance,vui.level,vub.value_type,fa.real_name AS belong_real_name,cr.remark,cr.comm_remark,vui.data_date",
-				"fa.`real_name` as belong_real_name,t.`remark` "
+				"vub.recover_account_wait,vui.recover_account_wait,vui.account_balance,vui.level,vub.value_type,fa.real_name AS belong_real_name,cr.remark,cr.comm_remark,vui.data_date,",
+				"fa.`real_name` as belong_real_name, vub.tags "
 		};
 		String[] fromSql = new String[]{
-				"FROM vip_user_indicator vui ",
-				"LEFT JOIN vip_user vu ON vu.user_id = vui.user_id ",
-				"LEFT JOIN call_record cr ON cr.user_id = vui.user_id ",
-				"LEFT JOIN vip_user_belongs vub ON vu.user_id = vub.user_id ",
-				"LEFT JOIN financial_advisor fa ON fa.id = vub.belongs_to "
+				" FROM vip_user_indicator vui ",
+				" LEFT JOIN vip_user vu ON vu.user_id = vui.user_id ",
+				" LEFT JOIN call_record cr ON cr.user_id = vui.user_id ",
+				" LEFT JOIN vip_user_belongs vub ON vu.user_id = vub.user_id ",
+				" LEFT JOIN financial_advisor fa ON fa.id = vub.belongs_to "
 		};
 		//查询列表的语句
 		StringBuilder querySql = new StringBuilder();
@@ -69,6 +69,16 @@ public class VIPController {
 		JdbcUtil ju = new JdbcUtil(dataSourceFactory, "crmMysql");
 		try {
 			List<Map<String, Object>> list = ju.query(sql);
+			ju = new JdbcUtil(dataSourceFactory, "crmMysql");
+			/*List<Map<String, Object>> listTags = null;
+			for(Map<String, Object> map : list) {
+				ju = new JdbcUtil(dataSourceFactory, "crmMysql");
+				String ui = String.valueOf((Long) map.get("user_id"));
+				if ((Long) map.get("user_id") != null) {
+					listTags = ju.query("SELECT tags FROM vip_user_belongs WHERE user_id = " + ui + ';');
+					logger.info("listTags={}", listTags);
+				}
+			}*/
 			ju = new JdbcUtil(dataSourceFactory, "crmMysql");
 			List<Map<String, Object>> list1 = ju.query(countSql);
 			int count = 0;
