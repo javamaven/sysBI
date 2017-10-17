@@ -351,17 +351,19 @@ function initGrid() {
 			{ label: '当日外呼', name: 'call_count', width: 45, key: false },
 			{ label: '当日有效外呼', name: 'call_yx_count', width: 45},
 			{ label: '当日接通率', name: 'xx', width: 45,formatter: function(value, options, row){
-				return (row.call_yx_count/row.call_count).toFixed(4)*100 + "%";
+				return row.call_count<=0 ? '0' : (row.call_yx_count/row.call_count).toFixed(4)*100 + "%";
 			}},
-			{ label: '当日外呼覆盖率', name: 'drwhfgl', width: 45 },
+			{ label: '当日外呼覆盖率', name: 'drwhfgl', width: 45,formatter: function(value, options, row){
+				return value<=0 ? '0' :(row.vip_count<=0 ? '100%' : (value/row.vip_count).toFixed(4)*100 + "%");
+			}},
 			{ label: '当日通时(s)', name: 'drts', width: 45,formatter: function(value, options, row){
 				return value*60;
 			}},
 			{ label: '所属人', name: 'real_name', width: 55 },
-			{ label: 'VIP总人数', name: 'aaa', width: 45 },
-			{ label: 'VIP总待收', name: 'aaa', width: 45 },
-			{ label: '待收提升率', name: 'aaa', width: 45,formatter: function(value, options, row){
-				return value;
+			{ label: 'VIP总人数', name: 'vip_count', width: 45 },
+			{ label: 'VIP总待收', name: 'vip_wait', width: 45 },
+			{ label: '待收提升率', name: 'vip_ori_wait', width: 45,formatter: function(value, options, row){
+				return row.vip_wait<=0?'0' : (value<=0?'0' : (row.vip_wait/value).toFixed(4)*100 + "%");
 			}}
         ],
 		viewrecords: true,

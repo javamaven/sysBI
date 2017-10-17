@@ -82,7 +82,7 @@ public class DateParam {
 				}else if("3".equals(time_type)){
 					days = 7;
 				}
-				sb.append(" and to_days(DATE_ADD(t.").append(dateField).append(",INTERVAL ").append(days).append(" DAY)) >= to_days(now())");
+				sb.append(" and to_days(DATE_ADD(cr.").append(dateField).append(",INTERVAL ").append(days).append(" DAY)) >= to_days(now())");
 			}
 		}
 		return sb.toString();
