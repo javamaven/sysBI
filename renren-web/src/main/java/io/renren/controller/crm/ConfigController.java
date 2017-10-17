@@ -39,7 +39,7 @@ import io.renren.utils.R;
 @RequestMapping("/crm/config")
 public class ConfigController {
 	
-private static final Logger logger = LoggerFactory.getLogger(ConfigController.class);
+	private static final Logger logger = LoggerFactory.getLogger(ConfigController.class);
 	
 	@Autowired
 	private DataSourceFactory dataSourceFactory;

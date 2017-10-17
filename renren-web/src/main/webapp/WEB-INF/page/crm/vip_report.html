@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>统计报表</title>
+#parse("sys/header.html")
+<style>
+       .title {
+           margin-top: 10px;
+           margin-left: 20px;
+       }
+       .content {
+       		margin-top: 10px;
+       		margin-left: 50px;
+       }
+       .left_blue {
+       		background-color: blue;
+       		width:5px;
+       		border: 0
+       }
+       .search-label {
+           float: left;
+           line-height: 34px;
+           height: 34px;
+       }
+</style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList" class="container-fluid">
+		<div id="vip_asset_tender" class="row">
+			<div class="title"><input type="text" class="left_blue"/><span style="margin-left: 10px;">资产趋势</span></div>
+			<div class="content">
+				<div class="col-md-4">
+					<span>平台总待收: </span>
+					<span>{{vip_report.platform_account_wait/100.0}}元</span>
+				</div>
+				<div class="col-md-4">
+					<span>平台人均待收: </span>
+					<span>{{vip_report.avg_account_wait/100.0}}元</span>
+				</div>
+				<div class="col-md-4">
+					<span>平台总投资人数: </span>
+					<span>{{vip_report.platform_tender_count}}人</span>
+				</div>
+			</div>
+			<div class="content">
+				<div class="col-md-4">
+					<span>VIP总待收: </span>
+					<span>{{vip_report.vip_account_wait/100.0}}元</span>
+				</div>
+				<div class="col-md-4">
+					<span>VIP人均待收: </span>
+					<span>{{vip_report.avg_vip_account_wait/100.0}}元</span>
+				</div>
+				<div class="col-md-4">
+					<span>当前VIP人数: </span>
+					<span>{{vip_report.vip_count}}人</span>
+				</div>
+			</div>
+			<div class="content">
+				<div class="col-md-4">
+					<span>VIP待收占比: </span>
+					<span>{{vip_report.vip_wait_rate}}%</span>
+				</div>
+				<div class="col-md-4"></div>
+				<div class="col-md-4">
+					<span>昨天VIP人数: </span>
+					<span>{{vip_report_pre.vip_count}}人</span>
+				</div>
+			</div>
+		</div>
+		
+		<div id="vip_asset_tender_search" class="row" style="text-align: left;">
+			<span class="control-label search-label">时间</span>
+			<div class="form-group col-sm-1" >
+				<select v-model="q.time_type" class="form-control" @change="change_time_type(q.time_type)">  
+				  	<option v-for="ctt in time_type" v-bind:value="ctt.id">  
+   						{{ ctt.value }}  
+ 					</option>  
+				</select>
+			</div>
+			<div id="div_call_time_s" class="form-group col-sm-1" style="display: none;">
+				<input type="text"class="form-control form_datetime_2" id="call_time_s" v-model="q.time_s"  placeholder="请选择开始时间"/>
+			</div>
+			<div id="div_call_time_e" class="form-group col-sm-1" style="display: none;">
+				<input type="text"class="form-control form_datetime_2" id="call_time_e" v-model="q.time_e" placeholder="请选择结束时间"/>
+			</div>
+			<a class="btn btn-default" @click="query">查询</a>
+		</div>
+		
+		<div id="vip_asset_tender_pic_wrapper" class="row">
+			<div id="vip_asset_tender_pic" style="width: 800px;height: 400px;"></div>
+		</div>
+		
+		<div id="div_call_record" class="row">
+			<div class="title"><input type="text" class="left_blue"/><span style="margin-left: 10px;">外呼统计</span></div>
+			<div class="content">
+				<span class="control-label search-label">所属人</span>
+				<div class="form-group col-sm-1" >
+					<select v-model="q1.belongs_to" class="form-control">  
+					  	<option v-for="bl in belongs" v-bind:value="bl.id">  
+	   						{{ bl.real_name }}  
+	 						</option>  
+					</select>
+				</div>
+				<span class="control-label search-label">时间</span>
+				<div class="form-group col-sm-1" >
+					<select v-model="q1.time_type" class="form-control" @change="change_time_type1(q1.time_type)">  
+					  	<option v-for="ctt in time_type" v-bind:value="ctt.id">  
+	  						{{ ctt.value }}  
+						</option>  
+					</select>
+				</div>
+				<div id="div_call_time_s1" class="form-group col-sm-1" style="display: none;">
+					<input type="text"class="form-control form_datetime_2" id="call_time_s1" v-model="q1.time_s"  placeholder="请选择开始时间"/>
+				</div>
+				<div id="div_call_time_e1" class="form-group col-sm-1" style="display: none;">
+					<input type="text"class="form-control form_datetime_2" id="call_time_e1" v-model="q1.time_e" placeholder="请选择结束时间"/>
+				</div>
+				<a class="btn btn-default" @click="queryCallReport">查询</a>
+			    <table id="jqGrid"></table>
+			    <div id="jqGridPager"></div>
+			</div>
+		</div>
+		
+    </div>
+</div>
+
+<script type="text/javascript">
+
+function initDatetimepicker(){
+	$(".form_datetime_2").datetimepicker({
+	    format: 'yyyy-mm-dd',
+	    minView:'month',
+	    language: 'zh-CN',
+	    autoclose:true,
+	    todayBtn : true,
+	    setStartDate:new Date()
+	});
+}
+
+var vm;
+
+function initVm(){
+	vm = new Vue({
+		el:'#rrapp',
+		data:{
+			q:{
+				time_type:{},
+				time_s: null,
+				time_e: null
+			},
+			q1:{
+				time_type:{},
+				time_s: null,
+				time_e: null,
+				belongs_to:{}
+			},
+			showList: true,
+			vip_report:{},
+			vip_report_pre:{},
+			time_type:[{id:1,value:'过去60天'},{id:2,value:'过去30天'},{id:3,value:'过去7天'},{id:4,value:'自选'}],
+			belongs:{}
+		},
+		methods: {
+			getVipReport: function(){
+				$.get("../crm/report/getVipReport", function(r){
+					vm.vip_report = r.vip_report;
+					vm.vip_report.vip_wait_rate = (r.vip_report.vip_account_wait/r.vip_report.platform_account_wait).toFixed(4) * 100;
+					if(r.vip_report_pre){
+						vm.vip_report_pre = r.vip_report_pre;
+					}
+					initDatetimepicker();
+				});
+			},
+			change_time_type: function(time_type){
+				if(time_type == 4){
+					$("#div_call_time_s").show();
+					$("#div_call_time_e").show();
+				}else {
+					$("#div_call_time_s").hide();
+					vm.q.time_s = null;
+					$("#div_call_time_e").hide();
+					vm.q.time_e = null;
+				}
+			},
+			change_time_type1: function(time_type){
+				//console.log("time_type=" + time_type);
+				if(time_type == 4){
+					$("#div_call_time_s1").show();
+					$("#div_call_time_e1").show();
+				}else {
+					$("#div_call_time_s1").hide();
+					vm.q1.time_s = null;
+					$("#div_call_time_e1").hide();
+					vm.q1.time_e = null;
+				}
+			},
+			query: function(){
+				$.get("../crm/report/getVipReportTender",
+						{time_type:vm.q.time_type,time_s:vm.q.time_s,time_e:vm.q.time_e}, 
+						function(r){
+							if(r && r.tender){
+								var data = {};
+								data.dates = [];
+								data.platform_account_wait = [];			//总待收
+								data.avg_account_wait = [];					//人均待收
+								data.platform_tender_count = [];			//总投资人数
+								data.vip_account_wait = [];					//VIP总待收
+								data.avg_vip_account_wait = [];				//VIP人均待收
+								data.vip_count = [];						//VIP人数
+								for(var i = 0; i < r.tender.length; i++){
+									data.dates.push(r.tender[i].data_date);
+									data.platform_account_wait.push(r.tender[i].platform_account_wait);
+									data.avg_account_wait.push(r.tender[i].avg_account_wait);
+									data.platform_tender_count.push(r.tender[i].platform_tender_count);
+									data.vip_account_wait.push(r.tender[i].vip_account_wait);
+									data.avg_vip_account_wait.push(r.tender[i].avg_vip_account_wait);
+									data.vip_count.push(r.tender[i].vip_count);
+								}
+								setDataForTender(data);
+							}
+				});
+			},
+			getBelongs: function(){
+				$.get("../crm/config/query_financial_advisor", function(r){
+					vm.belongs = r.list;
+					//console.log(r.list);
+				});
+			},
+			queryCallReport: function(){
+				var page = $("#jqGrid").jqGrid('getGridParam','page');
+				$("#jqGrid").jqGrid('setGridParam',{ 
+	                postData:{
+	               		'belongs_to':vm.q1.belongs_to,
+	               		'time_type':vm.q1.time_type,
+	               		'time_s':$("#call_time_s1").val(),
+	               		'time_e':$("#call_time_e1").val()
+	                },
+	                page:page
+	            }).trigger("reloadGrid");
+			}
+		}
+	});
+}
+
+var myChart;
+
+function initTender(){
+	myChart = echarts.init(document.getElementById('vip_asset_tender_pic'));
+	// 显示标题，图例和空的坐标轴
+	myChart.setOption({
+	    title: {
+	        text: '资产趋势'
+	    },
+	    tooltip: {},
+	    legend: {
+	        data:[]
+	    },
+	    xAxis: {
+	        data: []
+	    },
+	    yAxis: {},
+	    series: [{
+	        name: '总待收趋势',
+	        type: 'line',
+	        data: []
+	    }]
+	});
+}
+
+function setDataForTender(data){
+	// 填入数据
+    myChart.setOption({
+        xAxis: {
+            data: data.dates
+        },
+        legend: {
+	        data:['总待收趋势','VIP待收趋势','VIP人均待收','人均待收','VIP人数']
+	    },
+	    yAxis: [
+	    	{
+                type: 'value',
+                name: '待收趋势',
+                position: 'left',
+                axisLabel: {
+                    formatter: '{value} （元）'
+                }
+       		},
+       		{
+	           type: 'value',
+	           name: 'VIP人数',
+	           min: 0,
+	           //max: 5000,
+	           position: 'right',
+	           axisLabel: {
+	               formatter: '{value} （人）'
+	           }
+       		}
+	    ],
+        series: [{
+            // 根据名字对应到相应的系列
+            name: '总待收趋势',
+            type: 'line',
+            data: data.platform_account_wait
+        },{
+            // 根据名字对应到相应的系列
+            name: 'VIP待收趋势',
+            type: 'line',
+            data: data.vip_account_wait
+        },{
+            // 根据名字对应到相应的系列
+            name: 'VIP人均待收',
+            type: 'line',
+            data: data.avg_vip_account_wait
+        },{
+            // 根据名字对应到相应的系列
+            name: '人均待收',
+            type: 'line',
+            data: data.avg_account_wait
+        },{
+            // 根据名字对应到相应的系列
+            name: 'VIP人数',
+            type: 'line',
+            yAxisIndex: 1,
+            data: data.vip_count
+        }]
+    });
+}
+
+function defaultQuery(){
+	vm.q.time_type = 2;
+	vm.query();
+}
+
+$(document).ready(function(){
+	initVm();
+	vm.getVipReport();
+	initTender();
+	defaultQuery();
+	vm.getBelongs();
+	initGrid();
+});
+
+function initGrid() {
+    $("#jqGrid").jqGrid({
+        url: '../crm/report/call_record_statistics',
+        datatype: "json",
+        colModel: [			
+			{ label: '日期', name: 'date_', width: 45, key: false },
+			{ label: '当日外呼', name: 'call_count', width: 45, key: false },
+			{ label: '当日有效外呼', name: 'call_yx_count', width: 45},
+			{ label: '当日接通率', name: 'xx', width: 45,formatter: function(value, options, row){
+				return (row.call_yx_count/row.call_count).toFixed(4)*100 + "%";
+			}},
+			{ label: '当日外呼覆盖率', name: 'drwhfgl', width: 45 },
+			{ label: '当日通时(s)', name: 'drts', width: 45,formatter: function(value, options, row){
+				return value*60;
+			}},
+			{ label: '所属人', name: 'real_name', width: 55 },
+			{ label: 'VIP总人数', name: 'aaa', width: 45 },
+			{ label: 'VIP总待收', name: 'aaa', width: 45 },
+			{ label: '待收提升率', name: 'aaa', width: 45,formatter: function(value, options, row){
+				return value;
+			}}
+        ],
+		viewrecords: true,
+        height: 385,
+        rowNum: 10,
+		rowList : [10,30,50],
+        rownumbers: true, 
+        rownumWidth: 25, 
+        autowidth:true,
+        multiselect: false,
+        pager: "#jqGridPager",
+        jsonReader : {
+            root: "page.list",
+            page: "page.currPage",
+            total: "page.totalPage",
+            records: "page.totalCount"
+        },
+        prmNames : {
+            page:"page", 
+            rows:"limit", 
+            order: "order"
+        },
+        gridComplete:function(){
+        	//隐藏grid底部滚动条
+        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
+        }
+    });
+};
+
+</script>
+</body>
+</html>
