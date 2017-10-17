@@ -1,7 +1,6 @@
 package io.renren.controller.crm;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -110,34 +109,47 @@ public class ReportController extends AbstractController {
 	@RequiresPermissions("crm:report:list")
 	public R call_record_statistics(String belongs_to, DateParam param, Integer page, Integer limit){
 		logger.info("获取外呼统计,param={},belongs_to={}", JSON.toJSONString(param), belongs_to);
-		StringBuilder sql = new StringBuilder("SELECT DATE_FORMAT(t.`call_time`,'%Y%m%d') AS date_,fa.`real_name`,fa.id as fid");
-		sql.append("COUNT(t.`id`) AS call_count,SUM(IF(t.`status` IN (115,116),0,1)) AS call_yx_count,");
-		sql.append("SUM(IF(v.`user_id` IS NULL,0,1)) drwhfgl,SUM(t.`call_duration`) drts,COUNT(DISTINCT v.`user_id`) vip_count ");
-		sql.append("FROM `call_record` t ");
-		sql.append("LEFT JOIN `vip_user` v ON t.`user_id`=v.`user_id` ");
-		sql.append("LEFT JOIN `vip_user_belongs` vb ON t.`user_id`=vb.`user_id` ");
-		sql.append("LEFT JOIN `financial_advisor` fa ON vb.`belongs_to`=fa.`id` ");
+//		StringBuilder sql = new StringBuilder("SELECT DATE_FORMAT(t.`call_time`,'%Y%m%d') AS date_,fa.`real_name`,fa.id as fid");
+//		sql.append("COUNT(t.`id`) AS call_count,SUM(IF(t.`status` IN (115,116),0,1)) AS call_yx_count,");
+//		sql.append("SUM(IF(v.`user_id` IS NULL,0,1)) drwhfgl,SUM(t.`call_duration`) drts,COUNT(DISTINCT v.`user_id`) vip_count ");
+//		sql.append("FROM `call_record` t ");
+//		sql.append("LEFT JOIN `vip_user` v ON t.`user_id`=v.`user_id` ");
+//		sql.append("LEFT JOIN `vip_user_belongs` vb ON t.`user_id`=vb.`user_id` ");
+//		sql.append("LEFT JOIN `financial_advisor` fa ON vb.`belongs_to`=fa.`id` ");
+		
+		StringBuilder sql = new StringBuilder("SELECT DATE_FORMAT(cr.`call_time`,'%Y%m%d') AS date_,fa.`real_name`,fa.`id` AS fid,");
+		sql.append("COUNT(cr.`id`) AS call_count,");
+		sql.append("SUM(IF(cr.`status` NOT IN (115,116),1,0)) AS call_yx_count,");
+		sql.append("COUNT(DISTINCT vb.`user_id`) drwhfgl,");
+		sql.append("SUM(IFNULL(cr.`call_duration`,0)) drts,");
+		sql.append("COUNT(DISTINCT vb.`user_id`) vip_count,");
+		sql.append("SUM(IFNULL(vi.`recover_account_wait`,0)) vip_wait,");
+		sql.append("SUM(IFNULL(vb.`recover_account_wait`,0)) vip_ori_wait ");
+		sql.append("FROM `financial_advisor` fa ");
+		sql.append("LEFT JOIN `vip_user_belongs` vb ON fa.`id`=vb.`belongs_to` ");
+		sql.append("LEFT JOIN `call_record` cr ON vb.`user_id`=cr.`user_id` ");
+		sql.append("LEFT JOIN `vip_user_indicator` vi ON vb.`user_id`=vi.`user_id` AND DATE_FORMAT(cr.`call_time`,'%Y%m%d')=SUBSTR(vi.`data_date`,1,8) ");
 		sql.append(param.toWhereSql1("call_time"));
 		if(StringUtils.isNotBlank(belongs_to)){
 			sql.append(" and vb.belongs_to=").append(belongs_to);
 		}
-		sql.append(" GROUP BY TO_DAYS(t.`call_time`),fa.`real_name` ");
+		sql.append(" GROUP BY fa.`id`,fa.`real_name`,DATE_FORMAT(cr.`call_time`,'%Y%m%d') ");
 		logger.info("获取外呼统计,执行SQL={}", sql.toString());
 		JdbcUtil ju = new JdbcUtil(dataSourceFactory, "crmMysql");
 		try {
 			R r = R.ok();
 			List<Map<String, Object>> list = ju.query(sql.toString());
 			//查询每个理财顾问的vip人数、vip总待收、待收提升率
-			List<Integer> fids = new ArrayList<>();
+			/*List<Integer> fids = new ArrayList<>();
 			for(Map<String, Object> map : list){
-				Integer fid = (Integer) map.get("fid");
+				Integer fid = Integer.parseInt(map.get("fid").toString());
 				if(!fids.contains(fid)){
 					fids.add(fid);
 				}
 			}
 			if(!fids.isEmpty()){
 				
-			}
+			}*/
 			PageUtils pageUtil = new PageUtils(list, list.size(), limit, page);
 			return r.put("page", pageUtil);
 		} catch (SQLException e) {

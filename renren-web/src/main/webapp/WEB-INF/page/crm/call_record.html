@@ -18,9 +18,10 @@
 			<span class="control-label search-label">所属人</span>
 			<div class="form-group col-sm-1" >
 				<select v-model="q.belongs_to" class="form-control">  
+					<option value="">全部</option>
 				  	<option v-for="bl in belongs" v-bind:value="bl.id">  
-   						{{ bl.real_name }}  
- 						</option>  
+  						{{ bl.real_name }}  
+					</option>  
 				</select>
 			</div>
 			<span class="control-label search-label">用户ID</span>
@@ -34,9 +35,10 @@
 			<span class="control-label search-label">通话状态</span>
 			<div class="form-group col-sm-1" >
 				<select v-model="q.status" class="form-control">  
+					<option value="">全部</option>
 				  	<option v-for="sl in statusList" v-bind:value="sl.id">  
    						{{ sl.name }}  
- 						</option>  
+					</option>  
 				</select>
 			</div>
 			<span class="control-label search-label">时间</span>
@@ -97,7 +99,7 @@ function initGrid() {
 			{ label: '等级划分', name: 'level', width: 45 },
 			{ label: '通话状态', name: 'status', width: 45,formatter: function(value, options, row){
 				for(var i = 0; i < vm1.statusList.length; i++){
-					if(vm1.statusList[i].id=value)return vm1.statusList[i].name;
+					if(vm1.statusList[i].id==value)return vm1.statusList[i].name;
 				}
 				return value;
 			}},

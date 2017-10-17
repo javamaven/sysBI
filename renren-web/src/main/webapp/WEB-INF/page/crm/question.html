@@ -139,6 +139,7 @@ function onQuestionDbClick(span,tid){
 			p.append("<span ondblclick='onQuestionDbClick(this" + "," + tid + ")'>" + value + "</span>");
 	    }
 	});
+	$("#input_"+tid).focus();
 }
 
 function onItemDbClick(span,vid){
@@ -177,6 +178,7 @@ function onItemDbClick(span,vid){
 			p.append("<span ondblclick='onItemDbClick(this" + "," + vid + ")'>" + value + "</span>");
 	    }
 	});
+	$("#input_"+vid).focus();
 }
 
 $(function () {
