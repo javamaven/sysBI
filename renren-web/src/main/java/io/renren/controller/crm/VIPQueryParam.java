@@ -7,6 +7,9 @@ import java.io.Serializable;
  * @author HUGUANG 2017年10月16日下午4:13:51
  */
 public class VIPQueryParam implements Serializable {
+
+	private static final long serialVersionUID = 1L;
+	
 	private String user_id;
 	private String dep_user_id;
 	private String remark;
