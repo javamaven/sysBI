@@ -40,15 +40,16 @@ function initTableGrid(){
         url: '../hr/list',
         datatype: "json",
         colModel: [			
-			{ label: '员工姓名', name: 'realname', index: '$STAT_PERIOD', width: 100, key: true,align:'right' },
+			{ label: '员工姓名', name: 'realname', index: '$STAT_PERIOD', width: 60, key: true,align:'right' },
 			{ label: '身份证号', name: 'cardId', index: '$CHANNEL_LABEL', width: 80 ,align:'right',hidden: true}, 		
-			{ label: '手机', name: 'phone', index: '$CHANNEL_LABEL', width: 80 ,align:'right'}, 			
-			{ label: '部门', name: 'department', index: '$RECHARGE', width: 80 ,align:'right'},
-			{ label: '部门序列', name: 'part', index: '$COST', width: 80 ,align:'right'},
-			{ label: '职位', name: 'post', index: '$COST', width: 80 ,align:'right'},
+			{ label: '一级部门', name: 'phone', index: '$CHANNEL_LABEL', width: 80 ,align:'right'}, 			
+			{ label: '二级部门', name: 'department', index: '$RECHARGE', width: 80 ,align:'right'},
+			{ label: '部门序列', name: 'part', index: '$COST', width: 60 ,align:'right'},
+			{ label: '内外勤', name: 'post', index: '$COST', width: 60 ,align:'right'},
 			{ label: '是否副总监及以上职位', name: 'ifBoss', index: '$COST', width: 100,align:'right' }, 	
-			{ label: '入职时间', name: 'workTime', index: '$COST', width: 80,align:'right' }, 	
-			{ label: '离职时间', name: 'leaveTime', index: '$COST', width: 80,align:'right'}
+			{ label: '入职时间', name: 'workTime', index: '$COST', width: 70,align:'right' }, 	
+			{ label: '离职时间', name: 'leaveTime', index: '$COST', width: 70,align:'right'},
+			{ label: '更新时间', name: 'updateTime', index: '$COST', width: 80,align:'right'}
         ],
 		viewrecords: true,
 //        height: 385,

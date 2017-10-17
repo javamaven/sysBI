@@ -34,6 +34,8 @@ public class DimStaffEntity implements Serializable {
 	//
 	private String leaveTime;
 	
+	private String updateTime;
+	
 	private Date workTimeDate;
 	//
 	private Date leaveTimeDate;
@@ -55,9 +57,17 @@ public class DimStaffEntity implements Serializable {
 		this.workTimeDate = workTimeDate;
 		this.leaveTimeDate = leaveTimeDate;
 	}
+	
+	public void setUpdateTime(String updateTime) {
+		this.updateTime = updateTime;
+	}
+	
+	public String getUpdateTime() {
+		return updateTime;
+	}
 
 	public DimStaffEntity(String realname, String cardId, String phone, String department, String part, String post,
-			String ifBoss, String workTime, String leaveTime) {
+			String ifBoss, String workTime, String leaveTime, Date workTimeDate, Date leaveTimeDate,String updateTime) {
 		super();
 		this.realname = realname;
 		this.cardId = cardId;
@@ -68,6 +78,9 @@ public class DimStaffEntity implements Serializable {
 		this.ifBoss = ifBoss;
 		this.workTime = workTime;
 		this.leaveTime = leaveTime;
+		this.updateTime = updateTime;
+		this.workTimeDate = workTimeDate;
+		this.leaveTimeDate = leaveTimeDate;
 	}
 	
 	public DimStaffEntity(String realname, String cardId, String phone, String department, String part, String post,

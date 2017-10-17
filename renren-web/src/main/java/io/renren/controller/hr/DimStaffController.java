@@ -3,6 +3,7 @@ package io.renren.controller.hr;
 import java.io.File;
 import java.io.IOException;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -149,7 +150,7 @@ public class DimStaffController {
 						}
 					}
 					DimStaffEntity dimStaff = new DimStaffEntity(realname, cardId, phone, department, part, post, ifBoss,
-							workTime, leaveTime);
+							workTime, leaveTime, null, null, null);
 					//1。没有则insert
 					//2.已存在则update
 					if(StringUtils.isEmpty(cardId)){//没有身份证号则不要该条数据
@@ -163,12 +164,12 @@ public class DimStaffController {
 						new JdbcUtil(dataSourceFactory, "oracle26").execute(deleteSql, cardId);
 					}
 					
-					DimStaffEntity entity_new = dimStaffService.queryObject(cardId);
+//					DimStaffEntity entity_new = dimStaffService.queryObject(cardId);
 					
-					//插入到41oracle
-					new JdbcUtil(dataSourceFactory, "oracle26").execute(insertSql, entity_new.getRealname(), entity_new.getCardId(),
-							entity_new.getPhone(), entity_new.getDepartment(), entity_new.getPart(), entity_new.getPost(), entity_new.getIfBoss(),
-							entity_new.getWorkTimeDate(), entity_new.getLeaveTimeDate());
+//					//插入到41oracle
+//					new JdbcUtil(dataSourceFactory, "oracle26").execute(insertSql, entity_new.getRealname(), entity_new.getCardId(),
+//							entity_new.getPhone(), entity_new.getDepartment(), entity_new.getPart(), entity_new.getPost(), entity_new.getIfBoss(),
+//							entity_new.getWorkTimeDate(), entity_new.getLeaveTimeDate());
 					sucess_record++;
 					
 				} catch (Exception e) {
@@ -181,9 +182,59 @@ public class DimStaffController {
 			e.printStackTrace();
 			return R.error(e.getMessage());
 		}
+		
+		//最后同步mysql数据到oracle
+		mysqlToOracle();
+		
 		return R.ok().put("total_record", total_record).put("sucess_record", sucess_record).put("error_list", errorList);
 	}
 	
+	/**
+	 * 同步msyql dim_staff 表到oracle dim_staff
+	 */
+	private void mysqlToOracle() {
+		// TODO Auto-generated method stub
+		Map<String, Object> map = new HashMap<>();
+		map.put("offset", 0);
+		map.put("limit", 100000);
+		
+		//查询列表数据
+		List<DimStaffEntity> dimStaffList = dimStaffService.queryList(map);
+		String sql = "INSERT INTO dim_staff VALUES (?,?,?,?,?,?,?,?,?) ";
+		String truncate_sql = "truncate table dim_staff ";
+		List<List<Object>> dataList = new ArrayList<List<Object>>();
+		for (int i = 0; i < dimStaffList.size(); i++) {
+			DimStaffEntity en = dimStaffList.get(i);
+			List<Object> list = new ArrayList<Object>();
+//			  `REALNAME` varchar(100) DEFAULT NULL COMMENT '员工姓名',
+//			  `CARD_ID` varchar(30) DEFAULT NULL COMMENT '身份证号',
+//			  `PHONE` varchar(100) DEFAULT NULL COMMENT '电话',
+//			  `DEPARTMENT` varchar(100) DEFAULT NULL COMMENT '部门',
+//			  `PART` varchar(100) DEFAULT NULL COMMENT '部门序列',
+//			  `POST` varchar(100) DEFAULT NULL COMMENT '职位',
+//			  `IF_BOSS` varchar(20) DEFAULT NULL COMMENT '是否副总监及以上职位',
+//			  `WORK_TIME` date DEFAULT NULL COMMENT '入职时间',
+//			  `LEAVE_TIME` date DEFAULT NULL COMMENT '离职时间',
+			list.add(en.getRealname());
+			list.add(en.getCardId());
+			list.add(en.getPhone());
+			list.add(en.getDepartment());
+			list.add(en.getPart());
+			list.add(en.getPost());
+			list.add(en.getIfBoss());
+			list.add(en.getWorkTimeDate());
+			list.add(en.getLeaveTimeDate());
+			dataList.add(list);
+		}
+		try {
+			new JdbcUtil(dataSourceFactory, "oracle26").execute(truncate_sql);
+			new JdbcUtil(dataSourceFactory, "oracle26").batchInsert(sql , dataList );
+		} catch (ClassNotFoundException | SQLException e) {
+			e.printStackTrace();
+		}
+		
+	}
+
 	private File multipartToFile(MultipartFile multfile) throws IOException {
 		CommonsMultipartFile cf = (CommonsMultipartFile) multfile;
 		// 这个myfile是MultipartFile的
