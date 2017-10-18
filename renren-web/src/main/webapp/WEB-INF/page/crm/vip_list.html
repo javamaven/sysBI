@@ -23,6 +23,10 @@
 <div id="crm-call-record" v-cloak>
 	<div v-show="showList">
 		<div class="grid-btn">
+			<a class="btn btn-primary" id="upload"><i class="fa fa-plus"></i>&nbsp;指派</a>
+			<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出</a>
+		</div>
+		<div class="grid-btn">
 			<span class="control-label search-label">用户ID</span>
 			<div class="form-group col-sm-1">
 				<input type="text" class="form-control" v-model="q.user_id" placeholder="用户ID">
@@ -50,6 +54,7 @@
 			<span class="control-label search-label">所属人</span>
 			<div class="form-group col-sm-1" >
 				<select v-model="q.belongs_to" class="form-control">  
+					<option value="">全部</option>
 				  	<option v-for="bl in belongs" v-bind:value="bl.id">  
    						{{ bl.real_name }}  
  						</option>  
@@ -58,6 +63,7 @@
 			<span class="control-label search-label">价值分类</span>
 			<div class="form-group col-sm-1" >
 				<select v-model="q.value_class" class="form-control">  
+					<option value="">全部</option>
 				  	<option v-for="vc in valueClass" v-bind:value="vc.id">  
    						{{ vc.name }}  
  						</option>  
@@ -66,6 +72,7 @@
 			<span class="control-label search-label">标签</span>
 			<div class="form-group col-sm-1" >
 				<select v-model="q.tags" class="form-control">  
+					<option value="">全部</option>
 				  	<option v-for="t in tags" v-bind:value="t">  
    						{{ t.name }}  
  						</option>  
@@ -82,9 +89,8 @@
 				</select>
 			</div>
 			<a class="btn btn-default" @click="query">查询</a>
-			#if($shiro.hasPermission("crm:vip:save"))
-			<a class="btn btn-primary" @click="add"><i class="fa fa-plus"></i>&nbsp;新增</a>
-			#end
+			<a class="btn btn-primary" @click="view"><i class="fa fa-search"></i>&nbsp;查看</a>
+			<a class="btn btn-primary" @click="addCall"><i class="fa fa-plus"></i>&nbsp;添加通话</a>
 		</div>
 	    <table id="jqGrid"></table>
 	    <div id="jqGridPager"></div>
@@ -122,18 +128,30 @@ function initGrid() {
 			},
 			{ label: '电话号码', name: 'phone', width: 90 },
 			
-			{ label: '通话次数', name: 'recover_account_wait', width: 80 },
-			{ label: '分配前总代收', name: 'recover_account_wait', width: 80 },
-			{ label: '当前总代收', name: 'recover_account_wait', width: 80 },
-			{ label: '代收差额', name: 'account_balance', width: 80 },
-			{ label: '代收增比', name: 'account_balance', width: 80 },
-			{ label: '账户余额(元)', name: 'account_balance', width: 80 },
+			{ label: '通话次数', name: 'call_count', width: 80,formatter: function(value, options, row){
+				return !value ? 0 : value;
+			} },
+			{ label: '分配前总代收(元)', name: 'pre_account_wait', width: 80,formatter: function(value, options, row){
+				return value/100;
+			}},
+			{ label: '当前总代收(元)', name: 'cur_account_wait', width: 80,formatter: function(value, options, row){
+				return value/100;
+			}},
+			{ label: '代收差额', name: 'account_balance', width: 80,formatter: function(value, options, row){
+				return (row.cur_account_wait-row.pre_account_wait)/100;
+			}},
+			{ label: '代收增比(%)', name: 'account_wait_rate', width: 80,formatter: function(value, options, row){
+				return !row.belong_real_name ? 0 : ((row.cur_account_wait-row.pre_account_wait)/row.pre_account_wait)*100+"%";
+			}},
+			{ label: '账户余额(元)', name: 'account_balance', width: 80,formatter: function(value, options, row){
+				return value/100;
+			}},
 			{ label: '等级划分', name: 'level', width: 80 },
 			{ label: '价值分类', name: 'valueClass', width: 80 },
-			{ label: '标签', name: 'belong_real_name', width: 80 },
+			{ label: '标签', name: 'tags', width: 80 },
 			{ label: '所属人', name: 'belong_real_name', width: 80 },
 			{ label: '备忘', name: 'remark', width: 80},
-			{ label: '沟通备忘', name: 'remark', width: 80}
+			{ label: '沟通备忘', name: 'comm_remark', width: 80}
         ],
 		viewrecords: true,
         height: 385,
@@ -157,7 +175,7 @@ function initGrid() {
         },
         gridComplete:function(){
         	//隐藏grid底部滚动条
-        	$("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
+        	// $("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
         }
     });
 };
@@ -170,7 +188,7 @@ var vm1 = new Vue({
 			dep_user_id: null,
 			remark: null,
 			comm_remark: null,
-			comm_count: null,
+			call_count: null,
 			level: null,
 			belongs_to: null,
 			value_class: null,
@@ -195,81 +213,88 @@ var vm1 = new Vue({
 				alert("请选中一行后再进行操作");
 				return;
 			}
-			console.log(row);
 			var rowdata = $("#jqGrid").jqGrid('getRowData',row);
-			console.log(rowdata);
 			parent.addTab("新增通话记录","./crm/call_record_add.html?user_id="+rowdata.user_id+"&id="+rowdata.id,"");
 		},
 		getBelongs: function(){
 			$.get("../crm/config/query_financial_advisor", function(r){
 				vm1.belongs = r.list;
-				//console.log(r.list);
 			});
 		},
 		getStatusList: function(){
 			$.get("../crm/config/value_class_list?type=3", function(r){
+				console.log(r.list);
 				vm1.statusList = r.list;
 				initGrid();
 				initDatetimepicker();
-				console.log(r.list);
 			});
 		},
 		getValueClass: function(){
 			$.get("../crm/config/value_class_list?type=1", function(r){
 				vm1.valueClass = r.list;
-				console.log(r.list);
-				/* initGrid();
-				initDatetimepicker(); */
 			});
 		},
-		getTags: function(){
+		getTags: function() {
 			$.get("../crm/config/value_class_list?type=2", function(r){
 				vm1.tags = r.list;
-				console.log(r.list);
-				/* initGrid();
-				initDatetimepicker(); */
 			});
 		},
-		change_call_time_type: function(call_time_type){
-			if(call_time_type == 4){
-				$("#div_call_time_s").show();
-				$("#div_call_time_e").show();
-			}else {
-				$("#div_call_time_s").hide();
-				vm1.q.call_time_s = null;
-				$("#div_call_time_e").hide();
-				vm1.q.call_time_e = null;
+		view: function(){// 查看VIP详情
+			var row = $("#jqGrid").jqGrid('getGridParam','selrow');
+			if(!row) {
+				alert("请选中一行后再进行操作");
+				return;
 			}
+			console.log(row);
+			var rowdata = $("#jqGrid").jqGrid('getRowData',row);
+			console.log(rowdata);
+			parent.addTab("VIP详情","./crm/vip_detail.html?user_id=" + rowdata.user_id + ","");
+		},
+		addCall: function(){// 添加通话
+			$.get("../crm/config/value_class_list?type=2", function(r){
+			});
 		},
 		reload: function (event) {
 			vm1.showList = true;
 			var page = $("#jqGrid").jqGrid('getGridParam','page');
 			$("#jqGrid").jqGrid('setGridParam',{ 
-                postData:{
-                	
-               		'user_id': vm1.q.user_id,
-               		'dep_user_id':vm1.q.dep_user_id,
-               		'remark':vm1.q.remark,
-               		'comm_remark':vm1.q.comm_remark,
-               		'comm_count':vm1.q.comm_count,
-               		'level':vm1.q.level,
-               		'belongs_to':vm1.q.belongs_to,
-               		'value_class':vm1.q.value_class,
-               		'tags':vm1.q.tags,
-               		'vip_select':vm1.q.vip_select
-                },
+                postData:getParams(),
                 page:page
             }).trigger("reloadGrid");
 		}
 	}
 });
 
-$(document).ready(function(){
-	vm1.getBelongs();
-	vm1.getValueClass();
-	vm1.getTags();
-	vm1.getStatusList();
-});
+	function getParams() {
+		var params = {
+        		'user_id': vm1.q.user_id,
+        		'dep_user_id':vm1.q.dep_user_id,
+        		'remark':vm1.q.remark,
+        		'comm_remark':vm1.q.comm_remark,
+        		'call_count':vm1.q.call_count,
+        		'level':vm1.q.level,
+        		'belongs_to':vm1.q.belongs_to,
+        		'value_class':vm1.q.value_class,
+        		'tags':vm1.q.tags,
+        		'vip_select':vm1.q.vip_select
+            };
+		return params;
+	}
+
+	// 导出
+	function initExportFunction(){
+		$('#btn_exports').click(function(){
+			var params = getParams();
+				executePost('../channel/assess/exportExcel', {'params' : JSON.stringify(params)});
+		});
+	}  
+	
+	$(document).ready(function(){
+		vm1.getBelongs();
+		vm1.getValueClass();
+		vm1.getTags();
+		vm1.getStatusList();
+	});
 </script>
 </body>
 </html>

@@ -21,7 +21,7 @@ public class VIPQueryParam implements Serializable {
 	private String value_class;
 	private String tags;
 	private String vip_select;
-	private String comm_count;// 通话次数
+	private String call_count;// 通话次数
 
 	public String getUser_id() {
 		return user_id;
@@ -78,10 +78,10 @@ public class VIPQueryParam implements Serializable {
 		this.vip_select = vip_select;
 	}
 	public String getComm_count() {
-		return comm_count;
+		return call_count;
 	}
-	public void setComm_count(String comm_count) {
-		this.comm_count = comm_count;
+	public void setComm_count(String call_count) {
+		this.call_count = call_count;
 	}
 	
 	/**
@@ -98,10 +98,10 @@ public class VIPQueryParam implements Serializable {
 			sb.append(" AND vu.dep_user_id=").append(dep_user_id);
 		}
 		if(StringUtils.isNotEmpty(remark)){
-			sb.append(" AND cr.remark LIKE").append('%' + remark.trim() + '%');
+			sb.append(" AND cr.remark LIKE").append(" '%" + remark.trim() + "%'");
 		}
 		if(StringUtils.isNotEmpty(comm_remark)){
-			sb.append(" AND cr.comm_remark LIKE").append('%' + comm_remark.trim() + '%');
+			sb.append(" AND cr.comm_remark LIKE").append(" '%" + comm_remark.trim() + "%'");
 		}
 		if(StringUtils.isNotEmpty(level)){
 			sb.append(" AND vui.level=").append(dep_user_id);
@@ -137,7 +137,7 @@ public class VIPQueryParam implements Serializable {
 				sb.append(" AND vui.vip_status=1").append(" AND vui.tomorow_recover_account > 0");
 			}
 		}
-		if(StringUtils.isNotEmpty(comm_count)) {// 通话次数
+		if(StringUtils.isNotEmpty(call_count)) {// 通话次数
 		
 		}
 		return sb.toString();
