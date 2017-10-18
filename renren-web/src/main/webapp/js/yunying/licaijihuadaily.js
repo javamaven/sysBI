@@ -52,31 +52,33 @@ function initDataGrid(){
         columns:[[
 //          {field:'id',title:'id',width:180},
 //        {field:'STAT_PERIOD',title:'日期',width:80,align:'right',halign :'left'},
-        {field:'FIN_AWAIT',title:'理财计划待收',width:80,align:'right',halign :'left',
+        {field:'FIN_AWAIT',title:'理财计划待收',width:100,align:'right',halign :'left',
         	
 	    },
-        {field:'FIN_AWAIT_NUM',title:'有待收人数',width:80,align:'right',halign :'left',
+        {field:'FIN_AWAIT_NUM',title:'有待收人数',width:90,align:'right',halign :'left',
 	    	formatter:function(cellvalue, options, rowObject){
-	    		if(cellvalue){
-	    			return formatNumber(cellvalue,2);
-	    		}else{
-	    			return '';
-	    		}
-	    	} 
-	    },
-        
-        {field:'FIN_HUOQI_AWAIT',title:'活期待收总量',width:90,align:'right',halign :'left'},
-        {field:'AWAIT_RATE',title:'活期待收占比',width:90,align:'right',halign :'left',
-        	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
 	    		}else{
 	    			return '0';
 	    		}
 	    	} 
-	    },	
+	    },
+        
+        {field:'FIN_HUOQI_AWAIT',title:'活期待收总量',width:100,align:'right',halign :'left'},
+        {field:'AWAIT_RATE',title:'活期待收占比',width:100,align:'right',halign :'left',
+        	formatter: function(value, options, row){
+				 if(value == null || value == ''){
+					return '';
+				}else{
+					return formatNumber(value*100,2) + '%';
+				}
+			} 
+		},
+        	
+       
 
-        {field:'FIN_HUOQI_AWAIT_NUM',title:'有活期待收人数',width:100,align:'right',halign :'left',
+        {field:'FIN_HUOQI_AWAIT_NUM',title:'有活期待收人数',width:110,align:'right',halign :'left',
 	    	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
@@ -86,17 +88,17 @@ function initDataGrid(){
 	    	} 
 	    },
         
-        {field:'FIN_INV',title:'理财计划投资',width:90 , align:'right',halign :'left',
+        {field:'FIN_INV',title:'理财计划投资',width:100 , align:'right',halign :'left',
 	    	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
 	    		}else{
-	    			return '';
+	    			return '0';
 	    		}
 	    	}
         	},
         
-        {field:'UNLOCKS',title:'解锁金额',width:60,align:'right',halign :'left',
+        {field:'UNLOCKS',title:'解锁金额',width:80,align:'right',halign :'left',
         	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
@@ -106,7 +108,7 @@ function initDataGrid(){
 	    	} 
 	    },
         
-        {field:'APPLY_EXIT',title:'申请退出金额',width:80,align:'right',halign :'left',
+        {field:'APPLY_EXIT',title:'申请退出金额',width:100,align:'right',halign :'left',
 	    	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
@@ -116,79 +118,79 @@ function initDataGrid(){
 	    	} 
 	    },
 
-        {field:'APPLY_EXIT_NUM',title:'申请退出人数',width:80,align:'right',halign :'left',
+        {field:'APPLY_EXIT_NUM',title:'申请退出人数',width:100,align:'right',halign :'left',
 	    	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
 	    		}else{
-	    			return '';
+	    			return '0';
 	    		}
 	    	} 
 	    },
         
-        {field:'EXITS',title:'成功退出本金',width:80,align:'right',halign :'left',
+        {field:'EXITS',title:'成功退出本金',width:100,align:'right',halign :'left',
 	    	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
 	    		}else{
-	    			return '';
+	    			return '0';
 	    		}
 	    	} 
 	    },
         
         
-        {field:'EXITS_ALL',title:'成功退出本息',width:80,align:'right',halign :'left',
+        {field:'EXITS_ALL',title:'成功退出本息',width:100,align:'right',halign :'left',
 	    	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
 	    		}else{
-	    			return '';
+	    			return '0';
 	    		}
 	    	} 
 	    },
         
-        {field:'EXIT_RATE',title:'当日退出率',width:80,align:'right',halign :'left',
+        {field:'EXIT_RATE',title:'当日退出率',width:90,align:'right',halign :'left',
 	 
 	    },
-	    {field:'FIN_REPAY',title:'理财计划底层回款本息',width:110,align:'right',halign :'left',
+	    {field:'FIN_REPAY',title:'理财计划底层回款本息',width:160,align:'right',halign :'left',
 	    	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
 	    		}else{
-	    			return '';
+	    			return '0';
 	    		}
 	    	} 
 	    },
-	    {field:'NO_MATCH_CAPITIL_WAIT',title:'理财计划预约资金',width:100,align:'right',halign :'left',
+	    {field:'NO_MATCH_CAPITIL_WAIT',title:'理财计划预约资金',width:130,align:'right',halign :'left',
 	    	formatter:function(cellvalue, options, rowObject){
 	    		if(cellvalue){
 	    			return formatNumber(cellvalue,2);
 	    		}else{
-	    			return '';
+	    			return '0';
 	    		}
 	    	} 
 	    },
-	    {field:'FIN_APR',title:'理财计划加权利率',width:100,align:'right',halign :'left',
-	    	formatter:function(cellvalue, options, rowObject){
-	    		if(cellvalue){
-	    			return formatNumber(cellvalue,2);
-	    		}else{
-	    			return '';
-	    		}
-	    	} 
-	    },
+	    {field:'FIN_APR',title:'理财计划加权利率',width:130,align:'right',halign :'left',
+	    	formatter: function(value, options, row){
+				 if(value == null || value == ''){
+					return '';
+				}else{
+					return formatNumber(value*100,2) + '%';
+				}
+			} 
+		},
         
         
   
-	    {field:'AVG_APR',title:'理财计划底层资产加权利率',width:150,align:'right',halign :'left',
-	    	formatter:function(cellvalue, options, rowObject){
-	    		if(cellvalue){
-	    			return formatNumber(cellvalue,2);
-	    		}else{
-	    			return '';
-	    		}
-	    	} 
-	    }
+	    {field:'AVG_APR',title:'理财计划底层资产加权利率',width:170,align:'right',halign :'left',
+			formatter: function(value, options, row){
+				 if(value == null || value == ''){
+					return '';
+				}else{
+					return formatNumber(value*100,2) + '%';
+				}
+			} 
+		}
         
         ]],
         onLoadSuccess: function(row, data){
