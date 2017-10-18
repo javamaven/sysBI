@@ -1,8 +1,11 @@
 package io.renren.controller.crm;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
+
+import io.renren.utils.DateUtils;
 
 /**
  * 构建VIP列表查询条件
@@ -140,6 +143,7 @@ public class VIPQueryParam implements Serializable {
 		if(StringUtils.isNotEmpty(call_count)) {// 通话次数
 		
 		}
+		sb.append(" AND vui.stat_period=").append(DateUtils.format(new Date(), "yyyyMMdd"));
 		return sb.toString();
 	}
 }

@@ -9,22 +9,14 @@
            line-height: 34px;
            height: 34px;
        }
-       .inputClass2 {
-			height: 30px;
-			width: 200px;
-			border: 1px solid #ccc;
-			border-radius: 4px;
-		 	padding-left: 6px; 
-			vertical-align: middle;
-		}
 </style>
 </head>
 <body>
 <div id="crm-call-record" v-cloak>
 	<div v-show="showList">
 		<div class="grid-btn">
-			<a class="btn btn-primary" id="upload"><i class="fa fa-plus"></i>&nbsp;指派</a>
-			<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出</a>
+			<a class="btn btn-primary" id="upload" onclick="assign_config()"><i class="fa fa-pencil-square-o"></i>&nbsp;指派</a>
+			<a class="btn btn-primary" id="btn_exports" @click="exportExcel"><i class="fa fa-file-excel-o"></i>&nbsp;导出</a>
 		</div>
 		<div class="grid-btn">
 			<span class="control-label search-label">用户ID</span>
@@ -94,22 +86,35 @@
 		</div>
 	    <table id="jqGrid"></table>
 	    <div id="jqGridPager"></div>
+	    
+	 <div class="modal fade" id="assign_dlg" tabindex="-1" role="dialog"
+		aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal"
+						aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel"><font style="font-weight: bold;">指派弹框</font></h4>
+				</div>
+				<div class="modal-body" style="height: 320px;">
+					<span style="margin-bottom: -15px;" id='selCount'></span><br/>
+					<table id="jqGrid_config"></table>
+	   			 	<div id="jqGridPager_config"></div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary" onclick="saveOrUpdate()">确定</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	    
     </div>
-    
 </div>
 
 <script type="text/javascript">
-//时间格式
-function initDatetimepicker(){
-	$(".form_datetime_2").datetimepicker({
-	    format: 'yyyy-mm-dd',
-	    minView:'month',
-	    language: 'zh-CN',
-	    autoclose:true,
-	    todayBtn : true,
-	    setStartDate:new Date()
-	});
-}
+
+var currSelRow = {};
 
 function initGrid() {
     $("#jqGrid").jqGrid({
@@ -155,12 +160,12 @@ function initGrid() {
         ],
 		viewrecords: true,
         height: 385,
-        rowNum: 10,
+        rowNum: 30,
 		rowList : [10,30,50],
         rownumbers: true, 
         rownumWidth: 25, 
         autowidth:true,
-        multiselect: false,
+        multiselect: true,
         pager: "#jqGridPager",
         jsonReader : {
             root: "page.list",
@@ -173,12 +178,52 @@ function initGrid() {
             rows:"limit", 
             order: "order"
         },
+        onSelectRow: function(rowId){
+        	currSelRow = $("#jqGrid").jqGrid('getRowData',rowId);
+    	},
         gridComplete:function(){
-        	//隐藏grid底部滚动条
-        	// $("#jqGrid").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "hidden" });
         }
     });
 };
+
+function initFAGrid() {
+    $("#jqGrid_config").jqGrid({
+        url: '../crm/vip/query_financial_advisor',
+        datatype: "json",
+        colModel: [			
+			{ label: 'belongs_to', name: 'belongs_to', width: 25, key: true,hidden: true },
+			{ label: '理财顾问姓名', name: 'real_name', width: 150 },
+			{ label: '已管人数(有效人数)', name: 'belong_count', width: 300,formatter: 
+				function(value, options, row){
+				return "已管" + row.belongs_count + "人 (当前有效" + row.youxiao_count + "人)";
+			}
+		}
+        ],
+		viewrecords: true,
+        height: 185,
+        rowNum: 5,
+		rowList : [5,10],
+        rownumbers: true, 
+        rownumWidth: 25, 
+        autowidth:true,
+        multiselect: false,
+        pager: "#jqGridPager_config",
+        jsonReader : {
+            root: "page.list",
+            page: "page.currPage",
+            total: "page.totalPage",
+            records: "page.totalCount"
+        },
+        prmNames : {
+            page:"page", 
+            rows:"limit", 
+            order: "order"
+        },
+        onSelectRow: function(rowId){
+        	currSelRow = $("#jqGrid_config").jqGrid('getRowData',rowId);
+    	}
+    });
+}
 
 var vm1 = new Vue({
 	el:'#crm-call-record',
@@ -199,8 +244,7 @@ var vm1 = new Vue({
 		statusList:[],
 		belongs:[],
 		valueClass:[],
-		tags:[],
-		call_time_type:[{id:1,value:'过去60天'},{id:2,value:'过去30天'},{id:3,value:'过去7天'},{id:4,value:'自选'}]
+		tags:[]
 	},
 	methods: {
 		query: function () {
@@ -226,7 +270,6 @@ var vm1 = new Vue({
 				console.log(r.list);
 				vm1.statusList = r.list;
 				initGrid();
-				initDatetimepicker();
 			});
 		},
 		getValueClass: function(){
@@ -239,16 +282,28 @@ var vm1 = new Vue({
 				vm1.tags = r.list;
 			});
 		},
+		assign: function() {// 指派
+			var row = $("#jqGrid").jqGrid('getGridParam','selrow');
+			var rowdata = $("#jqGrid").jqGrid('getRowData',row);
+			console.log(rowdata);
+			if(!row){
+				alert("请先选择需要指派的用户");
+				return;
+			}
+			assignDlg();
+		},
+		exportExcel: function() {// 导出
+			
+		},
 		view: function(){// 查看VIP详情
 			var row = $("#jqGrid").jqGrid('getGridParam','selrow');
 			if(!row) {
 				alert("请选中一行后再进行操作");
 				return;
 			}
-			console.log(row);
 			var rowdata = $("#jqGrid").jqGrid('getRowData',row);
 			console.log(rowdata);
-			parent.addTab("VIP详情","./crm/vip_detail.html?user_id=" + rowdata.user_id + ","");
+			parent.addTab("VIP详情","./crm/vip_detail.html?user_id=" + rowdata.user_id,"");
 		},
 		addCall: function(){// 添加通话
 			$.get("../crm/config/value_class_list?type=2", function(r){
@@ -264,6 +319,27 @@ var vm1 = new Vue({
 		}
 	}
 });
+
+	// 保存指派投资顾问
+	function saveOrUpdate() {
+		
+	}
+
+	function assign_config() {
+		console.log(currSelRow);
+		if(!currSelRow.user_id){
+			alert('请先选择要指派的VIP用户');
+			return ;
+		}
+		initFAGrid();// 初始化理财顾问信息
+		$("#selCount").text("已选2个用户，请选择需要指派的理财顾问");
+		$("#jqGridPager_config_left").width("1px");
+		$('#assign_dlg').modal('show');
+	}
+
+	function assignDlg() {
+
+	}
 
 	function getParams() {
 		var params = {

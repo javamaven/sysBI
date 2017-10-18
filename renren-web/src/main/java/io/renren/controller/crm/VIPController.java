@@ -109,6 +109,47 @@ public class VIPController {
 		return R.error("查询VIP列表失败");
 	}
 	
+	/**
+	 * 获取理财顾问名下vip信息
+	 * @author HUGUANG 2017年10月18日下午5:12:55
+	 */
+	@ResponseBody
+	@RequestMapping("/query_financial_advisor")
+	@RequiresPermissions("crm:vip:list")
+	public R query_financial_advisor(){
+		StringBuilder sql = new StringBuilder("SELECT belongs_to,COUNT(1) AS belongs_count FROM vip_user_belongs GROUP BY belongs_to ");
+		logger.info("查询理财顾问名下vip用户信息,执行SQL={}", sql.toString());
+		JdbcUtil ju = new JdbcUtil(dataSourceFactory, "crmMysql");
+		try {
+			List<Map<String, Object>> list = ju.query(sql.toString());
+			List<Map<String, Object>> listCall = null;
+			for(Map<String, Object> map : list) {
+				ju = new JdbcUtil(dataSourceFactory, "crmMysql");
+				if ((Long) map.get("user_id") != null) {
+					listCall = ju.query("SELECT belongs_to,COUNT(1) AS youxiao_count"+ 
+							" FROM vip_user_belongs vub" + 
+							" LEFT JOIN vip_user_indicator vui ON vui.user_id = vub.user_id" +
+							" WHERE vui.vip_status = 1 AND vub.belongs_to=" + map.get("belongs_to"));
+					Integer youxiao_count = Integer.valueOf(listCall.get(0).get("youxiao_count").toString());
+					logger.info("youxiao_count={}", youxiao_count);
+					map.put("youxiao_count", youxiao_count == null ? 0 : youxiao_count);
+				}
+			}
+			return R.ok().put("list", list);
+		} catch (SQLException e) {
+			logger.error("查询理财顾问名下vip用户信息失败", e);
+			return R.error("查询理财顾问名下vip用户信息失败");
+		}
+	}
+	
+	/**
+	 * SELECT t.`id`,t.`role`,t.`real_name`,t.`system_account`,t.`email` FROM `financial_advisor` t
+	 * @author HUGUANG 2017年10月18日下午6:03:17
+	 */
+	private List<Map<String, Object>> formatList(List<Map<String, Object>> list) {
+		return null;
+	}
+
 	@ResponseBody
 	@RequestMapping("/exportExcel")
 	public void exportExcel(String params, HttpServletRequest request, HttpServletResponse response)
