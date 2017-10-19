@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title></title>
+#parse("sys/header.html")
+<style type="text/css">
+
+.inputClass2 {
+	height: 30px;
+	width: 200px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+ 	padding-left: 6px; 
+	vertical-align: middle;
+};
+	*{
+				padding: 0;margin: 0;
+				-webkit-transition: all 1s ease-in;
+				-moz-transition: all 1s ease-in;
+				-ms-transition: all 1s ease-in;
+				-o-transition: all 1s ease-in;
+				transition: all 1s ease-in;
+				}
+				input,select{outline: none;}
+				.box{
+			margin:10px 10px 10px 80px;
+				background: #f2f2f2;border: 1px solid #999999; 
+				
+				padding: 10px 10px 70px 10px; 
+			}
+			.box td,th{
+			text-align: center;width: 146px;
+			}
+			input{
+				width:172px;padding:4px;
+			}
+			label{
+				display: block;
+			}
+			
+			select{
+				width:70px;height:27px;
+			}
+			a{
+				text-decoration: none;
+				font-weight: bold;
+				color: #666666;
+				float: left;
+				margin-right: 10px;
+				font-size: 20px;
+			float: left;
+			}
+			#rrapp{
+			overflow: hidden;
+			 }
+			 #rrapp .showList{
+			 	float: left;
+			 }
+			 #tt{ 
+			 float: right; margin-top: 100px;
+			 }
+			 .box table{
+			 width:=70%;}
+			.box td,th{height: 40px;vertical-align: middle;font-weight: normal;}
+			.table_list>span{float:left;}
+			.panel-htop{margin-top: 82px !important;margin-left: 700px !important;}
+</style>
+</head>
+<body>
+<div id="rrapp" v-cloak>
+	<div v-show="showList" class="showList">
+		<div class="grid-btn">
+			<table border="0">
+				
+			
+				<tr height="10px;"></tr>
+				<tr>
+				
+					<td>
+						<label>开始日期：</label>
+					</td>
+					<td>
+					
+						<input type="text" class="inputClass2 form_datetime_2" id=beginTime  placeholder="请选择开始日期"/>
+					</td>
+					<td>
+						<label>结束日期：</label>
+					</td>
+					<td>
+					
+						<input type="text" class="inputClass2 form_datetime_2" id=endTime  placeholder="请选择结束日期"/>
+					</td>
+				
+					
+				</tr>
+			      </table>      
+  </div> 
+  <div>
+ <div class="table_first">
+			<span>当前页面 :</span>
+			
+			<div class="box">
+
+				<table>
+				<thead>
+					<th>页面标识</th>
+					<th>关系</th>
+					<th></th>
+				</thead>
+				<tbody>
+					<tr >
+					<td><input type="text" id="table_first_1" /></td>
+					<td>
+						<select name="">
+						<option value="">包含</option>
+						<option value="">不包含</option>
+						</select>
+					</td>
+					<td>
+						<a href="javascript:void(0)" class="add">+</a>
+						<a href="javascript:void(0)" class="reduce">-</a>
+					</td>
+					</tr>			
+				</tbody>
+				</table>
+		</div>
+		</div>
+		
+     <div class="table_sce">
+			<span>前一页面 :</span>
+			
+			<div class="box">
+
+				<table>
+				<thead>
+					<th>页面标识</th>
+					<th>关系</th>
+					<th></th>
+				</thead>
+				<tbody>
+					<tr >
+					<td>
+					<input type="text"  id="table_sce_1" />
+<!-- 					<input type="text" class="inputClass2 " id=table_sce_1  placeholder="请输入行为编号"/> -->
+					</td>
+					<td>
+						<select id="list_select">
+						<option value ="ture" selected="selected">包含</option>
+						<option value="false">不包含</option>
+						</select>
+					</td>
+					<td>
+						<a href="javascript:void(0)" class="add">+</a>
+						<a href="javascript:void(0)" class="reduce">-</a>	
+					</td>
+					</tr>
+				</tbody>
+				</table>			
+		   </div>
+	</div>	
+	
+	<div >
+			
+			
+
+				<table>
+				<tr>
+				<td>
+					<span>行为编号 :&nbsp;&nbsp;&nbsp;</span>
+					</td>
+					<td>
+					
+						<input type="text" class="inputClass2" id=bianhao  placeholder="请输入行为编号"/>
+					</td>
+					<td>
+						&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-primary" @click="reload"><i class="fa fa-search"></i>&nbsp;查询</a>
+						<a class="btn btn-primary" id="btn_exports"><i class="fa fa-file-excel-o"></i>&nbsp;导出EXCEL</a>
+						
+					</td>
+					</tr>
+					<tr height="10px;"></tr>
+					
+				</table>
+						
+		</div>	
+</div>  
+ </div>
+ 
+<table id="tt" style="width:245px; "  ></table>
+</div>
+<script src="${rc.contextPath}/statics/plugins/layui/lay/lib/jquery.js"></script>
+<script src="${rc.contextPath}/js/schedule/addtask.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/sys/util.js?_${date.systemTime}"></script>
+<script src="${rc.contextPath}/js/yunying/yemiantongji.js?_${date.systemTime}"></script>
+<script type="text/javascript">
+var ctx = "${rc.contextPath}";
+
+</script>
+<script type="text/javascript">
+
+$(function(){
+	
+	function addTr(table,id){
+	table.append('<tr>'+'<td><input type="text"  id="'+id+'" /></td>'+
+	'<td><select><option>包含</option><option>不包含</option></select></td>'+'</tr>')
+	}
+	
+	$(".add").on("click",function(){
+	var add=$(this).parent().parent().parent();
+	var id=add.parent().parent().parent().attr("class")+"_"+(add.find("tr").length+1);
+		addTr(add,id);
+	});
+	$(".reduce").on("click",function(){
+	var reduce=$(this).parent().parent().parent();
+	var length=	reduce.find("tr").length;
+if(length==1){
+  return false;
+}else{
+reduce.find("tr").eq(length-1).remove();
+	
+}
+
+
+	});
+})
+
+		</script>
+</body>
+</html>
