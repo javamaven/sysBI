@@ -35,7 +35,9 @@ function saveItem(divId){
 	var items = [];
 	for(var i = 0; i < unsaved.length; i++){
 		if($.trim(unsaved[i].value) == ''){
-			alert("请输入问题选项");
+			alert("请输入问题选项",function(){
+				$(unsaved[i]).focus();
+			});
 			return;
 		}
 		items.push(unsaved[i].value);
@@ -100,17 +102,13 @@ function delItem(divId){
 }
 
 function onQuestionDbClick(span,tid){
-	//console.log(span);
-	//console.log($(span).text());
-	//console.log($(span).parent());
-	//console.log(tid);
 	var p = $(span).parent();
 	var text = $(span).text();
 	$(span).remove();
 	//处理enter健事件
 	p.append("<input id='input_" + tid + "' type='text' value='" + text + "' style='width:300px;'/>");
 	$("#input_"+tid).keydown(function(e){
-		var value = $("#input_"+tid).val();
+		var value = $(this).val();
 		if(e.keyCode==13) {
 			//console.log(value);
 			if($.trim(value) == ''){
@@ -123,7 +121,6 @@ function onQuestionDbClick(span,tid){
 		        dataType:'json',
 		        success:function(r){
 		            if(r.code == 0){
-		            	//$("#jqGrid").trigger("reloadGrid");
 						$("#input_"+tid).remove();
 						p.append("<span ondblclick='onQuestionDbClick(this" + "," + tid + ")'>" + value + "</span>");
 		            }else{
@@ -135,9 +132,14 @@ function onQuestionDbClick(span,tid){
 		        }
 		    })
 	    }else if(e.keyCode==27) {
-	    	$("#input_"+tid).remove();
-			p.append("<span ondblclick='onQuestionDbClick(this" + "," + tid + ")'>" + value + "</span>");
+	    	$(this).remove();
+			p.append("<span ondblclick='onQuestionDbClick(this" + "," + tid + ")'>" + text + "</span>");
 	    }
+	});
+	$("#input_"+tid).blur(function(e){
+		//var value = $(this).val();
+		$(this).remove();
+		p.append("<span ondblclick='onQuestionDbClick(this" + "," + tid + ")'>" + text + "</span>");
 	});
 	$("#input_"+tid).focus();
 }
@@ -149,7 +151,7 @@ function onItemDbClick(span,vid){
 	//处理enter健事件
 	p.append("<input id='input_" + vid + "' type='text' value='" + text + "' style='width:200px;'/>");
 	$("#input_"+vid).keydown(function(e){
-		var value = $("#input_"+vid).val();
+		var value = $(this).val();
 		if(e.keyCode==13) {
 			//console.log(value);
 			if($.trim(value) == ''){
@@ -174,9 +176,14 @@ function onItemDbClick(span,vid){
 		        }
 		    })
 	    }else if(e.keyCode==27) {
-	    	$("#input_"+vid).remove();
-			p.append("<span ondblclick='onItemDbClick(this" + "," + vid + ")'>" + value + "</span>");
+	    	$(this).remove();
+			p.append("<span ondblclick='onItemDbClick(this" + "," + vid + ")'>" + text + "</span>");
 	    }
+	});
+	$("#input_"+vid).blur(function(e){
+		//var value = $(this).val();
+		$(this).remove();
+		p.append("<span ondblclick='onItemDbClick(this" + "," + vid + ")'>" + text + "</span>");
 	});
 	$("#input_"+vid).focus();
 }
