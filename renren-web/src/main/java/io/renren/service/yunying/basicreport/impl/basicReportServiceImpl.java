@@ -678,12 +678,12 @@ public class basicReportServiceImpl implements BasicReportService {
 
 	@Override
 	public PageUtils queryFreeChannelList(Integer page, Integer limit, String registerStartTime, String registerEndTime,
-			int start, int end, String queryType) {
+			int start, int end, String queryType) throws Exception {
 		JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		String path = this.getClass().getResource("/").getPath();
 		String detail_sql = null;
-		try {
+//		try {
 			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/电销数据推送/free_channel_send.txt"));
 			List<Map<String, Object>> resultList = util.query(detail_sql, registerStartTime, registerEndTime);
 			// 免费渠道
@@ -702,11 +702,11 @@ public class basicReportServiceImpl implements BasicReportService {
 			}
 
 
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 
 		List<Map<String, Object>> retList = new ArrayList<Map<String, Object>>();
 		if (list.size() > 0) {
@@ -777,19 +777,19 @@ public class basicReportServiceImpl implements BasicReportService {
 
 	@Override
 	public PageUtils queryXinxiLiuList(Integer page, Integer limit, String registerStartTime, String registerEndTime,
-			int start, int end) {
+			int start, int end) throws Exception {
 		JdbcUtil util = new JdbcUtil(dataSourceFactory, "mysql");
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
 		String path = this.getClass().getResource("/").getPath();
 		String detail_sql = null;
-		try {
+//		try {
 			detail_sql = FileUtil.readAsString(new File(path + File.separator + "sql/电销数据推送/SEM和信息流渠道.txt"));
 			list = util.query(detail_sql, registerStartTime, registerEndTime);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+//		} catch (SQLException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
 
 		List<Map<String, Object>> retList = new ArrayList<Map<String, Object>>();
 		if (list.size() > 0) {

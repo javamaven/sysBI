@@ -59,6 +59,11 @@ public class RegisterOneHourNotInvestReportJob implements Job {
 			if (success) {
 				break;
 			}
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 		if (!ConfigProp.getIsSendEmail()) {
 			return;

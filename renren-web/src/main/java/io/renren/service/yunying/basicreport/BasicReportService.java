@@ -1,5 +1,6 @@
 package io.renren.service.yunying.basicreport;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -36,7 +37,7 @@ public interface BasicReportService {
 	void batchInsertPhoneSaleJobSendData(List<Map<String, String>> dataList);
 
 	PageUtils queryFreeChannelList(Integer page, Integer limit, String registerStartTime, String registerEndTime,
-			int start, int end, String string);
+			int start, int end, String string) throws Exception;
 
 	List<Map<String, Object>> queryPayOrCpsChannelList(Map<String, Object> params);
 
@@ -46,5 +47,5 @@ public interface BasicReportService {
 	List<Map<String, Object>> queryAppFenfaShichang(Map<String, Object> queryParams);
 
 	PageUtils queryXinxiLiuList(Integer page, Integer limit, String registerStartTime, String registerEndTime,
-			int start, int end);
+			int start, int end) throws Exception;
 }

@@ -61,10 +61,11 @@ public class BasicReportController2 {
 	 * @param registerStartTime
 	 * @param registerEndTime
 	 * @return
+	 * @throws Exception 
 	 */
 	@ResponseBody
 	@RequestMapping("/phoneSaleDataSend")
-	public R phoneSaleDataSend(Integer page, Integer limit, String type, String registerStartTime, String registerEndTime) {
+	public R phoneSaleDataSend(Integer page, Integer limit, String type, String registerStartTime, String registerEndTime) throws Exception {
 		String reportType="电销数据推送";
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		Map<String, Object> params = new HashMap<>();
@@ -114,13 +115,13 @@ public class BasicReportController2 {
 	 * @param params
 	 * @param request
 	 * @param response
-	 * @throws IOException
+	 * @throws Exception 
 	 */
 	@SuppressWarnings("unchecked")
 	@ResponseBody
 	@RequestMapping("/exportPhoneSaleSendDataExcel")
 	public void exportPhoneSaleSendDataExcel(String params, HttpServletRequest request, HttpServletResponse response)
-			throws IOException {
+			throws Exception {
 		String reportType="电销数据推送";
 		UserBehaviorUtil userBehaviorUtil = new UserBehaviorUtil(userBehaviorService);
 		userBehaviorUtil.insert(getUserId(),new Date(),"导出",reportType," ");

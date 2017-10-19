@@ -45,13 +45,16 @@ AND NOT EXISTS (
 		1 = 1
 	AND p.user_id = u.user_id
 )
-AND EXISTS (
-	SELECT
-		f.user_id
-	FROM
-		mdtx_user.user_referee f
-	WHERE
-		f.user_id = u.user_id
-)
-and case when channel_id is null or channel_id='' then activity_tag
-	else channel_id end = 'invited'
+AND case when channel_id is null or channel_id='' then activity_tag else channel_id end = 'invited'
+-- ( 
+	-- EXISTS (
+	-- 	SELECT
+	-- 		f.user_id
+	-- 	FROM
+	-- 		mdtx_user.user_referee f
+	-- 	WHERE
+	-- 		f.user_id = u.user_id
+	-- )
+	-- or   
+	-- (case when channel_id is null or channel_id='' then activity_tag else channel_id end = 'invited')
+-- )
