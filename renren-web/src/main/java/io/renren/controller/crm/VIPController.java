@@ -60,13 +60,15 @@ public class VIPController {
 		logger.info("查询VIP记录,param={},page={},limit={}",JSON.toJSONString(param),page,limit);
 		String[] selectSql = new String[] {
 				"SELECT vu.user_id, vu.dep_user_id, vu.user_name, vu.real_name, vu.gender, vu.phone,",
-				"vub.recover_account_wait AS pre_account_wait,vui.recover_account_wait AS cur_account_wait,vui.account_balance,vui.level,vub.value_type,fa.real_name AS belong_real_name,cr.remark,cr.comm_remark,vui.data_date,",
-				"fa.`real_name` as belong_real_name, vub.tags "
+				"vub.recover_account_wait AS pre_account_wait,vui.recover_account_wait AS cur_account_wait,vui.account_balance,vui.level,vub.value_type,fa.real_name AS belong_real_name,vui.data_date,",
+				"fa.`real_name` as belong_real_name, vub.tags, ",
+				"(SELECT COUNT(*) FROM `call_record` t WHERE t.user_id=vu.user_id) call_count, ",
+				"(SELECT remark FROM `call_record` t WHERE t.user_id=vu.`user_id` ORDER BY t.id DESC LIMIT 1) remark, ",
+				"(SELECT comm_remark FROM `call_record` t WHERE t.user_id=vu.`user_id` ORDER BY t.id DESC LIMIT 1) comm_remark "
 		};
 		String[] fromSql = new String[]{
 				" FROM vip_user_indicator vui ",
 				" LEFT JOIN vip_user vu ON vu.user_id = vui.user_id ",
-				" LEFT JOIN call_record cr ON cr.user_id = vui.user_id ",
 				" LEFT JOIN vip_user_belongs vub ON vu.user_id = vub.user_id ",
 				" LEFT JOIN financial_advisor fa ON fa.id = vub.belongs_to "
 		};
@@ -74,7 +76,7 @@ public class VIPController {
 		StringBuilder querySql = new StringBuilder();
 		querySql.append(StringUtils.join(selectSql)).append(StringUtils.join(fromSql));
 		querySql.append(param.toWhereSql());
-		querySql.append(" ORDER BY cr.id DESC");
+		querySql.append(" ORDER BY vu.user_id DESC");
 		querySql.append(" LIMIT ").append((page-1)*limit).append(",").append(limit);
 		String sql = querySql.toString();
 		String countSql = "select count(1) as count " + StringUtils.join(fromSql) + param.toWhereSql();
@@ -83,18 +85,6 @@ public class VIPController {
 		JdbcUtil ju = new JdbcUtil(dataSourceFactory, "crmMysql");
 		try {
 			List<Map<String, Object>> list = ju.query(sql);
-			ju = new JdbcUtil(dataSourceFactory, "crmMysql");
-			List<Map<String, Object>> listCall = null;
-			for(Map<String, Object> map : list) {
-				ju = new JdbcUtil(dataSourceFactory, "crmMysql");
-				String ui = String.valueOf((Long) map.get("user_id"));
-				if ((Long) map.get("user_id") != null) {
-					listCall = ju.query("SELECT count(1) AS count FROM call_record WHERE user_id = " + ui + ';');
-					Integer callCount = Integer.valueOf(listCall.get(0).get("count").toString());
-					logger.info("callCount by userId={}", callCount);
-					map.put("call_count", listCall == null ? 0 : callCount);
-				}
-			}
 			ju = new JdbcUtil(dataSourceFactory, "crmMysql");
 			List<Map<String, Object>> list1 = ju.query(countSql);
 			int count = 0;
@@ -117,7 +107,9 @@ public class VIPController {
 	@RequestMapping("/query_financial_advisor")
 	@RequiresPermissions("crm:vip:list")
 	public R query_financial_advisor(){
-		StringBuilder sql = new StringBuilder("SELECT belongs_to,COUNT(1) AS belongs_count FROM vip_user_belongs GROUP BY belongs_to ");
+		StringBuilder sql = new StringBuilder("SELECT vub.belongs_to,fa.real_name, COUNT(1) AS belongs_count FROM vip_user_belongs vub "+
+				" LEFT JOIN financial_advisor fa ON vub.belongs_to = fa.id " +		
+				" GROUP BY belongs_to ");
 		logger.info("查询理财顾问名下vip用户信息,执行SQL={}", sql.toString());
 		JdbcUtil ju = new JdbcUtil(dataSourceFactory, "crmMysql");
 		try {
@@ -125,10 +117,10 @@ public class VIPController {
 			List<Map<String, Object>> listCall = null;
 			for(Map<String, Object> map : list) {
 				ju = new JdbcUtil(dataSourceFactory, "crmMysql");
-				if ((Long) map.get("user_id") != null) {
+				if ((Integer) map.get("belongs_to") != null) {
 					listCall = ju.query("SELECT belongs_to,COUNT(1) AS youxiao_count"+ 
 							" FROM vip_user_belongs vub" + 
-							" LEFT JOIN vip_user_indicator vui ON vui.user_id = vub.user_id" +
+							" INNER JOIN vip_user_indicator vui ON vui.user_id = vub.user_id" +
 							" WHERE vui.vip_status = 1 AND vub.belongs_to=" + map.get("belongs_to"));
 					Integer youxiao_count = Integer.valueOf(listCall.get(0).get("youxiao_count").toString());
 					logger.info("youxiao_count={}", youxiao_count);

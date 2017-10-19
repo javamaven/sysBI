@@ -12,10 +12,11 @@
 </style>
 </head>
 <body>
-<div id="crm-call-record" v-cloak>
+<div id="vip-list" v-cloak>
 	<div v-show="showList">
 		<div class="grid-btn">
-			<a class="btn btn-primary" id="upload" onclick="assign_config()"><i class="fa fa-pencil-square-o"></i>&nbsp;指派</a>
+			<!-- <a class="btn btn-primary" id="upload" onclick="assign_config()"><i class="fa fa-pencil-square-o"></i>&nbsp;指派</a> -->
+			<a class="btn btn-primary" id="upload" @click="assign_config()"><i class="fa fa-pencil-square-o"></i>&nbsp;指派</a>
 			<a class="btn btn-primary" id="btn_exports" @click="exportExcel"><i class="fa fa-file-excel-o"></i>&nbsp;导出</a>
 		</div>
 		<div class="grid-btn">
@@ -86,8 +87,11 @@
 		</div>
 	    <table id="jqGrid"></table>
 	    <div id="jqGridPager"></div>
-	    
-	 <div class="modal fade" id="assign_dlg" tabindex="-1" role="dialog"
+    </div>
+</div>
+
+<div id="vip-fa-list" v-cloak>
+	<div class="modal fade" id="assign_dlg" tabindex="-1" role="dialog"
 		aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -108,8 +112,6 @@
 			</div>
 		</div>
 	</div>
-	    
-    </div>
 </div>
 
 <script type="text/javascript">
@@ -194,13 +196,14 @@ function initFAGrid() {
 			{ label: 'belongs_to', name: 'belongs_to', width: 25, key: true,hidden: true },
 			{ label: '理财顾问姓名', name: 'real_name', width: 150 },
 			{ label: '已管人数(有效人数)', name: 'belong_count', width: 300,formatter: 
-				function(value, options, row){
+				function(value, options, row) {
+				console.log(row);
 				return "已管" + row.belongs_count + "人 (当前有效" + row.youxiao_count + "人)";
 			}
 		}
         ],
 		viewrecords: true,
-        height: 185,
+        height: '100%',
         rowNum: 5,
 		rowList : [5,10],
         rownumbers: true, 
@@ -220,13 +223,12 @@ function initFAGrid() {
             order: "order"
         },
         onSelectRow: function(rowId){
-        	currSelRow = $("#jqGrid_config").jqGrid('getRowData',rowId);
     	}
     });
 }
 
 var vm1 = new Vue({
-	el:'#crm-call-record',
+	el:'#vip-list',
 	data:{
 		q:{
 			user_id: null,
@@ -320,21 +322,43 @@ var vm1 = new Vue({
 	}
 });
 
+	var vm_fa = new Vue({
+		el:'#vip-fa-list',
+		data:{
+			q:{
+			},
+			showList: true,
+		},
+		methods: {
+			fa_query: function () {
+				if(!currSelRow.user_id){
+					alert('请先选择要指派的VIP用户');
+					return ;
+				}
+				initFAGrid();// 初始化理财顾问信息
+				$("#selCount").text("已选2个用户，请选择需要指派的理财顾问");
+				$("#jqGridPager_config_left").width("1px");
+				$('#assign_dlg').modal('show');
+				vm_fa.reload();
+			},
+			reload: function (event) {
+				vm1.showList = true;
+				var page = $("#jqGrid_config").jqGrid('getGridParam','page');
+				$("#jqGrid_config").jqGrid('setGridParam',{ 
+	                postData:{},
+	                page:page
+	            }).trigger("reloadGrid");
+			}
+		}
+	});
+
 	// 保存指派投资顾问
 	function saveOrUpdate() {
 		
 	}
 
 	function assign_config() {
-		console.log(currSelRow);
-		if(!currSelRow.user_id){
-			alert('请先选择要指派的VIP用户');
-			return ;
-		}
-		initFAGrid();// 初始化理财顾问信息
-		$("#selCount").text("已选2个用户，请选择需要指派的理财顾问");
-		$("#jqGridPager_config_left").width("1px");
-		$('#assign_dlg').modal('show');
+		vm_fa.fa_query();
 	}
 
 	function assignDlg() {
